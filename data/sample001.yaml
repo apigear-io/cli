@@ -1,0 +1,39 @@
+module: demo
+version: "1.0"
+
+interfaces:
+  - name: Interface01
+    properties:
+      - name: prop01
+        schema:
+          type: bool
+      - name: prop02
+        schema:
+          type: int
+      - name: prop03
+        schema:
+          type: string
+    methods:
+      - name: method01
+    signals:
+      - name: signal01
+structs:
+  - name: Struct01
+    fields:
+      - name: field01
+        schema:
+          type: bool
+      - name: field02
+        schema:
+          type: int
+      - name: field03
+        schema:
+          type: string
+
+enums:
+  - name: Enum01
+    members:
+      - name: Member01
+      - name: Member02
+      - name: Member03
+      - name: Member04
