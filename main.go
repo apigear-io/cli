@@ -15,8 +15,12 @@ limitations under the License.
 */
 package main
 
-import "objectapi/cmd"
+import (
+	"objectapi/cmd"
+	"objectapi/pkg/log"
+)
 
 func main() {
+	log.Info("Starting objectapi")
 	cmd.Execute()
 }

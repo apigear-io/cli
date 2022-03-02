@@ -95,3 +95,16 @@ func FindDocuments(path string) ([]string, error) {
 	}
 	return result, nil
 }
+
+func ReadYamlFromData(in []byte, out interface{}) error {
+	return yaml.Unmarshal(in, out)
+}
+
+func YamlToJson(in []byte) ([]byte, error) {
+	out := make(map[string]interface{})
+	err := yaml.Unmarshal(in, &out)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling yaml: %w", err)
+	}
+	return json.Marshal(out)
+}

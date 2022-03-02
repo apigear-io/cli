@@ -18,6 +18,10 @@ const (
 	ScopeEnum      ScopeType = "enum"
 )
 
+type RulesFile struct {
+	Features []*FeatureRule `json:"features" yaml:"features"`
+}
+
 type FeatureRule struct {
 	Name     string       `json:"name" yaml:"name"`
 	Requires []string     `json:"requires" yaml:"requires"`

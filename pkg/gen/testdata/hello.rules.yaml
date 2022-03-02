@@ -1,0 +1,6 @@
+features:
+  - name: core
+    scopes:
+      - match: system
+        documents:
+          - { source: "hello.txt", target: "hello.txt" }

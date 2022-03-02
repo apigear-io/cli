@@ -1,0 +1,4 @@
+system: {{system.name}}
+{% for module in system.modules %}
+module: {{module.name}}
+{% endfor %}

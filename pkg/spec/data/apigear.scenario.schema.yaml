@@ -1,0 +1,73 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+title: "Scenario 1.0 Schema"
+type: object
+additionalProperties: false
+properties:
+  schema:
+    type: string
+    enum: ["apigear.scenario/1.0"]
+    description: "The simulation scenario specification version of this document."
+  name: { type: string }
+  version: { type: string }
+  interfaces:
+    type: object
+    additionalProperties:
+      $ref: "#/definitions/Interface"
+        
+definitions:
+  Interface:
+    type: object
+    properties:
+      properties:
+        type: object
+      operations:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/Operation"
+      playbook:
+        $ref: "#/definitions/Playbook"
+    additionalProperties: false
+  Operation:
+    type: object
+    properties:
+      actions: # are an array of objects with an array as value
+        type: array
+        items:
+          $ref: "#/definitions/Action"
+      return:
+        type: object
+        properties:
+          schema: # is the JSON type schema
+            type: object
+          value: # can be anything
+            anyOf: [ { type: boolean} , { type: string} , { type: number} , { type: object } , { type: array }]
+        additionalProperties: false
+      additionalProperties: false
+  Action:
+    type: object
+    additionalProperties:
+      type: array
+  Playbook:
+    type: object
+    properties:
+      interval:
+        type: integer
+      loop:
+        type: boolean
+      steps:
+        type: array
+        items:
+          $ref: "#/definitions/Step"
+    additionalProperties: false
+  Step:
+    type: object
+    properties:
+      name:
+        type: string
+      sequence:
+        type: array
+        items:
+          $ref: "#/definitions/Action"
+    additionalProperties: false
+
+

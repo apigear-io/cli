@@ -1,0 +1,96 @@
+---
+"$id": https://apigear.co/schemas/rules.schema.json
+"$schema": http://json-schema.org/draft-07/schema#
+title: ObjectAPI rules engine
+description: |
+  Rules engine to drive the object api generator
+  A typical setup looks like this:
+  ```
+    apigear.rules: "1.0"
+    features:
+      api:
+        path: {{module|identifier}}/
+        module:
+          documents:
+            - source: api.h
+      core:
+        path: {{module|identifier}}/
+        module:
+          documents:
+            - source: core.h
+            - source: core.cpp
+      init:
+        path: {{module|identifier}}/
+        module:
+          documents:
+            - source: Makefile
+            - source: service.h
+              target: {{interface.name|lower}}.h
+            - source: service.cpp
+              target: {{interface.name|lower}}.cpp
+  ```
+
+type: object
+additionalProperties: false
+properties:
+  schema:
+    type: string
+    enum: ["apigear.rules/1.0"]
+    description: "The ApiGear Blueprint Rules specification version of this document."
+  features:
+    description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
+    type: object
+    additionalProperties:
+      $ref: "#/definitions/Feature"
+definitions:
+  Document:
+    type: object
+    properties:
+      source:
+        type: string
+        description: source defines the document source path relative to the templates folder
+      target:
+        type: string
+        description: target describes the target file path as a liquid templated string.
+      overwrite:
+        type: boolean
+        description: If overwrite is true an existing file will be overwritten.
+      raw:
+        type: boolean
+        description: If raw is true, the document will not be passed through the template engine and written as is.
+  Feature:
+    description: Feature defines a section in a template which can be enabled.
+    type: object
+    additionalProperties: false
+    properties:
+      when:
+        type: array
+        items:
+          type: string
+      path:
+        description: Path defines the base path (prefix) for all following selectors.
+        type: string
+      system:
+        description: System is called once for the whole set of modules (called the system).
+        $ref: "#/definitions/Scope"
+      module:
+        description: module is called for each module in the system with `module` set in the context.
+        $ref: "#/definitions/Scope"
+      interface:
+        description: interface section is called for each interface inside the looping module.
+        $ref: "#/definitions/Scope"
+      struct:
+        description: struct section is called for each struct inside the looping module
+        $ref: "#/definitions/Scope"
+      enum:
+        description: enum section is called for each enum inside the looping module
+        $ref: "#/definitions/Scope"
+  Scope:
+    description: A scope defines the set of documents for a given applied context (e.g. module, interface, ...)
+    type: object
+    properties:
+      documents:
+        description: A list of documents with a source and target value
+        type: array
+        items:
+          "$ref": "#/definitions/Document"
