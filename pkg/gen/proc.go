@@ -2,8 +2,11 @@ package gen
 
 import (
 	"fmt"
+	"io/ioutil"
 	"objectapi/pkg/model"
 	"path"
+
+	"gopkg.in/yaml.v2"
 )
 
 // Generator parses documents and applies
@@ -33,31 +36,45 @@ func NewProcessor(e RenderEngine, w FileWriter) *Processor {
 	return &Processor{Engine: e, Writer: w}
 }
 
-// ProcessRules processes a set of rules from a rules document
-func (g *Processor) ProcessRules(rules []*FeatureRule, s *model.System) error {
+func (p *Processor) ProcessFile(filename string, s *model.System) error {
+	var bytes, err = ioutil.ReadFile(filename)
+	if err != nil {
+		return fmt.Errorf("error reading file %s: %s", filename, err)
+	}
+	var rules = RulesDoc{}
+	err = yaml.Unmarshal(bytes, &rules)
+	if err != nil {
+		return fmt.Errorf("error parsing file %s: %s", filename, err)
+	}
+	return p.Process(rules, s)
+}
+
+// Process processes a set of rules from a rules document
+func (g *Processor) Process(rules RulesDoc, s *model.System) error {
+	fmt.Println("Processing rules")
 	if s == nil {
 		return fmt.Errorf("system is nil")
 	}
-	for _, rule := range rules {
-		err := g.processFeature(rule, s)
+	for _, feature := range rules.Features {
+		err := g.processFeature(feature, s)
 		if err != nil {
-			return fmt.Errorf("error processing feature %s: %s", rule.Name, err)
+			return fmt.Errorf("error processing feature %s: %s", feature.Name, err)
 		}
 	}
 	return nil
 }
 
-func (g *Processor) processFeature(r *FeatureRule, s *model.System) error {
+func (g *Processor) processFeature(f *FeatureRule, s *model.System) error {
 	// process system
 	var ctx = Context{"system": s}
-	scope := r.ScopeByMatch(ScopeSystem)
+	scope := f.ScopeByMatch(ScopeSystem)
 	err := g.processScope(scope, ctx)
 	if err != nil {
 		return fmt.Errorf("error processing system scope: %s", err)
 	}
 	for _, module := range s.Modules {
 		// process module
-		scope := r.ScopeByMatch(ScopeModule)
+		scope := f.ScopeByMatch(ScopeModule)
 		ctx = Context{"system": s, "module": module}
 		err := g.processScope(scope, ctx)
 		if err != nil {
@@ -66,7 +83,7 @@ func (g *Processor) processFeature(r *FeatureRule, s *model.System) error {
 		for _, iface := range module.Interfaces {
 			// process interface
 			ctx["interface"] = iface
-			scope := r.ScopeByMatch(ScopeInterface)
+			scope := f.ScopeByMatch(ScopeInterface)
 			err := g.processScope(scope, ctx)
 			if err != nil {
 				return fmt.Errorf("error processing interface %s: %s", iface.Name, err)
@@ -75,7 +92,7 @@ func (g *Processor) processFeature(r *FeatureRule, s *model.System) error {
 		for _, struct_ := range module.Structs {
 			// process struct
 			ctx["struct"] = struct_
-			scope := r.ScopeByMatch(ScopeStruct)
+			scope := f.ScopeByMatch(ScopeStruct)
 			err := g.processScope(scope, ctx)
 			if err != nil {
 				return fmt.Errorf("error processing struct %s: %s", struct_.Name, err)
@@ -84,7 +101,7 @@ func (g *Processor) processFeature(r *FeatureRule, s *model.System) error {
 		for _, enum := range module.Enums {
 			// process enum
 			ctx["enum"] = enum
-			scope := r.ScopeByMatch(ScopeEnum)
+			scope := f.ScopeByMatch(ScopeEnum)
 			err := g.processScope(scope, ctx)
 			if err != nil {
 				return fmt.Errorf("error processing enum %s: %s", enum.Name, err)
@@ -112,7 +129,7 @@ func (g *Processor) processDocument(doc *DocumentRule, ctx Context) error {
 	}
 	var force = doc.Force
 	var transform = doc.Transform
-	fmt.Printf("Write %s to %s force=%T transform=%T", source, target, force, transform)
+	fmt.Printf("write %s to %s force=%T transform=%T\n", source, target, force, transform)
 	content, err := g.Engine.RenderFile(source, ctx)
 	if err != nil {
 		return fmt.Errorf("error rendering file %s: %s", source, err)

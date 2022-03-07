@@ -17,10 +17,12 @@ package main
 
 import (
 	"objectapi/cmd"
-	"objectapi/pkg/log"
+	"objectapi/pkg/logger"
 )
 
+var log = logger.Get()
+
 func main() {
-	log.Info("Starting objectapi")
+	log.Info("starting objectapi")
 	cmd.Execute()
 }

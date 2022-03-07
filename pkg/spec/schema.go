@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"path"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -32,9 +34,58 @@ const (
 	DocumentTypeUnknown  DocumentType = "unknown"
 )
 
-func LintDocumentFromString(t DocumentType, data []byte) (*gojsonschema.Result, error) {
+func LintJsonDoc(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
+	schemaLoader, err := LoadSchema(t)
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling document: %w", err)
+	}
+	// load the go structure to json
+	jsonLoader := gojsonschema.NewBytesLoader(jsonDoc)
+
+	// validate the json document
+	_, err = jsonLoader.LoadJSON()
+	if err != nil {
+		return nil, fmt.Errorf("error loading json document: %w", err)
+	}
+	result, err := gojsonschema.Validate(schemaLoader, jsonLoader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to validate document: %w", err)
+	}
+	return result, nil
+}
+
+func LintFile(file string) (*gojsonschema.Result, error) {
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("error reading file: %w", err)
+	}
+	if path.Ext(file) == ".yaml" || path.Ext(file) == ".yml" {
+		data, err = YamlToJson(data)
+		if err != nil {
+			return nil, err
+		}
+	}
+	t, err := GetDocumentType(file)
+	if err != nil {
+		return nil, err
+	}
+	return LintJsonDoc(t, data)
+}
+
+func YamlToJson(data []byte) ([]byte, error) {
+	v := make(map[string]interface{})
+	err := yaml.Unmarshal(data, &v)
+	if err != nil {
+		return nil, fmt.Errorf("error reading document: %w", err)
+	}
+	return json.Marshal(v)
+}
+
+func LoadSchema(t DocumentType) (gojsonschema.JSONLoader, error) {
 	var schema []byte
-	var err error
 	switch t {
 	case DocumentTypeModule:
 		schema = ApigearModuleSchema
@@ -45,45 +96,19 @@ func LintDocumentFromString(t DocumentType, data []byte) (*gojsonschema.Result, 
 	case DocumentTypeRules:
 		schema = ApigearRulesSchema
 	default:
-		return nil, fmt.Errorf("unsupported document type: %s", t)
+		panic(fmt.Errorf("unsupported document type: %s", t))
 	}
 	// load document from json
 	schemaLoader := gojsonschema.NewBytesLoader(schema)
-	_, err = schemaLoader.LoadJSON()
+	_, err := schemaLoader.LoadJSON()
 	if err != nil {
 		return nil, fmt.Errorf("error loading schema: %w", err)
 	}
-	// parse the yaml document to go structure
-	// docJson, err := helper.YamlToJson(data)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("error parsing yaml document: %w", err)
-	// }
-	v := make(map[string]interface{})
-	err = yaml.Unmarshal(data, &v)
-	if err != nil {
-		return nil, fmt.Errorf("error reading document: %w", err)
-	}
-	docJson, err := json.Marshal(v)
-	if err != nil {
-		return nil, fmt.Errorf("error marshalling document: %w", err)
-	}
-	// load the go structure to json
-	docLoader := gojsonschema.NewBytesLoader(docJson)
-
-	// validate the json document
-	_, err = docLoader.LoadJSON()
-	if err != nil {
-		return nil, fmt.Errorf("error loading document: %w", err)
-	}
-	result, err := gojsonschema.Validate(schemaLoader, docLoader)
-	if err != nil {
-		return nil, fmt.Errorf("failed to validate document: %w", err)
-	}
-	return result, nil
+	return schemaLoader, nil
 }
 
-func GetDocumentType(fn string) (DocumentType, error) {
-	t, err := GetDocumentTypeAsString(fn)
+func GetDocumentType(file string) (DocumentType, error) {
+	t, err := DocumentTypeFromFileName(file)
 	if err != nil {
 		return DocumentTypeUnknown, err
 	}
@@ -101,7 +126,7 @@ func GetDocumentType(fn string) (DocumentType, error) {
 	}
 }
 
-func GetDocumentTypeAsString(fn string) (string, error) {
+func DocumentTypeFromFileName(fn string) (string, error) {
 	words := strings.Split(fn, ".")
 	if len(words) < 2 {
 		return "", fmt.Errorf("invalid filename: %s", fn)

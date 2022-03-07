@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
-	"objectapi/pkg/log"
+	"objectapi/pkg/logger"
 	"objectapi/pkg/spec"
 
 	"github.com/spf13/cobra"
 )
+
+var log = logger.Get()
 
 var lintCmd = &cobra.Command{
 	Use:   "lint",
@@ -15,16 +16,8 @@ var lintCmd = &cobra.Command{
 	Long:  `Lint documents.`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var fn = args[0]
-		doc, err := ioutil.ReadFile(fn)
-		if err != nil {
-			panic(err)
-		}
-		t, err := spec.GetDocumentType(fn)
-		if err != nil {
-			panic(err)
-		}
-		result, err := spec.LintDocumentFromString(t, doc)
+		var file = args[0]
+		result, err := spec.LintFile(file)
 		if err != nil {
 			panic(err)
 		}

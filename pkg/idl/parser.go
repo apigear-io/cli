@@ -12,21 +12,21 @@ type Parser struct {
 }
 
 // parse idl from file
-func (p *Parser) ParseFromFile(file string) error {
+func (p *Parser) ParseFile(file string) error {
 	input, err := antlr.NewFileStream(file)
 	if err != nil {
 		return err
 	}
-	return p.parseFromStream(input)
+	return p.ParseStream(input)
 }
 
-func (p *Parser) ParseFromString(str string) error {
+func (p *Parser) ParseString(str string) error {
 	input := antlr.NewInputStream(str)
-	return p.parseFromStream(input)
+	return p.ParseStream(input)
 }
 
 // parse idl from antlr file stream
-func (p *Parser) parseFromStream(input antlr.CharStream) error {
+func (p *Parser) ParseStream(input antlr.CharStream) error {
 	// create the lexer
 	lexer := parser.NewObjectApiLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
@@ -39,8 +39,8 @@ func (p *Parser) parseFromStream(input antlr.CharStream) error {
 	return nil
 }
 
-func NewParser(name string) *Parser {
+func NewIDLParser(s *model.System) *Parser {
 	return &Parser{
-		System: model.NewSystem(name),
+		System: s,
 	}
 }

@@ -44,13 +44,13 @@ func NewMockRenderEngine() *MockRenderEngine {
 	}
 }
 
-func readRules(t *testing.T, filename string) []*FeatureRule {
+func readRules(t *testing.T, filename string) RulesDoc {
 	content, err := ioutil.ReadFile(filename)
 	assert.NoError(t, err)
-	var file RulesFile
+	var file RulesDoc
 	err = yaml.Unmarshal(content, &file)
 	assert.NoError(t, err)
-	return file.Features
+	return file
 }
 
 func createProcessor() *Processor {
@@ -63,7 +63,7 @@ func TestEmptyRules(t *testing.T) {
 	s := model.NewSystem("test")
 	processor := createProcessor()
 	r := readRules(t, "testdata/empty.rules.yaml")
-	processor.ProcessRules(r, s)
+	processor.Process(r, s)
 }
 
 func TestHelloRules(t *testing.T) {
@@ -72,7 +72,7 @@ func TestHelloRules(t *testing.T) {
 	var w = NewMockFileWriter()
 	var p = NewProcessor(e, w)
 	r := readRules(t, "testdata/hello.rules.yaml")
-	p.ProcessRules(r, s)
+	p.Process(r, s)
 	assert.Equal(t, "hello.txt", w.Writes["hello.txt"])
 	assert.Equal(t, "hello.txt", e.Results[0])
 }

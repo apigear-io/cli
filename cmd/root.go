@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"objectapi/cmd/gen"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -62,6 +63,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "verbose output")
 	// dry-run flag for all cmds
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "dry-run")
+
+	rootCmd.AddCommand(gen.RootCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -49,9 +49,9 @@ interface Interface2 {
 `
 
 func parseModule(t *testing.T, doc string) *model.Module {
-	parser := NewParser("system")
-	parser.ParseFromString(doc)
-	system := parser.System
+	system := model.NewSystem("system")
+	parser := NewIDLParser(system)
+	parser.ParseString(doc)
 	assert.Equal(t, 1, len(system.Modules))
 	assert.Len(t, system.Modules, 1)
 	module := system.Modules[0]
