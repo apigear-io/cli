@@ -25,18 +25,25 @@ type RenderEngine interface {
 	RenderFile(name string, ctx Context) (string, error)
 }
 
-// Processor applies template transformation on a set of files define in rules
-type Processor struct {
+// Generator applies template transformation on a set of files define in rules
+type Generator struct {
 	Engine RenderEngine
 	Writer FileWriter
 }
 
-// NewProcessor creates a new processor
-func NewProcessor(e RenderEngine, w FileWriter) *Processor {
-	return &Processor{Engine: e, Writer: w}
+// NewGenerator creates a new processor
+func NewGenerator(e RenderEngine, w FileWriter) *Generator {
+	return &Generator{
+		Engine: e,
+		Writer: w,
+	}
 }
 
-func (p *Processor) ProcessFile(filename string, s *model.System) error {
+func NewDefaultGenerator(tplSearchDir string, outputDir string) *Generator {
+	return NewGenerator(NewRenderer(tplSearchDir), NewFileWriter(outputDir))
+}
+
+func (g *Generator) ProcessFile(filename string, s *model.System) error {
 	var bytes, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
@@ -46,12 +53,11 @@ func (p *Processor) ProcessFile(filename string, s *model.System) error {
 	if err != nil {
 		return fmt.Errorf("error parsing file %s: %s", filename, err)
 	}
-	return p.Process(rules, s)
+	return g.Process(rules, s)
 }
 
 // Process processes a set of rules from a rules document
-func (g *Processor) Process(rules RulesDoc, s *model.System) error {
-	fmt.Println("Processing rules")
+func (g *Generator) Process(rules RulesDoc, s *model.System) error {
 	if s == nil {
 		return fmt.Errorf("system is nil")
 	}
@@ -64,7 +70,7 @@ func (g *Processor) Process(rules RulesDoc, s *model.System) error {
 	return nil
 }
 
-func (g *Processor) processFeature(f *FeatureRule, s *model.System) error {
+func (g *Generator) processFeature(f *FeatureRule, s *model.System) error {
 	// process system
 	var ctx = Context{"system": s}
 	scope := f.ScopeByMatch(ScopeSystem)
@@ -111,7 +117,7 @@ func (g *Processor) processFeature(f *FeatureRule, s *model.System) error {
 	return nil
 }
 
-func (g *Processor) processScope(scope *ScopeRule, ctx Context) error {
+func (g *Generator) processScope(scope *ScopeRule, ctx Context) error {
 	if scope == nil {
 		return nil
 	}
@@ -121,15 +127,15 @@ func (g *Processor) processScope(scope *ScopeRule, ctx Context) error {
 	return nil
 }
 
-func (g *Processor) processDocument(doc *DocumentRule, ctx Context) error {
+func (g *Generator) processDocument(doc *DocumentRule, ctx Context) error {
 	var source = path.Clean(doc.Source)
 	var target = path.Clean(doc.Target)
 	if target == "" {
 		target = source
 	}
-	var force = doc.Force
-	var transform = doc.Transform
-	fmt.Printf("write %s to %s force=%T transform=%T\n", source, target, force, transform)
+	// var force = doc.Force
+	// var transform = doc.Transform
+	log.Infof("processing document %s -> %s", source, target)
 	content, err := g.Engine.RenderFile(source, ctx)
 	if err != nil {
 		return fmt.Errorf("error rendering file %s: %s", source, err)

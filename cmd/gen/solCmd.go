@@ -1,11 +1,14 @@
 package gen
 
 import (
-	"fmt"
+	"objectapi/pkg/logger"
 	"objectapi/pkg/sol"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
+
+var log = logger.Get()
 
 type GenSolutionOptions struct {
 	file string
@@ -24,9 +27,14 @@ as also the other options. To create a demo module or solution use the 'project 
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			o.file = args[0]
-			fmt.Println("run generator from solution ", o.file)
-			proc := sol.NewSolutionProcessor()
-			proc.ProcessFile(o.file)
+			log.Info("run generator from solution ", o.file)
+			doc, err := sol.ReadSolutionDoc(o.file)
+			if err != nil {
+				panic(err)
+			}
+			rootDir := filepath.Dir(o.file)
+			proc := sol.NewSolutionRunner(rootDir, doc)
+			proc.Run()
 		},
 	}
 

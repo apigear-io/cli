@@ -53,10 +53,10 @@ func readRules(t *testing.T, filename string) RulesDoc {
 	return file
 }
 
-func createProcessor() *Processor {
+func createProcessor() *Generator {
 	var engine = NewMockRenderEngine()
 	var writer = NewMockFileWriter()
-	var processor = NewProcessor(engine, writer)
+	var processor = NewGenerator(engine, writer)
 	return processor
 }
 func TestEmptyRules(t *testing.T) {
@@ -70,7 +70,7 @@ func TestHelloRules(t *testing.T) {
 	s := model.NewSystem("test")
 	var e = NewMockRenderEngine()
 	var w = NewMockFileWriter()
-	var p = NewProcessor(e, w)
+	var p = NewGenerator(e, w)
 	r := readRules(t, "testdata/hello.rules.yaml")
 	p.Process(r, s)
 	assert.Equal(t, "hello.txt", w.Writes["hello.txt"])
