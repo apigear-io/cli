@@ -25,7 +25,7 @@ type ObjectApiListener struct {
 	runningValue int
 }
 
-func isTrue(b bool, msg string) {
+func itMust(b bool, msg string) {
 	if !b {
 		panic(msg)
 	}
@@ -59,7 +59,7 @@ func (o *ObjectApiListener) EnterHeaderRule(c *parser.HeaderRuleContext) {
 
 // EnterModuleRule is called when entering the moduleRule production.
 func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
-	isTrue(o.module == nil, "module already defined")
+	itMust(o.module == nil, "module already defined")
 	name := c.GetName().GetText()
 	version := c.GetVersion().GetText()
 	o.module = model.NewModule(name, version)
@@ -81,7 +81,7 @@ func (o *ObjectApiListener) EnterDeclarationsRule(c *parser.DeclarationsRuleCont
 
 // EnterInterfaceRule is called when entering the interfaceRule production.
 func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
-	isTrue(o.iface == nil, "interface already defined")
+	itMust(o.iface == nil, "interface already defined")
 	name := c.GetName().GetText()
 	o.iface = model.NewInterface(name)
 	o.module.Interfaces = append(o.module.Interfaces, o.iface)
@@ -94,7 +94,7 @@ func (o *ObjectApiListener) EnterInterfaceMembersRule(c *parser.InterfaceMembers
 
 // EnterPropertyRule is called when entering the propertyRule production.
 func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
-	isTrue(o.property == nil, "property already defined")
+	itMust(o.property == nil, "property already defined")
 	name := c.GetName().GetText()
 	o.property = model.NewProperty(name)
 	o.iface.Properties = append(o.iface.Properties, o.property)
@@ -102,7 +102,7 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 
 // EnterMethodRule is called when entering the methodRule production.
 func (o *ObjectApiListener) EnterMethodRule(c *parser.MethodRuleContext) {
-	isTrue(o.method == nil, "method already defined")
+	itMust(o.method == nil, "method already defined")
 	name := c.GetName().GetText()
 	o.method = model.NewMethod(name)
 	o.iface.Methods = append(o.iface.Methods, o.method)
@@ -110,7 +110,7 @@ func (o *ObjectApiListener) EnterMethodRule(c *parser.MethodRuleContext) {
 
 // EnterInputRule is called when entering the inputRule production.
 func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
-	isTrue(o.input == nil, "input already defined")
+	itMust(o.input == nil, "input already defined")
 	name := c.GetName().GetText()
 	o.input = model.NewMethodInput(name)
 	if o.method != nil {
@@ -123,7 +123,7 @@ func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
 
 // EnterSignalRule is called when entering the signalRule production.
 func (o *ObjectApiListener) EnterSignalRule(c *parser.SignalRuleContext) {
-	isTrue(o.signal == nil, "signal already defined")
+	itMust(o.signal == nil, "signal already defined")
 	name := c.GetName().GetText()
 	o.signal = model.NewSignal(name)
 	o.iface.Signals = append(o.iface.Signals, o.signal)
@@ -145,7 +145,7 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 
 // EnterEnumRule is called when entering the enumRule production.
 func (o *ObjectApiListener) EnterEnumRule(c *parser.EnumRuleContext) {
-	isTrue(o.enum == nil, "enum already defined")
+	itMust(o.enum == nil, "enum already defined")
 	name := c.GetName().GetText()
 	o.enum = model.NewEnum(name)
 	o.module.Enums = append(o.module.Enums, o.enum)
@@ -173,7 +173,7 @@ func (o *ObjectApiListener) EnterEnumMemberRule(c *parser.EnumMemberRuleContext)
 
 // EnterSchemaRule is called when entering the schemaRule production.
 func (o *ObjectApiListener) EnterSchemaRule(c *parser.SchemaRuleContext) {
-	isTrue(o.schema == nil, "schema already defined")
+	itMust(o.schema == nil, "schema already defined")
 	o.schema = model.NewSchema()
 }
 
@@ -241,7 +241,7 @@ func (o *ObjectApiListener) ExitInterfaceMembersRule(c *parser.InterfaceMembersR
 
 // ExitPropertyRule is called when exiting the propertyRule production.
 func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
-	isTrue(o.schema != nil, fmt.Sprintf("property has no schema: %s", o.property.Name))
+	itMust(o.schema != nil, fmt.Sprintf("property has no schema: %s", o.property.Name))
 	o.property.Schema = o.schema
 	o.schema = nil
 	o.property = nil
@@ -258,7 +258,7 @@ func (o *ObjectApiListener) ExitMethodRule(c *parser.MethodRuleContext) {
 
 // ExitInputRule is called when exiting the inputRule production.
 func (o *ObjectApiListener) ExitInputRule(c *parser.InputRuleContext) {
-	isTrue(o.schema != nil, fmt.Sprintf("input has no schema (%s)", o.input.Name))
+	itMust(o.schema != nil, fmt.Sprintf("input has no schema (%s)", o.input.Name))
 	o.input.Schema = o.schema
 	o.schema = nil
 	o.input = nil
@@ -276,7 +276,7 @@ func (o *ObjectApiListener) ExitStructRule(c *parser.StructRuleContext) {
 
 // ExitStructFieldRule is called when exiting the structFieldRule production.
 func (o *ObjectApiListener) ExitStructFieldRule(c *parser.StructFieldRuleContext) {
-	isTrue(o.schema != nil, fmt.Sprintf("struct field has no schema: %s", o.field.Name))
+	itMust(o.schema != nil, fmt.Sprintf("struct field has no schema: %s", o.field.Name))
 	o.field.Schema = o.schema
 	o.schema = nil
 	o.field = nil

@@ -1,0 +1,6 @@
+layers:
+  - template: ./template
+    input:
+      - sample001.opi
+    output: ../out
+    force: true

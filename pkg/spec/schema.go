@@ -57,7 +57,7 @@ func LintJsonDoc(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 	return result, nil
 }
 
-func LintFile(file string) (*gojsonschema.Result, error) {
+func CheckFile(file string) (*gojsonschema.Result, error) {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("error reading file: %w", err)
