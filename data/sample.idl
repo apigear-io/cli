@@ -1,0 +1,20 @@
+package demo 1.0
+
+type Demo01 interface {
+    prop01 bool
+    method01(d Demo01)
+    signal signal01()    
+}
+
+type Struct01 struct {
+    field01 int
+    field02 bool
+    field03 string
+}
+
+type Enum01 enum {
+    Member01
+    Member02
+    Member03
+    Member04
+}

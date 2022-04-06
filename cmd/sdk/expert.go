@@ -2,6 +2,9 @@ package sdk
 
 import (
 	"fmt"
+	"objectapi/pkg/sol"
+	"objectapi/pkg/spec"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -25,6 +28,24 @@ func NewExpertCommand() *cobra.Command {
 		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("gen %s %s %s %s %t %t\n", options.templateDir, options.inputs, options.outputDir, options.features, options.force, options.watch)
+			doc := spec.SolutionDoc{
+				Schema: "apigear.solution/1.0",
+				Layers: []spec.SolutionLayer{
+					{
+						Inputs:   options.inputs,
+						Output:   options.outputDir,
+						Template: options.templateDir,
+						Features: options.features,
+						Force:    options.force,
+					},
+				},
+			}
+			rootDir, err := os.Getwd()
+			if err != nil {
+				log.Fatalf("failed to get current directory: %s", err)
+			}
+			proc := sol.NewSolutionRunner(rootDir, doc)
+			proc.Run()
 		},
 	}
 	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")
