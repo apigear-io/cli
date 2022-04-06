@@ -4,6 +4,7 @@
   "additionalProperties": false,
   "definitions": {
     "Document": {
+      "additionalProperties": false,
       "properties": {
         "force": {
           "description": "force defines whether the document should be overwritten if it already exists.",
@@ -22,6 +23,10 @@
           "type": "string"
         }
       },
+      "required": [
+        "source",
+        "target"
+      ],
       "type": "object"
     },
     "Feature": {

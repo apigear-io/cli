@@ -1,3 +1,4 @@
+schema: apigear.solution/1.0
 layers:
   - template: ./template
     input:

@@ -22,9 +22,9 @@ func NewCheckCommand() *cobra.Command {
 				panic(err)
 			}
 			if result.Valid() {
-				fmt.Println("valid")
+				fmt.Printf("valid: %s\n", file)
 			} else {
-				log.Print("invalid")
+				log.Printf("invalid: %s\n", file)
 				for _, desc := range result.Errors() {
 					log.Println(desc.String())
 				}

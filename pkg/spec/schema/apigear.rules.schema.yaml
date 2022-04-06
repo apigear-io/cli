@@ -82,6 +82,7 @@ definitions:
           "$ref": "#/definitions/Document"
   Document:
     type: object
+    required: [source, target]
     properties:
       source:
         type: string
@@ -95,3 +96,4 @@ definitions:
       raw:
         type: boolean
         description: raw defines whether the document should be written as is.
+    additionalProperties: false
