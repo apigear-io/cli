@@ -29,11 +29,12 @@ func (r *Runner) Run() {
 
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
-func (r *Runner) processLayer(layer spec.Layer) error {
+func (r *Runner) processLayer(layer spec.SolutionLayer) error {
 	var templateDir = path.Join(r.rootDir, layer.Template)
 	var searchDir = path.Join(templateDir, "templates")
 	var rulesFile = path.Join(templateDir, "rules.yaml")
 	var outputDir = path.Join(r.rootDir, layer.Output)
+	var force = layer.Force
 	system := model.NewSystem(layer.Name)
 	err := r.parseInputs(system, layer.Inputs)
 	if err != nil {
@@ -46,7 +47,10 @@ func (r *Runner) processLayer(layer spec.Layer) error {
 	}
 
 	rulesProc := gen.NewDefaultGenerator(searchDir, outputDir)
-	return rulesProc.ProcessFile(rulesFile, system)
+	return rulesProc.ProcessFile(rulesFile, &gen.GeneratorOptions{
+		System:    system,
+		UserForce: force,
+	})
 }
 
 // parseInputs parses the inputs from the layer.

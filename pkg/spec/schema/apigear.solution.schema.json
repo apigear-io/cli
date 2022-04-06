@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Layer": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "features": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "force": {
+          "type": "boolean"
+        },
+        "input": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "rootDir": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "input",
+        "output",
+        "template"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "description": {
+      "type": "string"
+    },
+    "layers": {
+      "items": {
+        "$ref": "#/definitions/Layer"
+      },
+      "type": "array"
+    },
+    "meta": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "rootDir": {
+      "type": "string"
+    },
+    "schema": {
+      "description": "The ApiGear Solution specification version of this document.",
+      "enum": [
+        "apigear.solution/1.0"
+      ],
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "title": "ApiGear Solution 1.0 Schema",
+  "type": "object"
+}

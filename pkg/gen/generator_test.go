@@ -3,6 +3,7 @@ package gen
 import (
 	"io/ioutil"
 	"objectapi/pkg/model"
+	"objectapi/pkg/spec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ type MockFileWriter struct {
 	Writes map[string]string
 }
 
-func (m *MockFileWriter) WriteFile(fn string, content string) error {
+func (m *MockFileWriter) WriteFile(fn string, content string, force bool) error {
 	m.Writes[fn] = content
 	return nil
 }
@@ -44,10 +45,10 @@ func NewMockRenderEngine() *MockRenderEngine {
 	}
 }
 
-func readRules(t *testing.T, filename string) RulesDoc {
+func readRules(t *testing.T, filename string) spec.RulesDoc {
 	content, err := ioutil.ReadFile(filename)
 	assert.NoError(t, err)
-	var file RulesDoc
+	var file spec.RulesDoc
 	err = yaml.Unmarshal(content, &file)
 	assert.NoError(t, err)
 	return file
@@ -63,7 +64,10 @@ func TestEmptyRules(t *testing.T) {
 	s := model.NewSystem("test")
 	processor := createProcessor()
 	r := readRules(t, "testdata/empty.rules.yaml")
-	processor.Process(r, s)
+	processor.Process(r, &GeneratorOptions{
+		System:    s,
+		UserForce: true,
+	})
 }
 
 func TestHelloRules(t *testing.T) {
@@ -72,7 +76,10 @@ func TestHelloRules(t *testing.T) {
 	var w = NewMockFileWriter()
 	var p = NewGenerator(e, w)
 	r := readRules(t, "testdata/hello.rules.yaml")
-	p.Process(r, s)
+	p.Process(r, &GeneratorOptions{
+		System:    s,
+		UserForce: true,
+	})
 	assert.Equal(t, "hello.txt", w.Writes["hello.txt"])
 	assert.Equal(t, "hello.txt", e.Results[0])
 }

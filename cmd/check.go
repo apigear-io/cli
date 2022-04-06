@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"objectapi/pkg/logger"
+	"log"
 	"objectapi/pkg/spec"
 
 	"github.com/spf13/cobra"
 )
-
-var log = logger.Get()
 
 func NewCheckCommand() *cobra.Command {
 
@@ -26,9 +24,9 @@ func NewCheckCommand() *cobra.Command {
 			if result.Valid() {
 				fmt.Println("valid")
 			} else {
-				log.Info("invalid")
+				log.Print("invalid")
 				for _, desc := range result.Errors() {
-					log.Info(desc.String())
+					log.Println(desc.String())
 				}
 			}
 		},

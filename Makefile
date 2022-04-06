@@ -11,3 +11,6 @@ test:
 
 build:
 	go build .
+
+schema:
+	go run main.go yaml2json "pkg/spec/schema/*.yaml"

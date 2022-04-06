@@ -16,6 +16,9 @@ type Writer struct {
 var log = logger.Get()
 
 func CompareContentWithFile(content string, target string) (bool, error) {
+	if _, err := os.Stat(target); os.IsNotExist(err) {
+		return false, nil
+	}
 	var bytes, err = ioutil.ReadFile(target)
 	if err != nil {
 		return false, err
@@ -23,25 +26,27 @@ func CompareContentWithFile(content string, target string) (bool, error) {
 	return md5.Sum([]byte(content)) == md5.Sum(bytes), nil
 }
 
-func (w *Writer) WriteFile(file string, content string) error {
+func (w *Writer) WriteFile(file string, content string, force bool) error {
 	target := path.Join(w.outputDir, file)
-	same, err := CompareContentWithFile(content, target)
-	if err != nil {
-		return fmt.Errorf("error comparing content to file %s: %s", target, err)
-	}
-	if same {
-		log.Infof("skipping file %s", target)
-		return nil
+	if !force {
+		same, err := CompareContentWithFile(content, target)
+		if err != nil {
+			return fmt.Errorf("error comparing content to file %s: %s", target, err)
+		}
+		if same {
+			log.Infof("skipping file %s", target)
+			return nil
+		}
 	}
 	log.Info("write file ", target)
 	dir := path.Dir(target)
-	err = os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0755)
 	if err != nil {
 		return fmt.Errorf("error creating directory: %s", err)
 	}
 	return ioutil.WriteFile(target, []byte(content), 0644)
 }
 
-func NewFileWriter(outputDir string) FileWriter {
+func NewFileWriter(outputDir string) IFileWriter {
 	return &Writer{outputDir: outputDir}
 }

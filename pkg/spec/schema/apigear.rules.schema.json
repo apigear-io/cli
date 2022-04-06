@@ -1,0 +1,100 @@
+{
+  "$id": "https://apigear.co/schemas/rules.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Document": {
+      "properties": {
+        "force": {
+          "description": "force defines whether the document should be overwritten if it already exists.",
+          "type": "boolean"
+        },
+        "raw": {
+          "description": "raw defines whether the document should be written as is.",
+          "type": "boolean"
+        },
+        "source": {
+          "description": "source defines the source file name.",
+          "type": "string"
+        },
+        "target": {
+          "description": "target defines the document target path relative to the output folder",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Feature": {
+      "additionalProperties": false,
+      "description": "Feature defines a section in a template which can be enabled.",
+      "properties": {
+        "depends": {
+          "description": "depends defines a list of features which must be enabled before this feature can be enabled.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "name defines the name of the feature.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path defines the base path (prefix) for all following selectors.",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "Scopes define a list of selectors which can be enabled/disabled on the command line.",
+          "items": {
+            "$ref": "#/definitions/Scope"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Scope": {
+      "description": "Scope defines a selector where the documents will be applied to",
+      "properties": {
+        "documents": {
+          "description": "Documents defines a list of documents which will be transformed.",
+          "items": {
+            "$ref": "#/definitions/Document"
+          },
+          "type": "array"
+        },
+        "match": {
+          "description": "match defines the context where this scope is applied to.",
+          "enum": [
+            "system",
+            "module",
+            "interface",
+            "struct",
+            "enum"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "description": "Rules engine to drive the object api generator\nA typical setup looks like this:\n```\nschema: apigear.rules: \"1.0\"\nfeatures:\n  - name: api\n    path: {{module|identifier}}/\n    scopes:\n      - match: module:\n        documents:\n          - source: api.h\n  - name: core\n    path: {{module|identifier}}/\n    scopes:\n      - match: module:\n        documents:\n          - source: core.h\n          - source: core.cpp\n  - name: init\n    path: {{module|identifier}}/\n    scopes:\n      - name: module:\n        documents:\n          - source: Makefile\n          - source: service.h\n            target: {{interface.name|lower}}.h\n          - source: service.cpp\n            target: {{interface.name|lower}}.cpp\n```\n",
+  "properties": {
+    "features": {
+      "description": "Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.",
+      "items": {
+        "$ref": "#/definitions/Feature"
+      },
+      "type": "array"
+    },
+    "schema": {
+      "description": "The ApiGear Blueprint Rules specification version of this document.",
+      "enum": [
+        "apigear.rules/1.0"
+      ],
+      "type": "string"
+    }
+  },
+  "title": "ObjectAPI rules engine",
+  "type": "object"
+}

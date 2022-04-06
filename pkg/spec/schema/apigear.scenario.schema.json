@@ -1,59 +1,42 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Scenario 1.0 Schema",
-  "type": "object",
   "additionalProperties": false,
-  "properties": {
-    "schema": {
-      "type": "string",
-      "enum": [
-        "apigear.scenario/1.0"
-      ],
-      "description": "The simulation scenario specification version of this document."
-    },
-    "name": {
-      "type": "string"
-    },
-    "version": {
-      "type": "string"
-    },
-    "interfaces": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/Interface"
-      }
-    }
-  },
   "definitions": {
+    "Action": {
+      "additionalProperties": {
+        "type": "array"
+      },
+      "type": "object"
+    },
     "Interface": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "properties": {
-          "type": "object"
-        },
         "operations": {
-          "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/Operation"
-          }
+          },
+          "type": "object"
         },
         "playbook": {
           "$ref": "#/definitions/Playbook"
+        },
+        "properties": {
+          "type": "object"
         }
       },
-      "additionalProperties": false
+      "type": "object"
     },
     "Operation": {
-      "type": "object",
       "properties": {
         "actions": {
-          "type": "array",
           "items": {
             "$ref": "#/definitions/Action"
-          }
+          },
+          "type": "array"
         },
+        "additionalProperties": false,
         "return": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "schema": {
               "type": "object"
@@ -78,19 +61,13 @@
               ]
             }
           },
-          "additionalProperties": false
-        },
-        "additionalProperties": false
-      }
-    },
-    "Action": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array"
-      }
+          "type": "object"
+        }
+      },
+      "type": "object"
     },
     "Playbook": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "interval": {
           "type": "integer"
@@ -99,28 +76,51 @@
           "type": "boolean"
         },
         "steps": {
-          "type": "array",
           "items": {
             "$ref": "#/definitions/Step"
-          }
+          },
+          "type": "array"
         }
       },
-      "additionalProperties": false
+      "type": "object"
     },
     "Step": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "name": {
           "type": "string"
         },
         "sequence": {
-          "type": "array",
           "items": {
             "$ref": "#/definitions/Action"
-          }
+          },
+          "type": "array"
         }
       },
-      "additionalProperties": false
+      "type": "object"
     }
-  }
+  },
+  "properties": {
+    "interfaces": {
+      "additionalProperties": {
+        "$ref": "#/definitions/Interface"
+      },
+      "type": "object"
+    },
+    "name": {
+      "type": "string"
+    },
+    "schema": {
+      "description": "The simulation scenario specification version of this document.",
+      "enum": [
+        "apigear.scenario/1.0"
+      ],
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "title": "Scenario 1.0 Schema",
+  "type": "object"
 }

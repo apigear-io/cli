@@ -26,6 +26,10 @@ type NamedNode struct {
 	Kind Kind   `json:"kind" yaml:"kind"`
 }
 
+func (n *NamedNode) String() string {
+	return n.Name
+}
+
 // TypedNode is a base node with a schema type.
 type TypedNode struct {
 	NamedNode `json:",inline" yaml:",inline"`

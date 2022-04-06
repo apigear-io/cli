@@ -6,22 +6,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed data/apigear.module.schema.json
+//go:embed schema/apigear.module.schema.json
 var ApigearModuleSchema []byte
 
-//go:embed data/apigear.solution.schema.json
+//go:embed schema/apigear.solution.schema.json
 var ApigearSolutionSchema []byte
 
-//go:embed data/apigear.scenario.schema.json
+//go:embed schema/apigear.scenario.schema.json
 var ApigearScenarioSchema []byte
 
-//go:embed data/apigear.rules.schema.json
+//go:embed schema/apigear.rules.schema.json
 var ApigearRulesSchema []byte
 
 type DocumentType string
@@ -81,7 +82,16 @@ func YamlToJson(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading document: %w", err)
 	}
-	return json.Marshal(v)
+	return json.MarshalIndent(v, "", "  ")
+}
+
+func JsonToYaml(data []byte) ([]byte, error) {
+	v := make(map[string]interface{})
+	err := json.Unmarshal(data, &v)
+	if err != nil {
+		return nil, fmt.Errorf("error reading document: %w", err)
+	}
+	return yaml.Marshal(v)
 }
 
 func LoadSchema(t DocumentType) (gojsonschema.JSONLoader, error) {
@@ -108,7 +118,8 @@ func LoadSchema(t DocumentType) (gojsonschema.JSONLoader, error) {
 }
 
 func GetDocumentType(file string) (DocumentType, error) {
-	t, err := DocumentTypeFromFileName(file)
+	base := filepath.Base(file)
+	t, err := DocumentTypeFromFileName(base)
 	if err != nil {
 		return DocumentTypeUnknown, err
 	}
@@ -127,6 +138,9 @@ func GetDocumentType(file string) (DocumentType, error) {
 }
 
 func DocumentTypeFromFileName(fn string) (string, error) {
+	if fn == "rules.yaml" {
+		return "rules", nil
+	}
 	words := strings.Split(fn, ".")
 	if len(words) < 2 {
 		return "", fmt.Errorf("invalid filename: %s", fn)

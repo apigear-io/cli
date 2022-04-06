@@ -19,27 +19,16 @@ properties:
 definitions:
   Layer:
     type: object
-    required: [name, output, template, modules]
+    required: [input, output, template]
     additionalProperties: false
     properties:
       name: { type: string }
       description: { type: string }
-      meta: { type: object }
       rootDir: { type: string }
+      input: { type: array, items: { type: string } }
       output: { type: string }
-      modules: { type: array, items: { type: string } }
-      template: # factory used in this layer
-        $ref: "#/definitions/Template"
-  Template:
-    type: object
-    additionalProperties: false
-    properties:
-      name: { type: string }
-      package: { type: string }
-      description: { type: string }
       meta: { type: object }
-      rules: { type: string }
-      searchPath: { type: string }
+      template: { type: string }
       features: { type: array, items: { type: string } }
       dryRun: { type: boolean }
       force: { type: boolean }

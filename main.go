@@ -10,7 +10,6 @@ import (
 var log = logger.Get()
 
 func main() {
-	log.Info("starting objectapi")
 	rootCmd := cmd.NewRootCommand()
 	err := rootCmd.Execute()
 	if err != nil {
