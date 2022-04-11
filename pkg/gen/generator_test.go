@@ -35,26 +35,40 @@ func readRules(t *testing.T, filename string) spec.RulesDoc {
 	return file
 }
 
-func createGenerator(w IFileWriter) *Generator {
-	var processor = &Generator{
-		Writer:    w,
-		Template:  template.New(""),
-		System:    model.NewSystem("test"),
-		UserForce: false,
+func createGenerator(t *testing.T, w IFileWriter) *Generator {
+	var g = &Generator{
+		Writer:       w,
+		Template:     template.New(""),
+		System:       model.NewSystem("test"),
+		UserForce:    false,
+		TemplatesDir: "testdata/templates",
+		OutputDir:    "testdata/output",
 	}
-	return processor
+	err := g.ParseTemplateDir("testdata/templates")
+	assert.NoError(t, err)
+	return g
 }
 func TestEmptyRules(t *testing.T) {
 	w := NewMockFileWriter()
-	g := createGenerator(w)
+	g := createGenerator(t, w)
 	r := readRules(t, "testdata/empty.rules.yaml")
 	g.ProcessRulesDoc(r)
 }
 
 func TestHelloRules(t *testing.T) {
 	w := NewMockFileWriter()
-	g := createGenerator(w)
-	r := readRules(t, "testdata/hello.rules.yaml")
-	g.ProcessRulesDoc(r)
-	assert.Equal(t, "hello.txt", w.Writes["hello.txt"])
+	g := createGenerator(t, w)
+	r := readRules(t, "testdata/test.rules.yaml")
+	err := g.ProcessRulesDoc(r)
+	assert.NoError(t, err)
+	assert.Contains(t, w.Writes, "system.txt")
+}
+
+func TestModules(t *testing.T) {
+	w := NewMockFileWriter()
+	g := createGenerator(t, w)
+	r := readRules(t, "testdata/test.rules.yaml")
+	err := g.ProcessRulesDoc(r)
+	assert.NoError(t, err)
+	assert.Contains(t, w.Writes, "system.txt")
 }

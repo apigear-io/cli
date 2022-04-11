@@ -11,7 +11,7 @@ type Renderer struct {
 
 // NewRenderer creates a new renderer
 func NewRenderer(tplDir string) *Renderer {
-	tpl, err := template.ParseGlob(tplDir + "/*.tpl")
+	tpl, err := template.ParseGlob(tplDir + "/*.tmpl")
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,7 @@ func NewRenderer(tplDir string) *Renderer {
 // RenderString renders a string from a string template
 func (r *Renderer) RenderString(s string, data any) (string, error) {
 	buf := bytes.Buffer{}
-	t := template.Must(template.New("temp").Parse(s))
+	t := template.Must(template.New("").Parse(s))
 	t.Execute(&buf, data)
 	return buf.String(), nil
 }

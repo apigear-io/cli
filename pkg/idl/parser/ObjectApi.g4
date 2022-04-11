@@ -10,7 +10,7 @@ importRule: 'import' name = IDENTIFIER version = VERSION;
 declarationsRule: interfaceRule | structRule | enumRule;
 
 interfaceRule:
-	'interface' name = IDENTIFIER extends = IDENTIFIER? '{' interfaceMembersRule* '}';
+	'interface' name = IDENTIFIER '{' interfaceMembersRule* '}';
 
 interfaceMembersRule: propertyRule | methodRule | signalRule;
 
@@ -33,7 +33,10 @@ enumRule: 'enum' name = IDENTIFIER '{' enumMemberRule* '}';
 
 enumMemberRule: name = IDENTIFIER ('=' value = INTEGER)? ','?;
 
-schemaRule: primitiveSchema | symbolSchema | arraySchema;
+// a schame can be followed by "[]" to indicate an array
+schemaRule: (primitiveSchema | symbolSchema) arrayRule?;
+
+arrayRule: '[' ']';
 
 primitiveSchema:
 	name = 'bool'
@@ -41,10 +44,10 @@ primitiveSchema:
 	| name = 'float'
 	| name = 'string';
 symbolSchema: name = IDENTIFIER;
-arraySchema: (primitiveSchema | symbolSchema) '[' ']';
 
 WHITESPACE: [ \t\r\n]+ -> skip;
 INTEGER: ('+' | '-')? '0' ..'9'+;
 HEX: '0x' ('0' ..'9' | 'a' ..'f' | 'A' ..'F')+;
+TYPE_IDENTIFIER: [A-Z_] [A-Z0-9_]* '[]'?;
 IDENTIFIER: [_A-Za-z] [_0-9A-Za-z]*;
 VERSION: [0-9]'.' [0-9];

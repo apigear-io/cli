@@ -9,7 +9,6 @@ import (
 	"objectapi/cmd/tpl"
 	"os"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
@@ -71,6 +70,5 @@ func initConfig() {
 
 	if verbose {
 		fmt.Fprintln(os.Stderr, "verbose output")
-		logrus.SetLevel(logrus.DebugLevel)
 	}
 }

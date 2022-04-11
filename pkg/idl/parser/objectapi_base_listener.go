@@ -117,6 +117,12 @@ func (s *BaseObjectApiListener) EnterSchemaRule(ctx *SchemaRuleContext) {}
 // ExitSchemaRule is called when production schemaRule is exited.
 func (s *BaseObjectApiListener) ExitSchemaRule(ctx *SchemaRuleContext) {}
 
+// EnterArrayRule is called when production arrayRule is entered.
+func (s *BaseObjectApiListener) EnterArrayRule(ctx *ArrayRuleContext) {}
+
+// ExitArrayRule is called when production arrayRule is exited.
+func (s *BaseObjectApiListener) ExitArrayRule(ctx *ArrayRuleContext) {}
+
 // EnterPrimitiveSchema is called when production primitiveSchema is entered.
 func (s *BaseObjectApiListener) EnterPrimitiveSchema(ctx *PrimitiveSchemaContext) {}
 
@@ -128,9 +134,3 @@ func (s *BaseObjectApiListener) EnterSymbolSchema(ctx *SymbolSchemaContext) {}
 
 // ExitSymbolSchema is called when production symbolSchema is exited.
 func (s *BaseObjectApiListener) ExitSymbolSchema(ctx *SymbolSchemaContext) {}
-
-// EnterArraySchema is called when production arraySchema is entered.
-func (s *BaseObjectApiListener) EnterArraySchema(ctx *ArraySchemaContext) {}
-
-// ExitArraySchema is called when production arraySchema is exited.
-func (s *BaseObjectApiListener) ExitArraySchema(ctx *ArraySchemaContext) {}

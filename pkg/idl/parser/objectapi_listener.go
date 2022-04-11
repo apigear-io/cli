@@ -56,14 +56,14 @@ type ObjectApiListener interface {
 	// EnterSchemaRule is called when entering the schemaRule production.
 	EnterSchemaRule(c *SchemaRuleContext)
 
+	// EnterArrayRule is called when entering the arrayRule production.
+	EnterArrayRule(c *ArrayRuleContext)
+
 	// EnterPrimitiveSchema is called when entering the primitiveSchema production.
 	EnterPrimitiveSchema(c *PrimitiveSchemaContext)
 
 	// EnterSymbolSchema is called when entering the symbolSchema production.
 	EnterSymbolSchema(c *SymbolSchemaContext)
-
-	// EnterArraySchema is called when entering the arraySchema production.
-	EnterArraySchema(c *ArraySchemaContext)
 
 	// ExitDocumentRule is called when exiting the documentRule production.
 	ExitDocumentRule(c *DocumentRuleContext)
@@ -113,12 +113,12 @@ type ObjectApiListener interface {
 	// ExitSchemaRule is called when exiting the schemaRule production.
 	ExitSchemaRule(c *SchemaRuleContext)
 
+	// ExitArrayRule is called when exiting the arrayRule production.
+	ExitArrayRule(c *ArrayRuleContext)
+
 	// ExitPrimitiveSchema is called when exiting the primitiveSchema production.
 	ExitPrimitiveSchema(c *PrimitiveSchemaContext)
 
 	// ExitSymbolSchema is called when exiting the symbolSchema production.
 	ExitSymbolSchema(c *SymbolSchemaContext)
-
-	// ExitArraySchema is called when exiting the arraySchema production.
-	ExitArraySchema(c *ArraySchemaContext)
 }

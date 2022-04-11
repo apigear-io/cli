@@ -1,0 +1,9 @@
+features:
+  - name: core
+    scopes:
+      - match: system
+        documents:
+          - { source: "system.name.tmpl", target: "system.txt" }
+      - match: modules
+        documents:
+          - { source: "module.name.tmpl", target: "module.txt" }

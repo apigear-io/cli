@@ -20,7 +20,7 @@ const (
 )
 
 type RulesDoc struct {
-	Features []*FeatureRule `json:"features" yaml:"features"`
+	Features []FeatureRule `json:"features" yaml:"features"`
 }
 
 // A feature rule defines a set of scopes to match a symbol type.
@@ -30,24 +30,24 @@ type FeatureRule struct {
 	// Which other features are required by this feature.
 	Requires []string `json:"requires" yaml:"requires"`
 	// Scopes to match.
-	Scopes []*ScopeRule `json:"scopes" yaml:"scopes"`
+	Scopes []ScopeRule `json:"scopes" yaml:"scopes"`
 }
 
 // NewFeatureRule creates a new named feature rule.
-func NewFeatureRule(name string) *FeatureRule {
-	return &FeatureRule{
+func InitFeatureRule(name string) FeatureRule {
+	return FeatureRule{
 		Name: name,
 	}
 }
 
 // FindScopeByMatch returns the first scope that matches the given match.
-func (s *FeatureRule) FindScopeByMatch(match ScopeType) *ScopeRule {
+func (s *FeatureRule) FindScopeByMatch(match ScopeType) ScopeRule {
 	for _, scope := range s.Scopes {
 		if scope.Match == match {
 			return scope
 		}
 	}
-	return nil
+	return ScopeRule{}
 }
 
 // ScopeRule defines a scope rule which is matched based on the symbol type.
@@ -55,12 +55,12 @@ type ScopeRule struct {
 	// Match is the type of the symbol to match
 	Match ScopeType `json:"match" yaml:"match"`
 	// Documents is a list of document rules to apply
-	Documents []*DocumentRule `json:"documents" yaml:"documents"`
+	Documents []DocumentRule `json:"documents" yaml:"documents"`
 }
 
 // NewScopeRule creates a new scope rule.
-func NewScopeRule(match ScopeType) *ScopeRule {
-	return &ScopeRule{
+func InitScopeRule(match ScopeType) ScopeRule {
+	return ScopeRule{
 		Match: match,
 	}
 }
@@ -78,8 +78,8 @@ type DocumentRule struct {
 }
 
 // NewDocumentRule creates a new document rule.
-func NewDocumentRule(source, target string) *DocumentRule {
-	return &DocumentRule{
+func InitDocumentRule(source, target string) DocumentRule {
+	return DocumentRule{
 		Source:    source,
 		Target:    target,
 		Transform: true,

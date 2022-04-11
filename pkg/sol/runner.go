@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"text/template"
 )
 
 var log = logger.Get()
@@ -47,11 +48,14 @@ func (r *Runner) processLayer(layer spec.SolutionLayer) error {
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
-	rulesProc := gen.NewGenerator(outputDir, &gen.GeneratorOptions{
+	rulesProc := gen.Generator{
+		Writer:       gen.NewFileWriter(outputDir),
+		Template:     template.New(""),
 		System:       system,
 		UserForce:    force,
+		OutputDir:    outputDir,
 		TemplatesDir: templatesDir,
-	})
+	}
 	return rulesProc.ProcessFile(rulesFile)
 }
 

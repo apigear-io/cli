@@ -103,6 +103,12 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 	o.property = model.InitTypeNode(name, model.KindProperty)
 }
 
+// ExitPropertyRule is called when exiting the propertyRule production.
+func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
+	o.property.Schema = o.schema
+	o.iface.Properties = append(o.iface.Properties, o.property)
+}
+
 // EnterMethodRule is called when entering the methodRule production.
 func (o *ObjectApiListener) EnterMethodRule(c *parser.MethodRuleContext) {
 	name := c.GetName().GetText()
@@ -223,8 +229,13 @@ func (o *ObjectApiListener) EnterSymbolSchema(c *parser.SymbolSchemaContext) {
 }
 
 // EnterArraySchema is called when entering the arraySchema production.
-func (o *ObjectApiListener) EnterArraySchema(c *parser.ArraySchemaContext) {
+func (o *ObjectApiListener) EnterArrayRule(c *parser.ArrayRuleContext) {
 	o.schema.Type += "[]"
+}
+
+// ExitArraySchema is called when exiting the arraySchema production.
+func (o *ObjectApiListener) ExitArrayRule(c *parser.ArrayRuleContext) {
+	// nothing todo
 }
 
 // ExitDocumentRule is called when exiting the documentRule production.
@@ -258,12 +269,6 @@ func (o *ObjectApiListener) ExitInterfaceMembersRule(c *parser.InterfaceMembersR
 	// nothing todo
 }
 
-// ExitPropertyRule is called when exiting the propertyRule production.
-func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
-	o.property.Schema = o.schema
-	o.iface.Properties = append(o.iface.Properties, o.property)
-}
-
 // ExitPrimitiveSchema is called when exiting the primitiveSchema production.
 func (o *ObjectApiListener) ExitPrimitiveSchema(c *parser.PrimitiveSchemaContext) {
 	// nothing todo
@@ -271,11 +276,6 @@ func (o *ObjectApiListener) ExitPrimitiveSchema(c *parser.PrimitiveSchemaContext
 
 // ExitReferenceSchema is called when exiting the referenceSchema production.
 func (o *ObjectApiListener) ExitSymbolSchema(c *parser.SymbolSchemaContext) {
-	// nothing todo
-}
-
-// ExitArraySchema is called when exiting the arraySchema production.
-func (o *ObjectApiListener) ExitArraySchema(c *parser.ArraySchemaContext) {
 	// nothing todo
 }
 
