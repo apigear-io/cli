@@ -105,7 +105,7 @@ var ruleNames = []string{
 	"documentRule", "headerRule", "moduleRule", "importRule", "declarationsRule",
 	"interfaceRule", "interfaceMembersRule", "propertyRule", "methodRule",
 	"inputRule", "signalRule", "structRule", "structFieldRule", "enumRule",
-	"enumMemberRule", "schemaRule", "primitiveSchema", "referenceSchema", "arraySchema",
+	"enumMemberRule", "schemaRule", "primitiveSchema", "symbolSchema", "arraySchema",
 }
 
 type ObjectApiParser struct {
@@ -185,7 +185,7 @@ const (
 	ObjectApiParserRULE_enumMemberRule       = 14
 	ObjectApiParserRULE_schemaRule           = 15
 	ObjectApiParserRULE_primitiveSchema      = 16
-	ObjectApiParserRULE_referenceSchema      = 17
+	ObjectApiParserRULE_symbolSchema         = 17
 	ObjectApiParserRULE_arraySchema          = 18
 )
 
@@ -2530,14 +2530,14 @@ func (s *SchemaRuleContext) PrimitiveSchema() IPrimitiveSchemaContext {
 	return t.(IPrimitiveSchemaContext)
 }
 
-func (s *SchemaRuleContext) ReferenceSchema() IReferenceSchemaContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IReferenceSchemaContext)(nil)).Elem(), 0)
+func (s *SchemaRuleContext) SymbolSchema() ISymbolSchemaContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*ISymbolSchemaContext)(nil)).Elem(), 0)
 
 	if t == nil {
 		return nil
 	}
 
-	return t.(IReferenceSchemaContext)
+	return t.(ISymbolSchemaContext)
 }
 
 func (s *SchemaRuleContext) ArraySchema() IArraySchemaContext {
@@ -2607,7 +2607,7 @@ func (p *ObjectApiParser) SchemaRule() (localctx ISchemaRuleContext) {
 		p.EnterOuterAlt(localctx, 2)
 		{
 			p.SetState(153)
-			p.ReferenceSchema()
+			p.SymbolSchema()
 		}
 
 	case 3:
@@ -2765,8 +2765,8 @@ func (p *ObjectApiParser) PrimitiveSchema() (localctx IPrimitiveSchemaContext) {
 	return localctx
 }
 
-// IReferenceSchemaContext is an interface to support dynamic dispatch.
-type IReferenceSchemaContext interface {
+// ISymbolSchemaContext is an interface to support dynamic dispatch.
+type ISymbolSchemaContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
@@ -2778,72 +2778,72 @@ type IReferenceSchemaContext interface {
 	// SetName sets the name token.
 	SetName(antlr.Token)
 
-	// IsReferenceSchemaContext differentiates from other interfaces.
-	IsReferenceSchemaContext()
+	// IsSymbolSchemaContext differentiates from other interfaces.
+	IsSymbolSchemaContext()
 }
 
-type ReferenceSchemaContext struct {
+type SymbolSchemaContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	name   antlr.Token
 }
 
-func NewEmptyReferenceSchemaContext() *ReferenceSchemaContext {
-	var p = new(ReferenceSchemaContext)
+func NewEmptySymbolSchemaContext() *SymbolSchemaContext {
+	var p = new(SymbolSchemaContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = ObjectApiParserRULE_referenceSchema
+	p.RuleIndex = ObjectApiParserRULE_symbolSchema
 	return p
 }
 
-func (*ReferenceSchemaContext) IsReferenceSchemaContext() {}
+func (*SymbolSchemaContext) IsSymbolSchemaContext() {}
 
-func NewReferenceSchemaContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReferenceSchemaContext {
-	var p = new(ReferenceSchemaContext)
+func NewSymbolSchemaContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SymbolSchemaContext {
+	var p = new(SymbolSchemaContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = ObjectApiParserRULE_referenceSchema
+	p.RuleIndex = ObjectApiParserRULE_symbolSchema
 
 	return p
 }
 
-func (s *ReferenceSchemaContext) GetParser() antlr.Parser { return s.parser }
+func (s *SymbolSchemaContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *ReferenceSchemaContext) GetName() antlr.Token { return s.name }
+func (s *SymbolSchemaContext) GetName() antlr.Token { return s.name }
 
-func (s *ReferenceSchemaContext) SetName(v antlr.Token) { s.name = v }
+func (s *SymbolSchemaContext) SetName(v antlr.Token) { s.name = v }
 
-func (s *ReferenceSchemaContext) IDENTIFIER() antlr.TerminalNode {
+func (s *SymbolSchemaContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
 }
 
-func (s *ReferenceSchemaContext) GetRuleContext() antlr.RuleContext {
+func (s *SymbolSchemaContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *ReferenceSchemaContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *SymbolSchemaContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *ReferenceSchemaContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *SymbolSchemaContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.EnterReferenceSchema(s)
+		listenerT.EnterSymbolSchema(s)
 	}
 }
 
-func (s *ReferenceSchemaContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *SymbolSchemaContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.ExitReferenceSchema(s)
+		listenerT.ExitSymbolSchema(s)
 	}
 }
 
-func (p *ObjectApiParser) ReferenceSchema() (localctx IReferenceSchemaContext) {
+func (p *ObjectApiParser) SymbolSchema() (localctx ISymbolSchemaContext) {
 	this := p
 	_ = this
 
-	localctx = NewReferenceSchemaContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 34, ObjectApiParserRULE_referenceSchema)
+	localctx = NewSymbolSchemaContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 34, ObjectApiParserRULE_symbolSchema)
 
 	defer func() {
 		p.ExitRule()
@@ -2867,7 +2867,7 @@ func (p *ObjectApiParser) ReferenceSchema() (localctx IReferenceSchemaContext) {
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
-		localctx.(*ReferenceSchemaContext).name = _m
+		localctx.(*SymbolSchemaContext).name = _m
 	}
 
 	return localctx
@@ -2921,14 +2921,14 @@ func (s *ArraySchemaContext) PrimitiveSchema() IPrimitiveSchemaContext {
 	return t.(IPrimitiveSchemaContext)
 }
 
-func (s *ArraySchemaContext) ReferenceSchema() IReferenceSchemaContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IReferenceSchemaContext)(nil)).Elem(), 0)
+func (s *ArraySchemaContext) SymbolSchema() ISymbolSchemaContext {
+	var t = s.GetTypedRuleContext(reflect.TypeOf((*ISymbolSchemaContext)(nil)).Elem(), 0)
 
 	if t == nil {
 		return nil
 	}
 
-	return t.(IReferenceSchemaContext)
+	return t.(ISymbolSchemaContext)
 }
 
 func (s *ArraySchemaContext) GetRuleContext() antlr.RuleContext {
@@ -2988,7 +2988,7 @@ func (p *ObjectApiParser) ArraySchema() (localctx IArraySchemaContext) {
 	case ObjectApiParserIDENTIFIER:
 		{
 			p.SetState(166)
-			p.ReferenceSchema()
+			p.SymbolSchema()
 		}
 
 	default:

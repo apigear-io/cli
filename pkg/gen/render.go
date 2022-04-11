@@ -1,47 +1,38 @@
 package gen
 
 import (
-	"fmt"
-
-	"github.com/flosch/pongo2"
+	"bytes"
+	"text/template"
 )
 
-func init() {
-	pongo2.SetAutoescape(false)
-}
-
 type Renderer struct {
-	s *pongo2.TemplateSet
+	t *template.Template
 }
 
 // NewRenderer creates a new renderer
 func NewRenderer(tplDir string) *Renderer {
-	l, err := pongo2.NewLocalFileSystemLoader(tplDir)
+	tpl, err := template.ParseGlob(tplDir + "/*.tpl")
 	if err != nil {
-		panic(fmt.Errorf("error creating fs loader for %s: %s", tplDir, err))
+		panic(err)
 	}
-	return &Renderer{
-		s: pongo2.NewSet("", l),
-	}
-}
-
-// AddTemplate adds a local file system loader to the renderer
-func (r *Renderer) AddTemplateDir(dir string) error {
-	l, err := pongo2.NewLocalFileSystemLoader(dir)
-	if err != nil {
-		return err
-	}
-	r.s.AddLoader(l)
-	return nil
+	return &Renderer{t: tpl}
 }
 
 // RenderString renders a string from a string template
-func (r *Renderer) RenderString(s string, ctx Context) (string, error) {
-	return r.s.RenderTemplateString(s, ctx)
+func (r *Renderer) RenderString(s string, data any) (string, error) {
+	buf := bytes.Buffer{}
+	t := template.Must(template.New("temp").Parse(s))
+	t.Execute(&buf, data)
+	return buf.String(), nil
 }
 
 // RenderFile renders a string from a file template
 // the file must be in the renderer's template directory
-func (r *Renderer) RenderFile(fn string, ctx Context) (string, error) {
-	return r.s.RenderTemplateFile(fn, ctx)
+func (r *Renderer) RenderFile(fn string, data any) (string, error) {
+	buf := bytes.Buffer{}
+	err := r.t.ExecuteTemplate(&buf, fn, data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }

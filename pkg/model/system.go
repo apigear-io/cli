@@ -2,15 +2,24 @@ package model
 
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Modules   []*Module `json:"modules" yaml:"modules"`
+	Modules   []Module `json:"modules" yaml:"modules"`
 }
 
 func NewSystem(name string) *System {
 	return &System{
 		NamedNode: NamedNode{
 			Name: name,
-			Kind: Kind_System,
+			Kind: KindSystem,
 		},
-		Modules: make([]*Module, 0),
+		Modules: make([]Module, 0),
 	}
+}
+
+func (s System) ModuleByName(name string) Module {
+	for _, m := range s.Modules {
+		if m.Name == name {
+			return m
+		}
+	}
+	return Module{}
 }

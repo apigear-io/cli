@@ -1,0 +1,8 @@
+module test 1.0
+
+interface Test {
+    prop1: bool
+    prop2: int
+    prop3: float
+    prop4: string
+}

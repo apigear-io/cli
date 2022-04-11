@@ -33,15 +33,15 @@ enumRule: 'enum' name = IDENTIFIER '{' enumMemberRule* '}';
 
 enumMemberRule: name = IDENTIFIER ('=' value = INTEGER)? ','?;
 
-schemaRule: primitiveSchema | referenceSchema | arraySchema;
+schemaRule: primitiveSchema | symbolSchema | arraySchema;
 
 primitiveSchema:
 	name = 'bool'
 	| name = 'int'
 	| name = 'float'
 	| name = 'string';
-referenceSchema: name = IDENTIFIER;
-arraySchema: (primitiveSchema | referenceSchema) '[' ']';
+symbolSchema: name = IDENTIFIER;
+arraySchema: (primitiveSchema | symbolSchema) '[' ']';
 
 WHITESPACE: [ \t\r\n]+ -> skip;
 INTEGER: ('+' | '-')? '0' ..'9'+;

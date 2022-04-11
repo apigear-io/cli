@@ -59,8 +59,8 @@ type ObjectApiListener interface {
 	// EnterPrimitiveSchema is called when entering the primitiveSchema production.
 	EnterPrimitiveSchema(c *PrimitiveSchemaContext)
 
-	// EnterReferenceSchema is called when entering the referenceSchema production.
-	EnterReferenceSchema(c *ReferenceSchemaContext)
+	// EnterSymbolSchema is called when entering the symbolSchema production.
+	EnterSymbolSchema(c *SymbolSchemaContext)
 
 	// EnterArraySchema is called when entering the arraySchema production.
 	EnterArraySchema(c *ArraySchemaContext)
@@ -116,8 +116,8 @@ type ObjectApiListener interface {
 	// ExitPrimitiveSchema is called when exiting the primitiveSchema production.
 	ExitPrimitiveSchema(c *PrimitiveSchemaContext)
 
-	// ExitReferenceSchema is called when exiting the referenceSchema production.
-	ExitReferenceSchema(c *ReferenceSchemaContext)
+	// ExitSymbolSchema is called when exiting the symbolSchema production.
+	ExitSymbolSchema(c *SymbolSchemaContext)
 
 	// ExitArraySchema is called when exiting the arraySchema production.
 	ExitArraySchema(c *ArraySchemaContext)

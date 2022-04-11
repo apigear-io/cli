@@ -6,12 +6,12 @@ type Enum struct {
 	Members   []*EnumMember `json:"members" yaml:"members"`
 }
 
-// NewEnum creates a new Enum.
-func NewEnum(name string) *Enum {
-	return &Enum{
+// InitEnum creates a new Enum.
+func InitEnum(name string) Enum {
+	return Enum{
 		NamedNode: NamedNode{
 			Name: name,
-			Kind: Kind_Enum,
+			Kind: KindEnum,
 		},
 	}
 }
@@ -27,7 +27,7 @@ func NewEnumMember(name string, value int) *EnumMember {
 	return &EnumMember{
 		NamedNode: NamedNode{
 			Name: name,
-			Kind: Kind_Member,
+			Kind: KindMember,
 		},
 		Value: value,
 	}

@@ -21,7 +21,7 @@ type Runner struct {
 }
 
 func (r *Runner) Run() {
-	log.Info("start processing solution")
+	log.Info("run solution")
 	for _, layer := range r.doc.Layers {
 		r.processLayer(layer)
 	}
@@ -30,8 +30,9 @@ func (r *Runner) Run() {
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
 func (r *Runner) processLayer(layer spec.SolutionLayer) error {
+	log.Infof("process layer %s", layer.Name)
 	var templateDir = path.Join(r.rootDir, layer.Template)
-	var searchDir = path.Join(templateDir, "templates")
+	var templatesDir = path.Join(templateDir, "templates")
 	var rulesFile = path.Join(templateDir, "rules.yaml")
 	var outputDir = path.Join(r.rootDir, layer.Output)
 	var force = layer.Force
@@ -46,11 +47,12 @@ func (r *Runner) processLayer(layer spec.SolutionLayer) error {
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
-	rulesProc := gen.NewDefaultGenerator(searchDir, outputDir)
-	return rulesProc.ProcessFile(rulesFile, &gen.GeneratorOptions{
-		System:    system,
-		UserForce: force,
+	rulesProc := gen.NewGenerator(outputDir, &gen.GeneratorOptions{
+		System:       system,
+		UserForce:    force,
+		TemplatesDir: templatesDir,
 	})
+	return rulesProc.ProcessFile(rulesFile)
 }
 
 // parseInputs parses the inputs from the layer.

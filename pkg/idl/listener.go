@@ -12,27 +12,22 @@ import (
 type ObjectApiListener struct {
 	antlr.ParseTreeListener
 	System       *model.System
-	module       *model.Module
-	iface        *model.Interface
-	struct_      *model.Struct
-	enum         *model.Enum
-	method       *model.Method
-	input        *model.Input
-	signal       *model.Signal
-	property     *model.Property
-	field        *model.StructField
-	schema       *model.Schema
+	kind         model.Kind
+	module       model.Module
+	iface        model.Interface
+	struct_      model.Struct
+	enum         model.Enum
+	method       model.Method
+	input        model.TypedNode
+	signal       model.Signal
+	property     model.TypedNode
+	field        model.TypedNode
+	schema       model.Schema
 	runningValue int
 }
 
-func itMust(b bool, msg string) {
-	if !b {
-		panic(msg)
-	}
-}
-
 func (o *ObjectApiListener) VisitTerminal(node antlr.TerminalNode) {
-	fmt.Printf("terminal: %s\n", node.GetText())
+	// fmt.Printf("terminal: %s\n", node.GetText())
 }
 
 func (o *ObjectApiListener) VisitErrorNode(node antlr.ErrorNode) {
@@ -40,11 +35,11 @@ func (o *ObjectApiListener) VisitErrorNode(node antlr.ErrorNode) {
 }
 
 func (o *ObjectApiListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Printf("enter: %s\n", ctx.GetStart().GetText())
+	// fmt.Printf("enter: %s\n", ctx.GetStart().GetText())
 }
 
 func (o *ObjectApiListener) ExitEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Printf("exit: %s\n", ctx.GetStart().GetText())
+	// fmt.Printf("exit: %s\n", ctx.GetStart().GetText())
 }
 
 // EnterDocumentRule is called when entering the documentRule production.
@@ -59,18 +54,22 @@ func (o *ObjectApiListener) EnterHeaderRule(c *parser.HeaderRuleContext) {
 
 // EnterModuleRule is called when entering the moduleRule production.
 func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
-	itMust(o.module == nil, "module already defined")
 	name := c.GetName().GetText()
 	version := c.GetVersion().GetText()
-	o.module = model.NewModule(name, version)
-	o.System.Modules = append(o.System.Modules, o.module)
+	o.module = model.InitModule(name, version)
+}
+
+// ExitMethodRule is called when exiting the methodRule production.
+func (o *ObjectApiListener) ExitMethodRule(c *parser.MethodRuleContext) {
+	o.iface.Methods = append(o.iface.Methods, o.method)
+	o.method = model.Method{}
 }
 
 // EnterImportRule is called when entering the importRule production.
 func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 	name := c.GetName().GetText()
 	version := c.GetVersion().GetText()
-	import_ := model.NewImport(name, version)
+	import_ := model.InitImport(name, version)
 	o.module.Imports = append(o.module.Imports, import_)
 }
 
@@ -81,10 +80,15 @@ func (o *ObjectApiListener) EnterDeclarationsRule(c *parser.DeclarationsRuleCont
 
 // EnterInterfaceRule is called when entering the interfaceRule production.
 func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
-	itMust(o.iface == nil, "interface already defined")
+	o.kind = model.KindInterface
 	name := c.GetName().GetText()
-	o.iface = model.NewInterface(name)
+	o.iface = model.InitInterface(name)
+}
+
+// ExitInterfaceRule is called when exiting the interfaceRule production.
+func (o *ObjectApiListener) ExitInterfaceRule(c *parser.InterfaceRuleContext) {
 	o.module.Interfaces = append(o.module.Interfaces, o.iface)
+	o.iface = model.Interface{}
 }
 
 // EnterInterfaceMembersRule is called when entering the interfaceMembersRule production.
@@ -94,62 +98,83 @@ func (o *ObjectApiListener) EnterInterfaceMembersRule(c *parser.InterfaceMembers
 
 // EnterPropertyRule is called when entering the propertyRule production.
 func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
-	itMust(o.property == nil, "property already defined")
 	name := c.GetName().GetText()
-	o.property = model.NewProperty(name)
-	o.iface.Properties = append(o.iface.Properties, o.property)
+	o.kind = model.KindProperty
+	o.property = model.InitTypeNode(name, model.KindProperty)
 }
 
 // EnterMethodRule is called when entering the methodRule production.
 func (o *ObjectApiListener) EnterMethodRule(c *parser.MethodRuleContext) {
-	itMust(o.method == nil, "method already defined")
 	name := c.GetName().GetText()
-	o.method = model.NewMethod(name)
-	o.iface.Methods = append(o.iface.Methods, o.method)
+	o.kind = model.KindMethod
+	o.method = model.InitMethod(name)
 }
 
 // EnterInputRule is called when entering the inputRule production.
 func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
-	itMust(o.input == nil, "input already defined")
 	name := c.GetName().GetText()
-	o.input = model.NewMethodInput(name)
-	if o.method != nil {
+	o.input = model.InitTypeNode(name, model.KindInput)
+}
+
+// ExitInputRule is called when exiting the inputRule production.
+func (o *ObjectApiListener) ExitInputRule(c *parser.InputRuleContext) {
+	o.input.Schema = o.schema
+	if !o.method.IsEmpty() {
 		o.method.Inputs = append(o.method.Inputs, o.input)
-	}
-	if o.signal != nil {
+	} else if !o.signal.IsEmpty() {
 		o.signal.Inputs = append(o.signal.Inputs, o.input)
 	}
 }
 
 // EnterSignalRule is called when entering the signalRule production.
 func (o *ObjectApiListener) EnterSignalRule(c *parser.SignalRuleContext) {
-	itMust(o.signal == nil, "signal already defined")
 	name := c.GetName().GetText()
 	o.signal = model.NewSignal(name)
+}
+
+// ExitSignalRule is called when exiting the signalRule production.
+func (o *ObjectApiListener) ExitSignalRule(c *parser.SignalRuleContext) {
 	o.iface.Signals = append(o.iface.Signals, o.signal)
+	o.signal = model.Signal{}
 }
 
 // EnterStructRule is called when entering the structRule production.
 func (o *ObjectApiListener) EnterStructRule(c *parser.StructRuleContext) {
 	name := c.GetName().GetText()
 	o.struct_ = model.NewStruct(name)
+}
+
+// ExitStructRule is called when exiting the structRule production.
+func (o *ObjectApiListener) ExitStructRule(c *parser.StructRuleContext) {
 	o.module.Structs = append(o.module.Structs, o.struct_)
+	o.struct_ = model.Struct{}
 }
 
 // EnterStructFieldRule is called when entering the structFieldRule production.
 func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContext) {
 	name := c.GetName().GetText()
-	o.field = model.NewStructField(name)
+	o.field = model.InitTypeNode(name, model.KindField)
+}
+
+// ExitStructFieldRule is called when exiting the structFieldRule production.
+func (o *ObjectApiListener) ExitStructFieldRule(c *parser.StructFieldRuleContext) {
+	o.field.Schema = o.schema
 	o.struct_.Fields = append(o.struct_.Fields, o.field)
+	o.field = model.TypedNode{}
 }
 
 // EnterEnumRule is called when entering the enumRule production.
 func (o *ObjectApiListener) EnterEnumRule(c *parser.EnumRuleContext) {
-	itMust(o.enum == nil, "enum already defined")
 	name := c.GetName().GetText()
-	o.enum = model.NewEnum(name)
+	o.enum = model.InitEnum(name)
+	o.runningValue = 0
+}
+
+// ExitEnumRule is called when exiting the enumRule production.
+func (o *ObjectApiListener) ExitEnumRule(c *parser.EnumRuleContext) {
 	o.module.Enums = append(o.module.Enums, o.enum)
 	o.runningValue = 0
+	o.enum = model.Enum{}
 }
 
 // EnterEnumMemberRule is called when entering the enumMemberRule production.
@@ -171,42 +196,41 @@ func (o *ObjectApiListener) EnterEnumMemberRule(c *parser.EnumMemberRuleContext)
 	o.enum.Members = append(o.enum.Members, member)
 }
 
+// ExitEnumMemberRule is called when exiting the enumMemberRule production.
+func (o *ObjectApiListener) ExitEnumMemberRule(c *parser.EnumMemberRuleContext) {
+}
+
 // EnterSchemaRule is called when entering the schemaRule production.
 func (o *ObjectApiListener) EnterSchemaRule(c *parser.SchemaRuleContext) {
-	itMust(o.schema == nil, "schema already defined")
-	o.schema = model.NewSchema()
+	o.schema = model.Schema{}
+}
+
+// ExitSchemaRule is called when exiting the schemaRule production.
+func (o *ObjectApiListener) ExitSchemaRule(c *parser.SchemaRuleContext) {
+	// schema is picked up and cleared by another rule
 }
 
 // EnterPrimitiveSchema is called when entering the primitiveSchema production.
 func (o *ObjectApiListener) EnterPrimitiveSchema(c *parser.PrimitiveSchemaContext) {
 	name := c.GetName().GetText()
-	if o.schema.Type == "array" {
-		o.schema.Items = name
-	} else {
-		o.schema.Type = name
-	}
+	o.schema.Type = name
 }
 
 // EnterReferenceSchema is called when entering the referenceSchema production.
-func (o *ObjectApiListener) EnterReferenceSchema(c *parser.ReferenceSchemaContext) {
+func (o *ObjectApiListener) EnterSymbolSchema(c *parser.SymbolSchemaContext) {
 	name := c.GetName().GetText()
-	if o.schema.Type == "array" {
-		// place type inside items when schema is an array
-		o.schema.Items = name
-	} else {
-		o.schema.Type = name
-	}
+	o.schema.Type = name
 }
 
 // EnterArraySchema is called when entering the arraySchema production.
 func (o *ObjectApiListener) EnterArraySchema(c *parser.ArraySchemaContext) {
-	// set schema type to array
-	o.schema.Type = "array"
+	o.schema.Type += "[]"
 }
 
 // ExitDocumentRule is called when exiting the documentRule production.
 func (o *ObjectApiListener) ExitDocumentRule(c *parser.DocumentRuleContext) {
-	// nothing todo
+	o.System.Modules = append(o.System.Modules, o.module)
+	o.module = model.Module{}
 }
 
 // ExitHeaderRule is called when exiting the headerRule production.
@@ -229,11 +253,6 @@ func (o *ObjectApiListener) ExitDeclarationsRule(c *parser.DeclarationsRuleConte
 	// nothing todo
 }
 
-// ExitInterfaceRule is called when exiting the interfaceRule production.
-func (o *ObjectApiListener) ExitInterfaceRule(c *parser.InterfaceRuleContext) {
-	o.iface = nil
-}
-
 // ExitInterfaceMembersRule is called when exiting the interfaceMembersRule production.
 func (o *ObjectApiListener) ExitInterfaceMembersRule(c *parser.InterfaceMembersRuleContext) {
 	// nothing todo
@@ -241,61 +260,8 @@ func (o *ObjectApiListener) ExitInterfaceMembersRule(c *parser.InterfaceMembersR
 
 // ExitPropertyRule is called when exiting the propertyRule production.
 func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
-	itMust(o.schema != nil, fmt.Sprintf("property has no schema: %s", o.property.Name))
 	o.property.Schema = o.schema
-	o.schema = nil
-	o.property = nil
-}
-
-// ExitMethodRule is called when exiting the methodRule production.
-func (o *ObjectApiListener) ExitMethodRule(c *parser.MethodRuleContext) {
-	if o.schema != nil {
-		o.method.Output = model.NewMethodOutput(o.schema)
-	}
-	o.schema = nil
-	o.method = nil
-}
-
-// ExitInputRule is called when exiting the inputRule production.
-func (o *ObjectApiListener) ExitInputRule(c *parser.InputRuleContext) {
-	itMust(o.schema != nil, fmt.Sprintf("input has no schema (%s)", o.input.Name))
-	o.input.Schema = o.schema
-	o.schema = nil
-	o.input = nil
-}
-
-// ExitSignalRule is called when exiting the signalRule production.
-func (o *ObjectApiListener) ExitSignalRule(c *parser.SignalRuleContext) {
-	o.signal = nil
-}
-
-// ExitStructRule is called when exiting the structRule production.
-func (o *ObjectApiListener) ExitStructRule(c *parser.StructRuleContext) {
-	o.struct_ = nil
-}
-
-// ExitStructFieldRule is called when exiting the structFieldRule production.
-func (o *ObjectApiListener) ExitStructFieldRule(c *parser.StructFieldRuleContext) {
-	itMust(o.schema != nil, fmt.Sprintf("struct field has no schema: %s", o.field.Name))
-	o.field.Schema = o.schema
-	o.schema = nil
-	o.field = nil
-}
-
-// ExitEnumRule is called when exiting the enumRule production.
-func (o *ObjectApiListener) ExitEnumRule(c *parser.EnumRuleContext) {
-	o.enum = nil
-	o.runningValue = 0
-}
-
-// ExitEnumMemberRule is called when exiting the enumMemberRule production.
-func (o *ObjectApiListener) ExitEnumMemberRule(c *parser.EnumMemberRuleContext) {
-	// nothing todo
-}
-
-// ExitSchemaRule is called when exiting the schemaRule production.
-func (o *ObjectApiListener) ExitSchemaRule(c *parser.SchemaRuleContext) {
-	// schema is picked up and cleared by another rule
+	o.iface.Properties = append(o.iface.Properties, o.property)
 }
 
 // ExitPrimitiveSchema is called when exiting the primitiveSchema production.
@@ -304,7 +270,7 @@ func (o *ObjectApiListener) ExitPrimitiveSchema(c *parser.PrimitiveSchemaContext
 }
 
 // ExitReferenceSchema is called when exiting the referenceSchema production.
-func (o *ObjectApiListener) ExitReferenceSchema(c *parser.ReferenceSchemaContext) {
+func (o *ObjectApiListener) ExitSymbolSchema(c *parser.SymbolSchemaContext) {
 	// nothing todo
 }
 
@@ -314,9 +280,6 @@ func (o *ObjectApiListener) ExitArraySchema(c *parser.ArraySchemaContext) {
 }
 
 func NewObjectApiListener(system *model.System) parser.ObjectApiListener {
-	if system == nil {
-		system = model.NewSystem("system")
-	}
 	return &ObjectApiListener{
 		System: system,
 	}

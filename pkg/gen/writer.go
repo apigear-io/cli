@@ -15,21 +15,21 @@ type Writer struct {
 
 var log = logger.Get()
 
-func CompareContentWithFile(content string, target string) (bool, error) {
+func CompareContentWithFile(sourceBytes []byte, target string) (bool, error) {
 	if _, err := os.Stat(target); os.IsNotExist(err) {
 		return false, nil
 	}
-	var bytes, err = ioutil.ReadFile(target)
+	var targetBytes, err = os.ReadFile(target)
 	if err != nil {
 		return false, err
 	}
-	return md5.Sum([]byte(content)) == md5.Sum(bytes), nil
+	return md5.Sum(sourceBytes) == md5.Sum(targetBytes), nil
 }
 
-func (w *Writer) WriteFile(file string, content string, force bool) error {
+func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 	target := path.Join(w.outputDir, file)
 	if !force {
-		same, err := CompareContentWithFile(content, target)
+		same, err := CompareContentWithFile(bytes, target)
 		if err != nil {
 			return fmt.Errorf("error comparing content to file %s: %s", target, err)
 		}
@@ -44,7 +44,7 @@ func (w *Writer) WriteFile(file string, content string, force bool) error {
 	if err != nil {
 		return fmt.Errorf("error creating directory: %s", err)
 	}
-	return ioutil.WriteFile(target, []byte(content), 0644)
+	return ioutil.WriteFile(target, bytes, 0644)
 }
 
 func NewFileWriter(outputDir string) IFileWriter {

@@ -1,0 +1,34 @@
+name: Module01
+version: "1.0"
+interfaces:
+  - name: Interface01
+    properties:
+      - name: prop01
+        schema:
+          type: bool
+  - name: Interface02
+    methods:
+      - name: method01
+        inputs:
+          - name: input01
+            schema:
+              type: bool
+        output:
+          schema:
+            type: bool
+  - name: Interface03
+    signals:
+      - name: signal01
+        inputs:
+          - name: param01
+            schema:
+              type: bool
+          - name: param02
+            schema:
+              type: bool
+enums:
+  - name: Enum1
+    members:
+      - name: "Enum1"
+      - name: "Enum2"
+      - name: "Enum3"

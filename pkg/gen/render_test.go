@@ -9,7 +9,7 @@ import (
 
 func TestRenderString(t *testing.T) {
 	var e = NewRenderer("testdata/templates")
-	s, err := e.RenderString("{{system.Name}}", Context{"system": model.NewSystem("test")})
+	s, err := e.RenderString("{{system.Name}}", DataMap{"system": model.NewSystem("test")})
 	assert.NoError(t, err)
 	assert.Equal(t, "test", s)
 

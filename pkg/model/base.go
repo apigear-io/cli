@@ -4,23 +4,26 @@ package model
 type Kind string
 
 const (
-	Kind_System    Kind = "system"
-	Kind_Module    Kind = "module"
-	Kind_Import    Kind = "import"
-	Kind_Interface Kind = "interface"
-	Kind_Property  Kind = "property"
-	Kind_Method    Kind = "method"
-	Kind_Input     Kind = "input"
-	Kind_Signal    Kind = "signal"
-	Kind_Struct    Kind = "struct"
-	Kind_Field     Kind = "field"
-	Kind_Enum      Kind = "enum"
-	Kind_Member    Kind = "member"
+	KindSystem    Kind = "system"
+	KindModule    Kind = "module"
+	KindImport    Kind = "import"
+	KindInterface Kind = "interface"
+	KindProperty  Kind = "property"
+	KindMethod    Kind = "method"
+	KindInput     Kind = "input"
+	KindSignal    Kind = "signal"
+	KindStruct    Kind = "struct"
+	KindField     Kind = "field"
+	KindEnum      Kind = "enum"
+	KindMember    Kind = "member"
 )
 
-type TypeKind string
+type ISchemaProvider interface {
+	GetSchema() Schema
+}
 
 // NamedNode is a base node with a name and a kind.
+// { "name": "foo", "kind": "interface" }
 type NamedNode struct {
 	Name string `json:"name" yaml:"name"`
 	Kind Kind   `json:"kind" yaml:"kind"`
@@ -30,28 +33,36 @@ func (n *NamedNode) String() string {
 	return n.Name
 }
 
+func (n NamedNode) IsEmpty() bool {
+	return n.Name == ""
+}
+
 // TypedNode is a base node with a schema type.
+// { name: "foo", kind: "property", type: "string" }
 type TypedNode struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Schema    *Schema `json:"schema" yaml:"schema"`
+	Schema    Schema `json:"schema" yaml:"schema"`
 }
 
-// Schema is a type definition.
-type Schema struct {
-	Type   string `json:"type" yaml:"type"`
-	Items  string `json:"items" yaml:"items"`
-	Format string `json:"format" yaml:"format"`
-}
-
-func NewSchema() *Schema {
-	return &Schema{}
-}
-
-func IsPrimitive(s string) bool {
-	switch s {
-	case "bool", "int", "float", "string":
-		return true
-	default:
-		return false
+func InitTypeNode(n string, k Kind) TypedNode {
+	return TypedNode{
+		NamedNode: NamedNode{
+			Name: n,
+			Kind: k,
+		},
 	}
+}
+
+func (t TypedNode) GetSchema() Schema {
+	return t.Schema
+}
+
+// TypeNode is a node with type information.
+// { type: array, items: { type: string } }
+type Schema struct {
+	Type string `json:"type" yaml:"type"`
+}
+
+func (s Schema) IsEmpty() bool {
+	return s.Type == ""
 }

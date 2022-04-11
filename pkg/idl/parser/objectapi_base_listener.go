@@ -123,11 +123,11 @@ func (s *BaseObjectApiListener) EnterPrimitiveSchema(ctx *PrimitiveSchemaContext
 // ExitPrimitiveSchema is called when production primitiveSchema is exited.
 func (s *BaseObjectApiListener) ExitPrimitiveSchema(ctx *PrimitiveSchemaContext) {}
 
-// EnterReferenceSchema is called when production referenceSchema is entered.
-func (s *BaseObjectApiListener) EnterReferenceSchema(ctx *ReferenceSchemaContext) {}
+// EnterSymbolSchema is called when production symbolSchema is entered.
+func (s *BaseObjectApiListener) EnterSymbolSchema(ctx *SymbolSchemaContext) {}
 
-// ExitReferenceSchema is called when production referenceSchema is exited.
-func (s *BaseObjectApiListener) ExitReferenceSchema(ctx *ReferenceSchemaContext) {}
+// ExitSymbolSchema is called when production symbolSchema is exited.
+func (s *BaseObjectApiListener) ExitSymbolSchema(ctx *SymbolSchemaContext) {}
 
 // EnterArraySchema is called when production arraySchema is entered.
 func (s *BaseObjectApiListener) EnterArraySchema(ctx *ArraySchemaContext) {}

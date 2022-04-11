@@ -5,6 +5,7 @@ import (
 	"objectapi/pkg/model"
 	"objectapi/pkg/spec"
 	"testing"
+	"text/template"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
@@ -14,34 +15,14 @@ type MockFileWriter struct {
 	Writes map[string]string
 }
 
-func (m *MockFileWriter) WriteFile(fn string, content string, force bool) error {
-	m.Writes[fn] = content
+func (m *MockFileWriter) WriteFile(fn string, buf []byte, force bool) error {
+	m.Writes[fn] = string(buf)
 	return nil
 }
 
 func NewMockFileWriter() *MockFileWriter {
 	return &MockFileWriter{
 		Writes: make(map[string]string),
-	}
-}
-
-type MockRenderEngine struct {
-	Results []string
-}
-
-func (m *MockRenderEngine) RenderString(template string, ctx Context) (string, error) {
-	m.Results = append(m.Results, template)
-	return template, nil
-}
-
-func (m *MockRenderEngine) RenderFile(name string, ctx Context) (string, error) {
-	m.Results = append(m.Results, name)
-	return name, nil
-}
-
-func NewMockRenderEngine() *MockRenderEngine {
-	return &MockRenderEngine{
-		Results: make([]string, 0),
 	}
 }
 
@@ -54,32 +35,26 @@ func readRules(t *testing.T, filename string) spec.RulesDoc {
 	return file
 }
 
-func createProcessor() *Generator {
-	var engine = NewMockRenderEngine()
-	var writer = NewMockFileWriter()
-	var processor = NewGenerator(engine, writer)
+func createGenerator(w IFileWriter) *Generator {
+	var processor = &Generator{
+		Writer:    w,
+		Template:  template.New(""),
+		System:    model.NewSystem("test"),
+		UserForce: false,
+	}
 	return processor
 }
 func TestEmptyRules(t *testing.T) {
-	s := model.NewSystem("test")
-	processor := createProcessor()
+	w := NewMockFileWriter()
+	g := createGenerator(w)
 	r := readRules(t, "testdata/empty.rules.yaml")
-	processor.Process(r, &GeneratorOptions{
-		System:    s,
-		UserForce: true,
-	})
+	g.ProcessRulesDoc(r)
 }
 
 func TestHelloRules(t *testing.T) {
-	s := model.NewSystem("test")
-	var e = NewMockRenderEngine()
-	var w = NewMockFileWriter()
-	var p = NewGenerator(e, w)
+	w := NewMockFileWriter()
+	g := createGenerator(w)
 	r := readRules(t, "testdata/hello.rules.yaml")
-	p.Process(r, &GeneratorOptions{
-		System:    s,
-		UserForce: true,
-	})
+	g.ProcessRulesDoc(r)
 	assert.Equal(t, "hello.txt", w.Writes["hello.txt"])
-	assert.Equal(t, "hello.txt", e.Results[0])
 }

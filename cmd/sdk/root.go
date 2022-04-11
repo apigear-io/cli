@@ -12,7 +12,6 @@ func NewRootCommand() *cobra.Command {
 		Short:   "generates code",
 		Long:    `provides a set of commands to generate code`,
 	}
-	cmd.AddCommand(NewExpertCommand())
-	cmd.AddCommand(NewSolutionCommand())
+	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())
 	return cmd
 }

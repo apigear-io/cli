@@ -9,7 +9,7 @@ import (
 func NewRootCommand() *cobra.Command {
 	// cmd represents the mon command
 	cmd := &cobra.Command{
-		Use:   "monitor",
+		Use:   "mon",
 		Short: "A brief description of your command",
 		Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:

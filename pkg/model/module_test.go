@@ -9,16 +9,16 @@ import (
 
 func TestModuleYaml(t *testing.T) {
 	var module Module
-	err := helper.ReadDocument("./test/module.yaml", &module)
+	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, err)
-	assert.Equal(t, "Module001", module.Name)
+	assert.Equal(t, "Module01", module.Name)
 	assert.Equal(t, "1.0", module.Version)
 }
 
 func TestModuleJson(t *testing.T) {
 	var module Module
-	err := helper.ReadDocument("./test/module.json", &module)
+	err := helper.ReadDocument("./testdata/module.json", &module)
 	assert.NoError(t, err)
-	assert.Equal(t, "Module001", module.Name)
+	assert.Equal(t, "Module01", module.Name)
 	assert.Equal(t, "1.0", module.Version)
 }

@@ -70,7 +70,7 @@ enumRule
 enumMemberRule
 schemaRule
 primitiveSchema
-referenceSchema
+symbolSchema
 arraySchema
 
 

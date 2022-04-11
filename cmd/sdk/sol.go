@@ -20,6 +20,7 @@ func NewSolutionCommand() *cobra.Command {
 		Use:     "sol [file to run]",
 		Short:   "generate code using a solution",
 		Aliases: []string{"solution", "s"},
+		Args:    cobra.ExactArgs(1),
 		Long: `A solution is a yaml document which describes different layers. 
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
