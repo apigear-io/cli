@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func parseModule(t *testing.T, doc string) model.Module {
-	system := model.NewSystem("system")
-	parser := NewIDLParser(system)
+func parseModule(t *testing.T, doc string) *model.Module {
+	system := model.NewSystem("test")
+	parser := NewParser(system)
 	parser.ParseString(doc)
 	assert.Equal(t, 1, len(system.Modules))
 	assert.Len(t, system.Modules, 1)

@@ -25,6 +25,7 @@ func NewRootCommand() *cobra.Command {
 		Short: "objectapi is a tool to manage code generation templates",
 		Long: `The ObjectAPI standard allows you to describe objects as API and generate SDKs in different languages. 
 Additional API monaitoring and simulation is also supported.`,
+		Version: "0.0.1",
 	}
 	cobra.OnInitialize(initConfig)
 

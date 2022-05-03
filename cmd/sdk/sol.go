@@ -1,17 +1,58 @@
 package sdk
 
 import (
-	"objectapi/pkg/logger"
+	"objectapi/pkg/log"
 	"objectapi/pkg/sol"
 	"path/filepath"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 )
 
-var log = logger.Get()
-
 type SolutionOptions struct {
-	file string
+	file  string
+	watch bool
+}
+
+func runSolution(file string) error {
+	log.Infof("run solution %s", file)
+	doc, err := sol.ReadSolutionDoc(file)
+	if err != nil {
+		log.Errorf("error reading solution: %s", err)
+		return err
+	}
+	rootDir := filepath.Dir(file)
+	proc := sol.NewSolutionRunner(rootDir, doc)
+	proc.Run()
+	return nil
+}
+
+func watchSol(options *SolutionOptions) {
+	runSolution(options.file)
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+	done := make(chan bool)
+	go func() {
+		for {
+			select {
+			case event := <-watcher.Events:
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					log.Infof("file %s modified", event.Name)
+					runSolution(options.file)
+				}
+			case err := <-watcher.Errors:
+				log.Error(err)
+			}
+		}
+	}()
+	err = watcher.Add(options.file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	<-done
 }
 
 func NewSolutionCommand() *cobra.Command {
@@ -26,15 +67,13 @@ Each layer defines the input module files, output directory and the features to 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			options.file = args[0]
-			log.Info("run generator from solution ", options.file)
-			doc, err := sol.ReadSolutionDoc(options.file)
-			if err != nil {
-				panic(err)
+			if options.watch {
+				watchSol(options)
+			} else {
+				runSolution(options.file)
 			}
-			rootDir := filepath.Dir(options.file)
-			proc := sol.NewSolutionRunner(rootDir, doc)
-			proc.Run()
 		},
 	}
+	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch solution file for changes")
 	return cmd
 }

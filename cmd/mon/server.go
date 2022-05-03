@@ -3,7 +3,7 @@ package mon
 import (
 	"encoding/json"
 	"fmt"
-	"objectapi/pkg/logger"
+	"objectapi/pkg/log"
 	"objectapi/pkg/mon"
 	"objectapi/pkg/net"
 
@@ -11,8 +11,6 @@ import (
 )
 
 func NewServerCommand() *cobra.Command {
-	var log = logger.Get()
-
 	var addr string
 	var cmd = &cobra.Command{
 		Use:   "start",
@@ -24,9 +22,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			log.Debugf("start server on %s", addr)
 			go func() {
 				for event := range mon.Emitter() {
-					state, err := json.Marshal(event.State)
+					props, err := json.Marshal(event.Props)
 					if err != nil {
 						log.Info("error marshalling state: ", err)
 					}
@@ -35,10 +34,12 @@ to quickly create a Cobra application.`,
 						log.Info("error marshalling params: ", err)
 					}
 
-					fmt.Printf("<- %s %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.DeviceId, event.Kind, event.Symbol, state, params)
+					fmt.Printf("<- %s %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.DeviceId, event.Kind, event.Symbol, props, params)
 				}
 			}()
-			s := net.NewServer()
+			s := net.NewHTTPServer()
+			s.Router().Post("/monitor/{device}/", net.HandleMonitorRequest)
+			log.Debugf("handle monitor request on %s/monitor/{device}", addr)
 			s.Start(addr)
 		},
 	}

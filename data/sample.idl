@@ -1,6 +1,6 @@
-package demo 1.0
+module demo 1.0
 
-type Demo01 interface {
+type Demo02 interface {
     prop01 bool
     method01(d Demo01)
     signal signal01()    

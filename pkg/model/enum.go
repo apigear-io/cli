@@ -7,8 +7,8 @@ type Enum struct {
 }
 
 // InitEnum creates a new Enum.
-func InitEnum(name string) Enum {
-	return Enum{
+func NewEnum(name string) *Enum {
+	return &Enum{
 		NamedNode: NamedNode{
 			Name: name,
 			Kind: KindEnum,

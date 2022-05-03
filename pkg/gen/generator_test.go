@@ -44,7 +44,7 @@ func createGenerator(t *testing.T, w IFileWriter) *Generator {
 		TemplatesDir: "testdata/templates",
 		OutputDir:    "testdata/output",
 	}
-	err := g.ParseTemplateDir("testdata/templates")
+	err := g.ParseTemplatesDir("testdata/templates")
 	assert.NoError(t, err)
 	return g
 }

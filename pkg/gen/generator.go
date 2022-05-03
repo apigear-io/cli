@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"objectapi/pkg/gen/filtercpp"
+	"objectapi/pkg/log"
 	"objectapi/pkg/model"
 	"objectapi/pkg/spec"
 	"os"
@@ -51,11 +51,11 @@ func NewGenerator(outputDir string, templatesDir string) (*Generator, error) {
 		System:       model.NewSystem(""),
 		TemplatesDir: templatesDir,
 	}
-	err := g.ParseTemplateDir(templatesDir)
+	err := g.ParseTemplatesDir(templatesDir)
 	if err != nil {
 		return nil, err
 	}
-	g.Template.Funcs(filtercpp.GetFuncMap())
+	g.Template.Funcs(PopulateFuncMap())
 	return g, nil
 }
 
@@ -68,7 +68,7 @@ func (g *Generator) ParseTemplate(path string) error {
 	return err
 }
 
-func (g *Generator) ParseTemplateDir(dir string) error {
+func (g *Generator) ParseTemplatesDir(dir string) error {
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println("error walking dir:", err)
@@ -86,7 +86,7 @@ func (g *Generator) ParseTemplateDir(dir string) error {
 	return err
 }
 
-func (g *Generator) ProcessFile(filename string) error {
+func (g *Generator) ProcessRulesFile(filename string) error {
 	var bytes, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
@@ -185,7 +185,7 @@ func (g *Generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	}
 	// var force = doc.Force
 	// var transform = doc.Transform
-	log.Infof("transform %s -> %s", source, target)
+	log.Debugf("transform %s -> %s", source, target)
 	// render the template using the context
 	buf := bytes.NewBuffer(nil)
 	err := g.Template.ExecuteTemplate(buf, source, ctx)

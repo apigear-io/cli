@@ -43,6 +43,7 @@ primitiveSchema:
 	| name = 'int'
 	| name = 'float'
 	| name = 'string';
+
 symbolSchema: name = IDENTIFIER;
 
 WHITESPACE: [ \t\r\n]+ -> skip;

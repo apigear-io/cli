@@ -2,11 +2,11 @@ package model
 
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Inputs    []TypedNode `json:"inputs" yaml:"inputs"`
+	Inputs    []*TypedNode `json:"inputs" yaml:"inputs"`
 }
 
-func NewSignal(name string) Signal {
-	return Signal{
+func NewSignal(name string) *Signal {
+	return &Signal{
 		NamedNode: NamedNode{
 			Name: name,
 			Kind: KindSignal,
@@ -17,12 +17,12 @@ func NewSignal(name string) Signal {
 type Method struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	// maybe inputs and outputs should be a map of name to Parameter
-	Inputs []TypedNode `json:"inputs" yaml:"inputs"`
-	Output TypedNode   `json:"output" yaml:"output"`
+	Inputs []*TypedNode `json:"inputs" yaml:"inputs"`
+	Output *TypedNode   `json:"output" yaml:"output"`
 }
 
-func InitMethod(name string) Method {
-	return Method{
+func NewMethod(name string) *Method {
+	return &Method{
 		NamedNode: NamedNode{
 			Name: name,
 			Kind: KindMethod,
@@ -32,13 +32,13 @@ func InitMethod(name string) Method {
 
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
-	Methods    []Method    `json:"methods" yaml:"methods"`
-	Properties []TypedNode `json:"properties" yaml:"properties"`
-	Signals    []Signal    `json:"signals" yaml:"signals"`
+	Properties []*TypedNode `json:"properties" yaml:"properties"`
+	Methods    []*Method    `json:"methods" yaml:"methods"`
+	Signals    []*Signal    `json:"signals" yaml:"signals"`
 }
 
-func InitInterface(name string) Interface {
-	return Interface{
+func NewInterface(name string) *Interface {
+	return &Interface{
 		NamedNode: NamedNode{
 			Name: name,
 			Kind: KindInterface,
@@ -46,29 +46,29 @@ func InitInterface(name string) Interface {
 	}
 }
 
-func (i Interface) MethodByName(name string) Method {
+func (i Interface) LookupMethod(name string) *Method {
 	for _, m := range i.Methods {
 		if m.Name == name {
 			return m
 		}
 	}
-	return Method{}
+	return nil
 }
 
-func (i Interface) PropertyByName(name string) TypedNode {
+func (i Interface) LookupProperty(name string) *TypedNode {
 	for _, p := range i.Properties {
 		if p.Name == name {
 			return p
 		}
 	}
-	return TypedNode{}
+	return nil
 }
 
-func (i Interface) SignalByName(name string) Signal {
+func (i Interface) LookupSignal(name string) *Signal {
 	for _, s := range i.Signals {
 		if s.Name == name {
 			return s
 		}
 	}
-	return Signal{}
+	return nil
 }

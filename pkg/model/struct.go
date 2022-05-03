@@ -2,15 +2,15 @@ package model
 
 type Struct struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Fields    []TypedNode `json:"fields" yaml:"fields"`
+	Fields    []*TypedNode `json:"fields" yaml:"fields"`
 }
 
-func NewStruct(name string) Struct {
-	return Struct{
+func NewStruct(name string) *Struct {
+	return &Struct{
 		NamedNode: NamedNode{
 			Name: name,
 			Kind: KindStruct,
 		},
-		Fields: make([]TypedNode, 0),
+		Fields: make([]*TypedNode, 0),
 	}
 }

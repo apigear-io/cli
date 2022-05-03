@@ -7,26 +7,35 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
+// Parser defines the parser data
 type Parser struct {
 	System *model.System
 }
 
-// parse idl from file
+// NewParser creates a new parser with a named system
+func NewParser(s *model.System) *Parser {
+	return &Parser{
+		System: s,
+	}
+}
+
+// ParseFile parses a file containing idl document
 func (p *Parser) ParseFile(file string) error {
 	input, err := antlr.NewFileStream(file)
 	if err != nil {
 		return err
 	}
-	return p.ParseStream(input)
+	return p.parseStream(input)
 }
 
+// ParseString parses a string containing idl document
 func (p *Parser) ParseString(str string) error {
 	input := antlr.NewInputStream(str)
-	return p.ParseStream(input)
+	return p.parseStream(input)
 }
 
 // parse idl from antlr file stream
-func (p *Parser) ParseStream(input antlr.CharStream) error {
+func (p *Parser) parseStream(input antlr.CharStream) error {
 	// create the lexer
 	lexer := parser.NewObjectApiLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
@@ -37,10 +46,4 @@ func (p *Parser) ParseStream(input antlr.CharStream) error {
 	start := parser.DocumentRule()
 	antlr.ParseTreeWalkerDefault.Walk(listener, start)
 	return nil
-}
-
-func NewIDLParser(s *model.System) *Parser {
-	return &Parser{
-		System: s,
-	}
 }

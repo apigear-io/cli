@@ -1,0 +1,4 @@
+{ "method": "simu.call", "params": [ "demo.Counter/increment" ]}
+{ "method": "simu.call", "params": [ "demo.Counter/decrement" ]}
+{ "method": "simu.call", "params": [ "demo.Counter/increment" ]}
+{ "method": "simu.call", "params": [ "demo.Counter/decrement" ]}

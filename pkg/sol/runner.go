@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"objectapi/pkg/gen"
 	"objectapi/pkg/idl"
-	"objectapi/pkg/logger"
+	"objectapi/pkg/log"
 	"objectapi/pkg/model"
 	"objectapi/pkg/spec"
 	"os"
@@ -13,8 +13,6 @@ import (
 	"path/filepath"
 	"text/template"
 )
-
-var log = logger.Get()
 
 type Runner struct {
 	doc     spec.SolutionDoc
@@ -56,14 +54,14 @@ func (r *Runner) processLayer(layer spec.SolutionLayer) error {
 		OutputDir:    outputDir,
 		TemplatesDir: templatesDir,
 	}
-	return rulesProc.ProcessFile(rulesFile)
+	return rulesProc.ProcessRulesFile(rulesFile)
 }
 
 // parseInputs parses the inputs from the layer.
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
 func (r *Runner) parseInputs(s *model.System, inputs []string) error {
-	idlParser := idl.NewIDLParser(s)
+	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
 	files, err := r.expandInputs(r.rootDir, inputs)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
-	"objectapi/pkg/logger"
+	"objectapi/pkg/log"
 	"os"
 	"path"
 )
@@ -12,8 +12,6 @@ import (
 type Writer struct {
 	outputDir string
 }
-
-var log = logger.Get()
 
 func CompareContentWithFile(sourceBytes []byte, target string) (bool, error) {
 	if _, err := os.Stat(target); os.IsNotExist(err) {
@@ -33,6 +31,7 @@ func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 		if err != nil {
 			return fmt.Errorf("error comparing content to file %s: %s", target, err)
 		}
+
 		if same {
 			log.Infof("skipping file %s", target)
 			return nil
@@ -47,6 +46,7 @@ func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 	return ioutil.WriteFile(target, bytes, 0644)
 }
 
+// NewFileWriter creates a new file writer
 func NewFileWriter(outputDir string) IFileWriter {
 	return &Writer{outputDir: outputDir}
 }

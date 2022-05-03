@@ -18,8 +18,14 @@ const (
 	KindMember    Kind = "member"
 )
 
-type ISchemaProvider interface {
-	GetSchema() Schema
+type ITypeProvider interface {
+	GetName() string
+	GetKind() Kind
+	GetSchema() *Schema
+}
+
+type IModuleProvider interface {
+	GetModule() *Module
 }
 
 // NamedNode is a base node with a name and a kind.
@@ -41,11 +47,11 @@ func (n NamedNode) IsEmpty() bool {
 // { name: "foo", kind: "property", type: "string" }
 type TypedNode struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Schema    Schema `json:"schema" yaml:"schema"`
+	Schema    *Schema `json:"schema" yaml:"schema"`
 }
 
-func InitTypeNode(n string, k Kind) TypedNode {
-	return TypedNode{
+func NewTypeNode(n string, k Kind) *TypedNode {
+	return &TypedNode{
 		NamedNode: NamedNode{
 			Name: n,
 			Kind: k,
@@ -53,16 +59,34 @@ func InitTypeNode(n string, k Kind) TypedNode {
 	}
 }
 
-func (t TypedNode) GetSchema() Schema {
+func (t TypedNode) GetKind() Kind {
+	return t.Kind
+}
+
+func (t TypedNode) GetName() string {
+	return t.Name
+}
+
+func (t TypedNode) GetSchema() *Schema {
 	return t.Schema
 }
 
 // TypeNode is a node with type information.
 // { type: array, items: { type: string } }
 type Schema struct {
-	Type string `json:"type" yaml:"type"`
+	Type      string `json:"type" yaml:"type"`
+	Module    *Module
+	Kind      Kind
+	Struct    *Struct
+	Enum      *Enum
+	Interface *Interface
 }
 
 func (s Schema) IsEmpty() bool {
 	return s.Type == ""
+}
+
+// Lookup returns the node with the given name inside the module
+func (s Schema) LookupNode(name string) *NamedNode {
+	return s.Module.LookupNode(name)
 }

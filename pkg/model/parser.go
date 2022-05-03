@@ -34,7 +34,7 @@ func (p *DataParser) ParseYaml(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("error parsing yaml string: %s", err)
 	}
-	p.s.Modules = append(p.s.Modules, module)
+	p.s.Modules = append(p.s.Modules, &module)
 	return nil
 }
 
@@ -44,7 +44,7 @@ func (p *DataParser) ParseJson(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("error parsing json string: %s", err)
 	}
-	p.s.Modules = append(p.s.Modules, module)
+	p.s.Modules = append(p.s.Modules, &module)
 	return nil
 }
 
