@@ -31,3 +31,6 @@ main
 out/
 tmp/
 .vscode/
+
+# dist folder
+dist/

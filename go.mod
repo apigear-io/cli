@@ -19,7 +19,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91 // indirect
 	github.com/dop251/goja v0.0.0-20220408131256-ffe77e20c6f1
-	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/fsnotify/fsnotify v1.5.4
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/gocarina/gocsv v0.0.0-20220310154401-d4df709ca055
 	github.com/gorilla/websocket v1.5.0
