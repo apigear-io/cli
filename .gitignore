@@ -29,3 +29,5 @@ main
 
 # Out test folder
 out/
+tmp/
+.vscode/
