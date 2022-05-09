@@ -1,5 +1,7 @@
 package mon
 
+// EventSender is a sender of events.
+// It sends events to the monitor server
 type EventSender struct {
 	addr string
 }
@@ -11,7 +13,6 @@ func NewEventSender(addr string) *EventSender {
 // SendEvents sends events to the monitor server.
 // The events are sent as json encoded strings.
 // The events are sent to the monitor server using a http post message
-
 func (s *EventSender) SendEvents(emitter chan *Event) {
 	for event := range emitter {
 		go HttpPost(s.addr, event)

@@ -7,7 +7,9 @@ import (
 	"github.com/gocarina/gocsv"
 )
 
-func ReadCSVEvents(fn string, emitter chan *Event) error {
+// ReadCsvEvents reads events from a csv file
+// and sends them to the emitter channel.
+func ReadCsvEvents(fn string, emitter chan *Event) error {
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {

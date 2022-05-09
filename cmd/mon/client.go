@@ -37,7 +37,7 @@ func NewClientCommand() *cobra.Command {
 			case ".csv":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.addr)
-				go mon.ReadCSVEvents(options.script, emitter)
+				go mon.ReadCsvEvents(options.script, emitter)
 				sender.SendEvents(emitter)
 			default:
 				log.Error("unknown file type: ", options.script)
