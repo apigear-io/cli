@@ -1,62 +1,26 @@
-# Simulation
+# API Simulation
 
-- Several playbooks per simulation
-- No sequence, just a number of steps
-- playbooks can have names and run via simulation ui
-- ui is done as terminal ui or web ui
-- ui can be used to run playbooks
-- playbooks can also be independent of an interface
-- animations must have easing curves or patterns
-- animations can be done in parallel or in sequence
-- you can link an animation to a API modules to validate correctness and types
-- simulation can also be done using fake values
+The API simulation is a tool that can be used to simulate the API calls and the performance of the API. The simulation listens on a websocket and shows the requests and the performance of the API.
 
-## Method Behavior
+The simulation is stored in either a JSON (YAML) file or run via a JavaScript file.
 
-Behavior for methods can be attached using JS script. The script is called every time the method is called.
+## Usage
 
-```javascript
-function add(a, b) {
-  return a + b;
-}
+Start the simulation with a JS scenario file:
+
+```sh
+$ cli simulation --port 8080 --scenario ./behavior.js
 ```
 
-The properties of the object are accessible as `$props` and the parameters are passed into the function.
+Use YAML (JSON) base API behavior
 
-```javascript
-function increment(value) {
-  $props.count += value;
-}
+```sh
+$ cli simulation --port 8080 --scenario ./behavior.yaml
 ```
 
-Property change signals are automatically sent back to the calling client or can be manually triggered.
+Send scripted API events to the simulation
 
-```javascript
-function increment(value) {
-  $change("count", $props.count + value);
-}
-```
-
-As part of a method call, it is also possible to emit signals.
-
-```javascript
-function increment(value) {
-  // signal system shutdown in 5 secs
-  $emit("shutdown", 5);
-}
-```
-
-## Playbooks
-
-It is possible to define playbooks which can be run from the UI or triggered automatically on simulation start.
-
-A simulation scenario can have one or more playbooks attached which can be run in sequence or in parallel and using different timings.
-
-```javascript
-let counter = $.get("demo.Counter");
-for (let i = 0; i < 10; i++) {
-  counter.call("increment", 1);
-  counter.set("count", counter.get("count") + 1);
-  wait(1000);
-}
+```sh
+$ cli simulation --port 8080 --send ./test/events.ndjson
+$ cli simulation --port 8080 --send ./test/events.csv
 ```

@@ -4,8 +4,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -56,24 +54,6 @@ func LintJsonDoc(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 		return nil, fmt.Errorf("failed to validate document: %w", err)
 	}
 	return result, nil
-}
-
-func CheckFile(file string) (*gojsonschema.Result, error) {
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, fmt.Errorf("error reading file: %w", err)
-	}
-	if path.Ext(file) == ".yaml" || path.Ext(file) == ".yml" {
-		data, err = YamlToJson(data)
-		if err != nil {
-			return nil, err
-		}
-	}
-	t, err := GetDocumentType(file)
-	if err != nil {
-		return nil, err
-	}
-	return LintJsonDoc(t, data)
 }
 
 func YamlToJson(data []byte) ([]byte, error) {

@@ -1,6 +1,9 @@
 package model
 
-import "objectapi/pkg/log"
+import (
+	"fmt"
+	"objectapi/pkg/log"
+)
 
 // Kind is an enumeration of the kinds of nodes.
 type Kind string
@@ -87,9 +90,12 @@ func (t TypedNode) GetSchema() *Schema {
 	return t.Schema
 }
 
-func (t *TypedNode) ResolveAll() {
-	t.Schema.ResolveSymbol()
-	t.Schema.ResolveType()
+func (t *TypedNode) ResolveAll() error {
+	err := t.Schema.ResolveSymbol()
+	if err != nil {
+		return err
+	}
+	return t.Schema.ResolveType()
 }
 
 // TypeNode is a node with type information.
@@ -116,34 +122,41 @@ func (s Schema) LookupNode(name string) *NamedNode {
 	return s.Module.LookupNode(name)
 }
 
-func (s *Schema) ResolveSymbol() {
+func (s *Schema) ResolveSymbol() error {
 	if s.IsResolved {
-		return
+		return nil
 	}
 	s.IsResolved = true
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
-		if le != nil {
+		if le == nil {
+			return fmt.Errorf("unknown symbol: %s", s.Type)
+		} else {
 			s.enum = le
 			s.KindType = TypeEnum
-			return
+			return nil
 		}
 		ls := s.Module.LookupStruct(s.Type)
-		if ls != nil {
+		if ls == nil {
+			return fmt.Errorf("unknown symbol %s", s.Type)
+		} else {
 			s.struct_ = ls
 			s.KindType = TypeStruct
-			return
+			return nil
 		}
 		li := s.Module.LookupInterface(s.Type)
-		if li != nil {
+		if li == nil {
+			return fmt.Errorf("unknown symbol %s", s.Type)
+		} else {
 			s.interface_ = li
 			s.KindType = TypeInterface
-			return
+			return nil
 		}
 	}
+	return nil
 }
 
-func (s *Schema) ResolveType() {
+func (s *Schema) ResolveType() error {
 	if !s.IsResolved {
 		s.ResolveSymbol()
 	}
@@ -162,8 +175,10 @@ func (s *Schema) ResolveType() {
 	if kind == "" {
 		log.Warnf("resolved type %s to %s", s.Type, kind)
 		kind = "unknown"
+		return fmt.Errorf("unknown type %s", s.Type)
 	}
 	s.KindType = KindType(kind)
+	return nil
 }
 
 func (s *Schema) GetEnum() *Enum {

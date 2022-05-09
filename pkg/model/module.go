@@ -82,15 +82,25 @@ func (m Module) LookupEnum(name string) *Enum {
 	return nil
 }
 
-func (m *Module) ResolveAll() {
+func (m *Module) ResolveAll() error {
 	log.Infof("Resolving module %s", m.Name)
 	for _, i := range m.Interfaces {
-		i.ResolveAll()
+		err := i.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
 	for _, s := range m.Structs {
-		s.ResolveAll()
+		err := s.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
 	for _, e := range m.Enums {
-		e.ResolveAll()
+		err := e.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }

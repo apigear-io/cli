@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//ReadJsonEvents reads events from a json stream file
+// ReadJsonEvents reads events from a json stream file
 // and sends them to the emitter channel.
 func ReadJsonEvents(fn string, emitter chan *Event) error {
 	// read file line by line using scanner

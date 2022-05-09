@@ -15,8 +15,12 @@ func NewStruct(name string) *Struct {
 	}
 }
 
-func (s *Struct) ResolveAll() {
+func (s *Struct) ResolveAll() error {
 	for _, f := range s.Fields {
-		f.ResolveAll()
+		err := f.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }

@@ -16,10 +16,14 @@ func NewEnum(name string) *Enum {
 	}
 }
 
-func (e *Enum) ResolveAll() {
+func (e *Enum) ResolveAll() error {
 	for _, m := range e.Members {
-		m.ResolveAll()
+		err := m.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // EnumMember is a member of an enumeration.
@@ -39,5 +43,6 @@ func NewEnumMember(name string, value int) *EnumMember {
 	}
 }
 
-func (e *EnumMember) ResolveAll() {
+func (e *EnumMember) ResolveAll() error {
+	return nil
 }

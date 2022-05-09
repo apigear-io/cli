@@ -14,10 +14,14 @@ func NewSignal(name string) *Signal {
 	}
 }
 
-func (s *Signal) ResolveAll() {
+func (s *Signal) ResolveAll() error {
 	for _, i := range s.Inputs {
-		i.ResolveAll()
+		err := i.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type Method struct {
@@ -36,13 +40,20 @@ func NewMethod(name string) *Method {
 	}
 }
 
-func (m *Method) ResolveAll() {
+func (m *Method) ResolveAll() error {
 	for _, p := range m.Inputs {
-		p.ResolveAll()
+		err := p.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
 	if m.Output != nil {
-		m.Output.ResolveAll()
+		err := m.Output.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 type Interface struct {
@@ -88,14 +99,24 @@ func (i Interface) LookupSignal(name string) *Signal {
 	return nil
 }
 
-func (i *Interface) ResolveAll() {
+func (i *Interface) ResolveAll() error {
 	for _, p := range i.Properties {
-		p.ResolveAll()
+		err := p.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
 	for _, m := range i.Methods {
-		m.ResolveAll()
+		err := m.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
 	for _, s := range i.Signals {
-		s.ResolveAll()
+		err := s.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }

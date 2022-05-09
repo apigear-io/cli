@@ -14,7 +14,8 @@ func loadSystem(t *testing.T) *model.System {
 	p := idl.NewParser(system)
 	err := p.ParseFile("testdata/test.idl")
 	assert.NoError(t, err)
-	system.ResolveAll()
+	err := system.ResolveAll()
+	assert.NoError(t, err)
 	return system
 }
 

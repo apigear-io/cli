@@ -74,9 +74,13 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 	return i.LookupSignal(eventName)
 }
 
-func (s *System) ResolveAll() {
+func (s *System) ResolveAll() error {
 	log.Infof("Resolving system %s", s.Name)
 	for _, m := range s.Modules {
-		m.ResolveAll()
+		err := m.ResolveAll()
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
