@@ -5,15 +5,13 @@ import (
 	"log"
 	"objectapi/pkg/model"
 	"reflect"
-	"strings"
 )
 
 func ToParamString(schema *model.Schema, name string) string {
 	t := schema.Type
-	isArray := strings.HasSuffix(t, "[]")
-	if isArray {
-		t = t[:len(t)-2] // remove the []
-		inner := model.Schema{Type: t, Module: schema.Module}
+	if schema.IsArray {
+		inner := *schema
+		inner.IsArray = false
 		return fmt.Sprintf("const std::vector<%s> &%s", ToReturnString(&inner), name)
 	}
 	switch t {

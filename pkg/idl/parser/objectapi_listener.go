@@ -35,6 +35,9 @@ type ObjectApiListener interface {
 	// EnterMethodRule is called when entering the methodRule production.
 	EnterMethodRule(c *MethodRuleContext)
 
+	// EnterOutputRule is called when entering the outputRule production.
+	EnterOutputRule(c *OutputRuleContext)
+
 	// EnterInputRule is called when entering the inputRule production.
 	EnterInputRule(c *InputRuleContext)
 
@@ -91,6 +94,9 @@ type ObjectApiListener interface {
 
 	// ExitMethodRule is called when exiting the methodRule production.
 	ExitMethodRule(c *MethodRuleContext)
+
+	// ExitOutputRule is called when exiting the outputRule production.
+	ExitOutputRule(c *OutputRuleContext)
 
 	// ExitInputRule is called when exiting the inputRule production.
 	ExitInputRule(c *InputRuleContext)

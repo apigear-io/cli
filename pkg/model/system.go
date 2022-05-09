@@ -1,5 +1,7 @@
 package model
 
+import "objectapi/pkg/log"
+
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
@@ -70,4 +72,11 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 		return nil
 	}
 	return i.LookupSignal(eventName)
+}
+
+func (s *System) ResolveAll() {
+	log.Infof("Resolving system %s", s.Name)
+	for _, m := range s.Modules {
+		m.ResolveAll()
+	}
 }

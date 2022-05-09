@@ -11,24 +11,26 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"text/template"
 )
 
-type Runner struct {
+type runner struct {
 	doc     spec.SolutionDoc
 	rootDir string
 }
 
-func (r *Runner) Run() {
+func (r *runner) Run() {
 	log.Info("run solution")
 	for _, layer := range r.doc.Layers {
-		r.processLayer(layer)
+		err := r.processLayer(layer)
+		if err != nil {
+			log.Errorf("error processing layer: %s", err)
+		}
 	}
 }
 
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
-func (r *Runner) processLayer(layer spec.SolutionLayer) error {
+func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	log.Infof("process layer %s", layer.Name)
 	var templateDir = path.Join(r.rootDir, layer.Template)
 	var templatesDir = path.Join(templateDir, "templates")
@@ -46,21 +48,18 @@ func (r *Runner) processLayer(layer spec.SolutionLayer) error {
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
-	rulesProc := gen.Generator{
-		Writer:       gen.NewFileWriter(outputDir),
-		Template:     template.New(""),
-		System:       system,
-		UserForce:    force,
-		OutputDir:    outputDir,
-		TemplatesDir: templatesDir,
+	generator, err := gen.New(outputDir, templatesDir, system, force)
+	if err != nil {
+		return fmt.Errorf("error creating generator: %w", err)
 	}
-	return rulesProc.ProcessRulesFile(rulesFile)
+	return generator.Run(rulesFile)
 }
 
 // parseInputs parses the inputs from the layer.
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
-func (r *Runner) parseInputs(s *model.System, inputs []string) error {
+func (r *runner) parseInputs(s *model.System, inputs []string) error {
+	log.Infof("parse inputs %v", inputs)
 	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
 	files, err := r.expandInputs(r.rootDir, inputs)
@@ -69,6 +68,7 @@ func (r *Runner) parseInputs(s *model.System, inputs []string) error {
 		return err
 	}
 	for _, file := range files {
+		log.Infof("parse input %s", file)
 		switch path.Ext(file) {
 		case ".yaml", ".yml", ".json":
 			err := dataParser.ParseFile(file)
@@ -84,6 +84,7 @@ func (r *Runner) parseInputs(s *model.System, inputs []string) error {
 			log.Warnf("unknown file type %s. skip", file)
 		}
 	}
+	s.ResolveAll()
 	return nil
 }
 
@@ -91,7 +92,7 @@ func (r *Runner) parseInputs(s *model.System, inputs []string) error {
 // If input entry is a file it is returned as a list.
 // If input entry is a directory, all files in the directory are returned.
 
-func (r *Runner) expandInputs(rootDir string, inputs []string) ([]string, error) {
+func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error) {
 	var files []string
 	for _, input := range inputs {
 		entry := path.Join(rootDir, input)
@@ -119,8 +120,8 @@ func (r *Runner) expandInputs(rootDir string, inputs []string) ([]string, error)
 	return files, nil
 }
 
-func NewSolutionRunner(rootDir string, doc spec.SolutionDoc) *Runner {
-	return &Runner{
+func NewSolutionRunner(rootDir string, doc spec.SolutionDoc) *runner {
+	return &runner{
 		doc:     doc,
 		rootDir: rootDir,
 	}

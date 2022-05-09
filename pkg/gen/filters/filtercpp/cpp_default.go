@@ -5,16 +5,11 @@ import (
 	"log"
 	"objectapi/pkg/model"
 	"reflect"
-	"strings"
 )
 
 // ToDefaultString returns the default value for a type
 func ToDefaultString(schema *model.Schema) string {
 	t := schema.Type
-	isArray := strings.HasSuffix(t, "[]")
-	if isArray {
-		t = t[:len(t)-2]
-	}
 	text := ""
 	switch t {
 	case "string":
@@ -42,7 +37,7 @@ func ToDefaultString(schema *model.Schema) string {
 			text = "nullptr"
 		}
 	}
-	if isArray {
+	if schema.IsArray {
 		inner := model.Schema{Type: t, Module: schema.Module}
 		text = fmt.Sprintf("std::vector<%s>()", ToReturnString(&inner))
 	}

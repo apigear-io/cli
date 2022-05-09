@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"objectapi/pkg/gen/filters"
 	"objectapi/pkg/log"
 	"objectapi/pkg/model"
 	"objectapi/pkg/spec"
@@ -26,15 +27,8 @@ type IFileWriter interface {
 	WriteFile(fn string, buf []byte, force bool) error
 }
 
-type GeneratorOptions struct {
-	System       *model.System
-	UserForce    bool
-	TemplatesDir string
-	OutputDir    string
-}
-
-// Generator applies template transformation on a set of files define in rules
-type Generator struct {
+// generator applies template transformation on a set of files define in rules
+type generator struct {
 	Template     *template.Template
 	Writer       IFileWriter
 	System       *model.System
@@ -43,23 +37,23 @@ type Generator struct {
 	OutputDir    string
 }
 
-func NewGenerator(outputDir string, templatesDir string) (*Generator, error) {
-	g := &Generator{
+func New(outputDir string, templatesDir string, system *model.System, userForce bool) (*generator, error) {
+	g := &generator{
 		Writer:       NewFileWriter(outputDir),
 		Template:     template.New(""),
-		UserForce:    false,
-		System:       model.NewSystem(""),
+		UserForce:    userForce,
+		System:       system,
 		TemplatesDir: templatesDir,
 	}
+	g.Template.Funcs(filters.PopulateFuncMap())
 	err := g.ParseTemplatesDir(templatesDir)
 	if err != nil {
 		return nil, err
 	}
-	g.Template.Funcs(PopulateFuncMap())
 	return g, nil
 }
 
-func (g *Generator) ParseTemplate(path string) error {
+func (g *generator) ParseTemplate(path string) error {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -68,10 +62,11 @@ func (g *Generator) ParseTemplate(path string) error {
 	return err
 }
 
-func (g *Generator) ParseTemplatesDir(dir string) error {
+func (g *generator) ParseTemplatesDir(dir string) error {
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println("error walking dir:", err)
+			return err
 		}
 		// ignore all dirs
 		if d.IsDir() {
@@ -86,7 +81,7 @@ func (g *Generator) ParseTemplatesDir(dir string) error {
 	return err
 }
 
-func (g *Generator) ProcessRulesFile(filename string) error {
+func (g *generator) Run(filename string) error {
 	var bytes, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
@@ -94,13 +89,14 @@ func (g *Generator) ProcessRulesFile(filename string) error {
 	var rules = spec.RulesDoc{}
 	err = yaml.Unmarshal(bytes, &rules)
 	if err != nil {
-		return fmt.Errorf("error parsing file %s: %s", filename, err)
+		log.Errorf("error parsing file %s: %s", filename, err)
+		return err
 	}
 	return g.ProcessRulesDoc(rules)
 }
 
 // ProcessRulesDoc processes a set of rules from a rules document
-func (g *Generator) ProcessRulesDoc(rules spec.RulesDoc) error {
+func (g *generator) ProcessRulesDoc(rules spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
@@ -114,7 +110,7 @@ func (g *Generator) ProcessRulesDoc(rules spec.RulesDoc) error {
 }
 
 // processFeature processes a feature rule
-func (g *Generator) processFeature(f spec.FeatureRule) error {
+func (g *generator) processFeature(f spec.FeatureRule) error {
 	// process system
 	var data = DataMap{"System": g.System}
 	scope := f.FindScopeByMatch(spec.ScopeSystem)
@@ -162,7 +158,7 @@ func (g *Generator) processFeature(f spec.FeatureRule) error {
 }
 
 // processScope processes a scope rule (e.g. system, modules, ...) with the given context
-func (g *Generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
+func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
 	for _, doc := range scope.Documents {
 		err := g.processDocument(doc, ctx)
 		if err != nil {
@@ -173,7 +169,7 @@ func (g *Generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
 }
 
 // processDocument processes a document rule with the given context
-func (g *Generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
+func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	// the source file to render
 	var source = path.Clean(doc.Source)
 	// the target destination file
@@ -190,7 +186,8 @@ func (g *Generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	buf := bytes.NewBuffer(nil)
 	err := g.Template.ExecuteTemplate(buf, source, ctx)
 	if err != nil {
-		return fmt.Errorf("error rendering file %s: %s", source, err)
+		log.Warnf("error executing template %s: %s", source, err)
+		return nil
 	}
 	// write the file
 	err = g.Writer.WriteFile(target, buf.Bytes(), force)

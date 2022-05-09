@@ -16,6 +16,12 @@ func NewEnum(name string) *Enum {
 	}
 }
 
+func (e *Enum) ResolveAll() {
+	for _, m := range e.Members {
+		m.ResolveAll()
+	}
+}
+
 // EnumMember is a member of an enumeration.
 type EnumMember struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -31,4 +37,7 @@ func NewEnumMember(name string, value int) *EnumMember {
 		},
 		Value: value,
 	}
+}
+
+func (e *EnumMember) ResolveAll() {
 }

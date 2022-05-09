@@ -5,6 +5,7 @@ import (
 	"objectapi/pkg/sol"
 	"objectapi/pkg/spec"
 	"os"
+	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
@@ -20,7 +21,7 @@ type ExpertOptions struct {
 }
 
 func runExpert(options *ExpertOptions) error {
-	log.Info("run generator from expert mode")
+	log.Info("run expert code generation")
 	doc := spec.SolutionDoc{
 		Schema: "apigear.solution/1.0",
 		Layers: []spec.SolutionLayer{
@@ -33,7 +34,6 @@ func runExpert(options *ExpertOptions) error {
 			},
 		},
 	}
-	log.Debugf("solution doc: %v", doc)
 	rootDir, err := os.Getwd()
 	log.Debugf("rootDir: %s", rootDir)
 	if err != nil {
@@ -75,6 +75,10 @@ func watchExpert(options *ExpertOptions) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = watcher.Add(filepath.Join(options.templateDir, "templates"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	<-done
 }
 
@@ -87,7 +91,6 @@ func NewExpertCommand() *cobra.Command {
 		Short:   "generate code using expert mode",
 		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Debugf("expert mode: %v", options)
 			if options.watch {
 				watchExpert(options)
 			} else {

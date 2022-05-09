@@ -75,6 +75,12 @@ func (s *BaseObjectApiListener) EnterMethodRule(ctx *MethodRuleContext) {}
 // ExitMethodRule is called when production methodRule is exited.
 func (s *BaseObjectApiListener) ExitMethodRule(ctx *MethodRuleContext) {}
 
+// EnterOutputRule is called when production outputRule is entered.
+func (s *BaseObjectApiListener) EnterOutputRule(ctx *OutputRuleContext) {}
+
+// ExitOutputRule is called when production outputRule is exited.
+func (s *BaseObjectApiListener) ExitOutputRule(ctx *OutputRuleContext) {}
+
 // EnterInputRule is called when production inputRule is entered.
 func (s *BaseObjectApiListener) EnterInputRule(ctx *InputRuleContext) {}
 

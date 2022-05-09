@@ -35,8 +35,8 @@ func readRules(t *testing.T, filename string) spec.RulesDoc {
 	return file
 }
 
-func createGenerator(t *testing.T, w IFileWriter) *Generator {
-	var g = &Generator{
+func createGenerator(t *testing.T, w IFileWriter) *generator {
+	var g = &generator{
 		Writer:       w,
 		Template:     template.New(""),
 		System:       model.NewSystem("test"),

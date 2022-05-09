@@ -16,9 +16,9 @@ interfaceMembersRule: propertyRule | methodRule | signalRule;
 
 propertyRule: name = IDENTIFIER ':' schema = schemaRule;
 methodRule:
-	name = IDENTIFIER '(' inputs = inputRule* ')' ':' (
-		schema = schemaRule
-	)?;
+	name = IDENTIFIER '(' inputs = inputRule* ')' outputRule?;
+
+outputRule: ':' schema = schemaRule;
 inputRule: name = IDENTIFIER ':' schema = schemaRule ','?;
 signalRule:
 	'signal' name = IDENTIFIER '(' inputs = inputRule* ')';
@@ -50,5 +50,5 @@ WHITESPACE: [ \t\r\n]+ -> skip;
 INTEGER: ('+' | '-')? '0' ..'9'+;
 HEX: '0x' ('0' ..'9' | 'a' ..'f' | 'A' ..'F')+;
 TYPE_IDENTIFIER: [A-Z_] [A-Z0-9_]* '[]'?;
-IDENTIFIER: [_A-Za-z] [_0-9A-Za-z]*;
+IDENTIFIER: [_A-Za-z] [_0-9A-Za-z.]*;
 VERSION: [0-9]'.' [0-9];

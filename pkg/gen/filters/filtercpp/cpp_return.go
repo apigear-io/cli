@@ -5,15 +5,10 @@ import (
 	"log"
 	"objectapi/pkg/model"
 	"reflect"
-	"strings"
 )
 
 func ToReturnString(schema *model.Schema) string {
 	t := schema.Type
-	isArray := strings.HasSuffix(t, "[]")
-	if isArray {
-		t = t[:len(t)-2]
-	}
 	text := ""
 	switch t {
 	case "string":
@@ -41,7 +36,7 @@ func ToReturnString(schema *model.Schema) string {
 			text = fmt.Sprintf("%s*", i.Name)
 		}
 	}
-	if isArray {
+	if schema.IsArray {
 		text = fmt.Sprintf("std::vector<%s>", text)
 	}
 	return text

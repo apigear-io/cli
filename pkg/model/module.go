@@ -1,5 +1,7 @@
 package model
 
+import "objectapi/pkg/log"
+
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Version   string `json:"version" yaml:"version"`
@@ -78,4 +80,17 @@ func (m Module) LookupEnum(name string) *Enum {
 		}
 	}
 	return nil
+}
+
+func (m *Module) ResolveAll() {
+	log.Infof("Resolving module %s", m.Name)
+	for _, i := range m.Interfaces {
+		i.ResolveAll()
+	}
+	for _, s := range m.Structs {
+		s.ResolveAll()
+	}
+	for _, e := range m.Enums {
+		e.ResolveAll()
+	}
 }

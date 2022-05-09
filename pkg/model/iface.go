@@ -14,6 +14,12 @@ func NewSignal(name string) *Signal {
 	}
 }
 
+func (s *Signal) ResolveAll() {
+	for _, i := range s.Inputs {
+		i.ResolveAll()
+	}
+}
+
 type Method struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	// maybe inputs and outputs should be a map of name to Parameter
@@ -27,6 +33,15 @@ func NewMethod(name string) *Method {
 			Name: name,
 			Kind: KindMethod,
 		},
+	}
+}
+
+func (m *Method) ResolveAll() {
+	for _, p := range m.Inputs {
+		p.ResolveAll()
+	}
+	if m.Output != nil {
+		m.Output.ResolveAll()
 	}
 }
 
@@ -71,4 +86,16 @@ func (i Interface) LookupSignal(name string) *Signal {
 		}
 	}
 	return nil
+}
+
+func (i *Interface) ResolveAll() {
+	for _, p := range i.Properties {
+		p.ResolveAll()
+	}
+	for _, m := range i.Methods {
+		m.ResolveAll()
+	}
+	for _, s := range i.Signals {
+		s.ResolveAll()
+	}
 }

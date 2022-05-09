@@ -14,3 +14,9 @@ func NewStruct(name string) *Struct {
 		Fields: make([]*TypedNode, 0),
 	}
 }
+
+func (s *Struct) ResolveAll() {
+	for _, f := range s.Fields {
+		f.ResolveAll()
+	}
+}
