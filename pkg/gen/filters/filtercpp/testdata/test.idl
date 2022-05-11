@@ -1,23 +1,53 @@
 module test 1.0
 
 interface Test1 {
-    prop1: bool
-    prop2: int
-    prop3: float
-    prop4: string
-    prop5: bool[]
-    prop6: int[]
-    prop7: float[]
-    prop8: string[]
+    propBool: bool
+    propInt: int
+    propFloat: float
+    propString: string
+    propBoolArray: bool[]
+    propIntArray: int[]
+    propFloatArray: float[]
+    propStringArray: string[]
 }
 
 interface Test2 {
-    prop1: Enum1
-    prop2: Struct1
-    prop3: Interface1
-    prop4: Enum1[]
-    prop5: Struct1[]
-    prop6: Interface1[]
+    propEnum: Enum1
+    propStruct: Struct1
+    propInterface: Interface1
+    propEnumArray: Enum1[]
+    propStructArray: Struct1[]
+    propInterfaceArray: Interface1[]
+}
+
+interface Test3 {
+    funcBool(input1: bool): bool
+    funcInt(input1: int): int
+    funcFloat(input1: float): float
+    funcString(input1: string): string
+    funcBoolArray(input1: bool[]): bool[]
+    funcIntArray(input1: int[]): int[]
+    funcFloatArray(input1: float[]): float[]
+    funcStringArray(input1: string[]): string[]
+}
+
+interface Test4 {
+    funcEnum(input1: Enum1): Enum1
+    funcStruct(input1: Struct1): Struct1
+    funcInterface(input1: Interface1): Interface1
+    funcEnumArray(input1: Enum1[]): Enum1[]
+    funcStructArray(input1: Struct1[]): Struct1[]
+    funcInterfaceArray(input1: Interface1[]): Interface1[]
+}
+
+interface Test5 {
+    funcBoolBool(input1: bool, input2: bool): bool
+    funcIntInt(input1: int, input2: int): int
+    funcFloatFloat(input1: float, input2: float): float
+    funcStringString(input1: string, input2: string): string
+    funcEnumEnum(input1: Enum1, input2: Enum1): Enum1    
+    funcStructStruct(input1: Struct1, input2: Struct1): Struct1
+    funcInterfaceInterface(input1: Interface1, input2: Interface1): Interface1
 }
 
 interface Interface1 { }
