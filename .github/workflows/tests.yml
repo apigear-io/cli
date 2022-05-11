@@ -1,27 +1,21 @@
 on: [push, pull_request]
 
 name: tests
-
+# tests for all pushs and pull requests
+# tests only on linux, for release we test on linux and macos, windows
 jobs:
   test:
-    strategy:
-      matrix:
-        go-version: [1.18.x]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: ">=1.18.0"
       - uses: actions/checkout@v3
       - uses: actions/cache@v2
         with:
-          # path for linux, macos, windows
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-            ~/Library/Caches/go-build
-            ~\AppData\Local\go-build
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
       - run: go test ./...
