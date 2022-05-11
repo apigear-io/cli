@@ -129,29 +129,24 @@ func (s *Schema) ResolveSymbol() error {
 	s.IsResolved = true
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
-		if le == nil {
-			return fmt.Errorf("unknown symbol: %s", s.Type)
-		} else {
+		if le != nil {
 			s.enum = le
 			s.KindType = TypeEnum
 			return nil
 		}
 		ls := s.Module.LookupStruct(s.Type)
-		if ls == nil {
-			return fmt.Errorf("unknown symbol %s", s.Type)
-		} else {
+		if ls != nil {
 			s.struct_ = ls
 			s.KindType = TypeStruct
 			return nil
 		}
 		li := s.Module.LookupInterface(s.Type)
-		if li == nil {
-			return fmt.Errorf("unknown symbol %s", s.Type)
-		} else {
+		if li != nil {
 			s.interface_ = li
 			s.KindType = TypeInterface
 			return nil
 		}
+		log.Warnf("unknown symbol %s", s.Type)
 	}
 	return nil
 }
