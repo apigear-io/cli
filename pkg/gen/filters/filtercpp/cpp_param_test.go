@@ -14,22 +14,24 @@ func TestParam(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "prop1", "bool prop1"},
-		{"test", "Test1", "prop2", "int prop2"},
-		{"test", "Test1", "prop3", "double prop3"},
-		{"test", "Test1", "prop4", "const std::string &prop4"},
-		{"test", "Test1", "prop5", "const std::vector<bool> &prop5"},
-		{"test", "Test1", "prop6", "const std::vector<int> &prop6"},
-		{"test", "Test1", "prop7", "const std::vector<double> &prop7"},
-		{"test", "Test1", "prop8", "const std::vector<std::string> &prop8"},
+		{"test", "Test1", "propBool", "bool propBool"},
+		{"test", "Test1", "propInt", "int propInt"},
+		{"test", "Test1", "propFloat", "double propFloat"},
+		{"test", "Test1", "propString", "const std::string &propString"},
+		{"test", "Test1", "propBoolArray", "const std::vector<bool> &propBoolArray"},
+		{"test", "Test1", "propIntArray", "const std::vector<int> &propIntArray"},
+		{"test", "Test1", "propFloatArray", "const std::vector<double> &propFloatArray"},
+		{"test", "Test1", "propStringArray", "const std::vector<std::string> &propStringArray"},
 	}
 	sys := loadSystem(t)
 	for _, tt := range table {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := cppParam(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := cppParam(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }
 
@@ -40,19 +42,21 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "prop1", "Enum1 prop1"},
-		{"test", "Test2", "prop2", "const Struct1 &prop2"},
-		{"test", "Test2", "prop3", "Interface1 *prop3"},
-		{"test", "Test2", "prop4", "const std::vector<Enum1> &prop4"},
-		{"test", "Test2", "prop5", "const std::vector<Struct1> &prop5"},
-		{"test", "Test2", "prop6", "const std::vector<Interface1*> &prop6"},
+		{"test", "Test2", "propEnum", "Enum1 propEnum"},
+		{"test", "Test2", "propStruct", "const Struct1 &propStruct"},
+		{"test", "Test2", "propInterface", "Interface1 *propInterface"},
+		{"test", "Test2", "propEnumArray", "const std::vector<Enum1> &propEnumArray"},
+		{"test", "Test2", "propStructArray", "const std::vector<Struct1> &propStructArray"},
+		{"test", "Test2", "propInterfaceArray", "const std::vector<Interface1*> &propInterfaceArray"},
 	}
 	sys := loadSystem(t)
 	for _, tt := range table {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := cppParam(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := cppParam(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }

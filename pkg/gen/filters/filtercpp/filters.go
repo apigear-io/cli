@@ -12,4 +12,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["cpp_return"] = cppReturn
 	fm["cpp_default"] = cppDefault
 	fm["cpp_param"] = cppParam
+	fm["cpp_params"] = cppParams
 }

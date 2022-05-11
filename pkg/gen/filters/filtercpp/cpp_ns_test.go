@@ -18,10 +18,12 @@ func TestNSOpen(t *testing.T) {
 		{"a.b.c", "namespace a { namespace b { namespace c {"},
 	}
 	for _, tt := range table {
-		m := model.NewModule(tt.in, "1.0")
-		r, err := nsOpen(reflect.ValueOf(m))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.out, r.String())
+		t.Run(tt.in, func(t *testing.T) {
+			m := model.NewModule(tt.in, "1.0")
+			r, err := nsOpen(reflect.ValueOf(m))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.out, r.String())
+		})
 	}
 }
 
