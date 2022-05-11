@@ -27,7 +27,7 @@ func ToDefaultString(schema *model.Schema) string {
 		case model.TypeStruct:
 			text = fmt.Sprintf("[]%s{}", schema.Type)
 		case model.TypeInterface:
-			text = fmt.Sprintf("[]%s{}", schema.Type)
+			text = fmt.Sprintf("[]*%s{}", schema.Type)
 		default:
 			log.Fatalf("unknown schema kind type: %s", schema.KindType)
 		}
@@ -49,8 +49,7 @@ func ToDefaultString(schema *model.Schema) string {
 			sym := schema.GetStruct()
 			text = fmt.Sprintf("%s{}", sym.Name)
 		case model.TypeInterface:
-			sym := schema.GetInterface()
-			text = fmt.Sprintf("%s{}", sym.Name)
+			text = "nil"
 		default:
 			log.Fatalf("unknown schema kind type: %s", schema.KindType)
 		}

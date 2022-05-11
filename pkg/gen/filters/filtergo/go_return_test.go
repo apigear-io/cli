@@ -29,21 +29,23 @@ func TestReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "prop1", "bool"},
-		{"test", "Test1", "prop2", "int"},
-		{"test", "Test1", "prop3", "float64"},
-		{"test", "Test1", "prop4", "string"},
-		{"test", "Test1", "prop5", "[]bool"},
-		{"test", "Test1", "prop6", "[]int"},
-		{"test", "Test1", "prop7", "[]float64"},
-		{"test", "Test1", "prop8", "[]string"},
+		{"test", "Test1", "propBool", "bool"},
+		{"test", "Test1", "propInt", "int"},
+		{"test", "Test1", "propFloat", "float64"},
+		{"test", "Test1", "propString", "string"},
+		{"test", "Test1", "propBoolArray", "[]bool"},
+		{"test", "Test1", "propIntArray", "[]int"},
+		{"test", "Test1", "propFloatArray", "[]float64"},
+		{"test", "Test1", "propStringArray", "[]string"},
 	}
 	for _, tt := range propTests {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := goReturn(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := goReturn(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }
 
@@ -55,18 +57,20 @@ func TestReturnSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "prop1", "Enum1"},
-		{"test", "Test2", "prop2", "Struct1"},
-		{"test", "Test2", "prop3", "Interface1"},
-		{"test", "Test2", "prop4", "[]Enum1"},
-		{"test", "Test2", "prop5", "[]Struct1"},
-		{"test", "Test2", "prop6", "[]Interface1"},
+		{"test", "Test2", "propEnum", "Enum1"},
+		{"test", "Test2", "propStruct", "Struct1"},
+		{"test", "Test2", "propInterface", "Interface1"},
+		{"test", "Test2", "propEnumArray", "[]Enum1"},
+		{"test", "Test2", "propStructArray", "[]Struct1"},
+		{"test", "Test2", "propInterfaceArray", "[]Interface1"},
 	}
 	for _, tt := range propTests {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := goReturn(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := goReturn(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }
