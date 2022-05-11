@@ -26,21 +26,24 @@ func TestReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "prop1", "bool"},
-		{"test", "Test1", "prop2", "int"},
-		{"test", "Test1", "prop3", "double"},
-		{"test", "Test1", "prop4", "std::string"},
-		{"test", "Test1", "prop5", "std::vector<bool>"},
-		{"test", "Test1", "prop6", "std::vector<int>"},
-		{"test", "Test1", "prop7", "std::vector<double>"},
-		{"test", "Test1", "prop8", "std::vector<std::string>"},
+
+		{"test", "Test1", "propBool", "bool"},
+		{"test", "Test1", "propInt", "int"},
+		{"test", "Test1", "propFloat", "double"},
+		{"test", "Test1", "propString", "std::string"},
+		{"test", "Test1", "propBoolArray", "std::vector<bool>"},
+		{"test", "Test1", "propIntArray", "std::vector<int>"},
+		{"test", "Test1", "propFloatArray", "std::vector<double>"},
+		{"test", "Test1", "propStringArray", "std::vector<std::string>"},
 	}
 	for _, tt := range propTests {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := cppReturn(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := cppReturn(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }
 
@@ -52,18 +55,20 @@ func TestReturnSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "prop1", "Enum1"},
-		{"test", "Test2", "prop2", "Struct1"},
-		{"test", "Test2", "prop3", "Interface1*"},
-		{"test", "Test2", "prop4", "std::vector<Enum1>"},
-		{"test", "Test2", "prop5", "std::vector<Struct1>"},
-		{"test", "Test2", "prop6", "std::vector<Interface1*>"},
+		{"test", "Test2", "propEnum", "Enum1"},
+		{"test", "Test2", "propStruct", "Struct1"},
+		{"test", "Test2", "propInterface", "Interface1*"},
+		{"test", "Test2", "propEnumArray", "std::vector<Enum1>"},
+		{"test", "Test2", "propStructArray", "std::vector<Struct1>"},
+		{"test", "Test2", "propInterfaceArray", "std::vector<Interface1*>"},
 	}
 	for _, tt := range propTests {
-		prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-		assert.NotNil(t, prop)
-		r, err := cppReturn(reflect.ValueOf(prop))
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rt, r.String())
+		t.Run(tt.pn, func(t *testing.T) {
+			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+			assert.NotNil(t, prop)
+			r, err := cppReturn(reflect.ValueOf(prop))
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rt, r.String())
+		})
 	}
 }
