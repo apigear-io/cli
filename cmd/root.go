@@ -39,7 +39,6 @@ Additional API monaitoring and simulation is also supported.`,
 	rootCmd.AddCommand(tpl.NewRootCommand())
 	rootCmd.AddCommand(sim.NewRootCommand())
 	rootCmd.AddCommand(NewCheckCommand())
-	rootCmd.AddCommand(NewVersionCommand())
 	rootCmd.AddCommand(NewYaml2JsonCommand())
 	rootCmd.AddCommand(NewJson2YamlCommand())
 
