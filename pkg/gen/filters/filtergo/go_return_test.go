@@ -59,10 +59,10 @@ func TestReturnSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "Enum1"},
 		{"test", "Test2", "propStruct", "Struct1"},
-		{"test", "Test2", "propInterface", "Interface1"},
+		{"test", "Test2", "propInterface", "*Interface1"},
 		{"test", "Test2", "propEnumArray", "[]Enum1"},
 		{"test", "Test2", "propStructArray", "[]Struct1"},
-		{"test", "Test2", "propInterfaceArray", "[]Interface1"},
+		{"test", "Test2", "propInterfaceArray", "[]*Interface1"},
 	}
 	for _, tt := range propTests {
 		t.Run(tt.pn, func(t *testing.T) {

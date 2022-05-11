@@ -27,7 +27,7 @@ func ToReturnString(schema *model.Schema) string {
 	case model.TypeStruct:
 		text = schema.Type
 	case model.TypeInterface:
-		text = schema.Type
+		text = fmt.Sprintf("*%s", schema.Type)
 	default:
 		log.Fatalf("unknown schema kind type: %s", schema.KindType)
 	}
