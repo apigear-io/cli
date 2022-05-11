@@ -15,7 +15,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
-require github.com/iancoleman/strcase v0.2.0 // indirect
+require github.com/iancoleman/strcase v0.2.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
