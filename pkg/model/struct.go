@@ -15,9 +15,9 @@ func NewStruct(name string) *Struct {
 	}
 }
 
-func (s *Struct) ResolveAll() error {
+func (s *Struct) ResolveAll(m *Module) error {
 	for _, f := range s.Fields {
-		err := f.ResolveAll()
+		err := f.ResolveAll(m)
 		if err != nil {
 			return err
 		}

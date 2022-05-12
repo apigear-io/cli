@@ -58,11 +58,16 @@ func (g *generator) ParseTemplate(path string) error {
 	if err != nil {
 		return err
 	}
-	_, err = g.Template.New(filepath.Base(path)).Parse(string(b))
+	tplName, err := filepath.Rel(g.TemplatesDir, path)
+	if err != nil {
+		return err
+	}
+	_, err = g.Template.New(tplName).Parse(string(b))
 	return err
 }
 
 func (g *generator) ParseTemplatesDir(dir string) error {
+	log.Info("parsing templates dir: %s", dir)
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println("error walking dir:", err)
@@ -76,12 +81,16 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		if strings.HasPrefix(filepath.Base(path), ".") {
 			return nil
 		}
+		if !strings.HasSuffix(filepath.Base(path), ".tmpl") {
+			return nil
+		}
 		return g.ParseTemplate(path)
 	})
 	return err
 }
 
 func (g *generator) Run(filename string) error {
+	log.Infof("processing file: %s", filename)
 	var bytes, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
@@ -111,6 +120,7 @@ func (g *generator) ProcessRulesDoc(rules spec.RulesDoc) error {
 
 // processFeature processes a feature rule
 func (g *generator) processFeature(f spec.FeatureRule) error {
+	log.Debugf("processing feature %s", f.Name)
 	// process system
 	var data = DataMap{"System": g.System}
 	scope := f.FindScopeByMatch(spec.ScopeSystem)
@@ -128,7 +138,7 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 		}
 		for _, iface := range module.Interfaces {
 			// process interface
-			data["Interface"] = iface
+			data = DataMap{"System": g.System, "Module": module, "Interface": iface}
 			scope := f.FindScopeByMatch(spec.ScopeInterface)
 			err := g.processScope(scope, data)
 			if err != nil {
@@ -137,7 +147,7 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 		}
 		for _, struct_ := range module.Structs {
 			// process struct
-			data["Struct"] = struct_
+			data = DataMap{"System": g.System, "Module": module, "Struct": struct_}
 			scope := f.FindScopeByMatch(spec.ScopeStruct)
 			err := g.processScope(scope, data)
 			if err != nil {
@@ -146,7 +156,7 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 		}
 		for _, enum := range module.Enums {
 			// process enum
-			data["Enum"] = enum
+			data = DataMap{"System": g.System, "Module": module, "Enum": enum}
 			scope := f.FindScopeByMatch(spec.ScopeEnum)
 			err := g.processScope(scope, data)
 			if err != nil {
@@ -170,6 +180,7 @@ func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
 
 // processDocument processes a document rule with the given context
 func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
+	log.Debugf("processing document %s", doc.Source)
 	// the source file to render
 	var source = path.Clean(doc.Source)
 	// the target destination file
@@ -190,6 +201,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 		return nil
 	}
 	// write the file
+	log.Debugf("writing file %s", target)
 	err = g.Writer.WriteFile(target, buf.Bytes(), force)
 	if err != nil {
 		return fmt.Errorf("error writing file %s: %s", target, err)

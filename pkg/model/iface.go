@@ -1,5 +1,9 @@
 package model
 
+type InputsProvider interface {
+	GetInputs() []*TypedNode
+}
+
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Inputs    []*TypedNode `json:"inputs" yaml:"inputs"`
@@ -14,9 +18,13 @@ func NewSignal(name string) *Signal {
 	}
 }
 
-func (s *Signal) ResolveAll() error {
+func (s *Signal) GetInputs() []*TypedNode {
+	return s.Inputs
+}
+
+func (s *Signal) ResolveAll(m *Module) error {
 	for _, i := range s.Inputs {
-		err := i.ResolveAll()
+		err := i.ResolveAll(m)
 		if err != nil {
 			return err
 		}
@@ -37,18 +45,40 @@ func NewMethod(name string) *Method {
 			Name: name,
 			Kind: KindMethod,
 		},
+		Inputs: make([]*TypedNode, 0),
+		Output: NewTypeNode("", KindOutput),
 	}
 }
 
-func (m *Method) ResolveAll() error {
+func (m *Method) GetInputs() []*TypedNode {
+	return m.Inputs
+}
+
+func (m *Method) GetName() string {
+	return m.Name
+}
+func (m *Method) GetKind() Kind {
+	return KindMethod
+}
+func (m *Method) GetSchema() *Schema {
+	return &m.Output.Schema
+}
+
+func (m *Method) ResolveAll(mod *Module) error {
+	if m.Output == nil {
+		m.Output = NewTypeNode("", KindOutput)
+	}
+	if m.Inputs == nil {
+		m.Inputs = make([]*TypedNode, 0)
+	}
 	for _, p := range m.Inputs {
-		err := p.ResolveAll()
+		err := p.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
 	if m.Output != nil {
-		err := m.Output.ResolveAll()
+		err := m.Output.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
@@ -99,21 +129,21 @@ func (i Interface) LookupSignal(name string) *Signal {
 	return nil
 }
 
-func (i *Interface) ResolveAll() error {
+func (i *Interface) ResolveAll(mod *Module) error {
 	for _, p := range i.Properties {
-		err := p.ResolveAll()
+		err := p.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
-	for _, m := range i.Methods {
-		err := m.ResolveAll()
+	for _, meth := range i.Methods {
+		err := meth.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
 	for _, s := range i.Signals {
-		err := s.ResolveAll()
+		err := s.ResolveAll(mod)
 		if err != nil {
 			return err
 		}

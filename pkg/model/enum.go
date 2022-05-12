@@ -16,9 +16,9 @@ func NewEnum(name string) *Enum {
 	}
 }
 
-func (e *Enum) ResolveAll() error {
-	for _, m := range e.Members {
-		err := m.ResolveAll()
+func (e *Enum) ResolveAll(mod *Module) error {
+	for _, mem := range e.Members {
+		err := mem.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
@@ -43,6 +43,6 @@ func NewEnumMember(name string, value int) *EnumMember {
 	}
 }
 
-func (e *EnumMember) ResolveAll() error {
+func (e *EnumMember) ResolveAll(m *Module) error {
 	return nil
 }

@@ -125,7 +125,7 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 
 // ExitPropertyRule is called when exiting the propertyRule production.
 func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
-	o.property.Schema = o.schema
+	o.property.Schema = *o.schema
 	o.schema = nil
 	o.iface.Properties = append(o.iface.Properties, o.property)
 	o.property = nil
@@ -161,7 +161,7 @@ func (o *ObjectApiListener) EnterOutputRule(c *parser.OutputRuleContext) {
 }
 
 func (o *ObjectApiListener) ExitOutputRule(c *parser.OutputRuleContext) {
-	o.output.Schema = o.schema
+	o.output.Schema = *o.schema
 	o.method.Output = o.output
 	o.schema = nil
 }
@@ -178,7 +178,7 @@ func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
 
 // ExitInputRule is called when exiting the inputRule production.
 func (o *ObjectApiListener) ExitInputRule(c *parser.InputRuleContext) {
-	o.input.Schema = o.schema
+	o.input.Schema = *o.schema
 	if o.method != nil {
 		o.method.Inputs = append(o.method.Inputs, o.input)
 	} else if o.signal != nil {
@@ -233,7 +233,7 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 
 // ExitStructFieldRule is called when exiting the structFieldRule production.
 func (o *ObjectApiListener) ExitStructFieldRule(c *parser.StructFieldRuleContext) {
-	o.field.Schema = o.schema
+	o.field.Schema = *o.schema
 	o.struct_.Fields = append(o.struct_.Fields, o.field)
 	o.field = nil
 	o.schema = nil

@@ -1,8 +1,10 @@
 package model
 
 import (
-	"fmt"
 	"objectapi/pkg/log"
+	"strings"
+
+	"github.com/iancoleman/strcase"
 )
 
 // Kind is an enumeration of the kinds of nodes.
@@ -27,14 +29,14 @@ const (
 type KindType string
 
 const (
-	TypeBool      = "bool"
-	TypeInt       = "int"
-	TypeFloat     = "float"
-	TypeString    = "string"
-	TypeEnum      = "enum"
-	TypeStruct    = "struct"
-	TypeInterface = "interface"
-	TypeUnknown   = "unknown"
+	TypeNull      KindType = "null"
+	TypeBool      KindType = "bool"
+	TypeInt       KindType = "int"
+	TypeFloat     KindType = "float"
+	TypeString    KindType = "string"
+	TypeEnum      KindType = "enum"
+	TypeStruct    KindType = "struct"
+	TypeInterface KindType = "interface"
 )
 
 type ITypeProvider interface {
@@ -58,6 +60,15 @@ func (n *NamedNode) String() string {
 	return n.Name
 }
 
+func (n *NamedNode) ShortName() string {
+	words := strings.Split(n.Name, ".")
+	return words[len(words)-1]
+}
+
+func (n *NamedNode) AsPath() string {
+	return strcase.ToDelimited(n.Name, '/')
+}
+
 func (n NamedNode) IsEmpty() bool {
 	return n.Name == ""
 }
@@ -66,7 +77,7 @@ func (n NamedNode) IsEmpty() bool {
 // { name: "foo", kind: "property", type: "string" }
 type TypedNode struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Schema    *Schema `json:"schema" yaml:"schema"`
+	Schema    `json:",inline" yaml:",inline"`
 }
 
 func NewTypeNode(n string, k Kind) *TypedNode {
@@ -74,6 +85,10 @@ func NewTypeNode(n string, k Kind) *TypedNode {
 		NamedNode: NamedNode{
 			Name: n,
 			Kind: k,
+		},
+		Schema: Schema{
+			Type:     "",
+			KindType: TypeNull,
 		},
 	}
 }
@@ -87,27 +102,27 @@ func (t TypedNode) GetName() string {
 }
 
 func (t TypedNode) GetSchema() *Schema {
-	return t.Schema
+	return &t.Schema
 }
 
-func (t *TypedNode) ResolveAll() error {
-	err := t.Schema.ResolveSymbol()
-	if err != nil {
-		return err
-	}
-	return t.Schema.ResolveType()
+func (t *TypedNode) ResolveAll(m *Module) error {
+	return t.Schema.ResolveAll(m)
+}
+
+func (t *TypedNode) NoType() bool {
+	return t.Type == ""
 }
 
 // TypeNode is a node with type information.
 // { type: array, items: { type: string } }
 type Schema struct {
 	Type        string `json:"type" yaml:"type"`
+	IsArray     bool   `json:"array" yaml:"array"`
 	Module      *Module
 	KindType    KindType
 	struct_     *Struct
 	enum        *Enum
 	interface_  *Interface
-	IsArray     bool
 	IsPrimitive bool
 	IsSymbol    bool
 	IsResolved  bool
@@ -122,11 +137,33 @@ func (s Schema) LookupNode(name string) *NamedNode {
 	return s.Module.LookupNode(name)
 }
 
-func (s *Schema) ResolveSymbol() error {
+func (s *Schema) ResolveAll(m *Module) error {
 	if s.IsResolved {
 		return nil
 	}
-	s.IsResolved = true
+	s.Module = m
+	switch s.Type {
+	case "":
+		s.IsPrimitive = false
+		s.IsSymbol = false
+		s.IsResolved = true
+	case "bool", "int", "float", "string":
+		s.IsPrimitive = true
+		s.IsSymbol = false
+		s.IsResolved = false
+	default:
+		s.IsPrimitive = false
+		s.IsSymbol = true
+		s.IsResolved = false
+	}
+	err := s.ResolveSymbol()
+	if err != nil {
+		return err
+	}
+	return s.ResolveType()
+}
+
+func (s *Schema) ResolveSymbol() error {
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
 		if le != nil {
@@ -166,11 +203,8 @@ func (s *Schema) ResolveType() error {
 		} else if s.IsEnum() {
 			kind = "enum"
 		}
-	}
-	if kind == "" {
-		log.Warnf("resolved type %s to %s", s.Type, kind)
-		kind = "unknown"
-		return fmt.Errorf("unknown type %s", s.Type)
+	} else {
+		kind = "null"
 	}
 	s.KindType = KindType(kind)
 	return nil
