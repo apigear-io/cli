@@ -15,6 +15,9 @@ func PopulateFuncMap() template.FuncMap {
 	fm["delimitedCase"] = DotCase
 	fm["lowerCamelCase"] = LowerCamelCase
 	fm["kebabCase"] = KebabCase
+	fm["pathCase"] = PathCase
+	fm["lowerCase"] = LowerCase
+	fm["upperCase"] = UpperCase
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)

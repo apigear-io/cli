@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"objectapi/pkg/log"
 	"objectapi/pkg/model"
-	"reflect"
 )
 
 func ToDefaultString(schema *model.Schema) string {
@@ -57,16 +56,6 @@ func ToDefaultString(schema *model.Schema) string {
 	return text
 }
 
-func goDefault(node reflect.Value) (reflect.Value, error) {
-	if node.IsNil() {
-		log.Debug("goDefault called with nil node")
-		return reflect.ValueOf(""), nil
-	}
-	p, ok := node.Interface().(model.ITypeProvider)
-	if !ok {
-		log.Debugf("goDefault called with non-typeprovider node: %v", node)
-		return reflect.ValueOf(""), nil
-	}
-	t := ToDefaultString(p.GetSchema())
-	return reflect.ValueOf(t), nil
+func goDefault(p *model.TypedNode) string {
+	return ToDefaultString(&p.Schema)
 }

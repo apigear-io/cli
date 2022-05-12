@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"objectapi/pkg/log"
 	"objectapi/pkg/model"
-	"reflect"
 )
 
 func ToParamString(schema *model.Schema, name string) string {
@@ -40,8 +39,6 @@ func ToParamString(schema *model.Schema, name string) string {
 	return "XXX"
 }
 
-func goParam(node reflect.Value) (reflect.Value, error) {
-	p := node.Interface().(model.ITypeProvider)
-	t := ToParamString(p.GetSchema(), p.GetName())
-	return reflect.ValueOf(t), nil
+func goParam(p *model.TypedNode) string {
+	return ToParamString(&p.Schema, p.Name)
 }

@@ -1,53 +1,47 @@
 package filters
 
 import (
-	"fmt"
-	"reflect"
+	"strings"
 
 	"github.com/iancoleman/strcase"
 )
 
 // SnakeCase returns a string representation of the value in snake_case.
-func SnakeCase(v reflect.Value) (reflect.Value, error) {
-	s, ok := v.Interface().(fmt.Stringer)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected stringer, got %s", v.Type())
-	}
-	return reflect.ValueOf(strcase.ToCamel(s.String())), nil
+func SnakeCase(s string) string {
+	return strcase.ToSnake(s)
 }
 
 // CamelCase returns a string representation of the value in CamelCase.
-func CamelCase(v reflect.Value) (reflect.Value, error) {
-	s, ok := v.Interface().(fmt.Stringer)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected stringer, got %s", v.Type())
-	}
-	return reflect.ValueOf(strcase.ToCamel(s.String())), nil
+func CamelCase(s string) string {
+	return strcase.ToCamel(s)
 }
 
 // DotCase returns a string representation of the value in dot.case
-func DotCase(v reflect.Value) (reflect.Value, error) {
-	s, ok := v.Interface().(fmt.Stringer)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected stringer, got %s", v.Type())
-	}
-	return reflect.ValueOf(strcase.ToDelimited(s.String(), '.')), nil
+func DotCase(s string) string {
+	return strcase.ToDelimited(s, '.')
 }
 
 // LowerCamelCase returns a string representation of the value in lowerCamelCase.
-func LowerCamelCase(v reflect.Value) (reflect.Value, error) {
-	s, ok := v.Interface().(fmt.Stringer)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected stringer, got %s", v.Type())
-	}
-	return reflect.ValueOf(strcase.ToLowerCamel(s.String())), nil
+func LowerCamelCase(s string) string {
+	return strcase.ToLowerCamel(s)
 }
 
 // KebabCase returns a string representation of the value in kebab-case.
-func KebabCase(v reflect.Value) (reflect.Value, error) {
-	s, ok := v.Interface().(fmt.Stringer)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected stringer, got %s", v.Type())
-	}
-	return reflect.ValueOf(strcase.ToKebab(s.String())), nil
+func KebabCase(s string) string {
+	return strcase.ToKebab(s)
+}
+
+// PathCase returns a string representation of the value in path/case.
+func PathCase(s string) string {
+	return strcase.ToDelimited(s, '/')
+}
+
+// LowerCase returns a string representation of the value in lowercase.
+func LowerCase(s string) string {
+	return strings.ToLower(s)
+}
+
+// UpperCase returns a string representation of the value in UPPER CASE.
+func UpperCase(s string) string {
+	return strings.ToUpper(s)
 }

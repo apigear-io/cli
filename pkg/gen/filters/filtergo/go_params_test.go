@@ -1,7 +1,6 @@
 package filtergo
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,9 +27,8 @@ func TestParams(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			meth := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, meth)
-			r, err := goParams(reflect.ValueOf(meth))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
+			r := goParams(meth.Inputs)
+			assert.Equal(t, tt.rt, r)
 		})
 	}
 }
@@ -54,9 +52,8 @@ func TestParamsSymbols(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goParams(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
+			r := goParams(prop.Inputs)
+			assert.Equal(t, tt.rt, r)
 		})
 	}
 }
@@ -81,9 +78,8 @@ func TestParamsMultiple(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goParams(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
+			r := goParams(prop.Inputs)
+			assert.Equal(t, tt.rt, r)
 		})
 	}
 }
