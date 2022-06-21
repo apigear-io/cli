@@ -1,22 +1,26 @@
 package conf
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // getCmd represents the confGet command
 var getCmd = &cobra.Command{
-	Use:   "confGet",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "get",
+	Short: "prints a configuration value",
+	Args:  cobra.MaximumNArgs(1),
+	Long:  `prints the value of a configuration parameter or all configuration parameters if no key is given`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("confGet called")
+		if len(args) == 0 {
+			// print all settings
+			for k, v := range viper.AllSettings() {
+				cmd.Printf("%s: %s\n", k, v)
+			}
+		} else {
+			// print setting by key
+			key := args[0]
+			cmd.Printf("%s: %s\n", key, viper.Get(key))
+		}
 	},
 }

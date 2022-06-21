@@ -19,30 +19,31 @@ var verbose bool
 var dryRun bool
 
 func NewRootCommand() *cobra.Command {
-	// rootCmd represents the base command when called without any subcommands
-	rootCmd := &cobra.Command{
-		Use:   "objectapi",
-		Short: "objectapi is a tool to manage code generation templates",
-		Long: `The ObjectAPI standard allows you to describe objects as API and generate SDKs in different languages. 
-Additional API monaitoring and simulation is also supported.`,
+	// cmd represents the base command when called without any subcommands
+	cmd := &cobra.Command{
+		Use:     "apigear",
+		Short:   "apigear creates instrumented SDKs from an API description",
+		Long:    `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 		Version: "0.0.1",
 	}
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.objectapi.yaml)")
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "verbose output")
-	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "dry-run")
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
+	cmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "verbose output")
+	cmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "dry-run")
+	cmd.PersistentFlags().String("env", "development", "environment (development, production, staging)")
+	viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env"))
+	viper.Set("version", cmd.Version)
+	cmd.AddCommand(sdk.NewRootCommand())
+	cmd.AddCommand(mon.NewRootCommand())
+	cmd.AddCommand(conf.NewRootCommand())
+	cmd.AddCommand(tpl.NewRootCommand())
+	cmd.AddCommand(sim.NewRootCommand())
+	cmd.AddCommand(NewCheckCommand())
+	cmd.AddCommand(NewYaml2JsonCommand())
+	cmd.AddCommand(NewJson2YamlCommand())
 
-	rootCmd.AddCommand(sdk.NewRootCommand())
-	rootCmd.AddCommand(mon.NewRootCommand())
-	rootCmd.AddCommand(conf.NewRootCommand())
-	rootCmd.AddCommand(tpl.NewRootCommand())
-	rootCmd.AddCommand(sim.NewRootCommand())
-	rootCmd.AddCommand(NewCheckCommand())
-	rootCmd.AddCommand(NewYaml2JsonCommand())
-	rootCmd.AddCommand(NewJson2YamlCommand())
-
-	return rootCmd
+	return cmd
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -55,10 +56,10 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".objectapi" (without extension).
+		// Search config in home directory with name ".apigear" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".objectapi")
+		viper.SetConfigName(".apigear")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
