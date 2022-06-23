@@ -37,7 +37,7 @@ func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 			return nil
 		}
 	}
-	log.Info("write file ", target)
+	log.Debug("write file ", target)
 	dir := path.Dir(target)
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 func PopulateFuncMap() template.FuncMap {
-	log.Info("populate func map")
+	log.Debug("populate func map")
 	fm := make(template.FuncMap)
 	fm["snakeCase"] = SnakeCase
 	fm["camelCase"] = CamelCase
@@ -23,6 +23,10 @@ func PopulateFuncMap() template.FuncMap {
 	fm["firstChar"] = FirstChar
 	fm["firstCharLower"] = FirstCharLower
 	fm["firstCharUpper"] = FirstCharUpper
+	fm["first"] = FirstCharLower
+	fm["First"] = FirstCharUpper
+	fm["Camel"] = CamelCase
+	fm["camel"] = LowerCamelCase
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)

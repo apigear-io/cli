@@ -6,6 +6,7 @@ import (
 	"apigear/cmd/sdk"
 	"apigear/cmd/sim"
 	"apigear/cmd/tpl"
+	"apigear/pkg/log"
 	"fmt"
 	"os"
 
@@ -70,7 +71,6 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	if verbose {
-		fmt.Fprintln(os.Stderr, "verbose output")
-	}
+	viper.Set("verbose", verbose)
+	log.SetVerbose(verbose)
 }
