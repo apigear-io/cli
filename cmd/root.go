@@ -30,7 +30,7 @@ func NewRootCommand() *cobra.Command {
 	cobra.OnInitialize(initConfig)
 
 	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
-	cmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "verbose output")
+	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "dry-run")
 	cmd.PersistentFlags().String("env", "development", "environment (development, production, staging)")
 	viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env"))

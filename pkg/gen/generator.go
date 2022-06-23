@@ -67,7 +67,7 @@ func (g *generator) ParseTemplate(path string) error {
 }
 
 func (g *generator) ParseTemplatesDir(dir string) error {
-	log.Info("parsing templates dir: %s", dir)
+	log.Debugf("parsing templates dir: %s", dir)
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println("error walking dir:", err)
@@ -90,7 +90,7 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 }
 
 func (g *generator) Run(filename string) error {
-	log.Infof("processing file: %s", filename)
+	log.Debugf("processing file: %s", filename)
 	var bytes, err = ioutil.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
@@ -197,7 +197,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	}
 	// var force = doc.Force
 	// var transform = doc.Transform
-	log.Debugf("transform %s -> %s", source, target)
+	log.Infof("render %s -> %s", source, target)
 	// render the template using the context
 	buf := bytes.NewBuffer(nil)
 	err = g.Template.ExecuteTemplate(buf, source, ctx)

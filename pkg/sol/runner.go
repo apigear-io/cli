@@ -19,7 +19,7 @@ type runner struct {
 }
 
 func (r *runner) Run() {
-	log.Info("run solution")
+	log.Debug("run solution")
 	for _, layer := range r.doc.Layers {
 		err := r.processLayer(layer)
 		if err != nil {
@@ -31,7 +31,7 @@ func (r *runner) Run() {
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
 func (r *runner) processLayer(layer spec.SolutionLayer) error {
-	log.Infof("process layer %s", layer.Name)
+	log.Debugf("process layer %s", layer.Name)
 	var templateDir = path.Join(r.rootDir, layer.Template)
 	var templatesDir = path.Join(templateDir, "templates")
 	var rulesFile = path.Join(templateDir, "rules.yaml")
@@ -64,7 +64,7 @@ func (r *runner) processLayer(layer spec.SolutionLayer) error {
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
 func (r *runner) parseInputs(s *model.System, inputs []string) error {
-	log.Infof("parse inputs %v", inputs)
+	log.Debugf("parse inputs %v", inputs)
 	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
 	files, err := r.expandInputs(r.rootDir, inputs)
@@ -73,7 +73,7 @@ func (r *runner) parseInputs(s *model.System, inputs []string) error {
 		return err
 	}
 	for _, file := range files {
-		log.Infof("parse input %s", file)
+		log.Debugf("parse input %s", file)
 		switch path.Ext(file) {
 		case ".yaml", ".yml", ".json":
 			err := dataParser.ParseFile(file)

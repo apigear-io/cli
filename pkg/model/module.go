@@ -83,7 +83,7 @@ func (m Module) LookupEnum(name string) *Enum {
 }
 
 func (m *Module) ResolveAll() error {
-	log.Infof("Resolving module %s", m.Name)
+	log.Debugf("Resolving module %s", m.Name)
 	for _, i := range m.Interfaces {
 		err := i.ResolveAll(m)
 		if err != nil {

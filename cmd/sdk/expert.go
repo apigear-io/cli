@@ -52,7 +52,7 @@ func NewExpertCommand() *cobra.Command {
 }
 
 func runExpert(options *ExpertOptions) error {
-	log.Info("run expert code generation")
+	log.Debug("run expert code generation")
 	doc := spec.SolutionDoc{
 		Schema: "apigear.solution/1.0",
 		Layers: []spec.SolutionLayer{
