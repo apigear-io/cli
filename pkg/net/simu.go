@@ -1,10 +1,10 @@
 package net
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/net/rpc"
+	"apigear/pkg/sim"
 	"fmt"
-	"objectapi/pkg/log"
-	"objectapi/pkg/net/rpc"
-	"objectapi/pkg/sim"
 )
 
 type SimuRpcHandler struct {

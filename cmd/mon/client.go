@@ -1,8 +1,8 @@
 package mon
 
 import (
-	"objectapi/pkg/log"
-	"objectapi/pkg/mon"
+	"apigear/pkg/log"
+	"apigear/pkg/mon"
 	"path"
 
 	"github.com/spf13/cobra"

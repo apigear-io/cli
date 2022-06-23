@@ -27,7 +27,7 @@ func TestParams(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			meth := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, meth)
-			r := goParams(meth.Inputs)
+			r := goParams(meth.Inputs, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}
@@ -52,7 +52,7 @@ func TestParamsSymbols(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goParams(prop.Inputs)
+			r := goParams(prop.Inputs, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}
@@ -78,7 +78,7 @@ func TestParamsMultiple(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goParams(prop.Inputs)
+			r := goParams(prop.Inputs, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}

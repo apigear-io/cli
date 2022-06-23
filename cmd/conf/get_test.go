@@ -2,18 +2,30 @@ package conf
 
 import (
 	"bytes"
-	"io"
+	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCmdGet(t *testing.T) {
-	var cmd = getCmd
-	buf := bytes.NewBufferString("")
+func ExecuteCmd(t *testing.T, cmd *cobra.Command, args ...string) string {
+	t.Helper()
+	buf := &bytes.Buffer{}
 	cmd.SetOut(buf)
-	cmd.Execute()
-	out, err := io.ReadAll(buf)
+	cmd.SetErr(buf)
+	cmd.SetArgs(args)
+	err := cmd.Execute()
 	assert.NoError(t, err)
-	assert.Contains(t, string(out), "confGet called")
+	return strings.TrimSpace(buf.String())
+}
+
+func TestCmdGetAllSettings(t *testing.T) {
+	out := ExecuteCmd(t, NewGetCmd())
+	assert.Contains(t, out, "All settings")
+}
+
+func TestCmdGetOneSetting(t *testing.T) {
+	out := ExecuteCmd(t, NewGetCmd(), "foo")
+	assert.Contains(t, out, "foo")
 }

@@ -21,8 +21,8 @@ to quickly create a Cobra application.`,
 			fmt.Println("conf called")
 		},
 	}
-	cmd.AddCommand(openCmd)
-	cmd.AddCommand(getCmd)
+	cmd.AddCommand(NewInfoCmd())
+	cmd.AddCommand(NewGetCmd())
 	return cmd
 }
 

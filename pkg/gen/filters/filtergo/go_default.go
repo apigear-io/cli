@@ -1,13 +1,14 @@
 package filtergo
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/model"
 	"fmt"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
 )
 
-func ToDefaultString(schema *model.Schema) string {
+func ToDefaultString(schema *model.Schema, prefix string) string {
 	if schema == nil {
+		log.Warn("ToDefaultString called with nil schema")
 		return ""
 	}
 	var text string
@@ -22,11 +23,11 @@ func ToDefaultString(schema *model.Schema) string {
 		case model.TypeBool:
 			text = "[]bool{}"
 		case model.TypeEnum:
-			text = fmt.Sprintf("[]%s{}", schema.Type)
+			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		case model.TypeStruct:
-			text = fmt.Sprintf("[]%s{}", schema.Type)
+			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		case model.TypeInterface:
-			text = fmt.Sprintf("[]*%s{}", schema.Type)
+			text = fmt.Sprintf("[]*%s%s{}", prefix, schema.Type)
 		default:
 			log.Fatalf("unknown schema kind type: %s", schema.KindType)
 		}
@@ -43,12 +44,14 @@ func ToDefaultString(schema *model.Schema) string {
 		case model.TypeEnum:
 			sym := schema.GetEnum()
 			member := sym.Members[0]
-			text = fmt.Sprintf("%s%s", sym.Name, member.Name)
+			text = fmt.Sprintf("%s%s%s", prefix, sym.Name, member.Name)
 		case model.TypeStruct:
 			sym := schema.GetStruct()
-			text = fmt.Sprintf("%s{}", sym.Name)
+			text = fmt.Sprintf("%s%s{}", prefix, sym.Name)
 		case model.TypeInterface:
 			text = "nil"
+		case model.TypeNull:
+			text = ""
 		default:
 			log.Fatalf("unknown schema kind type: %s", schema.KindType)
 		}
@@ -56,6 +59,10 @@ func ToDefaultString(schema *model.Schema) string {
 	return text
 }
 
-func goDefault(p *model.TypedNode) string {
-	return ToDefaultString(&p.Schema)
+func goDefault(node *model.TypedNode, prefix string) string {
+	if node == nil {
+		log.Warn("goDefault called with nil node")
+		return ""
+	}
+	return ToDefaultString(&node.Schema, prefix)
 }

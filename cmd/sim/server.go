@@ -1,10 +1,10 @@
 package sim
 
 import (
-	"objectapi/pkg/log"
-	"objectapi/pkg/net"
-	"objectapi/pkg/net/rpc"
-	"objectapi/pkg/sim"
+	"apigear/pkg/log"
+	"apigear/pkg/net"
+	"apigear/pkg/net/rpc"
+	"apigear/pkg/sim"
 
 	"github.com/spf13/cobra"
 )

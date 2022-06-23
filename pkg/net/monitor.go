@@ -1,10 +1,10 @@
 package net
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/mon"
 	"encoding/json"
 	"net/http"
-	"objectapi/pkg/log"
-	"objectapi/pkg/mon"
 	"time"
 
 	"github.com/go-chi/chi/v5"

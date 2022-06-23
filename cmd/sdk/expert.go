@@ -1,9 +1,9 @@
 package sdk
 
 import (
-	"objectapi/pkg/log"
-	"objectapi/pkg/sol"
-	"objectapi/pkg/spec"
+	"apigear/pkg/log"
+	"apigear/pkg/sol"
+	"apigear/pkg/spec"
 	"os"
 	"path/filepath"
 
@@ -18,6 +18,37 @@ type ExpertOptions struct {
 	force       bool
 	watch       bool
 	templateDir string
+}
+
+func NewExpertCommand() *cobra.Command {
+	options := &ExpertOptions{}
+
+	cmd := &cobra.Command{
+		Use:     "x",
+		Aliases: []string{"expert"},
+		Short:   "generate code using expert mode",
+		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if options.watch {
+				watchExpert(options)
+			} else {
+				err := runExpert(options)
+				if err != nil {
+					log.Fatalf("failed to run expert mode: %s", err)
+				}
+			}
+		},
+	}
+	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")
+	cmd.Flags().StringSliceVarP(&options.inputs, "input", "i", []string{"api"}, "input files")
+	cmd.Flags().StringVarP(&options.outputDir, "output", "o", "out", "output directory")
+	cmd.Flags().StringSliceVarP(&options.features, "feature", "f", []string{"core"}, "features to enable")
+	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
+	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
+	cmd.MarkFlagRequired("input")
+	cmd.MarkFlagRequired("output")
+	cmd.MarkFlagRequired("template")
+	return cmd
 }
 
 func runExpert(options *ExpertOptions) error {
@@ -71,44 +102,21 @@ func watchExpert(options *ExpertOptions) {
 			log.Fatal(err)
 		}
 	}
-	err = watcher.Add(options.templateDir)
+	// add directories of template dir recursively
+	err = filepath.Walk(options.templateDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			err = watcher.Add(path)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 	if err != nil {
-		log.Fatal(err)
-	}
-	err = watcher.Add(filepath.Join(options.templateDir, "templates"))
-	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to watch template directory: %s", err)
 	}
 	<-done
-}
-
-func NewExpertCommand() *cobra.Command {
-	options := &ExpertOptions{}
-
-	cmd := &cobra.Command{
-		Use:     "x",
-		Aliases: []string{"expert"},
-		Short:   "generate code using expert mode",
-		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			if options.watch {
-				watchExpert(options)
-			} else {
-				err := runExpert(options)
-				if err != nil {
-					log.Fatalf("failed to run expert mode: %s", err)
-				}
-			}
-		},
-	}
-	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")
-	cmd.Flags().StringSliceVarP(&options.inputs, "input", "i", []string{"api"}, "input files")
-	cmd.Flags().StringVarP(&options.outputDir, "output", "o", "out", "output directory")
-	cmd.Flags().StringSliceVarP(&options.features, "feature", "f", []string{"core"}, "features to enable")
-	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
-	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
-	cmd.MarkFlagRequired("input")
-	cmd.MarkFlagRequired("output")
-	cmd.MarkFlagRequired("template")
-	return cmd
 }

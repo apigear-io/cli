@@ -1,7 +1,8 @@
 package tpl
 
 import (
-	"fmt"
+	"apigear/pkg/tpl"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -9,16 +10,20 @@ import (
 func NewListCommand() *cobra.Command {
 	// cmd represents the pkgList command
 	var cmd = &cobra.Command{
-		Use:   "pkgList",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Use:     "list",
+		Aliases: []string{"ls"},
+		Short:   "list all installed packages",
+		Long:    `List all installed packages. A package can be installed using a git url or a local directory.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("pkgList called")
+			infos, err := tpl.ListTemplates()
+			if err != nil {
+				cmd.PrintErrln(err)
+				os.Exit(-1)
+			}
+			cmd.Println("Installed Template Packages:")
+			for _, info := range infos {
+				cmd.Printf("  * %s\n", info.Name)
+			}
 		},
 	}
 	return cmd

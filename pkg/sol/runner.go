@@ -1,13 +1,13 @@
 package sol
 
 import (
+	"apigear/pkg/gen"
+	"apigear/pkg/idl"
+	"apigear/pkg/log"
+	"apigear/pkg/model"
+	"apigear/pkg/spec"
 	"fmt"
 	"io/fs"
-	"objectapi/pkg/gen"
-	"objectapi/pkg/idl"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
-	"objectapi/pkg/spec"
 	"os"
 	"path"
 	"path/filepath"
@@ -37,7 +37,12 @@ func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	var rulesFile = path.Join(templateDir, "rules.yaml")
 	var outputDir = path.Join(r.rootDir, layer.Output)
 	var force = layer.Force
-	system := model.NewSystem(layer.Name)
+	name := layer.Name
+	if name == "" {
+		// if no layer name, name is the last part of the output directory
+		name = path.Base(outputDir)
+	}
+	system := model.NewSystem(name)
 	err := r.parseInputs(system, layer.Inputs)
 	if err != nil {
 		return fmt.Errorf("error parsing inputs: %w", err)

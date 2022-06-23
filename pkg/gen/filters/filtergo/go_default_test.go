@@ -29,7 +29,7 @@ func TestDefaultFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goDefault(prop)
+			r := goDefault(prop, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}
@@ -54,7 +54,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goDefault(prop)
+			r := goDefault(prop, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}

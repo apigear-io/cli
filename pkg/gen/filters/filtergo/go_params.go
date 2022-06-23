@@ -1,26 +1,14 @@
 package filtergo
 
 import (
-	"objectapi/pkg/model"
+	"apigear/pkg/model"
 	"strings"
 )
 
-// func goParams(node reflect.Value) (reflect.Value, error) {
-// 	types, ok := node.Interface().([]*model.TypedNode)
-// 	if !ok {
-// 		return reflect.Value{}, fmt.Errorf("expected array of type nodes, got %s", node.Type())
-// 	}
-// 	var inputs []string
-// 	for _, p := range types {
-// 		inputs = append(inputs, ToParamString(p.GetSchema(), p.GetName()))
-// 	}
-// 	return reflect.ValueOf(strings.Join(inputs, ", ")), nil
-// }
-
-func goParams(nodes []*model.TypedNode) string {
+func goParams(nodes []*model.TypedNode, prefix string) string {
 	var inputs []string
 	for _, p := range nodes {
-		inputs = append(inputs, ToParamString(p.GetSchema(), p.GetName()))
+		inputs = append(inputs, ToParamString(p.GetSchema(), p.GetName(), prefix))
 	}
 	return strings.Join(inputs, ", ")
 }

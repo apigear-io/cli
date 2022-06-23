@@ -1,9 +1,9 @@
 package gen
 
 import (
+	"apigear/pkg/model"
+	"apigear/pkg/spec"
 	"io/ioutil"
-	"objectapi/pkg/model"
-	"objectapi/pkg/spec"
 	"testing"
 	"text/template"
 

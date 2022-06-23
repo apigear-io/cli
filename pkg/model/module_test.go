@@ -1,7 +1,7 @@
 package model
 
 import (
-	"objectapi/pkg/helper"
+	"apigear/pkg/helper"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

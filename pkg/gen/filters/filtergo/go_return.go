@@ -1,12 +1,12 @@
 package filtergo
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/model"
 	"fmt"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
 )
 
-func ToReturnString(schema *model.Schema) string {
+func ToReturnString(schema *model.Schema, prefix string) string {
 	if schema == nil {
 		log.Debug("ToReturnString called with nil schema")
 		return ""
@@ -22,11 +22,11 @@ func ToReturnString(schema *model.Schema) string {
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeEnum:
-		text = schema.Type
+		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeStruct:
-		text = schema.Type
+		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeInterface:
-		text = fmt.Sprintf("*%s", schema.Type)
+		text = fmt.Sprintf("*%s%s", prefix, schema.Type)
 	case model.TypeNull:
 		text = ""
 	default:
@@ -39,6 +39,10 @@ func ToReturnString(schema *model.Schema) string {
 }
 
 // cast value to TypedNode and deduct the cpp return type
-func goReturn(p *model.TypedNode) string {
-	return ToReturnString(&p.Schema)
+func goReturn(node *model.TypedNode, prefix string) string {
+	if node == nil {
+		log.Warnf("goReturn called with nil node")
+		return ""
+	}
+	return ToReturnString(&node.Schema, prefix)
 }

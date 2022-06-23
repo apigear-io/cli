@@ -1,8 +1,8 @@
 package idl
 
 import (
-	"objectapi/pkg/idl/parser"
-	"objectapi/pkg/model"
+	"apigear/pkg/idl/parser"
+	"apigear/pkg/model"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )

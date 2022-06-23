@@ -1,7 +1,7 @@
 package filtercpp
 
 import (
-	"objectapi/pkg/model"
+	"apigear/pkg/model"
 	"reflect"
 	"testing"
 

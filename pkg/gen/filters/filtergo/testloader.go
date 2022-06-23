@@ -1,8 +1,8 @@
 package filtergo
 
 import (
-	"objectapi/pkg/idl"
-	"objectapi/pkg/model"
+	"apigear/pkg/idl"
+	"apigear/pkg/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -100,6 +100,6 @@
       "type": "string"
     }
   },
-  "title": "ObjectAPI rules engine",
+  "title": "ApiGear rules engine",
   "type": "object"
 }

@@ -1,8 +1,8 @@
 package sdk
 
 import (
-	"objectapi/pkg/log"
-	"objectapi/pkg/sol"
+	"apigear/pkg/log"
+	"apigear/pkg/sol"
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"

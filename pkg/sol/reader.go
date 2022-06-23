@@ -1,8 +1,8 @@
 package sol
 
 import (
+	"apigear/pkg/spec"
 	"io/ioutil"
-	"objectapi/pkg/spec"
 
 	"gopkg.in/yaml.v2"
 )

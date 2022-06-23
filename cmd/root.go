@@ -1,12 +1,12 @@
 package cmd
 
 import (
+	"apigear/cmd/conf"
+	"apigear/cmd/mon"
+	"apigear/cmd/sdk"
+	"apigear/cmd/sim"
+	"apigear/cmd/tpl"
 	"fmt"
-	"objectapi/cmd/conf"
-	"objectapi/cmd/mon"
-	"objectapi/cmd/sdk"
-	"objectapi/cmd/sim"
-	"objectapi/cmd/tpl"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -42,6 +42,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewCheckCommand())
 	cmd.AddCommand(NewYaml2JsonCommand())
 	cmd.AddCommand(NewJson2YamlCommand())
+	cmd.AddCommand(NewDocsCommand())
 
 	return cmd
 }

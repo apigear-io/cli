@@ -1,16 +1,16 @@
 package spec
 
 import (
+	"apigear/pkg/model"
 	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"objectapi/pkg/model"
 	"os"
 	"path"
 	"strings"
 
-	"objectapi/pkg/idl"
+	"apigear/pkg/idl"
 
 	"github.com/gocarina/gocsv"
 	"github.com/xeipuuv/gojsonschema"

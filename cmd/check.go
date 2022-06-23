@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/spec"
 	"fmt"
-	"objectapi/pkg/log"
-	"objectapi/pkg/spec"
 	"path/filepath"
 
 	"github.com/spf13/cobra"

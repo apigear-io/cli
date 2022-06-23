@@ -1,17 +1,17 @@
 package filtergo
 
 import (
+	"apigear/pkg/log"
+	"apigear/pkg/model"
 	"fmt"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
 )
 
-func ToParamString(schema *model.Schema, name string) string {
+func ToParamString(schema *model.Schema, name string, prefix string) string {
 	t := schema.Type
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
-		return fmt.Sprintf("%s []%s", name, ToReturnString(&inner))
+		return fmt.Sprintf("%s []%s", name, ToReturnString(&inner, prefix))
 	}
 	switch t {
 	case "string":
@@ -25,20 +25,24 @@ func ToParamString(schema *model.Schema, name string) string {
 	}
 	e := schema.Module.LookupEnum(t)
 	if e != nil {
-		return fmt.Sprintf("%s %s", name, e.Name)
+		return fmt.Sprintf("%s %s%s", name, prefix, e.Name)
 	}
 	s := schema.Module.LookupStruct(t)
 	if s != nil {
-		return fmt.Sprintf("%s %s", name, s.Name)
+		return fmt.Sprintf("%s %s%s", name, prefix, s.Name)
 	}
 	i := schema.Module.LookupInterface(t)
 	if i != nil {
-		return fmt.Sprintf("%s *%s", name, i.Name)
+		return fmt.Sprintf("%s *%s%s", name, prefix, i.Name)
 	}
 	log.Fatalf("unknown type %s", t)
 	return "XXX"
 }
 
-func goParam(p *model.TypedNode) string {
-	return ToParamString(&p.Schema, p.Name)
+func goParam(node *model.TypedNode, prefix string) string {
+	if node == nil {
+		log.Warnf("goParam called with nil node")
+		return ""
+	}
+	return ToParamString(&node.Schema, node.GetName(), prefix)
 }

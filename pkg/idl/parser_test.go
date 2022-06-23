@@ -1,7 +1,7 @@
 package idl
 
 import (
-	"objectapi/pkg/model"
+	"apigear/pkg/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

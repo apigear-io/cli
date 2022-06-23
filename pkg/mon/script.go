@@ -1,7 +1,7 @@
 package mon
 
 import (
-	"objectapi/pkg/log"
+	"apigear/pkg/log"
 	"time"
 
 	"github.com/dop251/goja"

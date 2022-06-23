@@ -1,7 +1,7 @@
 package model
 
 import (
-	"objectapi/pkg/log"
+	"apigear/pkg/log"
 	"strings"
 
 	"github.com/iancoleman/strcase"
@@ -111,6 +111,10 @@ func (t *TypedNode) ResolveAll(m *Module) error {
 
 func (t *TypedNode) NoType() bool {
 	return t.Type == ""
+}
+
+func (t TypedNode) HasType() bool {
+	return t.Type != ""
 }
 
 // TypeNode is a node with type information.

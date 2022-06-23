@@ -29,7 +29,7 @@ func TestReturn(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goReturn(prop)
+			r := goReturn(prop, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}
@@ -54,7 +54,7 @@ func TestReturnSymbols(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r := goReturn(prop)
+			r := goReturn(prop, "")
 			assert.Equal(t, tt.rt, r)
 		})
 	}

@@ -1,4 +1,4 @@
-# ObjectAPI
+# ApiGear CLI
 
 ## Development
 

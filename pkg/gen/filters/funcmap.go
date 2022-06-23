@@ -1,9 +1,9 @@
 package filters
 
 import (
-	"objectapi/pkg/gen/filters/filtercpp"
-	"objectapi/pkg/gen/filters/filtergo"
-	"objectapi/pkg/log"
+	"apigear/pkg/gen/filters/filtercpp"
+	"apigear/pkg/gen/filters/filtergo"
+	"apigear/pkg/log"
 	"text/template"
 )
 
@@ -18,6 +18,11 @@ func PopulateFuncMap() template.FuncMap {
 	fm["pathCase"] = PathCase
 	fm["lowerCase"] = LowerCase
 	fm["upperCase"] = UpperCase
+	fm["upperFirst"] = UpperFirst
+	fm["lowerFirst"] = LowerFirst
+	fm["firstChar"] = FirstChar
+	fm["firstCharLower"] = FirstCharLower
+	fm["firstCharUpper"] = FirstCharUpper
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)

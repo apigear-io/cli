@@ -1,10 +1,10 @@
 package gen
 
 import (
+	"apigear/pkg/log"
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
-	"objectapi/pkg/log"
 	"os"
 	"path"
 )

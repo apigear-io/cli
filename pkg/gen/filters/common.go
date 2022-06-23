@@ -45,3 +45,28 @@ func LowerCase(s string) string {
 func UpperCase(s string) string {
 	return strings.ToUpper(s)
 }
+
+// UpperFirst returns a string representation of the value with the first character in UPPER CASE.
+func UpperFirst(s string) string {
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+// LowerFirst returns a string representation of the value with the first character in lowercase.
+func LowerFirst(s string) string {
+	return strings.ToLower(s[:1]) + s[1:]
+}
+
+// FirstChar returns the first character of the value.
+func FirstChar(s string) string {
+	return s[:1]
+}
+
+// FirstCharLower returns the first character of the value in lowercase.
+func FirstCharLower(s string) string {
+	return strings.ToLower(s[:1])
+}
+
+// FirstCharUpper returns the first character of the value in UPPER CASE.
+func FirstCharUpper(s string) string {
+	return strings.ToUpper(s[:1])
+}

@@ -1,13 +1,13 @@
 package gen
 
 import (
+	"apigear/pkg/gen/filters"
+	"apigear/pkg/log"
+	"apigear/pkg/model"
+	"apigear/pkg/spec"
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"objectapi/pkg/gen/filters"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
-	"objectapi/pkg/spec"
 	"os"
 	"path"
 	"path/filepath"
@@ -190,12 +190,17 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	if target == "" {
 		target = source
 	}
+	// transform the target name using the context
+	target, err := g.RenderString(target, ctx)
+	if err != nil {
+		return fmt.Errorf("error rendering target %s: %s", target, err)
+	}
 	// var force = doc.Force
 	// var transform = doc.Transform
 	log.Debugf("transform %s -> %s", source, target)
 	// render the template using the context
 	buf := bytes.NewBuffer(nil)
-	err := g.Template.ExecuteTemplate(buf, source, ctx)
+	err = g.Template.ExecuteTemplate(buf, source, ctx)
 	if err != nil {
 		log.Warnf("error executing template %s: %s", source, err)
 		return nil
@@ -207,4 +212,22 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 		return fmt.Errorf("error writing file %s: %s", target, err)
 	}
 	return nil
+}
+
+// Renders a string using the given context
+func (g *generator) RenderString(s string, ctx DataMap) (string, error) {
+	var buf = bytes.NewBuffer(nil)
+	t := template.New("target")
+	t.Funcs(filters.PopulateFuncMap())
+	_, err := t.Parse(s)
+	if err != nil {
+		log.Errorf("error parsing template %s: %s", s, err)
+		return "", err
+	}
+	err = t.Execute(buf, ctx)
+	if err != nil {
+		log.Warnf("error executing template %s: %s", s, err)
+		return "", err
+	}
+	return buf.String(), nil
 }

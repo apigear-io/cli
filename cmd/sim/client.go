@@ -1,8 +1,8 @@
 package sim
 
 import (
-	"objectapi/pkg/log"
-	"objectapi/pkg/net/rpc"
+	"apigear/pkg/log"
+	"apigear/pkg/net/rpc"
 	"path"
 	"time"
 

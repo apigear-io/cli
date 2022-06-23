@@ -1,10 +1,10 @@
 package idl
 
 import (
+	"apigear/pkg/idl/parser"
+	"apigear/pkg/log"
+	"apigear/pkg/model"
 	"fmt"
-	"objectapi/pkg/idl/parser"
-	"objectapi/pkg/log"
-	"objectapi/pkg/model"
 	"reflect"
 	"strconv"
 
