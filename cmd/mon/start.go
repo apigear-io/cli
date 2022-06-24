@@ -25,21 +25,16 @@ to quickly create a Cobra application.`,
 			log.Debugf("start server on %s", addr)
 			go func() {
 				for event := range mon.Emitter() {
-					props, err := json.Marshal(event.Props)
+					data, err := json.Marshal(event.Data)
 					if err != nil {
-						log.Info("error marshalling state: ", err)
+						log.Info("error marshalling data: ", err)
 					}
-					params, err := json.Marshal(event.Params)
-					if err != nil {
-						log.Info("error marshalling params: ", err)
-					}
-
-					fmt.Printf("<- %s %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.DeviceId, event.Kind, event.Symbol, props, params)
+					fmt.Printf("-> %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
 				}
 			}()
 			s := net.NewHTTPServer()
-			s.Router().Post("/monitor/{device}/", net.HandleMonitorRequest)
-			log.Debugf("handle monitor request on %s/monitor/{device}", addr)
+			s.Router().Post("/monitor/{source}/", net.HandleMonitorRequest)
+			log.Infof("handle monitor request on %s/monitor/{source}", addr)
 			s.Start(addr)
 		},
 	}

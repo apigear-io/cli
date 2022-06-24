@@ -10,7 +10,7 @@ import (
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
-		addr   string
+		url    string
 		script string
 	}
 	var options = &ClientOptions{}
@@ -23,20 +23,20 @@ func NewClientCommand() *cobra.Command {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
 			switch path.Ext(options.script) {
-			case ".json":
+			case ".json", ".ndjson":
 				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.addr)
+				sender := mon.NewEventSender(options.url)
 				go mon.ReadJsonEvents(options.script, emitter)
 				sender.SendEvents(emitter)
 			case ".js":
 				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.addr)
+				sender := mon.NewEventSender(options.url)
 				vm := mon.NewEventScript(emitter)
 				vm.RunScript(options.script)
 				sender.SendEvents(emitter)
 			case ".csv":
 				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.addr)
+				sender := mon.NewEventSender(options.url)
 				go mon.ReadCsvEvents(options.script, emitter)
 				sender.SendEvents(emitter)
 			default:
@@ -44,7 +44,7 @@ func NewClientCommand() *cobra.Command {
 			}
 		},
 	}
-	cmd.Flags().StringVarP(&options.addr, "addr", "", "localhost:8080", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123/", "monitor server address")
 
 	return cmd
 }

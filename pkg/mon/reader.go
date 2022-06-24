@@ -21,7 +21,7 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Debug("read line: ", line)
+		log.Infof("send: %s", line)
 		// decode each line into an event using json
 		event := &Event{}
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(event)

@@ -16,7 +16,8 @@ func NewHTTPServer() *Server {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
+	r.Use(log.NewHttpLogger())
+	// r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	return &Server{
 		r: r,

@@ -42,47 +42,43 @@ func (s *EventScript) init() {
 	s.vm.Set("sleep", s.jsSleep)
 }
 
-func (s *EventScript) jsCall(symbol string, args ...interface{}) {
-	log.Debugf("call: %s %v", symbol, args)
+func (s *EventScript) jsCall(symbol string, data Payload) {
+	log.Debugf("call: %s %v", symbol, data)
 	evt := &Event{
 		Id:        uuid.New().String(),
-		DeviceId:  "1234",
-		Kind:      KindCall,
+		Type:      TypeCall,
 		Timestamp: time.Now(),
 		Source:    "345",
 		Symbol:    symbol,
-		Params:    args,
+		Data:      data,
 	}
 	s.emitter <- evt
 }
 
-func (s *EventScript) jsSignal(symbol string, args ...interface{}) {
-	log.Debugf("signal: %s %v", symbol, args)
+func (s *EventScript) jsSignal(symbol string, data Payload) {
+	log.Debugf("signal: %s %v", symbol, data)
 	evt := &Event{
 		Id:        uuid.New().String(),
-		DeviceId:  "1234",
-		Kind:      KindSignal,
+		Type:      TypeSignal,
 		Timestamp: time.Now(),
 		Source:    "345",
 		Symbol:    symbol,
-		Params:    args,
+		Data:      data,
 	}
 	s.emitter <- evt
 }
 
-func (s *EventScript) jsSet(symbol string, props map[string]any) {
+func (s *EventScript) jsSet(symbol string, data Payload) {
 	log.Debugf("get: %s", symbol)
 	evt := &Event{
 		Id:        uuid.New().String(),
-		DeviceId:  "1234",
-		Kind:      KindState,
+		Type:      TypeState,
 		Timestamp: time.Now(),
 		Source:    "345",
 		Symbol:    symbol,
-		Props:     props,
+		Data:      data,
 	}
 	s.emitter <- evt
-
 }
 
 func (s *EventScript) jsSleep(duration int) {

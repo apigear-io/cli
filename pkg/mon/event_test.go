@@ -6,26 +6,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	SOURCE = "123"
+	CALL   = "demo/Counter#increment"
+	SIGNAL = "demo/Counter#shutdown"
+	STATE  = "demo/Counter"
+)
+
+var PAYLOAD = Payload{"a": 1, "b": 2}
+
 func TestMakeCall(t *testing.T) {
-	f := NewEventFactory("123", "test")
+	f := NewEventFactory(SOURCE)
 	// make a call object and validate content
-	call := f.MakeCall("test", "a", "b")
-	assert.Equal(t, "test", call.Symbol)
-	assert.Equal(t, []any{"a", "b"}, call.Params)
+	call := f.MakeCall(CALL, PAYLOAD)
+	assert.Equal(t, CALL, call.Symbol)
+	assert.Equal(t, PAYLOAD, call.Data)
 }
 
 func TestMakeSignal(t *testing.T) {
-	f := NewEventFactory("123", "test")
+	f := NewEventFactory(SOURCE)
 	// make a signal object and validate content
-	signal := f.MakeSignal("test", "a", "b")
-	assert.Equal(t, "test", signal.Symbol)
-	assert.Equal(t, []any{"a", "b"}, signal.Params)
+	signal := f.MakeSignal(SIGNAL, PAYLOAD)
+	assert.Equal(t, SIGNAL, signal.Symbol)
+	assert.Equal(t, PAYLOAD, signal.Data)
 }
 
 func TestMakeState(t *testing.T) {
-	f := NewEventFactory("123", "test")
+	f := NewEventFactory(SOURCE)
 	// make a state object and validate content
-	state := f.MakeState("test", map[string]any{"a": "b"})
-	assert.Equal(t, "test", state.Symbol)
-	assert.Equal(t, map[string]any{"a": "b"}, state.Props)
+	state := f.MakeState(STATE, PAYLOAD)
+	assert.Equal(t, STATE, state.Symbol)
+	assert.Equal(t, PAYLOAD, state.Data)
 }

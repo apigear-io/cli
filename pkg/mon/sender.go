@@ -3,11 +3,11 @@ package mon
 // EventSender is a sender of events.
 // It sends events to the monitor server
 type EventSender struct {
-	addr string
+	url string
 }
 
-func NewEventSender(addr string) *EventSender {
-	return &EventSender{addr: addr}
+func NewEventSender(url string) *EventSender {
+	return &EventSender{url: url}
 }
 
 // SendEvents sends events to the monitor server.
@@ -15,6 +15,7 @@ func NewEventSender(addr string) *EventSender {
 // The events are sent to the monitor server using a http post message
 func (s *EventSender) SendEvents(emitter chan *Event) {
 	for event := range emitter {
-		go HttpPost(s.addr, event)
+		// capture url, event for closure
+		HttpPost(s.url, event)
 	}
 }

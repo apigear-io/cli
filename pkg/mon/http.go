@@ -7,12 +7,14 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
-func HttpPost(addr string, data any) error {
+func HttpPost(url string, data any) error {
 	client := &http.Client{}
+	client.Timeout = time.Second * 15
 	// create a new http request
-	req, err := http.NewRequest("POST", addr, nil)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		log.Error("failed to create http request: ", err)
 		return err
@@ -30,6 +32,7 @@ func HttpPost(addr string, data any) error {
 	// set the body of the request to the json encoded event
 	req.Body = io.NopCloser(bytes.NewReader(json))
 	// send the request to the monitor server
+	log.Debugf("http post %s %s", url, json)
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Error("failed to send request: ", err)

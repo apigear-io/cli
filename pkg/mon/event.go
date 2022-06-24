@@ -6,76 +6,69 @@ import (
 	"github.com/google/uuid"
 )
 
-// Kind is the type of event.
-type Kind string
+// EventType is the type of event.
+type EventType string
+
+type Payload map[string]any
 
 const (
-	KindCall   Kind = "call"
-	KindSignal Kind = "signal"
-	KindState  Kind = "state"
+	TypeCall   EventType = "call"
+	TypeSignal EventType = "signal"
+	TypeState  EventType = "state"
 )
 
 // Event represents an API event.
 type Event struct {
-	Id        string                 `json:"id" yaml:"id"`
-	DeviceId  string                 `json:"device" yaml:"device"`
-	Kind      Kind                   `json:"kind" yaml:"kind"`
-	Timestamp time.Time              `json:"timestamp" yaml:"timestamp"`
-	Source    string                 `json:"source" yaml:"source"`
-	Symbol    string                 `json:"symbol" yaml:"symbol"`
-	Props     map[string]interface{} `json:"state" yaml:"state"`
-	Params    []any                  `json:"params" yaml:"params"`
+	Id        string    `json:"id" yaml:"id"`
+	Source    string    `json:"source" yaml:"source"`
+	Type      EventType `json:"type" yaml:"type"`
+	Timestamp time.Time `json:"timestamp" yaml:"timestamp"`
+	Symbol    string    `json:"symbol" yaml:"symbol"`
+	Data      Payload   `json:"data" yaml:"data"`
 }
 
 // EventFactory is used to create events.
 // Factory associates device ids and sources with events.
 type EventFactory struct {
-	DeviceId string
-	Source   string
+	Source string
 }
 
 // NewEventFactory creates a new event factory.
-func NewEventFactory(deviceId string, source string) *EventFactory {
+func NewEventFactory(source string) *EventFactory {
 	return &EventFactory{
-		DeviceId: deviceId,
-		Source:   source,
+		Source: source,
 	}
 }
 
 // MakeEvent creates an event with the given kind, symbol and params.
-func (f EventFactory) MakeEvent(kind Kind, symbol string, params []any, props map[string]any) *Event {
+func (f EventFactory) MakeEvent(kind EventType, symbol string, data Payload) *Event {
 	return &Event{
 		Id:        uuid.New().String(),
-		DeviceId:  f.DeviceId,
-		Kind:      kind,
+		Type:      kind,
 		Timestamp: time.Now(),
 		Source:    f.Source,
 		Symbol:    symbol,
-		Params:    params,
-		Props:     props,
+		Data:      data,
 	}
 }
 
 // MakeCall creates a call event with the given symbol and params.
-func (f EventFactory) MakeCall(symbol string, params ...any) *Event {
-	return f.MakeEvent(KindCall, symbol, params, nil)
+func (f EventFactory) MakeCall(symbol string, data Payload) *Event {
+	return f.MakeEvent(TypeCall, symbol, data)
 }
 
 // MakeSignal creates a signal event with the given symbol and params.
-func (f EventFactory) MakeSignal(symbol string, params ...any) *Event {
-	return f.MakeEvent(KindSignal, symbol, params, nil)
+func (f EventFactory) MakeSignal(symbol string, data Payload) *Event {
+	return f.MakeEvent(TypeSignal, symbol, data)
 }
 
 // MakeState creates a state event with the given symbol and props.
-func (f EventFactory) MakeState(symbol string, props map[string]interface{}) *Event {
-	return f.MakeEvent(KindState, symbol, nil, props)
+func (f EventFactory) MakeState(symbol string, data Payload) *Event {
+	return f.MakeEvent(TypeState, symbol, data)
 }
 
 // Sanitize ensures events are valid and fills in missing fields.
 func (f EventFactory) Sanitize(event *Event) *Event {
-	if event.DeviceId == "" {
-		event.DeviceId = f.DeviceId
-	}
 	if event.Source == "" {
 		event.Source = f.Source
 	}
