@@ -2,9 +2,13 @@ package mon
 
 import (
 	"apigear/pkg/log"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/dop251/goja"
+	"github.com/dop251/goja_nodejs/console"
+	"github.com/dop251/goja_nodejs/require"
 	"github.com/google/uuid"
 )
 
@@ -15,24 +19,34 @@ type EventScript struct {
 
 func NewEventScript(emitter chan *Event) *EventScript {
 	vm := goja.New()
-	s := &EventScript{vm: vm}
+	new(require.Registry).Enable(vm)
+	console.Enable(vm)
+	s := &EventScript{vm: vm, emitter: emitter}
 	s.init()
 	return s
 }
 
-func (s *EventScript) RunScript(script string) {
-	_, err := s.vm.RunString(script)
+func (s *EventScript) RunScriptFromFile(file string) error {
+	content, err := os.ReadFile(file)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to read script file: %v", err)
 	}
-	fn, ok := goja.AssertFunction(s.vm.Get("main"))
-	if !ok {
-		panic("not a function")
-	}
-	_, err = fn(goja.Undefined())
+	return s.RunScript(string(content))
+}
+
+func (s *EventScript) RunScript(script string) error {
+	prog, err := goja.Compile("", script, true)
+	defer func() {
+		close(s.emitter)
+	}()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("compile error: %v", err)
 	}
+	_, err = s.vm.RunProgram(prog)
+	if err != nil {
+		return fmt.Errorf("failed to run script: %v", err)
+	}
+	return nil
 }
 
 func (s *EventScript) init() {
@@ -69,7 +83,7 @@ func (s *EventScript) jsSignal(symbol string, data Payload) {
 }
 
 func (s *EventScript) jsSet(symbol string, data Payload) {
-	log.Debugf("get: %s", symbol)
+	log.Debugf("set: %s", symbol)
 	evt := &Event{
 		Id:        uuid.New().String(),
 		Type:      TypeState,

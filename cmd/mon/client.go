@@ -31,8 +31,13 @@ func NewClientCommand() *cobra.Command {
 			case ".js":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
-				vm := mon.NewEventScript(emitter)
-				vm.RunScript(options.script)
+				go func(script string, emitter chan *mon.Event) {
+					vm := mon.NewEventScript(emitter)
+					err := vm.RunScriptFromFile(options.script)
+					if err != nil {
+						log.Error(err)
+					}
+				}(options.script, emitter)
 				sender.SendEvents(emitter)
 			case ".csv":
 				emitter := make(chan *mon.Event)

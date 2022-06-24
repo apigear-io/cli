@@ -1,0 +1,4 @@
+type,symbol,data
+call,demo/Counter#increment,"{""count"":1}"
+state,demo/Counter,
+signal,demo/Counter#shutdown,"{""time"":1}"

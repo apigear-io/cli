@@ -9,6 +9,14 @@ import (
 // EventType is the type of event.
 type EventType string
 
+func (e EventType) String() string {
+	return string(e)
+}
+
+func ParseEventType(s string) EventType {
+	return EventType(s)
+}
+
 type Payload map[string]any
 
 const (
@@ -19,12 +27,12 @@ const (
 
 // Event represents an API event.
 type Event struct {
-	Id        string    `json:"id" yaml:"id"`
-	Source    string    `json:"source" yaml:"source"`
-	Type      EventType `json:"type" yaml:"type"`
-	Timestamp time.Time `json:"timestamp" yaml:"timestamp"`
-	Symbol    string    `json:"symbol" yaml:"symbol"`
-	Data      Payload   `json:"data" yaml:"data"`
+	Id        string    `json:"id" yaml:"id" csv:"id"`
+	Source    string    `json:"source" yaml:"source" csv:"source"`
+	Type      EventType `json:"type" yaml:"type" csv:"type"`
+	Timestamp time.Time `json:"timestamp" yaml:"timestamp" csv:"timestamp"`
+	Symbol    string    `json:"symbol" yaml:"symbol" csv:"symbol"`
+	Data      Payload   `json:"data" yaml:"data" csv:"data"`
 }
 
 // EventFactory is used to create events.
