@@ -33,8 +33,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "dry-run")
 	cmd.PersistentFlags().String("env", "development", "environment (development, production, staging)")
-	viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env"))
-	viper.Set("version", cmd.Version)
 	cmd.AddCommand(sdk.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(conf.NewRootCommand())
@@ -44,6 +42,10 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewYaml2JsonCommand())
 	cmd.AddCommand(NewJson2YamlCommand())
 	cmd.AddCommand(NewDocsCommand())
+
+	viper.Set("version", cmd.Version)
+	viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env"))
+	viper.BindPFlag("verbose", cmd.PersistentFlags().Lookup("verbose"))
 
 	return cmd
 }
@@ -64,13 +66,13 @@ func initConfig() {
 		viper.SetConfigName(".apigear")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
-
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	viper.Set("verbose", verbose)
-	log.SetVerbose(verbose)
+	viper.BindEnv("debug")
+	viper.SetEnvPrefix("apigear")
+	viper.AutomaticEnv() // read in environment variables that match
+	log.Config(viper.GetBool("verbose"), viper.GetBool("debug"))
 }

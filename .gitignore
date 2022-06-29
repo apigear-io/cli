@@ -35,3 +35,6 @@ tmp/
 # dist folder
 dist/
 cli
+
+# idea ide
+.idea/

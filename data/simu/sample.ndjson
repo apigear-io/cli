@@ -1,4 +1,4 @@
-{ "method": "simu.call", "params": [ "demo.Counter/increment" ]}
-{ "method": "simu.call", "params": [ "demo.Counter/decrement" ]}
-{ "method": "simu.call", "params": [ "demo.Counter/increment" ]}
-{ "method": "simu.call", "params": [ "demo.Counter/decrement" ]}
+{ "method": "simu.call", "params": { "service": "demo.Counter", "operation": "increment", "params": { "step": 1 } }}
+{ "method": "simu.call", "params": { "service": "demo.Counter", "operation": "decrement", "params": { "step": 2 } }}
+{ "method": "simu.call", "params": { "service": "demo.Counter", "operation": "increment", "params": { "step": 3 } }}
+{ "method": "simu.call", "params": { "service": "demo.Counter", "operation": "decrement", "params": { "step": 4 } }}

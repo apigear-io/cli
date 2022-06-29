@@ -3,7 +3,6 @@ package sim
 import (
 	"apigear/pkg/log"
 	"fmt"
-	"strings"
 )
 
 // Simulate runs one or more simulation scenarios.
@@ -37,7 +36,7 @@ func (s *Simulation) RemoveAll() {
 	fmt.Println("Simulation.stopAll")
 }
 
-func (s Simulation) LookupMethod(ifaceName string, methodName string) *ScriptEntry {
+func (s Simulation) LookupMethod(ifaceName string, methodName string) *MethodEntry {
 	log.Debugf("sim.lookupMethod: %s %s", ifaceName, methodName)
 	iface := s.LookupInterface(ifaceName)
 	if iface == nil {
@@ -63,21 +62,15 @@ func (s Simulation) LookupInterface(ifaceName string) *InterfaceEntry {
 	return nil
 }
 
-func (s Simulation) CallMethod(symbol string, params []interface{}) error {
-	log.Debugf("sim.call: %s %v", symbol, params)
-	words := strings.Split(symbol, "/")
-	if len(words) != 2 {
-		return fmt.Errorf("invalid method symbol %s", symbol)
-	}
-	ifaceName := words[0]
-	methodName := words[1]
-	iface := s.LookupInterface(ifaceName)
+func (s Simulation) CallMethod(service string, method string, params map[string]any) error {
+	log.Debugf("sim.call: %s#%s %v", service, method, params)
+	iface := s.LookupInterface(service)
 	if iface == nil {
-		return fmt.Errorf("interface %s not found", ifaceName)
+		return fmt.Errorf("interface %s not found", service)
 	}
 	for _, m := range iface.Methods {
-		if m.Name == methodName {
-			log.Debugf("call method %s.%s", ifaceName, methodName)
+		if m.Name == method {
+			log.Debugf("TODO: call method %s.%s", service, method)
 		}
 	}
 	return nil

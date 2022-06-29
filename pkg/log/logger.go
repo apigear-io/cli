@@ -1,17 +1,21 @@
 package log
 
 import (
+	"github.com/apigear-io/hub/log"
 	"github.com/sirupsen/logrus"
 )
 
 var logger = logrus.New()
 
-func SetVerbose(verbose bool) {
+func Config(verbose bool, debug bool) {
 	if verbose {
-		logger.SetReportCaller(true)
 		logger.SetLevel(logrus.DebugLevel)
 	} else {
 		logger.SetLevel(logrus.InfoLevel)
+	}
+	logger.SetReportCaller(debug)
+	if verbose || debug {
+		log.Infof("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
 }
 

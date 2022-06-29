@@ -6,6 +6,12 @@ import (
 	"github.com/dop251/goja"
 )
 
+type Script struct {
+	Name    string
+	Source  string
+	Context map[string]any
+}
+
 // ScriptEngine is a runs the different scripts in the context of a simulation.
 // The engine produces events which are sent via a channel.
 // Typically the simulation listens to all script engines passes them on to the network communication.
@@ -20,7 +26,7 @@ func NewScriptEngine() *ScriptEngine {
 	}
 }
 
-func (s *ScriptEngine) Run(script ScriptEntry) error {
+func (s *ScriptEngine) Run(script Script) error {
 	log.Debugf("run script %s", script.Name)
 	value, err := s.vm.RunScript(script.Name, script.Source)
 	if err != nil {
@@ -29,4 +35,9 @@ func (s *ScriptEngine) Run(script ScriptEntry) error {
 	}
 	log.Debugf("script %s returned %v", script.Name, value)
 	return nil
+}
+
+func (s *ScriptEngine) Set(key string, value any) {
+	log.Debugf("set %s to %v", key, value)
+	s.vm.Set(key, value)
 }

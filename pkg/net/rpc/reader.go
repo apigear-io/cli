@@ -28,6 +28,7 @@ func ReadJsonMessagesFromFile(fn string, sleepDuration time.Duration, emitter ch
 
 func ReadJsonMessages(r io.Reader, sleepDuration time.Duration, emitter chan RpcMessage) error {
 	scanner := bufio.NewScanner(r)
+	id := uint64(0)
 	for scanner.Scan() {
 		line := scanner.Text()
 		log.Debug("read line: ", line)
@@ -38,6 +39,10 @@ func ReadJsonMessages(r io.Reader, sleepDuration time.Duration, emitter chan Rpc
 			log.Fatalf("failed to decode line: %s: %v", line, err)
 		}
 		m.Version = "2.0"
+		if m.Id == 0 {
+			m.Id = id
+			id++
+		}
 		time.Sleep(sleepDuration)
 		emitter <- m
 	}

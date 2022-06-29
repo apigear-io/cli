@@ -28,7 +28,7 @@ func NewClientCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "client",
 		Short: "running simu calls from command line",
-		Long: `Simlation clients runs simulation calls from command line. 
+		Long: `Simulation clients runs simulation calls from command line. 
 These calls can be used to test the service.`,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -44,6 +44,7 @@ These calls can be used to test the service.`,
 					log.Fatalf("failed to connect to %s: %v", options.addr, err)
 				}
 				go rpc.ReadJsonMessagesFromFile(options.script, options.sleepDuration, emitter)
+				go sender.ReadPump()
 				sender.SendMessages(emitter)
 			}
 		},

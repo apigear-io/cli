@@ -21,6 +21,7 @@ func NewRpcSender(writer RpcMessageHandler) *RpcSender {
 
 func (s *RpcSender) Dial(addr string) error {
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/ws/"}
+	log.Infof("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		return err
@@ -35,7 +36,7 @@ func (s *RpcSender) Close() {
 
 func (s *RpcSender) SendMessages(emitter chan RpcMessage) {
 	for message := range emitter {
-		log.Debugf("send message %+v\n", message)
+		log.Infof("send  %v\n", message)
 		s.conn.WriteJSON(message)
 	}
 }
@@ -55,7 +56,7 @@ func (s *RpcSender) ReadPump() {
 		var msg RpcMessage
 		err = json.Unmarshal(data, &msg)
 		if err != nil {
-			log.Debugf("error decoding rpc mesage: %v", err)
+			log.Debugf("error decoding rpc message: %v", err)
 			return
 		}
 		log.Debugf("decoded message: %+v", msg)
@@ -64,6 +65,5 @@ func (s *RpcSender) ReadPump() {
 			log.Debugf("error writing message: %v", err)
 			return
 		}
-
 	}
 }

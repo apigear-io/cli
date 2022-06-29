@@ -4,7 +4,6 @@ import (
 	"apigear/pkg/log"
 	"apigear/pkg/net/rpc"
 	"apigear/pkg/sim"
-	"fmt"
 )
 
 type SimuRpcHandler struct {
@@ -24,12 +23,10 @@ func (s SimuRpcHandler) HandleMessage(r rpc.RpcRequest) error {
 
 	switch m.Method {
 	case "simu.call":
-		if len(m.Params) != 2 {
-			return fmt.Errorf("invalid params for simu.call: %v", m.Params)
-		}
-		symbol := m.Params[0].(string)
-		args := m.Params[1].([]interface{})
-		s.simu.CallMethod(symbol, args)
+		service := m.Params["service"].(string)
+		operation := m.Params["operation"].(string)
+		params := m.Params["params"].(map[string]any)
+		s.simu.CallMethod(service, operation, params)
 	}
 	return nil
 }
