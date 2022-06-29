@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/dop251/goja_nodejs v0.0.0-20211022123610-8dd9abb0616d
 	github.com/iancoleman/strcase v0.2.0
 	github.com/sirupsen/logrus v1.8.1
 )

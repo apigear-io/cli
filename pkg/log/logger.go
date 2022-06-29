@@ -1,7 +1,6 @@
 package log
 
 import (
-	"github.com/apigear-io/hub/log"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,7 +14,7 @@ func Config(verbose bool, debug bool) {
 	}
 	logger.SetReportCaller(debug)
 	if verbose || debug {
-		log.Infof("logger configured: verbose=%v, debug=%v", verbose, debug)
+		logger.Infof("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
 }
 
