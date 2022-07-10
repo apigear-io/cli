@@ -19,6 +19,12 @@ var cfgFile string
 var verbose bool
 var dryRun bool
 
+func Must(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func NewRootCommand() *cobra.Command {
 	// cmd represents the base command when called without any subcommands
 	cmd := &cobra.Command{
@@ -44,8 +50,8 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewDocsCommand())
 
 	viper.Set("version", cmd.Version)
-	viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env"))
-	viper.BindPFlag("verbose", cmd.PersistentFlags().Lookup("verbose"))
+	Must(viper.BindPFlag("env", cmd.PersistentFlags().Lookup("env")))
+	Must(viper.BindPFlag("verbose", cmd.PersistentFlags().Lookup("verbose")))
 
 	return cmd
 }
@@ -71,7 +77,7 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	viper.BindEnv("debug")
+	Must(viper.BindEnv("debug"))
 	viper.SetEnvPrefix("apigear")
 	viper.AutomaticEnv() // read in environment variables that match
 	log.Config(viper.GetBool("verbose"), viper.GetBool("debug"))
