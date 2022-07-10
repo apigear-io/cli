@@ -1,0 +1,8 @@
+schema: apigear.rules/1.0
+features:
+  - name: core
+    scopes:
+      - match: module
+        documents:
+          - source: "api.json.tmpl"
+            target: "{{.Module.Name}}.json"

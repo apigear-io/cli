@@ -24,6 +24,7 @@ func NewCheckCommand() *cobra.Command {
 				result, err := spec.CheckFile(file)
 				if err != nil {
 					log.Warnf("failed to check json file %s: %s", file, err)
+					break
 				}
 				if result.Valid() {
 					fmt.Printf("valid: %s\n", file)

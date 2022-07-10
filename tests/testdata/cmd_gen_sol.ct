@@ -1,0 +1,2 @@
+$ apigear gen sol ${DATA}/api/demo.solution.yaml
+Using config file: /Users/jryannel/.apigear.json

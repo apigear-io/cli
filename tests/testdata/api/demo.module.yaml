@@ -1,0 +1,12 @@
+schema: "apigear.module/1.0"
+name: demo
+version: "0.1"
+
+interfaces:
+  - name: Counter
+    properties:
+      - name: count
+        type: int
+    operations:
+      - name: inc
+      - name: dev

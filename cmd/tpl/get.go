@@ -6,10 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type GetOptions struct {
-	repo string
-}
-
 func NewGetCommand() *cobra.Command {
 	var url string
 	var name string

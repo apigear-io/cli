@@ -21,7 +21,10 @@ func runSolution(file string) error {
 		log.Errorf("error reading solution: %s", err)
 		return err
 	}
-	rootDir := filepath.Dir(file)
+	rootDir, err := filepath.Abs(filepath.Dir(file))
+	if err != nil {
+		return err
+	}
 	proc := sol.NewSolutionRunner(rootDir, doc)
 	proc.Run()
 	return nil

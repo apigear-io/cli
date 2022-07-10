@@ -1,0 +1,1 @@
+$ apigear gen x -i ${DATA}/api/demo.module.yaml -o tmp -t ${DATA}/tpl 

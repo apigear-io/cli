@@ -1,0 +1,28 @@
+$ apigear --help
+ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.
+
+Usage:
+  apigear [command]
+
+Available Commands:
+  check       check document
+  completion  Generate the autocompletion script for the specified shell
+  conf        A brief description of your command
+  doc         exports cli docs as markdown
+  gen         generates code
+  help        Help about any command
+  json2yaml   convert json doc to yaml doc
+  mon         A brief description of your command
+  sim         A brief description of your command
+  tpl         manage code generation templates
+  yaml2json   convert yaml doc to json doc
+
+Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+      --env string      environment (development, production, staging) (default "development")
+  -h, --help            help for apigear
+  -v, --verbose         verbose output
+      --version         version for apigear
+
+Use "apigear [command] --help" for more information about a command.
