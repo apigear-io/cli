@@ -52,7 +52,7 @@ func TestEmptyRules(t *testing.T) {
 	w := NewMockFileWriter()
 	g := createGenerator(t, w)
 	r := readRules(t, "testdata/empty.rules.yaml")
-	g.ProcessRulesDoc(r)
+	assert.NoError(t, g.ProcessRulesDoc(r))
 }
 
 func TestHelloRules(t *testing.T) {

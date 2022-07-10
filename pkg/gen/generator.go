@@ -86,7 +86,10 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		}
 		return g.ParseTemplate(path)
 	})
-	return err
+	if err != nil {
+		return fmt.Errorf("error parsing templates dir %s: %s", dir, err)
+	}
+	return nil
 }
 
 func (g *generator) Run(filename string) error {
@@ -98,8 +101,7 @@ func (g *generator) Run(filename string) error {
 	var rules = spec.RulesDoc{}
 	err = yaml.Unmarshal(bytes, &rules)
 	if err != nil {
-		log.Errorf("error parsing file %s: %s", filename, err)
-		return err
+		return fmt.Errorf("error unmarshalling file %s: %s", filename, err)
 	}
 	return g.ProcessRulesDoc(rules)
 }

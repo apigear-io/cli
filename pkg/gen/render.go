@@ -22,7 +22,10 @@ func NewRenderer(tplDir string) *Renderer {
 func (r *Renderer) RenderString(s string, data any) (string, error) {
 	buf := bytes.Buffer{}
 	t := template.Must(template.New("").Parse(s))
-	t.Execute(&buf, data)
+	err := t.Execute(&buf, data)
+	if err != nil {
+		return "", err
+	}
 	return buf.String(), nil
 }
 
