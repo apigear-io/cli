@@ -26,7 +26,12 @@ func NewClientCommand() *cobra.Command {
 			case ".json", ".ndjson":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
-				go mon.ReadJsonEvents(options.script, emitter)
+				go func(fn string, emitter chan *mon.Event) {
+					err := mon.ReadJsonEvents(fn, emitter)
+					if err != nil {
+						log.Error(err)
+					}
+				}(options.script, emitter)
 				sender.SendEvents(emitter)
 			case ".js":
 				emitter := make(chan *mon.Event)
@@ -42,7 +47,12 @@ func NewClientCommand() *cobra.Command {
 			case ".csv":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
-				go mon.ReadCsvEvents(options.script, emitter)
+				go func(fn string, emitter chan *mon.Event) {
+					err := mon.ReadCsvEvents(fn, emitter)
+					if err != nil {
+						log.Error(err)
+					}
+				}(options.script, emitter)
 				sender.SendEvents(emitter)
 			default:
 				log.Error("unknown file type: ", options.script)

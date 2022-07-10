@@ -14,7 +14,10 @@ func init() {
 	}
 	packageDir := path.Join(home, ".apigear", "templates")
 	viper.SetDefault("packageDir", packageDir)
-	os.MkdirAll(packageDir, 0755)
+	err = os.MkdirAll(packageDir, 0755)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func GetPackageDir() string {

@@ -31,7 +31,10 @@ func runSolution(file string) error {
 }
 
 func watchSol(options *SolutionOptions) {
-	runSolution(options.file)
+	err := runSolution(options.file)
+	if err != nil {
+		log.Fatal(err)
+	}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)

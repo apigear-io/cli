@@ -12,6 +12,12 @@ import (
 	"github.com/google/uuid"
 )
 
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 type EventScript struct {
 	vm      *goja.Runtime
 	emitter chan *Event
@@ -50,10 +56,10 @@ func (s *EventScript) RunScript(script string) error {
 }
 
 func (s *EventScript) init() {
-	s.vm.Set("call", s.jsCall)
-	s.vm.Set("signal", s.jsSignal)
-	s.vm.Set("set", s.jsSet)
-	s.vm.Set("sleep", s.jsSleep)
+	Must(s.vm.Set("call", s.jsCall))
+	Must(s.vm.Set("signal", s.jsSignal))
+	Must(s.vm.Set("set", s.jsSet))
+	Must(s.vm.Set("sleep", s.jsSleep))
 }
 
 func (s *EventScript) jsCall(symbol string, data Payload) {

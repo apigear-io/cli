@@ -21,7 +21,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Debugf("start server on %s", addr)
 			go func() {
 				for event := range mon.Emitter() {
@@ -35,7 +35,11 @@ to quickly create a Cobra application.`,
 			s := net.NewHTTPServer()
 			s.Router().Post("/monitor/{source}/", net.HandleMonitorRequest)
 			log.Infof("handle monitor request on %s/monitor/{source}", addr)
-			s.Start(addr)
+			err := s.Start(addr)
+			if err != nil {
+				return fmt.Errorf("error starting server: %s", err)
+			}
+			return nil
 		},
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", ":5555", "address to listen on")

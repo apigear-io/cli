@@ -194,7 +194,7 @@ func (s *Schema) ResolveSymbol() error {
 
 func (s *Schema) ResolveType() error {
 	if !s.IsResolved {
-		s.ResolveSymbol()
+		return s.ResolveSymbol()
 	}
 	kind := ""
 	if s.IsPrimitive {
@@ -215,7 +215,11 @@ func (s *Schema) ResolveType() error {
 }
 
 func (s *Schema) GetEnum() *Enum {
-	s.ResolveSymbol()
+	err := s.ResolveSymbol()
+	if err != nil {
+		log.Errorf("%s", err)
+		return nil
+	}
 	return s.enum
 }
 
@@ -225,8 +229,12 @@ func (s *Schema) GetStruct() *Struct {
 }
 
 func (s *Schema) GetInterface() *Interface {
-	s.ResolveSymbol()
-	return s.interface_
+	err := s.ResolveSymbol()
+	if err != nil {
+		log.Errorf("%s", err)
+		return nil
+	}
+	return s.interface_ 
 }
 
 func (s *Schema) IsEnum() bool {

@@ -11,6 +11,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+
+
+func Must(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 type ExpertOptions struct {
 	inputs      []string
 	outputDir   string
@@ -45,9 +53,9 @@ func NewExpertCommand() *cobra.Command {
 	cmd.Flags().StringSliceVarP(&options.features, "feature", "f", []string{"core"}, "features to enable")
 	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
 	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
-	cmd.MarkFlagRequired("input")
-	cmd.MarkFlagRequired("output")
-	cmd.MarkFlagRequired("template")
+	Must(cmd.MarkFlagRequired("input"))
+	Must(cmd.MarkFlagRequired("output"))
+	Must(cmd.MarkFlagRequired("template"))
 	return cmd
 }
 
@@ -76,7 +84,10 @@ func runExpert(options *ExpertOptions) error {
 }
 
 func watchExpert(options *ExpertOptions) {
-	runExpert(options)
+	err := runExpert(options)
+	if err != nil {
+		log.Fatalf("failed to run expert mode: %s", err)
+	}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)

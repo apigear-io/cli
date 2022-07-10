@@ -25,6 +25,7 @@ deps:
 	@echo "https://go.dev/doc/install"
 	@echo "https://goreleaser.com/install/"
 	@echo "https://github.com/cosmtrek/air"
+	@echo "https://golangci-lint.run/usage/install/"
 
 check:
 	golangci-lint run

@@ -5,6 +5,7 @@ import (
 	"apigear/pkg/net"
 	"apigear/pkg/net/rpc"
 	"apigear/pkg/sim"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -20,15 +21,14 @@ func NewServerCommand() *cobra.Command {
 		Long: `The simulation server simulates the service backend. 
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Debug("run simulation server")
 			var scenario *sim.ScenarioDoc
 			if len(args) == 1 {
 				file := args[0]
 				doc, err := sim.ReadScenario(file)
 				if err != nil {
-					log.Errorf("failed to read scenario file %s: %v", file, err)
-					return
+					return fmt.Errorf("failed to read scenario file %s: %v", file, err)
 				}
 				log.Info("run simulation server from scenario ", file)
 				scenario = doc
@@ -42,8 +42,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			s := net.NewHTTPServer()
 			s.Router().HandleFunc("/ws/", hub.HandleWebsocketRequest)
 			log.Debugf("handle ws rpc server on %s/ws/", addr)
-			s.Start(addr)
-
+			return s.Start(addr)
 		},
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", ":5555", "address to listen on")
