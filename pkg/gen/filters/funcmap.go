@@ -10,23 +10,25 @@ import (
 func PopulateFuncMap() template.FuncMap {
 	log.Debug("populate func map")
 	fm := make(template.FuncMap)
-	fm["snakeCase"] = SnakeCase
-	fm["camelCase"] = CamelCase
-	fm["delimitedCase"] = DotCase
-	fm["lowerCamelCase"] = LowerCamelCase
-	fm["kebabCase"] = KebabCase
-	fm["pathCase"] = PathCase
-	fm["lowerCase"] = LowerCase
-	fm["upperCase"] = UpperCase
-	fm["upperFirst"] = UpperFirst
-	fm["lowerFirst"] = LowerFirst
-	fm["firstChar"] = FirstChar
-	fm["firstCharLower"] = FirstCharLower
-	fm["firstCharUpper"] = FirstCharUpper
-	fm["first"] = FirstCharLower
-	fm["First"] = FirstCharUpper
+	fm["snake"] = SnakeCaseLower
+	fm["Snake"] = SnakeCase
+	fm["SNAKE"] = SnakeCaseUpper
+	fm["camel"] = CamelCaseLower
 	fm["Camel"] = CamelCase
-	fm["camel"] = LowerCamelCase
+	fm["dot"] = DotCaseLower
+	fm["Dot"] = DotCase
+	fm["DOT"] = DotCaseUpper
+	fm["kebap"] = KebabCaseLower
+	fm["Kebab"] = KebabCase
+	fm["KEBAP"] = KebabCaseUpper
+	fm["pathCase"] = PathCase
+	fm["lower"] = LowerCase
+	fm["upper"] = UpperCase
+	fm["upper1"] = UpperFirst
+	fm["lower1"] = LowerFirst
+	fm["first"] = FirstCharLower
+	fm["First"] = FirstChar
+	fm["FIRST"] = FirstCharUpper
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)
