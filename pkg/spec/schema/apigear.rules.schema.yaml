@@ -11,7 +11,7 @@ description: |
     - name: api
       path: {{module|identifier}}/
       scopes:
-        - match: module:
+        - match: module
           documents:
             - source: api.h
     - name: core
