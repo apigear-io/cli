@@ -1,4 +1,4 @@
-.PHONY: antlr deb test build
+.PHONY: antlr deb test build check
 
 
 test:
@@ -25,3 +25,6 @@ deps:
 	@echo "https://go.dev/doc/install"
 	@echo "https://goreleaser.com/install/"
 	@echo "https://github.com/cosmtrek/air"
+
+check:
+	golangci-lint run
