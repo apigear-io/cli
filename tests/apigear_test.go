@@ -3,8 +3,6 @@ package tests
 import (
 	"apigear/cmd"
 	"flag"
-	"os"
-	"path"
 	"testing"
 
 	cmdtest "github.com/google/go-cmdtest"
@@ -13,43 +11,24 @@ import (
 
 var update = flag.Bool("update", false, "update test files with results")
 
-// func copyFile(src string, dstDir string) error {
-// 	buf, err := os.ReadFile(src)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	dst := path.Join(dstDir, src)
-// 	return os.WriteFile(dst, buf, 0644)
-// }
+var entries = []string{
+	"api/demo.module.yaml",
+	"api/demo.solution.yaml",
+	"tpl/rules.yaml",
+	"tpl/templates/api.json.tmpl",
+}
 
-// func setupWrapped(cwd string) func(string) error {
-// 	return func(root string) error {
-// 		err := copyFile(path.Join(cwd, "api/demo.module.yaml"), root)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		err = copyFile(path.Join(cwd, "api/demo.solution.yaml"), root)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		err = copyFile(path.Join(cwd, "tpl/rules.yaml"), root)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		return copyFile(path.Join(cwd, "tpl/templates/api.json.tmpl"), root)
-// 	}
-// }
+func setup(root string) error {
+	return copyTestData(TEST_DATA, root, entries...)
+}
 
 func TestApiGear(t *testing.T) {
-	cwd, err := os.Getwd()
-	assert.NoError(t, err)
-	os.Setenv("DATA", path.Join(cwd, "testdata"))
-	// cwd, err := os.Getwd()
-	// assert.NoError(t, err)
 	ts, err := cmdtest.Read("./testdata")
+	ts.Setup = setup
 	ts.KeepRootDirs = true
 	// ts.Setup = setupWrapped(cwd)
 	assert.NoError(t, err)
 	ts.Commands["apigear"] = cmdtest.InProcessProgram("apigear", cmd.Run)
+	ts.Commands["exists"] = exists
 	ts.Run(t, *update)
 }

@@ -208,7 +208,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 		return nil
 	}
 	// write the file
-	log.Debugf("writing file %s", target)
+	log.Infof("write %s", target)
 	err = g.Writer.WriteFile(target, buf.Bytes(), force)
 	if err != nil {
 		return fmt.Errorf("error writing file %s: %s", target, err)

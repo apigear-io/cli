@@ -13,6 +13,7 @@ Available Commands:
   help        Help about any command
   json2yaml   convert json doc to yaml doc
   mon         A brief description of your command
+  prj         Manages project creation and management
   sim         A brief description of your command
   tpl         manage code generation templates
   yaml2json   convert yaml doc to json doc

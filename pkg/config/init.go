@@ -2,7 +2,6 @@ package config
 
 import (
 	"apigear/pkg/log"
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -31,8 +30,8 @@ func InitConfig() {
 	}
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
 	viper.SetEnvPrefix("apigear")

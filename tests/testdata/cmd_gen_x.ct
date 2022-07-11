@@ -1,1 +1,10 @@
-$ apigear gen x -i ${DATA}/api/demo.module.yaml -o tmp -t ${DATA}/tpl 
+$ apigear gen x -i api/demo.module.yaml -o tmp -t tpl
+
+$ exists tmp/demo.json
+exists tmp/demo.json
+
+$ cd tmp
+$ cat demo.json
+{
+    "name": "demo"
+}
