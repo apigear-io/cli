@@ -14,7 +14,7 @@ func Config(verbose bool, debug bool) {
 	}
 	logger.SetReportCaller(debug)
 	if verbose || debug {
-		logger.Infof("logger configured: verbose=%v, debug=%v", verbose, debug)
+		logger.Debugf("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
 }
 
