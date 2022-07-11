@@ -3,7 +3,7 @@ package mon
 import (
 	"apigear/pkg/log"
 	"apigear/pkg/mon"
-	"path"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -22,7 +22,7 @@ func NewClientCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
-			switch path.Ext(options.script) {
+			switch filepath.Ext(options.script) {
 			case ".json", ".ndjson":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)

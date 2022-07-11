@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -184,9 +183,9 @@ func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
 func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	log.Debugf("processing document %s", doc.Source)
 	// the source file to render
-	var source = path.Clean(doc.Source)
+	var source = filepath.Clean(doc.Source)
 	// the target destination file
-	var target = path.Clean(doc.Target)
+	var target = filepath.Clean(doc.Target)
 	// either user can force an overwrite or the target or the rules document
 	force := doc.Force || g.UserForce
 	if target == "" {

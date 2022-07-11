@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"path"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
@@ -18,13 +18,13 @@ func (p *DataParser) ParseFile(file string) error {
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", file, err)
 	}
-	switch path.Ext(file) {
+	switch filepath.Ext(file) {
 	case ".json":
 		return p.ParseJson(data)
 	case ".yaml", ".yml":
 		return p.ParseYaml(data)
 	default:
-		return fmt.Errorf("unknown file extension %s", path.Ext(file))
+		return fmt.Errorf("unknown file extension %s", filepath.Ext(file))
 	}
 }
 

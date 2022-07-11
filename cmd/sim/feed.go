@@ -3,7 +3,7 @@ package sim
 import (
 	"apigear/pkg/log"
 	"apigear/pkg/net/rpc"
-	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -33,7 +33,7 @@ func NewClientCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
-			switch path.Ext(options.script) {
+			switch filepath.Ext(options.script) {
 			case ".ndjson":
 				emitter := make(chan rpc.RpcMessage)
 				writer := ConsoleHandler{}

@@ -5,7 +5,7 @@ import (
 	"apigear/pkg/log"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 )
 
 var currentProject ProjectInfo
@@ -17,7 +17,7 @@ func OpenProject(source string) (ProjectInfo, error) {
 		return ProjectInfo{}, err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(path.Join(source, "apigear")); err != nil {
+	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
 		return ProjectInfo{}, err
 	}
 
@@ -39,16 +39,16 @@ func InitProject(d string) (ProjectInfo, error) {
 		}
 	}
 	// create apigear directory
-	if err := os.Mkdir(path.Join(d, "apigear"), 0755); err != nil {
+	if err := os.Mkdir(filepath.Join(d, "apigear"), 0755); err != nil {
 		if !os.IsExist(err) {
 			return ProjectInfo{}, err
 		}
 	}
 	// write demo module and demo solution
-	if err := writeDemoModule(path.Join(d, "apigear", "demo.module.yaml")); err != nil {
+	if err := writeDemoModule(filepath.Join(d, "apigear", "demo.module.yaml")); err != nil {
 		log.Debugf("Failed to write demo module: %s", err)
 	}
-	if err := writeDemoSolution(path.Join(d, "apigear", "demo.solution.yaml")); err != nil {
+	if err := writeDemoSolution(filepath.Join(d, "apigear", "demo.solution.yaml")); err != nil {
 		log.Debugf("Failed to write demo solution: %s", err)
 	}
 	return readProject(d)
@@ -97,7 +97,7 @@ func ImportProject(source string, target string) (ProjectInfo, error) {
 		return ProjectInfo{}, err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(path.Join(source, "apigear")); err != nil {
+	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
 		return ProjectInfo{}, err
 	}
 	// check if destination is directory
@@ -105,7 +105,7 @@ func ImportProject(source string, target string) (ProjectInfo, error) {
 		return ProjectInfo{}, err
 	}
 	// check if destination contains apigear directory
-	if _, err := os.Stat(path.Join(target, "apigear")); err != nil {
+	if _, err := os.Stat(filepath.Join(target, "apigear")); err != nil {
 		return ProjectInfo{}, err
 	}
 	// copy apigear directory
@@ -122,7 +122,7 @@ func PackProject(source string, target string) (string, error) {
 		return "", err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(path.Join(source, "apigear")); err != nil {
+	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
 		return "", err
 	}
 	// create archive file

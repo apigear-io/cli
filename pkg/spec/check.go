@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"apigear/pkg/idl"
@@ -21,7 +21,7 @@ func CheckFile(file string) (*gojsonschema.Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error reading file: %w", err)
 	}
-	if path.Ext(file) == ".yaml" || path.Ext(file) == ".yml" {
+	if filepath.Ext(file) == ".yaml" || filepath.Ext(file) == ".yml" {
 		data, err = YamlToJson(data)
 		if err != nil {
 			return nil, err

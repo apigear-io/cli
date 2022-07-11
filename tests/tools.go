@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -16,7 +15,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	TEST_DATA = path.Join(cwd, "testdata")
+	TEST_DATA = filepath.Join(cwd, "testdata")
 
 }
 
@@ -41,7 +40,7 @@ func copyTestData(srcDir, dstDir string, entries ...string) error {
 		if err != nil {
 			return err
 		}
-		err = os.MkdirAll(path.Dir(dst), 0755)
+		err = os.MkdirAll(filepath.Dir(dst), 0755)
 		if err != nil {
 			return err
 		}

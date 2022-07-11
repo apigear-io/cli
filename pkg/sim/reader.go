@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 )
 
 func ReadScenario(file string) (*ScenarioDoc, error) {
-	switch path.Ext(file) {
+	switch filepath.Ext(file) {
 	case ".json":
 		return ReadJsonScenario(file)
 	case ".yaml":

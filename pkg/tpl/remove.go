@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 func RemoveTemplate(name string) error {
@@ -13,7 +13,7 @@ func RemoveTemplate(name string) error {
 	log.Infof("remove template %s from %s", name, dir)
 	// remove dir from packageDir
 	// check if dir exists
-	target := path.Join(dir, name)
+	target := filepath.Join(dir, name)
 	_, err := os.Stat(target)
 	if errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("template %s does not exist", name)

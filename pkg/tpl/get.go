@@ -6,13 +6,13 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 )
 
 // GetTemplate clones a template using git from an url into a local directory.
 func GetTemplate(name string, repo string) error {
 	// check if repo is a local dir or an url
-	target := path.Join(GetPackageDir(), name)
+	target := filepath.Join(GetPackageDir(), name)
 	_, err := os.Stat(target)
 	if err == nil {
 		return fmt.Errorf("%s already exists", name)

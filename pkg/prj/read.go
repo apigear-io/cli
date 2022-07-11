@@ -4,7 +4,7 @@ import (
 	"apigear/pkg/config"
 	"apigear/pkg/log"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 func readProject(d string) (ProjectInfo, error) {
@@ -14,11 +14,11 @@ func readProject(d string) (ProjectInfo, error) {
 		return ProjectInfo{}, err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(path.Join(d, "apigear")); err != nil {
+	if _, err := os.Stat(filepath.Join(d, "apigear")); err != nil {
 		return ProjectInfo{}, err
 	}
 	// read apigear directory
-	entries, err := os.ReadDir(path.Join(d, "apigear"))
+	entries, err := os.ReadDir(filepath.Join(d, "apigear"))
 	if err != nil {
 		return ProjectInfo{}, err
 	}
@@ -30,12 +30,12 @@ func readProject(d string) (ProjectInfo, error) {
 		}
 		docs = append(docs, DocumentInfo{
 			Name: entry.Name(),
-			Path: path.Join(d, "apigear", entry.Name()),
+			Path: filepath.Join(d, "apigear", entry.Name()),
 			Type: "module",
 		})
 	}
 	project := ProjectInfo{
-		Name:      path.Base(d),
+		Name:      filepath.Base(d),
 		Path:      d,
 		Documents: docs,
 	}

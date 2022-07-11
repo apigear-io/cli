@@ -2,12 +2,12 @@ package tpl
 
 import (
 	"apigear/pkg/log"
-	"path"
+	"path/filepath"
 )
 
 func UpdateTemplate(name string) error {
 	// update template
-	target := path.Join(GetPackageDir(), name)
+	target := filepath.Join(GetPackageDir(), name)
 	log.Infof("update template %s", name)
 	err := ExecGit([]string{"pull"}, target)
 	if err != nil {

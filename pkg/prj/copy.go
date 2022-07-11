@@ -3,7 +3,7 @@ package prj
 import (
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 func copyFiles(srcDir, dstDir string) error {
@@ -12,8 +12,8 @@ func copyFiles(srcDir, dstDir string) error {
 		return err
 	}
 	for _, entry := range entries {
-		srcPath := path.Join(srcDir, entry.Name())
-		dstPath := path.Join(dstDir, entry.Name())
+		srcPath := filepath.Join(srcDir, entry.Name())
+		dstPath := filepath.Join(dstDir, entry.Name())
 		if entry.IsDir() {
 			if err := copyFiles(srcPath, dstPath); err != nil {
 				return err

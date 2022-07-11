@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 type Writer struct {
@@ -25,7 +25,7 @@ func CompareContentWithFile(sourceBytes []byte, target string) (bool, error) {
 }
 
 func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
-	target := path.Join(w.outputDir, file)
+	target := filepath.Join(w.outputDir, file)
 	if !force {
 		same, err := CompareContentWithFile(bytes, target)
 		if err != nil {
@@ -38,7 +38,7 @@ func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 		}
 	}
 	log.Debug("write file ", target)
-	dir := path.Dir(target)
+	dir := filepath.Dir(target)
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {
 		return fmt.Errorf("error creating directory: %s", err)

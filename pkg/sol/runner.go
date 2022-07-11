@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -32,15 +31,15 @@ func (r *runner) Run() {
 // A layer contains information about the inputs, used template and output.
 func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	log.Debugf("process layer %s", layer.Name)
-	var templateDir = path.Join(r.rootDir, layer.Template)
-	var templatesDir = path.Join(templateDir, "templates")
-	var rulesFile = path.Join(templateDir, "rules.yaml")
-	var outputDir = path.Join(r.rootDir, layer.Output)
+	var templateDir = filepath.Join(r.rootDir, layer.Template)
+	var templatesDir = filepath.Join(templateDir, "templates")
+	var rulesFile = filepath.Join(templateDir, "rules.yaml")
+	var outputDir = filepath.Join(r.rootDir, layer.Output)
 	var force = layer.Force
 	name := layer.Name
 	if name == "" {
 		// if no layer name, name is the last part of the output directory
-		name = path.Base(outputDir)
+		name = filepath.Base(outputDir)
 	}
 	system := model.NewSystem(name)
 	err := r.parseInputs(system, layer.Inputs)
@@ -74,7 +73,7 @@ func (r *runner) parseInputs(s *model.System, inputs []string) error {
 	}
 	for _, file := range files {
 		log.Debugf("parse input %s", file)
-		switch path.Ext(file) {
+		switch filepath.Ext(file) {
 		case ".yaml", ".yml", ".json":
 			err := dataParser.ParseFile(file)
 			if err != nil {
@@ -100,7 +99,7 @@ func (r *runner) parseInputs(s *model.System, inputs []string) error {
 func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error) {
 	var files []string
 	for _, input := range inputs {
-		entry := path.Join(rootDir, input)
+		entry := filepath.Join(rootDir, input)
 		info, err := os.Stat(entry)
 		if err != nil {
 			log.Infof("error resolving input: %s", entry)
