@@ -31,7 +31,7 @@ func InitConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
-		log.Warnf("no config file: %s", err)
+		log.Debugf("no config file: %s", err)
 	}
 
 	viper.SetEnvPrefix("apigear")
