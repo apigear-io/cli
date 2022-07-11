@@ -150,24 +150,29 @@ func (s *Schema) ResolveAll(m *Module) error {
 	case "":
 		s.IsPrimitive = false
 		s.IsSymbol = false
-		s.IsResolved = true
 	case "bool", "int", "float", "string":
 		s.IsPrimitive = true
 		s.IsSymbol = false
-		s.IsResolved = false
 	default:
 		s.IsPrimitive = false
 		s.IsSymbol = true
-		s.IsResolved = false
 	}
 	err := s.ResolveSymbol()
 	if err != nil {
 		return err
 	}
-	return s.ResolveType()
+	err = s.ResolveType()
+	if err != nil {
+		return err
+	}
+	s.IsResolved = true
+	return nil
 }
 
 func (s *Schema) ResolveSymbol() error {
+	if s.IsResolved {
+		return nil
+	}
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
 		if le != nil {
@@ -193,9 +198,6 @@ func (s *Schema) ResolveSymbol() error {
 }
 
 func (s *Schema) ResolveType() error {
-	if !s.IsResolved {
-		return s.ResolveSymbol()
-	}
 	kind := ""
 	if s.IsPrimitive {
 		kind = s.Type
@@ -234,7 +236,7 @@ func (s *Schema) GetInterface() *Interface {
 		log.Errorf("%s", err)
 		return nil
 	}
-	return s.interface_ 
+	return s.interface_
 }
 
 func (s *Schema) IsEnum() bool {

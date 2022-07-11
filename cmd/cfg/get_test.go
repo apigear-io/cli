@@ -22,7 +22,7 @@ func ExecuteCmd(t *testing.T, cmd *cobra.Command, args ...string) string {
 
 func TestCmdGetAllSettings(t *testing.T) {
 	out := ExecuteCmd(t, NewGetCmd())
-	assert.Contains(t, out, "All settings")
+	assert.Contains(t, out, "all settings")
 }
 
 func TestCmdGetOneSetting(t *testing.T) {
