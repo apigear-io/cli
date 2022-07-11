@@ -16,7 +16,6 @@ func init() {
 		panic(err)
 	}
 	TEST_DATA = filepath.Join(cwd, "testdata")
-
 }
 
 func exists(args []string, inputFile string) ([]byte, error) {
