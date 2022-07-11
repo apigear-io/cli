@@ -16,13 +16,13 @@ require (
 
 require (
 	github.com/dop251/goja_nodejs v0.0.0-20211022123610-8dd9abb0616d
+	github.com/google/go-cmdtest v0.4.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/sirupsen/logrus v1.8.1
 )
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
-	github.com/google/go-cmdtest v0.4.0 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/renameio v0.1.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
