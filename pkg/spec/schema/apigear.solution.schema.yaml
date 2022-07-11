@@ -34,7 +34,7 @@ definitions:
   Layer:
     type: object
     required:
-      - input
+      - inputs
       - output
       - template
     additionalProperties: false
@@ -46,7 +46,7 @@ definitions:
       description:
         type: string
         description: "description of the layer."
-      input:
+      inputs:
         type: array
         items:
           type: string

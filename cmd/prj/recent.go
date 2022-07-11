@@ -15,7 +15,7 @@ func NewRecentCommand() *cobra.Command {
 		Long:  `The recent command allows you to show recent projects.`,
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Recent projects:\n")
+			fmt.Println("recent projects:")
 			for _, info := range prj.RecentProjectInfos() {
 				fmt.Printf("  %s\n", info.Name)
 			}

@@ -22,13 +22,24 @@ func setup(root string) error {
 	return copyTestData(TEST_DATA, root, entries...)
 }
 
-func TestApiGear(t *testing.T) {
-	ts, err := cmdtest.Read("./testdata")
+func runCmdTest(t *testing.T, source string) {
+	ts, err := cmdtest.Read(source)
 	ts.Setup = setup
 	ts.KeepRootDirs = true
-	// ts.Setup = setupWrapped(cwd)
 	assert.NoError(t, err)
 	ts.Commands["apigear"] = cmdtest.InProcessProgram("apigear", cmd.Run)
 	ts.Commands["exists"] = exists
 	ts.Run(t, *update)
+}
+
+func TestGen(t *testing.T) {
+	runCmdTest(t, "gen")
+}
+
+func TestPrj(t *testing.T) {
+	runCmdTest(t, "prj")
+}
+
+func TestRoot(t *testing.T) {
+	runCmdTest(t, "root")
 }

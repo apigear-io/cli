@@ -3,6 +3,7 @@ package prj
 import (
 	"apigear/pkg/log"
 	"apigear/pkg/prj"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -21,10 +22,10 @@ func NewImportCommand() *cobra.Command {
 			log.Debug("import project %s to %s", source, target)
 			info, err := prj.ImportProject(source, target)
 			if err != nil {
-				log.Error("error: %s", err)
+				log.Errorf("error: %s", err)
 				os.Exit(1)
 			}
-			log.Infof("project %s imported to %s", source, info.Path)
+			fmt.Printf("project %s imported to %s\n", source, info.Path)
 		},
 	}
 	cmd.Flags().StringVarP(&target, "target", "t", "", "target directory")

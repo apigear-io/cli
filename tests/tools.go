@@ -16,7 +16,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("cwd: %s\n", cwd)
 	TEST_DATA = path.Join(cwd, "testdata")
 
 }

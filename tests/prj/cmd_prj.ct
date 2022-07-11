@@ -1,0 +1,28 @@
+$ apigear prj --help
+The prj command allows you to create a new project and manage it.
+
+Usage:
+  apigear prj [flags]
+  apigear prj [command]
+
+Available Commands:
+  create      Create a new document inside current project
+  edit        Edit a project in the default editor (vscode)
+  import      Import a project from a directory
+  info        Show project information
+  init        Initialize a new project
+  open        Open a project in studio
+  pack        Pack a project
+  recent      Show recent projects
+  share       Share a project
+
+Flags:
+  -h, --help   help for prj
+
+Global Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+      --env string      environment (development, production, staging) (default "development")
+  -v, --verbose         verbose output
+
+Use "apigear prj [command] --help" for more information about a command.

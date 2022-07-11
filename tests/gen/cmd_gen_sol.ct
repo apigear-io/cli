@@ -1,3 +1,5 @@
+# gen inputs to tmp
+
 $ apigear gen sol api/demo.solution.yaml
 
 $ exists tmp/demo.json
@@ -8,3 +10,6 @@ $ cat demo.json
 {
     "name": "demo"
 }
+
+
+

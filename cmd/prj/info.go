@@ -16,14 +16,14 @@ func NewInfoCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			fmt.Printf("info project %s\n", dir)
+			fmt.Printf("# info %s\n", dir)
 			info, err := prj.GetProjectInfo(dir)
 			if err != nil {
 				fmt.Printf("error: %s\n", err)
 				return
 			}
-			fmt.Printf("Path: %s\n", info.Path)
-			fmt.Printf("Name: %s\n", info.Name)
+			fmt.Printf("path: %s\n", info.Path)
+			fmt.Printf("name: %s\n", info.Name)
 			for _, v := range info.Documents {
 				fmt.Printf("  %s\n", v.Name)
 			}

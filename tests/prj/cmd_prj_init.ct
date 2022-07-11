@@ -1,0 +1,25 @@
+$ apigear prj init demo
+project initialized at: demo
+
+$ exists demo/apigear/demo.module.yaml
+exists demo/apigear/demo.module.yaml
+
+$ exists demo/apigear/demo.solution.yaml
+exists demo/apigear/demo.solution.yaml
+
+$ apigear prj info demo
+# info demo
+path: demo
+name: demo
+  demo.module.yaml
+  demo.solution.yaml
+
+$ apigear prj recent
+recent projects:
+  demo
+
+$ apigear prj init demo2
+project initialized at: demo2
+
+$ apigear prj import demo --target demo2
+project demo imported to demo2

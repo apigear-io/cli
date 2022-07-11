@@ -4,6 +4,7 @@ import (
 	"apigear/pkg/prj"
 	"fmt"
 
+	"github.com/apigear-io/hub/log"
 	"github.com/spf13/cobra"
 )
 
@@ -16,13 +17,13 @@ func NewInitCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			fmt.Printf("init project %s\n", dir)
+			log.Debugf("init project %s\n", dir)
 			info, err := prj.InitProject(dir)
 			if err != nil {
 				fmt.Printf("error: %s\n", err)
 				return
 			}
-			fmt.Printf("created project at: %s\n", info.Path)
+			fmt.Printf("project initialized at: %s\n", info.Path)
 
 		},
 	}
