@@ -15,8 +15,8 @@ func NewClientCommand() *cobra.Command {
 	}
 	var options = &ClientOptions{}
 	var cmd = &cobra.Command{
-		Use:   "client",
-		Short: "API monitor client",
+		Use:   "feed",
+		Short: "feed a script to a monitor",
 		Long:  `The monitor client allows you to send api events the monitor server for testing purposes.`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {

@@ -26,11 +26,10 @@ func NewClientCommand() *cobra.Command {
 	var options = &ClientOptions{}
 	// cmd represents the simCli command
 	var cmd = &cobra.Command{
-		Use:   "client",
-		Short: "running simu calls from command line",
-		Long: `Simulation clients runs simulation calls from command line. 
-These calls can be used to test the service.`,
-		Args: cobra.ExactArgs(1),
+		Use:   "feed",
+		Short: "feed simulation from command line",
+		Long:  `The feed command allows you to simulate calls from command line.`,
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)

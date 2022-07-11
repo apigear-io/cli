@@ -1,4 +1,4 @@
-package conf
+package cfg
 
 import (
 	"github.com/spf13/cobra"
@@ -14,7 +14,7 @@ func NewGetCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				// print all settings
-				cmd.Println("All settings:")
+				cmd.Println("all settings:")
 				for k, v := range viper.AllSettings() {
 					cmd.Printf("  %s: %s\n", k, v)
 				}

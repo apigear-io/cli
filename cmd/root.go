@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"apigear/cmd/conf"
+	"apigear/cmd/cfg"
 	"apigear/cmd/mon"
 	"apigear/cmd/prj"
 	"apigear/cmd/sdk"
@@ -37,7 +37,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().String("env", "development", "environment (development, production, staging)")
 	cmd.AddCommand(sdk.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
-	cmd.AddCommand(conf.NewRootCommand())
+	cmd.AddCommand(cfg.NewRootCommand())
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(sim.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())

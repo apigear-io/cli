@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
-
 func Must(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -32,8 +30,8 @@ func NewExpertCommand() *cobra.Command {
 	options := &ExpertOptions{}
 
 	cmd := &cobra.Command{
-		Use:     "x",
-		Aliases: []string{"expert"},
+		Use:     "expert",
+		Aliases: []string{"x"},
 		Short:   "generate code using expert mode",
 		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {

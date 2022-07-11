@@ -1,0 +1,24 @@
+$ apigear config --help
+The config command allows you to manage application configurations.
+
+Usage:
+  apigear config [flags]
+  apigear config [command]
+
+Aliases:
+  config, cfg
+
+Available Commands:
+  get         prints a configuration value
+  info        Information about configuration
+
+Flags:
+  -h, --help   help for config
+
+Global Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+      --env string      environment (development, production, staging) (default "development")
+  -v, --verbose         verbose output
+
+Use "apigear config [command] --help" for more information about a command.

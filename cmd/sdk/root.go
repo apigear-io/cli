@@ -7,9 +7,9 @@ import (
 func NewRootCommand() *cobra.Command {
 	// genCmd represents the generate command
 	var cmd = &cobra.Command{
-		Use:     "gen",
-		Aliases: []string{"generate", "g"},
-		Short:   "generates code",
+		Use:     "sdk",
+		Aliases: []string{"gen", "g"},
+		Short:   "generates sdk",
 		Long:    `provides a set of commands to generate code`,
 	}
 	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())

@@ -9,9 +9,10 @@ import (
 func NewRootCommand() *cobra.Command {
 	// cmd represents the mon command
 	cmd := &cobra.Command{
-		Use:   "prj",
-		Short: "Manages project creation and management",
-		Long:  `The prj command allows you to create a new project and manage it.`,
+		Use:     "project",
+		Aliases: []string{"prj"},
+		Short:   "Manages project creation and management",
+		Long:    `The project command allows you to create a new project and manage it.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("prj called")
 		},

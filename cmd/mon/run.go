@@ -13,8 +13,8 @@ import (
 func NewServerCommand() *cobra.Command {
 	var addr string
 	var cmd = &cobra.Command{
-		Use:   "start",
-		Short: "A brief description of your command",
+		Use:   "run",
+		Short: "run the monitor server",
 		Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

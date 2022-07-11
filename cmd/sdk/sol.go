@@ -64,9 +64,9 @@ func watchSol(options *SolutionOptions) {
 func NewSolutionCommand() *cobra.Command {
 	var options = &SolutionOptions{}
 	var cmd = &cobra.Command{
-		Use:     "sol [file to run]",
+		Use:     "solution [file to run]",
 		Short:   "generate code using a solution",
-		Aliases: []string{"solution", "s"},
+		Aliases: []string{"sol", "s"},
 		Args:    cobra.ExactArgs(1),
 		Long: `A solution is a yaml document which describes different layers. 
 Each layer defines the input module files, output directory and the features to enable, 

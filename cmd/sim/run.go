@@ -15,7 +15,7 @@ func NewServerCommand() *cobra.Command {
 
 	// cmd represents the simSvr command
 	var cmd = &cobra.Command{
-		Use:   "server [scenario to run]",
+		Use:   "run [scenario to run]",
 		Args:  cobra.MaximumNArgs(1),
 		Short: "Runs the simulation server using am optional scenario file",
 		Long: `The simulation server simulates the service backend. 

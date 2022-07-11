@@ -9,8 +9,9 @@ import (
 func NewRootCommand() *cobra.Command {
 	// cmd represents the sim command
 	var cmd = &cobra.Command{
-		Use:   "sim",
-		Short: "A brief description of your command",
+		Use:     "simulate",
+		Aliases: []string{"sim", "s"},
+		Short:   "A brief description of your command",
 		Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

@@ -7,14 +7,14 @@ Usage:
 Available Commands:
   check       check document
   completion  Generate the autocompletion script for the specified shell
-  conf        A brief description of your command
+  config      commands related to application configuration
   doc         exports cli docs as markdown
-  gen         generates code
   help        Help about any command
   json2yaml   convert json doc to yaml doc
-  mon         A brief description of your command
-  prj         Manages project creation and management
-  sim         A brief description of your command
+  monitor     A brief description of your command
+  project     Manages project creation and management
+  sdk         generates sdk
+  simulate    A brief description of your command
   tpl         manage code generation templates
   yaml2json   convert yaml doc to json doc
 

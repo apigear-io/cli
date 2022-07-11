@@ -40,6 +40,10 @@ func TestPrj(t *testing.T) {
 	runCmdTest(t, "prj")
 }
 
+func TestCfg(t *testing.T) {
+	runCmdTest(t, "cfg")
+}
+
 func TestRoot(t *testing.T) {
 	runCmdTest(t, "root")
 }

@@ -1,6 +1,6 @@
 # gen inputs to tmp
 
-$ apigear gen sol api/demo.solution.yaml
+$ apigear sdk solution api/demo.solution.yaml
 
 $ exists tmp/demo.json
 exists tmp/demo.json

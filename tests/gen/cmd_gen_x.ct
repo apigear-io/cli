@@ -1,6 +1,6 @@
 # gen inputs to tmp
 
-$ apigear gen x -i api/demo.module.yaml -o tmp -t tpl
+$ apigear sdk expert -i api/demo.module.yaml -o tmp -t tpl
 
 $ exists tmp/demo.json
 exists tmp/demo.json

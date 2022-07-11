@@ -1,4 +1,4 @@
-package conf
+package cfg
 
 import (
 	"github.com/spf13/cobra"
@@ -9,11 +9,11 @@ import (
 func NewInfoCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "info",
-		Short: "Information about the configuration",
-		Long:  `Information about the configuration.`,
+		Short: "Information about configuration",
+		Long:  `Information about configuration.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Println("Configuration information:")
-			cmd.Printf("  Config file: %s\n", viper.ConfigFileUsed())
+			cmd.Println("info:")
+			cmd.Printf("  config file: %s\n", viper.ConfigFileUsed())
 		},
 	}
 	return cmd
