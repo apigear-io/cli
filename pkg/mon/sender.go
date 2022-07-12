@@ -19,6 +19,9 @@ func (s *EventSender) SendEvents(emitter chan *Event) {
 	for event := range emitter {
 		log.Infof("send event: %+v", event)
 		// capture url, event for closure
-		HttpPost(s.url, event)
+		err := HttpPost(s.url, event)
+		if err != nil {
+			log.Warnf("failed to send event: %s", err)
+		}
 	}
 }

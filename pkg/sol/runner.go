@@ -88,7 +88,10 @@ func (r *runner) parseInputs(s *model.System, inputs []string) error {
 			log.Warnf("unknown file type %s. skip", file)
 		}
 	}
-	s.ResolveAll()
+	err = s.ResolveAll()
+	if err != nil {
+		return fmt.Errorf("error resolving system: %w", err)
+	}
 	return nil
 }
 
@@ -107,7 +110,7 @@ func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error)
 		}
 
 		if info.IsDir() {
-			filepath.WalkDir(entry, func(root string, d fs.DirEntry, err error) error {
+			err := filepath.WalkDir(entry, func(root string, d fs.DirEntry, err error) error {
 				if err != nil {
 					return fmt.Errorf("error resolving input: %w", err)
 				}
@@ -117,6 +120,9 @@ func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error)
 				files = append(files, root)
 				return nil
 			})
+			if err != nil {
+				return nil, fmt.Errorf("error resolving input: %w", err)
+			}
 		} else {
 			files = append(files, entry)
 		}

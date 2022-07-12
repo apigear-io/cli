@@ -47,7 +47,10 @@ func watchSol(options *SolutionOptions) {
 			case event := <-watcher.Events:
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					log.Infof("file %s modified", event.Name)
-					runSolution(options.file)
+					err := runSolution(options.file)
+					if err != nil {
+						log.Errorf("failed to run solution: %s", err)
+					}
 				}
 			case err := <-watcher.Errors:
 				log.Error(err)
@@ -71,13 +74,17 @@ func NewSolutionCommand() *cobra.Command {
 		Long: `A solution is a yaml document which describes different layers. 
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			options.file = args[0]
 			if options.watch {
 				watchSol(options)
 			} else {
-				runSolution(options.file)
+				err := runSolution(options.file)
+				if err != nil {
+					return err
+				}
 			}
+			return nil
 		},
 	}
 	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch solution file for changes")

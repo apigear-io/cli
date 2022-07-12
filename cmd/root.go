@@ -29,8 +29,8 @@ func NewRootCommand() *cobra.Command {
 		Short:   "apigear creates instrumented SDKs from an API description",
 		Long:    `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 		Version: "0.0.1",
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
 		},
 	}
 	cobra.OnInitialize(config.InitConfig)

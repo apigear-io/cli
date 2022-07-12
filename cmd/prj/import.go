@@ -4,10 +4,15 @@ import (
 	"apigear/pkg/log"
 	"apigear/pkg/prj"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
+
+func Must(err error) {
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
 
 // NewImportCommand returns a new cobra.Command for the "import" command.
 func NewImportCommand() *cobra.Command {
@@ -22,13 +27,12 @@ func NewImportCommand() *cobra.Command {
 			log.Debug("import project %s to %s", source, target)
 			info, err := prj.ImportProject(source, target)
 			if err != nil {
-				log.Errorf("error: %s", err)
-				os.Exit(1)
+				log.Fatalf("error: %s", err)
 			}
 			fmt.Printf("project %s imported to %s\n", source, info.Path)
 		},
 	}
 	cmd.Flags().StringVarP(&target, "target", "t", "", "target directory")
-	cmd.MarkFlagRequired("target")
+	Must(cmd.MarkFlagRequired("target"))
 	return cmd
 }

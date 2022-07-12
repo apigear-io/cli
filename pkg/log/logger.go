@@ -20,13 +20,19 @@ func Config(verbose bool, debug bool) {
 
 var Debug = logger.Debug
 var Debugf = logger.Debugf
+var Debugln = logger.Debugln
 var Info = logger.Info
 var Infof = logger.Infof
+var Infoln = logger.Infoln
 var Warn = logger.Warn
 var Warnf = logger.Warnf
+var Warnln = logger.Warnln
 var Error = logger.Error
 var Errorf = logger.Errorf
+var Errorln = logger.Errorln
 var Panic = logger.Panic
 var Panicf = logger.Panicf
+var Panicln = logger.Panicln
 var Fatal = logger.Fatal
 var Fatalf = logger.Fatalf
+var Fatalln = logger.Fatalln

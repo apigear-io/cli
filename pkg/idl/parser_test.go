@@ -10,7 +10,7 @@ import (
 func parseModule(t *testing.T, doc string) *model.Module {
 	system := model.NewSystem("test")
 	parser := NewParser(system)
-	parser.ParseString(doc)
+	assert.NoError(t, parser.ParseString(doc))
 	assert.Equal(t, 1, len(system.Modules))
 	assert.Len(t, system.Modules, 1)
 	module := system.Modules[0]

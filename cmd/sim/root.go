@@ -11,8 +11,8 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"sim", "s"},
 		Short:   "Simulates a solution API calls",
 		Long:    `A simulation server can run one or more scenarios which simulation API calls.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewClientCommand())

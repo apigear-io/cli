@@ -10,8 +10,8 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"t"},
 		Short:   "assorted tool commands",
 		Long:    `General purpose tools used for various reasons.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewCheckCommand())

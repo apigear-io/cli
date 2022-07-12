@@ -39,5 +39,8 @@ func (s *ScriptEngine) Run(script Script) error {
 
 func (s *ScriptEngine) Set(key string, value any) {
 	log.Debugf("set %s to %v", key, value)
-	s.vm.Set(key, value)
+	err := s.vm.Set(key, value)
+	if err != nil {
+		log.Errorf("ScriptEngine.set: %s", err)
+	}
 }

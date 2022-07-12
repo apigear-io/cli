@@ -20,7 +20,10 @@ func AppendRecentProject(file string) {
 		}
 	}
 	viper.Set("recent", append(recent, file))
-	viper.WriteConfig()
+	err := viper.WriteConfig()
+	if err != nil {
+		log.Warnf("Failed to write config: %s", err)
+	}
 }
 
 func RemoveRecentFile(d string) {
@@ -32,5 +35,8 @@ func RemoveRecentFile(d string) {
 		}
 	}
 	viper.Set("recent", recent)
-	viper.WriteConfig()
+	err := viper.WriteConfig()
+	if err != nil {
+		log.Warnf("Failed to write config: %s", err)
+	}
 }

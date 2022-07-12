@@ -11,8 +11,8 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"cfg"},
 		Short:   "commands related to application configuration",
 		Long:    `The config command allows you to manage application configurations.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewInfoCmd())

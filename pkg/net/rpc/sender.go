@@ -37,7 +37,10 @@ func (s *RpcSender) Close() {
 func (s *RpcSender) SendMessages(emitter chan RpcMessage) {
 	for message := range emitter {
 		log.Infof("send  %v\n", message)
-		s.conn.WriteJSON(message)
+		err := s.conn.WriteJSON(message)
+		if err != nil {
+			log.Warnf("failed to send message: %s", err)
+		}
 	}
 }
 

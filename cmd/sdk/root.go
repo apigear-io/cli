@@ -11,8 +11,8 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"gen", "g"},
 		Short:   "SDK code generation",
 		Long:    `Code generation using templates for SDK creation.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())

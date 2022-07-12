@@ -84,7 +84,7 @@ func runExpert(options *ExpertOptions) error {
 func watchExpert(options *ExpertOptions) {
 	err := runExpert(options)
 	if err != nil {
-		log.Fatalf("failed to run expert mode: %s", err)
+		log.Errorf("failed to run expert mode: %s", err)
 	}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -98,7 +98,10 @@ func watchExpert(options *ExpertOptions) {
 			case event := <-watcher.Events:
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					log.Infof("[%s] modified", event.Name)
-					runExpert(options)
+					err := runExpert(options)
+					if err != nil {
+						log.Errorf("failed to run expert mode: %s", err)
+					}
 				}
 			case err := <-watcher.Errors:
 				log.Error(err)

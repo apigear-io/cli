@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"log"
+	"apigear/pkg/log"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -30,19 +30,22 @@ func (c *Connection) BroadCast(m RpcMessage) {
 }
 
 func (c *Connection) writePump() {
-	log.Println("writePump")
+	log.Debugln("writePump")
 	ticker := time.NewTicker(10 * time.Second)
 	defer func() {
-		log.Println("writePump: close")
+		log.Debugln("writePump: closing")
 		c.conn.Close()
 		ticker.Stop()
 	}()
 	for {
 		select {
 		case m, ok := <-c.send:
-			log.Printf("writePump: %v", m)
+			log.Debugf("writePump: %v", m)
 			if !ok {
-				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				err := c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err != nil {
+					log.Warnf("writePump: %s", err)
+				}
 				return
 			}
 			err := c.conn.WriteJSON(m)
@@ -50,10 +53,13 @@ func (c *Connection) writePump() {
 				return
 			}
 		case <-ticker.C:
-			log.Printf("writePump: ping")
+			log.Debug("writePump: ping")
 			err := c.conn.WriteMessage(websocket.PingMessage, []byte{})
 			if err != nil {
-				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				err := c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err != nil {
+					log.Warnf("error sending message in write pump: %s", err)
+				}
 				return
 			}
 		}
@@ -61,11 +67,11 @@ func (c *Connection) writePump() {
 }
 
 func (c *Connection) readPump() {
-	log.Println("readPump")
+	log.Debugln("readPump")
 	for {
 		var m RpcMessage
 		err := c.conn.ReadJSON(&m)
-		log.Printf("readPump: %v", m)
+		log.Debugf("readPump: %v", m)
 		if err != nil {
 			c.hub.unregister <- c
 			c.conn.Close()
