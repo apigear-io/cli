@@ -7,12 +7,12 @@ Aliases:
   template, t, tpl
 
 Available Commands:
+  get         Download a template from a source to the local cache.
   info        Shows information about a template.
-  install     Download and install a template from a source
-  installed   List all installed packages
+  list        List all installed packages
   remove      Remove an installed template
   search      Search templates by name.
-  update      List and update installed templates.
+  update      Update installed templates.
 
 Flags:
   -h, --help   help for template

@@ -5,7 +5,7 @@ test:
 	go test ./...
 
 build:
-	go build .
+	go build -o apigear .
 
 watch:
 	air

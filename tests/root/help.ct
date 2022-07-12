@@ -9,7 +9,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   config      commands related to application configuration
   help        Help about any command
-  monitor     A brief description of your command
+  monitor     Monitor API calls from client libraries
   project     Manages project creation and management
   sdk         SDK code generation
   simulate    Simulates a solution API calls
@@ -35,7 +35,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   config      commands related to application configuration
   help        Help about any command
-  monitor     A brief description of your command
+  monitor     Monitor API calls from client libraries
   project     Manages project creation and management
   sdk         SDK code generation
   simulate    Simulates a solution API calls

@@ -1,8 +1,6 @@
 package tpl
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +12,7 @@ func NewSearchCommand() *cobra.Command {
 		Short: "Search templates by name.",
 		Long:  `Search templates by name using wildcards.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("pkgSearch called")
+			cmd.Println("Please visit https://apigear.io/templates/ for a list of templates.")
 		},
 	}
 	return cmd

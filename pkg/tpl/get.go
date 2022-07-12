@@ -19,15 +19,24 @@ func GetTemplate(name string, repo string) error {
 		return fmt.Errorf("%s already exists", name)
 	}
 	log.Infof("clone template from %s into %s", repo, target)
-	err = ExecGit([]string{"clone", repo, target}, "")
+	_, err = ExecGit([]string{"clone", repo, target}, "")
 	if err != nil {
 		log.Warnf("failed to clone template from %s into %s", repo, target)
 	}
 	return err
 }
 
+// GetNameFromURL returns the name of the template from an git url.
+func GetNameFromURL(source string) (string, error) {
+	u, err := url.Parse(source)
+	if err != nil {
+		return "", fmt.Errorf("invalid url: %s", source)
+	}
+	return u.Path, nil
+}
+
 // ExecGit executes a git command.
-func ExecGit(args []string, cwd string) error {
+func ExecGit(args []string, cwd string) (string, error) {
 	if cwd == "" {
 		cwd = GetPackageDir()
 	}
@@ -35,16 +44,18 @@ func ExecGit(args []string, cwd string) error {
 	_, err := exec.LookPath("git")
 	if err != nil {
 		log.Warnf("git not found")
-		return err
+		return "", err
 	}
 	cmd := exec.Command("git", args...)
 	cmd.Dir = cwd
-	err = cmd.Run()
+	out, err := cmd.Output()
 	if err != nil {
 		log.Warnf("git %s failed", args)
-		return err
+		return "", err
 	}
-	return nil
+	log.Debugf("git output: %s", out)
+	return string(out), nil
+
 }
 
 func IsUrl(path string) bool {

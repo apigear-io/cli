@@ -11,7 +11,7 @@ import (
 func NewListCommand() *cobra.Command {
 	// cmd represents the pkgList command
 	var cmd = &cobra.Command{
-		Use:     "installed",
+		Use:     "list",
 		Aliases: []string{"ls"},
 		Short:   "List all installed packages",
 		Long:    `List all installed packages. A package can be installed using a git url or a local directory.`,

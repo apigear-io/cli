@@ -9,13 +9,9 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "monitor",
 		Aliases: []string{"mon", "m"},
-		Short:   "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short:   "Monitor API calls from client libraries",
+		Long: `Typical a SDK contains trace calls which are send to the API monitor. 
+		This monitor then can be used to display and analyze the API calls.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

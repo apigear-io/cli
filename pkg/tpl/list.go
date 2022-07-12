@@ -1,23 +1,53 @@
 package tpl
 
-import "os"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
 
 type TemplateInfo struct {
-	Name string
+	Name   string
+	URL    string
+	Commit string
+	Path   string
 }
 
 func ListTemplates() ([]TemplateInfo, error) {
 	// list all dirs in packageDir
 	dir := GetPackageDir()
-	items, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
+	// walk package dir to find a dir that contains a .git dir
 	var infos []TemplateInfo
-	for _, d := range items {
-		if d.IsDir() {
-			infos = append(infos, TemplateInfo{Name: d.Name()})
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("failed to walk template dir: %s", err)
 		}
+		if info.IsDir() && info.Name() != "." && info.Name() != ".." {
+			if _, err := os.Stat(filepath.Join(path, ".git")); err == nil {
+				name, err := filepath.Rel(dir, path)
+				if err != nil {
+					return fmt.Errorf("failed to get relative path for %s", path)
+				}
+				infos = append(infos, TemplateInfo{Name: name})
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list templates: %s", err)
 	}
 	return infos, nil
+
+	// items, err := os.ReadDir(dir)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// var infos []TemplateInfo
+
+	// for _, d := range items {
+	// 	if d.IsDir() {
+	// 		infos = append(infos, TemplateInfo{Name: d.Name()})
+	// 	}
+	// }
+	// return infos, nil
 }
