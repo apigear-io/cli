@@ -6,6 +6,7 @@ import (
 	"apigear/cmd/prj"
 	"apigear/cmd/sdk"
 	"apigear/cmd/sim"
+	"apigear/cmd/tools"
 	"apigear/cmd/tpl"
 	"apigear/pkg/config"
 	"apigear/pkg/log"
@@ -28,23 +29,22 @@ func NewRootCommand() *cobra.Command {
 		Short:   "apigear creates instrumented SDKs from an API description",
 		Long:    `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 		Version: "0.0.1",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Usage()
+		},
 	}
 	cobra.OnInitialize(config.InitConfig)
 
 	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
 	cmd.PersistentFlags().BoolVarP(&config.Verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&config.DryRun, "dry-run", false, "dry-run")
-	cmd.PersistentFlags().String("env", "development", "environment (development, production, staging)")
 	cmd.AddCommand(sdk.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(sim.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())
-	cmd.AddCommand(NewCheckCommand())
-	cmd.AddCommand(NewYaml2JsonCommand())
-	cmd.AddCommand(NewJson2YamlCommand())
-	cmd.AddCommand(NewDocsCommand())
+	cmd.AddCommand(tools.NewRootCommand())
 
 	viper.Set("version", cmd.Version)
 

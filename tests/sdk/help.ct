@@ -1,0 +1,46 @@
+$ apigear sdk --help
+Code generation using templates for SDK creation.
+
+Usage:
+  apigear sdk [flags]
+  apigear sdk [command]
+
+Aliases:
+  sdk, gen, g
+
+Available Commands:
+  expert      generate code using expert mode
+  solution    generate code using a solution
+
+Flags:
+  -h, --help   help for sdk
+
+Global Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+  -v, --verbose         verbose output
+
+Use "apigear sdk [command] --help" for more information about a command.
+
+
+$ apigear sdk
+Usage:
+  apigear sdk [flags]
+  apigear sdk [command]
+
+Aliases:
+  sdk, gen, g
+
+Available Commands:
+  expert      generate code using expert mode
+  solution    generate code using a solution
+
+Flags:
+  -h, --help   help for sdk
+
+Global Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+  -v, --verbose         verbose output
+
+Use "apigear sdk [command] --help" for more information about a command.

@@ -1,4 +1,4 @@
-package cmd
+package tools
 
 import (
 	"apigear/pkg/log"

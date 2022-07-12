@@ -1,13 +1,15 @@
-# gen inputs to tmp
+# create sdk from solution
 
-$ apigear sdk expert -i api/demo.module.yaml -o tmp -t tpl
+$ apigear sdk solution api/demo.solution.yaml
 
 $ exists tmp/demo.json
 exists tmp/demo.json
 
 $ cd tmp
-
 $ cat demo.json
 {
     "name": "demo"
 }
+
+
+

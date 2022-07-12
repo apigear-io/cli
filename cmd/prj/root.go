@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +12,7 @@ func NewRootCommand() *cobra.Command {
 		Short:   "Manages project creation and management",
 		Long:    `The project command allows you to create a new project and manage it.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("prj called")
+			cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewCreateCommand())

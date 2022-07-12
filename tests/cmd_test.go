@@ -32,18 +32,22 @@ func runCmdTest(t *testing.T, source string) {
 	ts.Run(t, *update)
 }
 
-func TestGen(t *testing.T) {
-	runCmdTest(t, "gen")
+func TestSDK(t *testing.T) {
+	runCmdTest(t, "sdk")
 }
 
-func TestPrj(t *testing.T) {
-	runCmdTest(t, "prj")
+func TestProject(t *testing.T) {
+	runCmdTest(t, "project")
 }
 
-func TestCfg(t *testing.T) {
-	runCmdTest(t, "cfg")
+func TestConfig(t *testing.T) {
+	runCmdTest(t, "config")
 }
 
 func TestRoot(t *testing.T) {
 	runCmdTest(t, "root")
+}
+
+func TestTools(t *testing.T) {
+	runCmdTest(t, "tools")
 }

@@ -9,8 +9,11 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "sdk",
 		Aliases: []string{"gen", "g"},
-		Short:   "generates sdk",
-		Long:    `provides a set of commands to generate code`,
+		Short:   "SDK code generation",
+		Long:    `Code generation using templates for SDK creation.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Usage()
+		},
 	}
 	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())
 	return cmd

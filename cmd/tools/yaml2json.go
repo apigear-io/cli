@@ -1,4 +1,4 @@
-package cmd
+package tools
 
 import (
 	"apigear/pkg/spec"
@@ -12,10 +12,11 @@ import (
 func NewYaml2JsonCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "yaml2json",
-		Short: "convert yaml doc to json doc",
-		Long:  `convert one or many yaml documents to json documents`,
-		Args:  cobra.ExactArgs(1),
+		Use:     "yaml2json",
+		Aliases: []string{"y2j"},
+		Short:   "convert yaml doc to json doc",
+		Long:    `convert one or many yaml documents to json documents`,
+		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			var input = args[0]
 			matches, err := filepath.Glob(input)

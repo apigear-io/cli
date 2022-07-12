@@ -1,8 +1,6 @@
 package cfg
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +12,7 @@ func NewRootCommand() *cobra.Command {
 		Short:   "commands related to application configuration",
 		Long:    `The config command allows you to manage application configurations.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("config called")
+			cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewInfoCmd())

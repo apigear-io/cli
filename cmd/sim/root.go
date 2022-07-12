@@ -1,8 +1,6 @@
 package sim
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -11,15 +9,10 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "simulate",
 		Aliases: []string{"sim", "s"},
-		Short:   "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short:   "Simulates a solution API calls",
+		Long:    `A simulation server can run one or more scenarios which simulation API calls.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("sim called")
+			cmd.Usage()
 		},
 	}
 	cmd.AddCommand(NewClientCommand())

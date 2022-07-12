@@ -100,7 +100,7 @@ func (g *generator) Run(filename string) error {
 	var rules = spec.RulesDoc{}
 	err = yaml.Unmarshal(bytes, &rules)
 	if err != nil {
-		return fmt.Errorf("error unmarshalling file %s: %s", filename, err)
+		return fmt.Errorf("error unmarshal file %s: %s", filename, err)
 	}
 	return g.ProcessRulesDoc(rules)
 }
