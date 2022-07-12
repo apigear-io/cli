@@ -14,10 +14,12 @@ func NewDocsCommand() *cobra.Command {
 		Use:   "doc",
 		Short: "exports cli docs as markdown",
 		Long:  `export the cli docs as markdown document into a dir`,
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			dir := args[0]
-
+			dir := "docs/cli"
+			if len(args) > 0 {
+				dir = args[0]
+			}
 			if force {
 				err := os.MkdirAll(dir, 0755)
 				if err != nil {
