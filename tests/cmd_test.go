@@ -1,9 +1,10 @@
 package tests
 
 import (
-	"apigear/cmd"
 	"flag"
 	"testing"
+
+	"github.com/apigear-io/cli/cmd"
 
 	cmdtest "github.com/google/go-cmdtest"
 	"github.com/stretchr/testify/assert"
@@ -50,4 +51,8 @@ func TestRoot(t *testing.T) {
 
 func TestTools(t *testing.T) {
 	runCmdTest(t, "tools")
+}
+
+func TestTemplate(t *testing.T) {
+	runCmdTest(t, "template")
 }

@@ -1,12 +1,13 @@
 package gen
 
 import (
-	"apigear/pkg/log"
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 type Writer struct {

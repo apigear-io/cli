@@ -1,8 +1,9 @@
 package tpl
 
 import (
-	"apigear/pkg/log"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func UpdateTemplate(name string) error {

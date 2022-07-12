@@ -1,4 +1,4 @@
-module apigear
+module github.com/apigear-io/cli
 
 go 1.18
 

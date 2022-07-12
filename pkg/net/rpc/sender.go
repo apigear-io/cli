@@ -1,9 +1,10 @@
 package rpc
 
 import (
-	"apigear/pkg/log"
 	"encoding/json"
 	"net/url"
+
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/gorilla/websocket"
 )

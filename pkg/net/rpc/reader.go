@@ -1,13 +1,14 @@
 package rpc
 
 import (
-	"apigear/pkg/log"
 	"bufio"
 	"encoding/json"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func ReadJsonMessagesFromFile(fn string, sleepDuration time.Duration, emitter chan RpcMessage) {

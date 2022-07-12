@@ -1,10 +1,11 @@
 package prj
 
 import (
-	"apigear/pkg/log"
-	"apigear/vfs"
 	"fmt"
 	"os"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/vfs"
 )
 
 func writeDemoModule(path string) error {

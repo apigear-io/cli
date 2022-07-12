@@ -1,8 +1,9 @@
 package prj
 
 import (
-	"apigear/pkg/prj"
 	"fmt"
+
+	"github.com/apigear-io/cli/pkg/prj"
 
 	"github.com/spf13/cobra"
 )

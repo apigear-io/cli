@@ -1,10 +1,11 @@
 package filters
 
 import (
-	"apigear/pkg/gen/filters/filtercpp"
-	"apigear/pkg/gen/filters/filtergo"
-	"apigear/pkg/log"
 	"text/template"
+
+	"github.com/apigear-io/cli/pkg/gen/filters/filtercpp"
+	"github.com/apigear-io/cli/pkg/gen/filters/filtergo"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func PopulateFuncMap() template.FuncMap {

@@ -1,13 +1,14 @@
 package mon
 
 import (
-	"apigear/pkg/log"
 	"bytes"
 	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func HttpPost(url string, data any) error {

@@ -1,8 +1,9 @@
 package model
 
 import (
-	"apigear/pkg/log"
 	"strings"
+
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/iancoleman/strcase"
 )

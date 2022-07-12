@@ -1,11 +1,12 @@
 package prj
 
 import (
-	"apigear/pkg/config"
-	"apigear/pkg/log"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 var currentProject ProjectInfo

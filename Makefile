@@ -1,4 +1,4 @@
-.PHONY: antlr deb test build check
+.PHONY: antlr deb test build check cover
 
 
 test:
@@ -29,3 +29,7 @@ deps:
 
 check:
 	golangci-lint run
+
+cover:
+	go test -covermode=count -coverprofile=coverage.out -coverpkg=apigear/... ./...
+	go tool cover -func coverage.out

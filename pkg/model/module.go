@@ -1,6 +1,6 @@
 package model
 
-import "apigear/pkg/log"
+import "github.com/apigear-io/cli/pkg/log"
 
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`

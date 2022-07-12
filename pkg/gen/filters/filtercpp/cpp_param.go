@@ -1,10 +1,11 @@
 package filtercpp
 
 import (
-	"apigear/pkg/model"
 	"fmt"
 	"log"
 	"reflect"
+
+	"github.com/apigear-io/cli/pkg/model"
 )
 
 func ToParamString(schema *model.Schema, name string) string {

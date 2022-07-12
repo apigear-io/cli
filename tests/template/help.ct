@@ -1,0 +1,25 @@
+$ apigear template
+Usage:
+  apigear template [flags]
+  apigear template [command]
+
+Aliases:
+  template, t, tpl
+
+Available Commands:
+  info        Shows information about a template.
+  install     Download and install a template from a source
+  installed   List all installed packages
+  remove      Remove an installed template
+  search      Search templates by name.
+  update      List and update installed templates.
+
+Flags:
+  -h, --help   help for template
+
+Global Flags:
+      --config string   config file (default is $HOME/.apigear.yaml)
+      --dry-run         dry-run
+  -v, --verbose         verbose output
+
+Use "apigear template [command] --help" for more information about a command.

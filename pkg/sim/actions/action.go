@@ -1,6 +1,6 @@
 package actions
 
-import "apigear/pkg/log"
+import "github.com/apigear-io/cli/pkg/log"
 
 type Context map[string]any
 

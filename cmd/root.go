@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"apigear/cmd/cfg"
-	"apigear/cmd/mon"
-	"apigear/cmd/prj"
-	"apigear/cmd/sdk"
-	"apigear/cmd/sim"
-	"apigear/cmd/tools"
-	"apigear/cmd/tpl"
-	"apigear/pkg/config"
-	"apigear/pkg/log"
+	"github.com/apigear-io/cli/cmd/cfg"
+	"github.com/apigear-io/cli/cmd/mon"
+	"github.com/apigear-io/cli/cmd/prj"
+	"github.com/apigear-io/cli/cmd/sdk"
+	"github.com/apigear-io/cli/cmd/sim"
+	"github.com/apigear-io/cli/cmd/tools"
+	"github.com/apigear-io/cli/cmd/tpl"
+	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/spf13/cobra"
 

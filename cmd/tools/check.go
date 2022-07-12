@@ -1,10 +1,11 @@
 package tools
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/spec"
 	"fmt"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
 )

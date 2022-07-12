@@ -1,10 +1,11 @@
 package filtercpp
 
 import (
-	"apigear/pkg/model"
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/apigear-io/cli/pkg/model"
 )
 
 func cppParams(node reflect.Value) (reflect.Value, error) {

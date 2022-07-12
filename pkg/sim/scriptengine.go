@@ -1,7 +1,7 @@
 package sim
 
 import (
-	"apigear/pkg/log"
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/dop251/goja"
 )

@@ -1,10 +1,11 @@
 package tools
 
 import (
-	"apigear/pkg/spec"
 	"io/ioutil"
 	"log"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
 )

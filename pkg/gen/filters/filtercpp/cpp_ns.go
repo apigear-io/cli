@@ -1,10 +1,11 @@
 package filtercpp
 
 import (
-	"apigear/pkg/model"
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/apigear-io/cli/pkg/model"
 )
 
 // cast value to module and concate module name to cpp open namespaces

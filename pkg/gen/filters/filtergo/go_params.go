@@ -1,8 +1,9 @@
 package filtergo
 
 import (
-	"apigear/pkg/model"
 	"strings"
+
+	"github.com/apigear-io/cli/pkg/model"
 )
 
 func goParams(nodes []*model.TypedNode, prefix string) string {

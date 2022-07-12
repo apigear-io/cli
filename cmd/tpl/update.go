@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"apigear/pkg/tpl"
+	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )
@@ -12,8 +12,8 @@ func NewUpdateCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "update [template]",
 		Aliases: []string{"up"},
-		Short:   "update an installed template",
-		Long:    `Update an installed template.`,
+		Short:   "List and update installed templates.",
+		Long:    `List and update installed templates.`,
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name = args[0]

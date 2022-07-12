@@ -1,7 +1,6 @@
 package spec
 
 import (
-	"apigear/pkg/model"
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -10,7 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"apigear/pkg/idl"
+	"github.com/apigear-io/cli/pkg/model"
+
+	"github.com/apigear-io/cli/pkg/idl"
 
 	"github.com/gocarina/gocsv"
 	"github.com/xeipuuv/gojsonschema"

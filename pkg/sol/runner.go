@@ -1,15 +1,16 @@
 package sol
 
 import (
-	"apigear/pkg/gen"
-	"apigear/pkg/idl"
-	"apigear/pkg/log"
-	"apigear/pkg/model"
-	"apigear/pkg/spec"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/gen"
+	"github.com/apigear-io/cli/pkg/idl"
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/spec"
 )
 
 type runner struct {

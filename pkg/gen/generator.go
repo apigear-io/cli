@@ -1,10 +1,6 @@
 package gen
 
 import (
-	"apigear/pkg/gen/filters"
-	"apigear/pkg/log"
-	"apigear/pkg/model"
-	"apigear/pkg/spec"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/apigear-io/cli/pkg/gen/filters"
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"gopkg.in/yaml.v2"
 )

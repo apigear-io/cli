@@ -1,9 +1,10 @@
 package filtercpp
 
 import (
-	"apigear/pkg/model"
 	"reflect"
 	"testing"
+
+	"github.com/apigear-io/cli/pkg/model"
 
 	"github.com/stretchr/testify/assert"
 )

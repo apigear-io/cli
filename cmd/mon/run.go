@@ -1,11 +1,12 @@
 package mon
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/mon"
-	"apigear/pkg/net"
 	"encoding/json"
 	"fmt"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/net"
 
 	"github.com/spf13/cobra"
 )

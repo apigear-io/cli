@@ -1,8 +1,9 @@
 package rpc
 
 import (
-	"apigear/pkg/log"
 	"time"
+
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/gorilla/websocket"
 )

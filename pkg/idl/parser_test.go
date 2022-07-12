@@ -1,8 +1,9 @@
 package idl
 
 import (
-	"apigear/pkg/model"
 	"testing"
+
+	"github.com/apigear-io/cli/pkg/model"
 
 	"github.com/stretchr/testify/assert"
 )

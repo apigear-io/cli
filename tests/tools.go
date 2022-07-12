@@ -1,11 +1,12 @@
 package tests
 
 import (
-	"apigear/pkg/log"
 	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 var TEST_DATA string

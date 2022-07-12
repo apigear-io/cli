@@ -1,8 +1,9 @@
 package config
 
 import (
-	"apigear/pkg/log"
 	"os"
+
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

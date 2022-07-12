@@ -1,8 +1,9 @@
 package main
 
 import (
-	"apigear/cmd"
 	"os"
+
+	"github.com/apigear-io/cli/cmd"
 )
 
 func main() {

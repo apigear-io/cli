@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"apigear/pkg/log"
 	"fmt"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 var (

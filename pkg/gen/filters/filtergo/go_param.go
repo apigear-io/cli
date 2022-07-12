@@ -1,9 +1,10 @@
 package filtergo
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/model"
 	"fmt"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/model"
 )
 
 func ToParamString(schema *model.Schema, name string, prefix string) string {

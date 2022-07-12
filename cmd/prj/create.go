@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"apigear/pkg/log"
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/spf13/cobra"
 )

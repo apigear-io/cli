@@ -1,11 +1,12 @@
 package sdk
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/sol"
-	"apigear/pkg/spec"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/sol"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"

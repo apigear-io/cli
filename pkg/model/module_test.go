@@ -1,8 +1,9 @@
 package model
 
 import (
-	"apigear/pkg/helper"
 	"testing"
+
+	"github.com/apigear-io/cli/pkg/helper"
 
 	"github.com/stretchr/testify/assert"
 )

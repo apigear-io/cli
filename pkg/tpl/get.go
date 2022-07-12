@@ -1,12 +1,13 @@
 package tpl
 
 import (
-	"apigear/pkg/log"
 	"fmt"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 // GetTemplate clones a template using git from an url into a local directory.

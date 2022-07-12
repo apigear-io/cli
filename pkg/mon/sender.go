@@ -1,6 +1,6 @@
 package mon
 
-import "apigear/pkg/log"
+import "github.com/apigear-io/cli/pkg/log"
 
 // EventSender is a sender of events.
 // It sends events to the monitor server

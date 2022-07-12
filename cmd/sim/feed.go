@@ -1,10 +1,11 @@
 package sim
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/net/rpc"
 	"path/filepath"
 	"time"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/net/rpc"
 
 	"github.com/spf13/cobra"
 )

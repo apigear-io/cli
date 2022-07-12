@@ -1,12 +1,13 @@
 package idl
 
 import (
-	"apigear/pkg/idl/parser"
-	"apigear/pkg/log"
-	"apigear/pkg/model"
 	"fmt"
 	"reflect"
 	"strconv"
+
+	"github.com/apigear-io/cli/pkg/idl/parser"
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/model"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )

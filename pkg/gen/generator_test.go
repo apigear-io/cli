@@ -1,11 +1,12 @@
 package gen
 
 import (
-	"apigear/pkg/model"
-	"apigear/pkg/spec"
 	"io/ioutil"
 	"testing"
 	"text/template"
+
+	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"

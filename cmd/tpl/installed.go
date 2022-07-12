@@ -1,8 +1,9 @@
 package tpl
 
 import (
-	"apigear/pkg/tpl"
 	"os"
+
+	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )
@@ -10,9 +11,9 @@ import (
 func NewListCommand() *cobra.Command {
 	// cmd represents the pkgList command
 	var cmd = &cobra.Command{
-		Use:     "list",
+		Use:     "installed",
 		Aliases: []string{"ls"},
-		Short:   "list all installed packages",
+		Short:   "List all installed packages",
 		Long:    `List all installed packages. A package can be installed using a git url or a local directory.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			infos, err := tpl.ListTemplates()

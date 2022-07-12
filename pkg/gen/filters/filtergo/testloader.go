@@ -1,9 +1,10 @@
 package filtergo
 
 import (
-	"apigear/pkg/idl"
-	"apigear/pkg/model"
 	"testing"
+
+	"github.com/apigear-io/cli/pkg/idl"
+	"github.com/apigear-io/cli/pkg/model"
 
 	"github.com/stretchr/testify/assert"
 )

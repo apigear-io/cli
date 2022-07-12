@@ -1,11 +1,12 @@
 package tpl
 
 import (
-	"apigear/pkg/log"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func RemoveTemplate(name string) error {

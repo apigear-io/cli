@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"apigear/pkg/tpl"
+	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ func NewRemoveCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "remove [template]",
 		Aliases: []string{"rm"},
-		Short:   "remove an installed template",
+		Short:   "Remove an installed template",
 		Long:    `Remove an installed template.`,
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {

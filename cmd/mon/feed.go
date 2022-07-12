@@ -1,9 +1,10 @@
 package mon
 
 import (
-	"apigear/pkg/log"
-	"apigear/pkg/mon"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/mon"
 
 	"github.com/spf13/cobra"
 )
