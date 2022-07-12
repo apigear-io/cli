@@ -157,49 +157,42 @@ func (s *Schema) ResolveAll(m *Module) error {
 		s.IsPrimitive = false
 		s.IsSymbol = true
 	}
-	err := s.resolveSymbol()
-	if err != nil {
-		return err
-	}
-	err = s.resolveType()
-	if err != nil {
-		return err
-	}
+	s.resolveSymbol()
+	s.resolveType()
 	s.IsResolved = true
 	return nil
 }
 
-func (s *Schema) resolveSymbol() error {
+func (s *Schema) resolveSymbol() {
 	if s.IsResolved {
-		return nil
+		return
 	}
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
 		if le != nil {
 			s.enum = le
 			s.KindType = TypeEnum
-			return nil
+			return
 		}
 		ls := s.Module.LookupStruct(s.Type)
 		if ls != nil {
 			s.struct_ = ls
 			s.KindType = TypeStruct
-			return nil
+			return
 		}
 		li := s.Module.LookupInterface(s.Type)
 		if li != nil {
 			s.interface_ = li
 			s.KindType = TypeInterface
-			return nil
+			return
 		}
 		log.Warnf("unknown symbol %s", s.Type)
 	}
-	return nil
 }
 
-func (s *Schema) resolveType() error {
+func (s *Schema) resolveType() {
 	if s.IsResolved {
-		return nil
+		return
 	}
 	kind := ""
 	if s.IsPrimitive {
@@ -216,11 +209,11 @@ func (s *Schema) resolveType() error {
 		kind = "null"
 	}
 	s.KindType = KindType(kind)
-	return nil
 }
 
 func (s *Schema) GetEnum() *Enum {
 	s.resolveSymbol()
+
 	return s.enum
 }
 
