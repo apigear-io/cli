@@ -26,6 +26,7 @@ require (
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/renameio v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )
 

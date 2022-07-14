@@ -1,6 +1,8 @@
 package net
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/apigear-io/cli/pkg/log"
@@ -10,7 +12,8 @@ import (
 )
 
 type Server struct {
-	r chi.Router
+	router chi.Router
+	server *http.Server
 }
 
 func NewHTTPServer() *Server {
@@ -21,15 +24,40 @@ func NewHTTPServer() *Server {
 	// r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	return &Server{
-		r: r,
+		router: r,
 	}
 }
 
 func (s *Server) Router() chi.Router {
-	return s.r
+	return s.router
 }
 
 func (s *Server) Start(addr string) error {
+	if s.server != nil {
+		return fmt.Errorf("server already started")
+	}
 	log.Debugf("start http server at %s", addr)
-	return http.ListenAndServe(addr, s.r)
+	server := &http.Server{Addr: addr, Handler: s.router}
+	s.server = server
+	return server.ListenAndServe()
+}
+
+func (s Server) Address() string {
+	if s.server == nil {
+		return ""
+	}
+	return s.server.Addr
+}
+
+func (s *Server) Restart(ctx context.Context, addr string) error {
+	if s.server == nil {
+		return fmt.Errorf("server not started")
+	}
+	log.Debugf("restart http server at %s", addr)
+	err := s.server.Shutdown(ctx)
+	if err != nil {
+		return fmt.Errorf("error shutting down server: %s", err)
+	}
+	s.server.Addr = addr
+	return s.server.ListenAndServe()
 }

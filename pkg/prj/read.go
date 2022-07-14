@@ -42,6 +42,6 @@ func readProject(d string) (ProjectInfo, error) {
 	}
 	// save current project
 	currentProject = project
-	config.AppendRecentProject(d)
+	config.AppendRecentEntry(d)
 	return project, nil
 }

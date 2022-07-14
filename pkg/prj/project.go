@@ -61,11 +61,11 @@ func GetProjectInfo(d string) (ProjectInfo, error) {
 
 func RecentProjectInfos() []ProjectInfo {
 	var infos []ProjectInfo
-	for _, d := range config.ReadRecentProjects() {
+	for _, d := range config.GetRecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
 			log.Warnf("Failed to read project %s: %s", d, err)
-			config.RemoveRecentFile(d)
+			config.RemoveRecentEntry(d)
 			continue
 		}
 		infos = append(infos, info)
