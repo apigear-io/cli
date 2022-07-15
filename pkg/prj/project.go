@@ -149,17 +149,23 @@ func PackProject(source string, target string) (string, error) {
 }
 
 // CreateDocument creates a new document inside the project
-func CreateProjectDocument(docType string, target string) error {
+func CreateProjectDocument(prjDir string, docType string, name string) (string, error) {
+	target := filepath.Join(prjDir, "apigear", MakeDocumentName(docType, name))
+	var err error
 	switch docType {
 	case "module":
-		return writeDemo(target, vfs.DemoModule)
+		err = writeDemo(target, vfs.DemoModule)
 	case "solution":
-		return writeDemo(target, vfs.DemoSolution)
+		err = writeDemo(target, vfs.DemoSolution)
 	case "scenario":
-		return writeDemo(target, vfs.DemoScenario)
+		err = writeDemo(target, vfs.DemoScenario)
 	default:
-		return fmt.Errorf("invalid document type %s", docType)
+		err = fmt.Errorf("invalid document type %s", docType)
 	}
+	if err != nil {
+		return "", err
+	}
+	return target, nil
 }
 
 // MakeDocumentName creates a new document name

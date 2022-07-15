@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"path/filepath"
-
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/prj"
 
@@ -10,7 +8,7 @@ import (
 )
 
 func NewCreateCommand() *cobra.Command {
-	var project string
+	var prjDir string
 	var cmd = &cobra.Command{
 		Use:   "create doc-type doc-name",
 		Short: "Create a new document inside current project",
@@ -19,9 +17,7 @@ func NewCreateCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			docType := args[0]
 			name := args[1]
-			docName := prj.MakeDocumentName(docType, name)
-			target := filepath.Join(project, "apigear", docName)
-			err := prj.CreateProjectDocument(docType, target)
+			target, err := prj.CreateProjectDocument(prjDir, docType, name)
 			if err != nil {
 				log.Errorf("error: %s\n", err)
 				return
@@ -29,6 +25,6 @@ func NewCreateCommand() *cobra.Command {
 			cmd.Printf("document %s created\n", target)
 		},
 	}
-	cmd.Flags().StringVarP(&project, "project", "p", ".", "project directory")
+	cmd.Flags().StringVarP(&prjDir, "project", "p", ".", "project directory")
 	return cmd
 }

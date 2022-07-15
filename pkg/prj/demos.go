@@ -17,5 +17,14 @@ func writeDemo(target string, content []byte) error {
 	if _, err := os.Stat(target); err == nil {
 		return fmt.Errorf("file %s already exists", target)
 	}
-	return os.WriteFile(target, content, 0644)
+	f, err := os.Create(target)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write(content)
+	if err != nil {
+		return err
+	}
+	return nil
 }
