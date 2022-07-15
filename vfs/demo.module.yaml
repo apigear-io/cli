@@ -8,5 +8,5 @@ interfaces:
       - name: count
         type: int
     operations:
-      - name: inc
-      - name: dev
+      - name: increment
+      - name: decrement

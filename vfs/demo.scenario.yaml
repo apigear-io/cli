@@ -1,0 +1,27 @@
+schema: apigear.scenario/1.0
+name: demo
+version: "1.0"
+
+interfaces:
+  demo.Counter:
+    properties:
+      count: 0
+    operations:
+      increment:
+        actions:
+          - set: [count, 0]
+          - add: [count, $params.step]
+      decrement:
+        actions:
+          - set: [count, 0]
+          - sub: [count, $params.step]
+    playbook:
+      loop: true
+      interval: 1000
+      steps:
+        - name: count up
+          sequence:
+            - set: [count, 1]
+        - name: count down
+          sequence:
+            - set: [count, 0]

@@ -8,6 +8,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/vfs"
 )
 
 var currentProject ProjectInfo
@@ -46,12 +47,20 @@ func InitProject(d string) (ProjectInfo, error) {
 			return ProjectInfo{}, err
 		}
 	}
-	// write demo module and demo solution
-	if err := writeDemoModule(filepath.Join(d, "apigear", "demo.module.yaml")); err != nil {
+	// write demo module
+	target := filepath.Join(d, "apigear", "demo.module.yaml")
+	if err := writeDemo(target, vfs.DemoModule); err != nil {
 		log.Debugf("Failed to write demo module: %s", err)
 	}
-	if err := writeDemoSolution(filepath.Join(d, "apigear", "demo.solution.yaml")); err != nil {
+	// write demo solution
+	target = filepath.Join(d, "apigear", "demo.solution.yaml")
+	if err := writeDemo(target, vfs.DemoSolution); err != nil {
 		log.Debugf("Failed to write demo solution: %s", err)
+	}
+	// write demo scenario
+	target = filepath.Join(d, "apigear", "demo.scenario.yaml")
+	if err := writeDemo(target, vfs.DemoScenario); err != nil {
+		log.Debugf("Failed to write demo scenario: %s", err)
 	}
 	return readProject(d)
 }
@@ -94,6 +103,7 @@ func OpenStudio(d string) error {
 	return cmd.Run()
 }
 
+// ImportProject imports a project from a zip file
 func ImportProject(source string, target string) (ProjectInfo, error) {
 	log.Infof("Import Project %s", source)
 	// check if source is directory
@@ -113,12 +123,14 @@ func ImportProject(source string, target string) (ProjectInfo, error) {
 		return ProjectInfo{}, err
 	}
 	// copy apigear directory
+	// TODO: check is source is a zip file and unpack it
 	if err := copyFiles(source, target); err != nil {
 		return ProjectInfo{}, err
 	}
 	return readProject(target)
 }
 
+// PackProject packs the project into a zip file
 func PackProject(source string, target string) (string, error) {
 	log.Infof("Pack Project %s", source)
 	// check if source is directory
@@ -134,4 +146,32 @@ func PackProject(source string, target string) (string, error) {
 		return "", err
 	}
 	return target, nil
+}
+
+// CreateDocument creates a new document inside the project
+func CreateProjectDocument(docType string, target string) error {
+	switch docType {
+	case "module":
+		return writeDemo(target, vfs.DemoModule)
+	case "solution":
+		return writeDemo(target, vfs.DemoSolution)
+	case "scenario":
+		return writeDemo(target, vfs.DemoScenario)
+	default:
+		return fmt.Errorf("invalid document type %s", docType)
+	}
+}
+
+// MakeDocumentName creates a new document name
+func MakeDocumentName(docType string, name string) string {
+	switch docType {
+	case "module":
+		return fmt.Sprintf("%s.module.yaml", name)
+	case "solution":
+		return fmt.Sprintf("%s.solution.yaml", name)
+	case "scenario":
+		return fmt.Sprintf("%s.scenario.yaml", name)
+	default:
+		return ""
+	}
 }

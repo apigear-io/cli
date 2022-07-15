@@ -3,26 +3,19 @@ package prj
 import (
 	"fmt"
 	"os"
-
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/vfs"
 )
 
-func writeDemoModule(path string) error {
-	log.Infof("Write Demo Module %s", path)
-	// return if path exists
-	if _, err := os.Stat(path); err == nil {
-		return fmt.Errorf("file %s already exists", path)
-	}
-	return os.WriteFile(path, []byte(vfs.DemoModule), 0644)
-}
+type DemoType string
 
-func writeDemoSolution(path string) error {
-	log.Infof("Write Demo Solution %s", path)
-	// check if path exists
-	if _, err := os.Stat(path); err == nil {
-		return fmt.Errorf("file %s already exists", path)
+const (
+	DemoModule   DemoType = "module"
+	DemoSolution DemoType = "solution"
+	DemoScenario DemoType = "scenario"
+)
+
+func writeDemo(target string, content []byte) error {
+	if _, err := os.Stat(target); err == nil {
+		return fmt.Errorf("file %s already exists", target)
 	}
-	log.Infof("Write Demo Solution %s", path)
-	return os.WriteFile(path, []byte(vfs.DemoSolution), 0644)
+	return os.WriteFile(target, content, 0644)
 }
