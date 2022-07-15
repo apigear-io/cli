@@ -2,6 +2,8 @@ package mon
 
 import (
 	"path/filepath"
+	"sync"
+	"time"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
@@ -11,8 +13,10 @@ import (
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
-		url    string
-		script string
+		url    string        // monitor server url
+		script string        // script to run
+		repeat int           // -1 for infinite
+		sleep  time.Duration // sleep between each event
 	}
 	var options = &ClientOptions{}
 	var cmd = &cobra.Command{
@@ -23,17 +27,31 @@ func NewClientCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
+			wg := &sync.WaitGroup{}
 			switch filepath.Ext(options.script) {
 			case ".json", ".ndjson":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
+				wg.Add(1)
 				go func(fn string, emitter chan *mon.Event) {
-					err := mon.ReadJsonEvents(fn, emitter)
-					if err != nil {
-						log.Error(err)
+					defer func() {
+						close(emitter)
+						wg.Done()
+					}()
+					for i := 0; i < options.repeat; i++ {
+						err := mon.ReadJsonEvents(fn, emitter)
+						if err != nil {
+							log.Error(err)
+						}
 					}
 				}(options.script, emitter)
-				sender.SendEvents(emitter)
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					sender.SendEvents(emitter, options.sleep)
+				}()
+				wg.Wait()
+
 			case ".js":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
@@ -44,7 +62,7 @@ func NewClientCommand() *cobra.Command {
 						log.Error(err)
 					}
 				}(options.script, emitter)
-				sender.SendEvents(emitter)
+				sender.SendEvents(emitter, options.sleep)
 			case ".csv":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
@@ -54,13 +72,17 @@ func NewClientCommand() *cobra.Command {
 						log.Error(err)
 					}
 				}(options.script, emitter)
-				sender.SendEvents(emitter)
+				sender.SendEvents(emitter, options.sleep)
 			default:
 				log.Error("unknown file type: ", options.script)
 			}
 		},
 	}
 	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123/", "monitor server address")
+	// repeat is -1 for infinite
+	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
+	// sleep is in milliseconds
+	cmd.Flags().DurationVar(&options.sleep, "sleep", 0, "sleep between each event")
 
 	return cmd
 }
