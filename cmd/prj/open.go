@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewOpenCommand returns a new cobra.Command for the "open" command.
+// NewOpenCommand opens the project directory in a ApiGear Studio
 func NewOpenCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "open project-path",

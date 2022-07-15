@@ -1,6 +1,7 @@
 package prj
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -73,10 +74,12 @@ func RecentProjectInfos() []ProjectInfo {
 	return infos
 }
 
+// OpenEditor opens the project directory in a editor
 func OpenEditor(d string) error {
-	path, err := exec.LookPath("code")
+	editor := config.GetEditorCommand()
+	path, err := exec.LookPath(editor)
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to find editor %s: %s", editor, err)
 	}
 	cmd := exec.Command(path, d)
 	return cmd.Run()

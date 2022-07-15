@@ -36,6 +36,5 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 		log.Error("failed to read file: ", fn, ": ", err)
 		return err
 	}
-	close(emitter)
 	return nil
 }

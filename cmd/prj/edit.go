@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// NewEditCommand returns a new cobra.Command for the "edit" command.
+// NewEditCommand opens the project in a configured editor
 func NewEditCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "edit",
