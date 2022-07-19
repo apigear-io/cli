@@ -24,7 +24,7 @@ func NewClientCommand() *cobra.Command {
 		Short: "Feed a script to a monitor",
 		Long:  `Feeds API calls from various sources to the monitor to be displayed. This is mainly to playback recorded API calls.`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
 			wg := &sync.WaitGroup{}
@@ -46,10 +46,10 @@ func NewClientCommand() *cobra.Command {
 					}
 				}(options.script, emitter)
 				wg.Add(1)
-				go func() {
+				go func(emitter chan *mon.Event, sleep time.Duration) {
 					defer wg.Done()
-					sender.SendEvents(emitter, options.sleep)
-				}()
+					sender.SendEvents(emitter, sleep)
+				}(emitter, options.sleep)
 				wg.Wait()
 
 			case ".js":
@@ -57,7 +57,7 @@ func NewClientCommand() *cobra.Command {
 				sender := mon.NewEventSender(options.url)
 				go func(script string, emitter chan *mon.Event) {
 					vm := mon.NewEventScript(emitter)
-					err := vm.RunScriptFromFile(options.script)
+					err := vm.RunScriptFromFile(script)
 					if err != nil {
 						log.Error(err)
 					}

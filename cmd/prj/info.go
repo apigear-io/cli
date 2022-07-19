@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"fmt"
-
 	"github.com/apigear-io/cli/pkg/prj"
 
 	"github.com/spf13/cobra"
@@ -17,16 +15,16 @@ func NewInfoCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			fmt.Printf("# info %s\n", dir)
+			cmd.Printf("# info %s\n", dir)
 			info, err := prj.GetProjectInfo(dir)
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
+				cmd.Printf("error: %s\n", err)
 				return
 			}
-			fmt.Printf("path: %s\n", info.Path)
-			fmt.Printf("name: %s\n", info.Name)
+			cmd.Printf("path: %s\n", info.Path)
+			cmd.Printf("name: %s\n", info.Name)
 			for _, v := range info.Documents {
-				fmt.Printf("  %s\n", v.Name)
+				cmd.Printf("  %s\n", v.Name)
 			}
 
 		},

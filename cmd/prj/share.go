@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +13,7 @@ func NewShareCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			fmt.Printf("share project %s\n", dir)
+			cmd.Printf("share project %s\n", dir)
 		},
 	}
 	return cmd

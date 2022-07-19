@@ -17,7 +17,7 @@ func NewServerCommand() *cobra.Command {
 		Use:   "run",
 		Short: "Run the monitor server",
 		Long:  `A monitor server runs on a HTTP port and listens for API calls.`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			log.Debugf("start server on %s", addr)
 			go func() {
 				for event := range mon.Emitter() {
@@ -25,7 +25,7 @@ func NewServerCommand() *cobra.Command {
 					if err != nil {
 						log.Info("error marshalling data: ", err)
 					}
-					fmt.Printf("-> %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
+					cmd.Printf("-> %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
 				}
 			}()
 			s := net.NewHTTPServer()

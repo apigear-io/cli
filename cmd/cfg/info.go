@@ -11,7 +11,7 @@ func NewInfoCmd() *cobra.Command {
 		Use:   "info",
 		Short: "Information about configuration",
 		Long:  `Information about configuration.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			cmd.Println("info:")
 			cmd.Printf("  config file: %s\n", viper.ConfigFileUsed())
 		},

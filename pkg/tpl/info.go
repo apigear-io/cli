@@ -11,11 +11,11 @@ func GetInfo(name string) (TemplateInfo, error) {
 	dir := GetPackageDir()
 	// get git info for template
 	target := filepath.Join(dir, name)
-	sha1, err := ExecGit([]string{"log", "-1", "--pretty=%H"}, target)
+	sha1, err := execGit([]string{"log", "-1", "--pretty=%H"}, target)
 	if err != nil {
 		log.Warnf("failed to get git info for template %s", name)
 	}
-	url, err := ExecGit([]string{"config", "--get", "remote.origin.url"}, target)
+	url, err := execGit([]string{"config", "--get", "remote.origin.url"}, target)
 	if err != nil {
 		log.Warnf("failed to get git info for template %s", name)
 	}

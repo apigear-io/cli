@@ -1,7 +1,6 @@
 package tpl
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,7 +15,7 @@ func RemoveTemplate(name string) error {
 	// check if dir exists
 	target := filepath.Join(dir, name)
 	_, err := os.Stat(target)
-	if errors.Is(err, os.ErrNotExist) {
+	if err != nil && os.IsNotExist(err) {
 		return fmt.Errorf("template %s does not exist", name)
 	}
 	return os.RemoveAll(target)

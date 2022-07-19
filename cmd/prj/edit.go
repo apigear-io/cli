@@ -1,7 +1,6 @@
 package prj
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/apigear-io/cli/pkg/prj"
@@ -18,10 +17,10 @@ func NewEditCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			fmt.Printf("launch vscode with %s\n", dir)
+			cmd.Printf("launch vscode with %s\n", dir)
 			err := prj.OpenEditor(dir)
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
+				cmd.Printf("error: %s\n", err)
 				os.Exit(1)
 			}
 		},

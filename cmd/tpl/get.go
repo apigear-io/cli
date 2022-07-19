@@ -21,13 +21,13 @@ by using the template name.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url = args[0]
 			if name == "" {
-				path, err := tpl.GetNameFromURL(url)
+				path, err := tpl.RepositoryNameFromGitUrl(url)
 				if err != nil {
 					return err
 				}
 				name = path
 			}
-			err := tpl.GetTemplate(name, url)
+			err := tpl.InstallTemplate(name, url)
 			if err != nil {
 				return err
 			}

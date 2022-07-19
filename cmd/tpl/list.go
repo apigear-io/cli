@@ -15,7 +15,7 @@ func NewListCommand() *cobra.Command {
 		Aliases: []string{"ls"},
 		Short:   "List all installed packages",
 		Long:    `List all installed packages. A package can be installed using a git url or a local directory.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			infos, err := tpl.ListTemplates()
 			if err != nil {
 				cmd.PrintErrln(err)

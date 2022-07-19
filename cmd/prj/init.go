@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"fmt"
-
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/prj"
 
@@ -21,10 +19,10 @@ func NewInitCommand() *cobra.Command {
 			log.Debugf("init project %s\n", dir)
 			info, err := prj.InitProject(dir)
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
+				cmd.Printf("error: %s\n", err)
 				return
 			}
-			fmt.Printf("project initialized at: %s\n", info.Path)
+			cmd.Printf("project initialized at: %s\n", info.Path)
 
 		},
 	}

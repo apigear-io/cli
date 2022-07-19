@@ -19,10 +19,10 @@ func NewPackCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			source := args[0]
-			fmt.Printf("pack project %s\n", source)
+			cmd.Printf("pack project %s\n", source)
 			cwd, err := os.Getwd()
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
+				cmd.Printf("error: %s\n", err)
 				os.Exit(1)
 			}
 			base := filepath.Base(source)
@@ -30,10 +30,10 @@ func NewPackCommand() *cobra.Command {
 
 			target, err = prj.PackProject(source, target)
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
+				cmd.Printf("error: %s\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("project %s packed to %s\n", source, target)
+			cmd.Printf("project %s packed to %s\n", source, target)
 		},
 	}
 	return cmd

@@ -11,7 +11,7 @@ func NewSearchCommand() *cobra.Command {
 		Use:   "search",
 		Short: "Search templates by name.",
 		Long:  `Search templates by name using wildcards.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			cmd.Println("Please visit https://apigear.io/templates/ for a list of templates.")
 		},
 	}

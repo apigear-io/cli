@@ -28,7 +28,10 @@ func ListTemplates() ([]TemplateInfo, error) {
 				if err != nil {
 					return fmt.Errorf("failed to get relative path for %s", path)
 				}
-				infos = append(infos, TemplateInfo{Name: name})
+				infos = append(infos, TemplateInfo{
+					Name: name,
+					Path: path,
+				})
 			}
 		}
 		return nil
