@@ -12,7 +12,7 @@ func TestJsonReader(t *testing.T) {
 	emitter := make(chan *Event)
 	// create a reader
 	wg := sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(1)
 	go func() {
 		// start the reader
 		// read events from the channel
@@ -23,10 +23,7 @@ func TestJsonReader(t *testing.T) {
 		assert.Equal(t, events, 4)
 		wg.Done()
 	}()
-	go func() {
-		err := ReadJsonEvents("testdata/events.ndjson", emitter)
-		assert.NoError(t, err)
-		wg.Done()
-	}()
+	err := ReadJsonEvents("testdata/events.ndjson", emitter)
+	assert.NoError(t, err)
 	wg.Wait()
 }

@@ -18,7 +18,10 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 		log.Error("failed to open file ", fn, ": ", err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		file.Close()
+		close(emitter)
+	}()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
