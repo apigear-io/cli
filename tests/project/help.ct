@@ -11,7 +11,7 @@ Aliases:
 Available Commands:
   create      Create a new document inside current project
   edit        Edit a project in the default editor (vscode)
-  import      Import a project from a directory
+  import      Import a project from a git url into a local directory.
   info        Show project information
   init        Initialize a new project
   open        Open a project in studio
@@ -41,7 +41,7 @@ Aliases:
 Available Commands:
   create      Create a new document inside current project
   edit        Edit a project in the default editor (vscode)
-  import      Import a project from a directory
+  import      Import a project from a git url into a local directory.
   info        Show project information
   init        Initialize a new project
   open        Open a project in studio

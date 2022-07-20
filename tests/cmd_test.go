@@ -13,6 +13,7 @@ import (
 var update = flag.Bool("update", false, "update test files with results")
 
 var entries = []string{
+	"config.json",
 	"api/demo.module.yaml",
 	"api/demo.solution.yaml",
 	"tpl/rules.yaml",
