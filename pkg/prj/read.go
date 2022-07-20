@@ -8,20 +8,20 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 )
 
-func readProject(d string) (ProjectInfo, error) {
+func readProject(d string) (*ProjectInfo, error) {
 	log.Debugf("Read Project %s", d)
 	// check if source is directory
 	if _, err := os.Stat(d); err != nil {
-		return ProjectInfo{}, err
+		return nil, err
 	}
 	// check if source contains apigear directory
 	if _, err := os.Stat(filepath.Join(d, "apigear")); err != nil {
-		return ProjectInfo{}, err
+		return nil, err
 	}
 	// read apigear directory
 	entries, err := os.ReadDir(filepath.Join(d, "apigear"))
 	if err != nil {
-		return ProjectInfo{}, err
+		return nil, err
 	}
 	// convert entries to documents
 	var docs []DocumentInfo
@@ -35,7 +35,7 @@ func readProject(d string) (ProjectInfo, error) {
 			Type: "module",
 		})
 	}
-	project := ProjectInfo{
+	project := &ProjectInfo{
 		Name:      filepath.Base(d),
 		Path:      d,
 		Documents: docs,

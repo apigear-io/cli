@@ -7,44 +7,45 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/vfs"
 )
 
-var currentProject ProjectInfo
+var currentProject *ProjectInfo
 
-func OpenProject(source string) (ProjectInfo, error) {
+func OpenProject(source string) (*ProjectInfo, error) {
 	log.Infof("Open Project %s", source)
 	// check if source is directory
 	if _, err := os.Stat(source); err != nil {
-		return ProjectInfo{}, err
+		return nil, err
 	}
 	// check if source contains apigear directory
 	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
-		return ProjectInfo{}, err
+		return nil, err
 	}
 
 	return readProject(source)
 }
 
-func CurrentProject() ProjectInfo {
+func CurrentProject() *ProjectInfo {
 	return currentProject
 }
 
 // InitProject initializes a new project inside destination
-func InitProject(d string) (ProjectInfo, error) {
+func InitProject(d string) (*ProjectInfo, error) {
 	log.Debugf("Init Project %s", d)
 	// create destination if not exists
 	if _, err := os.Stat(d); os.IsNotExist(err) {
 		err := os.MkdirAll(d, 0755)
 		if err != nil {
-			return ProjectInfo{}, err
+			return nil, err
 		}
 	}
 	// create apigear directory
 	if err := os.Mkdir(filepath.Join(d, "apigear"), 0755); err != nil {
 		if !os.IsExist(err) {
-			return ProjectInfo{}, err
+			return nil, err
 		}
 	}
 	// write demo module
@@ -65,12 +66,12 @@ func InitProject(d string) (ProjectInfo, error) {
 	return readProject(d)
 }
 
-func GetProjectInfo(d string) (ProjectInfo, error) {
+func GetProjectInfo(d string) (*ProjectInfo, error) {
 	return readProject(d)
 }
 
-func RecentProjectInfos() []ProjectInfo {
-	var infos []ProjectInfo
+func RecentProjectInfos() []*ProjectInfo {
+	var infos []*ProjectInfo
 	for _, d := range config.GetRecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
@@ -104,30 +105,21 @@ func OpenStudio(d string) error {
 }
 
 // ImportProject imports a project from a zip file
-func ImportProject(source string, target string) (ProjectInfo, error) {
-	log.Infof("Import Project %s", source)
-	// check if source is directory
-	if _, err := os.Stat(source); err != nil {
-		return ProjectInfo{}, err
+func ImportProject(repo string, dir string) (*ProjectInfo, error) {
+	log.Infof("Import Project %s", repo)
+	// check if directory exists
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, fmt.Errorf("target directory %s does not exist", dir)
 	}
-	// check if source contains apigear directory
-	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
-		return ProjectInfo{}, err
+	// check if repo is valid url
+	if !git.IsValidGitUrl(repo) {
+		return nil, fmt.Errorf("invalid repo url: '%s'", repo)
 	}
-	// check if destination is directory
-	if _, err := os.Stat(target); os.IsNotExist(err) {
-		return ProjectInfo{}, err
+	err := git.Clone(repo, dir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to clone project repository: %s", err)
 	}
-	// check if destination contains apigear directory
-	if _, err := os.Stat(filepath.Join(target, "apigear")); err != nil {
-		return ProjectInfo{}, err
-	}
-	// copy apigear directory
-	// TODO: check is source is a zip file and unpack it
-	if err := copyFiles(source, target); err != nil {
-		return ProjectInfo{}, err
-	}
-	return readProject(target)
+	return readProject(dir)
 }
 
 // PackProject packs the project into a zip file
