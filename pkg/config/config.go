@@ -16,7 +16,12 @@ const (
 )
 
 func GetRecentEntries() []string {
-	return viper.GetStringSlice(KeyRecent)
+	entries := viper.GetStringSlice(KeyRecent)
+	// limit to 5 entries
+	if len(entries) > 5 {
+		entries = entries[:5]
+	}
+	return entries
 }
 
 func AppendRecentEntry(file string) {
@@ -29,7 +34,12 @@ func AppendRecentEntry(file string) {
 			return
 		}
 	}
-	viper.Set(KeyRecent, append(recent, file))
+	// limit to 5 entries
+	if len(recent) >= 5 {
+		recent = recent[1:]
+	}
+	recent = append(recent, file)
+	viper.Set(KeyRecent, recent)
 	err := viper.WriteConfig()
 	if err != nil {
 		log.Warnf("Failed to write config: %s", err)
