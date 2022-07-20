@@ -25,7 +25,7 @@ func InitConfig() {
 		cobra.CheckErr(err)
 		// Search config in home directory with name ".apigear" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
+		viper.SetConfigType("json")
 		viper.SetConfigName(".apigear")
 	}
 
