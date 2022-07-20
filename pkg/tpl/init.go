@@ -19,7 +19,3 @@ func init() {
 		panic(err)
 	}
 }
-
-func GetPackageDir() string {
-	return viper.GetString("packageDir")
-}

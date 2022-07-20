@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/config"
 )
 
 type TemplateInfo struct {
@@ -15,7 +17,7 @@ type TemplateInfo struct {
 
 func ListTemplates() ([]TemplateInfo, error) {
 	// list all dirs in packageDir
-	dir := GetPackageDir()
+	dir := config.GetPackageDir()
 	// walk package dir to find a dir that contains a .git dir
 	var infos []TemplateInfo
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -40,17 +42,4 @@ func ListTemplates() ([]TemplateInfo, error) {
 		return nil, fmt.Errorf("failed to list templates: %s", err)
 	}
 	return infos, nil
-
-	// items, err := os.ReadDir(dir)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// var infos []TemplateInfo
-
-	// for _, d := range items {
-	// 	if d.IsDir() {
-	// 		infos = append(infos, TemplateInfo{Name: d.Name()})
-	// 	}
-	// }
-	// return infos, nil
 }

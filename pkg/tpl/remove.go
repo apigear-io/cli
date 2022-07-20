@@ -5,11 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/log"
 )
 
 func RemoveTemplate(name string) error {
-	dir := GetPackageDir()
+	dir := config.GetPackageDir()
 	log.Infof("remove template %s from %s", name, dir)
 	// remove dir from packageDir
 	// check if dir exists
