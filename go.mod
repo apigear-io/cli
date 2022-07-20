@@ -28,7 +28,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/whilp/git-urls v1.0.0 // indirect
+	github.com/whilp/git-urls v1.0.0
 )
 
 require (
