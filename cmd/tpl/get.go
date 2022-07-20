@@ -1,6 +1,7 @@
 package tpl
 
 import (
+	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
@@ -21,7 +22,7 @@ by using the template name.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url = args[0]
 			if name == "" {
-				path, err := tpl.RepositoryNameFromGitUrl(url)
+				path, err := git.RepositoryNameFromGitUrl(url)
 				if err != nil {
 					return err
 				}
