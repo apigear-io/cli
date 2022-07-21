@@ -21,6 +21,8 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 )
 
+require gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
+
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect

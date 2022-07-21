@@ -1,6 +1,10 @@
 package log
 
 import (
+	"io"
+	"os"
+	"path/filepath"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,6 +21,14 @@ func Config(verbose bool, debug bool) {
 		logger.Debugf("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
 	logger.AddHook(NewReportHook())
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	logFile := filepath.Join(home, ".apigear/logs/app.log")
+	ljack := newLogFileRotator(logFile)
+
+	logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
 }
 
 var Debug = logger.Debug
