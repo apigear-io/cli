@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/apigear-io/cli/pkg/log"
-
 	"github.com/gocarina/gocsv"
 )
 

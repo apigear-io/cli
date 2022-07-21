@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
 
 	"github.com/go-chi/chi/v5"

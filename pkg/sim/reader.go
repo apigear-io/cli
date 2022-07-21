@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/log"
-
 	"gopkg.in/yaml.v2"
 )
 

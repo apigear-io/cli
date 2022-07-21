@@ -5,7 +5,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/gen/filters/filtercpp"
 	"github.com/apigear-io/cli/pkg/gen/filters/filtergo"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 func PopulateFuncMap() template.FuncMap {

@@ -1,7 +1,5 @@
 package actions
 
-import "github.com/apigear-io/cli/pkg/log"
-
 type Context map[string]any
 
 type HandlerFunc func(Action, Context) error

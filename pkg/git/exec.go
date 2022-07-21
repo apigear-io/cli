@@ -4,7 +4,6 @@ import (
 	"os/exec"
 
 	"github.com/apigear-io/cli/pkg/config"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // ExecGit executes a git command.

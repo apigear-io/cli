@@ -2,7 +2,6 @@ package filtercpp
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/apigear-io/cli/pkg/model"

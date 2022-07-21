@@ -2,8 +2,6 @@ package sol
 
 import (
 	"path/filepath"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // RunSolution reads the solution file

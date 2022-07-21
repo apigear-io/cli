@@ -6,7 +6,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/git"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 func GetInfo(name string) (TemplateInfo, error) {

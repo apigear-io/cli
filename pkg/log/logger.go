@@ -16,6 +16,7 @@ func Config(verbose bool, debug bool) {
 	if verbose || debug {
 		logger.Debugf("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
+	logger.AddHook(NewReportHook())
 }
 
 var Debug = logger.Debug
@@ -36,3 +37,11 @@ var Panicln = logger.Panicln
 var Fatal = logger.Fatal
 var Fatalf = logger.Fatalf
 var Fatalln = logger.Fatalln
+
+func TopicLogger(topic string) *logrus.Entry {
+	return logger.WithField("topic", topic)
+}
+
+func Logger() *logrus.Logger {
+	return logger
+}

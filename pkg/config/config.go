@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/apigear-io/cli/pkg/log"
-
 	"github.com/spf13/viper"
 )
 

@@ -1,4 +1,4 @@
-package log
+package net
 
 import (
 	"fmt"
@@ -15,15 +15,15 @@ import (
 // on this work, designed for context-based http routers.
 
 func NewHttpLogger() func(next http.Handler) http.Handler {
-	return middleware.RequestLogger(&StructuredLogger{logger})
+	return middleware.RequestLogger(&StructuredLogger{log})
 }
 
 type StructuredLogger struct {
-	Logger *logrus.Logger
+	LogEntry *logrus.Entry
 }
 
 func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
-	entry := &StructuredLoggerEntry{Logger: logrus.NewEntry(l.Logger)}
+	entry := &StructuredLoggerEntry{Logger: l.LogEntry}
 	logFields := logrus.Fields{}
 
 	logFields["ts"] = time.Now().UTC().Format(time.RFC1123)

@@ -6,9 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/gen"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/idl"
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 )
@@ -32,7 +33,16 @@ func (r *runner) Run() {
 // A layer contains information about the inputs, used template and output.
 func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	log.Debugf("process layer %s", layer.Name)
-	var templateDir = filepath.Join(r.rootDir, layer.Template)
+	// TODO: template can be a dir or a name of a template
+	var templateDir string
+
+	if helper.IsDir(filepath.Join(r.rootDir, layer.Template)) {
+		templateDir = filepath.Join(r.rootDir, layer.Template)
+	} else if helper.IsDir(filepath.Join(config.GetPackageDir(), layer.Template)) {
+		templateDir = filepath.Join(config.GetPackageDir(), layer.Template)
+	} else {
+		return fmt.Errorf("template %s not found", layer.Template)
+	}
 	var templatesDir = filepath.Join(templateDir, "templates")
 	var rulesFile = filepath.Join(templateDir, "rules.yaml")
 	var outputDir = filepath.Join(r.rootDir, layer.Output)

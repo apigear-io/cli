@@ -10,7 +10,6 @@ import (
 	"text/template"
 
 	"github.com/apigear-io/cli/pkg/gen/filters"
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 

@@ -5,8 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/log"
-
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/require"

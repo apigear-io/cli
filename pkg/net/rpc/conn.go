@@ -3,8 +3,6 @@ package rpc
 import (
 	"time"
 
-	"github.com/apigear-io/cli/pkg/log"
-
 	"github.com/gorilla/websocket"
 )
 

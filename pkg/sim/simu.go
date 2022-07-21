@@ -2,8 +2,6 @@ package sim
 
 import (
 	"fmt"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // Simulate runs one or more simulation scenarios.

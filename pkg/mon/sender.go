@@ -2,8 +2,6 @@ package mon
 
 import (
 	"time"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // EventSender is a sender of events.

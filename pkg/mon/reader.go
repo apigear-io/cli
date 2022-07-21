@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // ReadJsonEvents reads events from a json stream file

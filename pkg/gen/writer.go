@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 type Writer struct {
