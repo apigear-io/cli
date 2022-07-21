@@ -27,7 +27,6 @@ func Config(verbose bool, debug bool) {
 	}
 	logFile := filepath.Join(home, ".apigear/logs/app.log")
 	ljack := newLogFileRotator(logFile)
-
 	logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
 }
 

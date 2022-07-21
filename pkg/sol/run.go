@@ -17,7 +17,6 @@ func RunSolution(file string) error {
 	if err != nil {
 		return err
 	}
-	proc := NewSolutionRunner(rootDir, doc)
-	proc.Run()
-	return nil
+	runner := NewSolutionRunner(rootDir, doc)
+	return runner.Run()
 }

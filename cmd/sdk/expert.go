@@ -77,9 +77,8 @@ func runExpert(options *ExpertOptions) error {
 	if err != nil {
 		log.Fatalf("failed to get current directory: %s", err)
 	}
-	proc := sol.NewSolutionRunner(rootDir, doc)
-	proc.Run()
-	return nil
+	runner := sol.NewSolutionRunner(rootDir, doc)
+	return runner.Run()
 }
 
 func watchExpert(options *ExpertOptions) {

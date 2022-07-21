@@ -19,14 +19,15 @@ type runner struct {
 	rootDir string
 }
 
-func (r *runner) Run() {
+func (r *runner) Run() error {
 	log.Debug("run solution")
 	for _, layer := range r.doc.Layers {
 		err := r.processLayer(layer)
 		if err != nil {
-			log.Errorf("error processing layer: %s", err)
+			return err
 		}
 	}
+	return nil
 }
 
 // processLayer processes a layer from the solution.
