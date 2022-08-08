@@ -1,22 +1,23 @@
 package sol
 
 import (
-	"path/filepath"
+	"github.com/apigear-io/cli/pkg/spec"
 )
 
 // RunSolution reads the solution file
 // and starts the solution runner
-func RunSolution(file string) error {
+// returns the dependencies of the solution
+func RunSolution(file string) ([]string, error) {
 	log.Infof("run solution %s", file)
 	doc, err := ReadSolutionDoc(file)
 	if err != nil {
 		log.Errorf("error reading solution: %s", err)
-		return err
+		return nil, err
 	}
-	rootDir, err := filepath.Abs(filepath.Dir(file))
-	if err != nil {
-		return err
-	}
-	runner := NewSolutionRunner(rootDir, doc)
+	return RunSolutionDocument(doc)
+}
+
+func RunSolutionDocument(doc *spec.SolutionDoc) ([]string, error) {
+	runner := NewSolutionRunner(doc)
 	return runner.Run()
 }

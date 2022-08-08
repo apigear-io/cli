@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/gen"
@@ -15,19 +16,35 @@ import (
 )
 
 type runner struct {
-	doc     spec.SolutionDoc
+	doc     *spec.SolutionDoc
 	rootDir string
+	deps    []string
 }
 
-func (r *runner) Run() error {
+func NewSolutionRunner(doc *spec.SolutionDoc) *runner {
+	return &runner{
+		doc:  doc,
+		deps: make([]string, 0),
+	}
+}
+
+func (r *runner) Run() ([]string, error) {
 	log.Debug("run solution")
+	if r.doc == nil {
+		return nil, fmt.Errorf("solution doc is nil")
+	}
+	if r.doc.RootDir == "" {
+		return nil, fmt.Errorf("solution doc root dir is empty")
+	}
+	// reset deps
+	r.deps = []string{}
 	for _, layer := range r.doc.Layers {
 		err := r.processLayer(layer)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return r.deps, nil
 }
 
 // processLayer processes a layer from the solution.
@@ -47,6 +64,8 @@ func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	var templatesDir = filepath.Join(templateDir, "templates")
 	var rulesFile = filepath.Join(templateDir, "rules.yaml")
 	var outputDir = filepath.Join(r.rootDir, layer.Output)
+	// add templates dir and rules file as dependency
+	r.deps = append(r.deps, templatesDir, rulesFile)
 	var force = layer.Force
 	name := layer.Name
 	if name == "" {
@@ -122,6 +141,8 @@ func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error)
 		}
 
 		if info.IsDir() {
+			// add every dir as dependency
+			r.deps = append(r.deps, entry)
 			err := filepath.WalkDir(entry, func(root string, d fs.DirEntry, err error) error {
 				if err != nil {
 					return fmt.Errorf("error resolving input: %w", err)
@@ -129,22 +150,34 @@ func (r *runner) expandInputs(rootDir string, inputs []string) ([]string, error)
 				if d.IsDir() {
 					return nil
 				}
-				files = append(files, root)
+				if hasExtension(d.Name(), []string{"module.yaml", "module.yml", "module.json", ".odl"}) {
+					files = append(files, root)
+				}
 				return nil
 			})
 			if err != nil {
 				return nil, fmt.Errorf("error resolving input: %w", err)
 			}
 		} else {
-			files = append(files, entry)
+			if hasExtension(entry, []string{"module.yaml", "module.yml", "module.json", ".odl"}) {
+				// add every file as dependency
+				r.deps = append(r.deps, entry)
+				files = append(files, entry)
+			}
 		}
 	}
 	return files, nil
 }
 
-func NewSolutionRunner(rootDir string, doc spec.SolutionDoc) *runner {
-	return &runner{
-		doc:     doc,
-		rootDir: rootDir,
+func (r runner) Dependencies() []string {
+	return r.deps
+}
+
+func hasExtension(file string, extensions []string) bool {
+	for _, ext := range extensions {
+		if strings.HasSuffix(file, ext) {
+			return true
+		}
 	}
+	return false
 }

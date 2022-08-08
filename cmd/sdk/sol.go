@@ -22,7 +22,7 @@ as also the other options. To create a demo module or solution use the 'project 
 			if watch {
 				sol.WatchSolution(file)
 			} else {
-				err := sol.RunSolution(file)
+				_, err := sol.RunSolution(file)
 				if err != nil {
 					return err
 				}
