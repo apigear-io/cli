@@ -16,9 +16,8 @@ import (
 )
 
 type runner struct {
-	doc     *spec.SolutionDoc
-	rootDir string
-	deps    []string
+	doc  *spec.SolutionDoc
+	deps []string
 }
 
 func NewSolutionRunner(doc *spec.SolutionDoc) *runner {
@@ -47,6 +46,10 @@ func (r *runner) Run() ([]string, error) {
 	return r.deps, nil
 }
 
+func (r runner) rootDir() string {
+	return r.doc.RootDir
+}
+
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
 func (r *runner) processLayer(layer spec.SolutionLayer) error {
@@ -54,8 +57,8 @@ func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	// TODO: template can be a dir or a name of a template
 	var templateDir string
 
-	if helper.IsDir(filepath.Join(r.rootDir, layer.Template)) {
-		templateDir = filepath.Join(r.rootDir, layer.Template)
+	if helper.IsDir(filepath.Join(r.rootDir(), layer.Template)) {
+		templateDir = filepath.Join(r.rootDir(), layer.Template)
 	} else if helper.IsDir(filepath.Join(config.GetPackageDir(), layer.Template)) {
 		templateDir = filepath.Join(config.GetPackageDir(), layer.Template)
 	} else {
@@ -63,7 +66,7 @@ func (r *runner) processLayer(layer spec.SolutionLayer) error {
 	}
 	var templatesDir = filepath.Join(templateDir, "templates")
 	var rulesFile = filepath.Join(templateDir, "rules.yaml")
-	var outputDir = filepath.Join(r.rootDir, layer.Output)
+	var outputDir = filepath.Join(r.rootDir(), layer.Output)
 	// add templates dir and rules file as dependency
 	r.deps = append(r.deps, templatesDir, rulesFile)
 	var force = layer.Force
@@ -97,7 +100,7 @@ func (r *runner) parseInputs(s *model.System, inputs []string) error {
 	log.Debugf("parse inputs %v", inputs)
 	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
-	files, err := r.expandInputs(r.rootDir, inputs)
+	files, err := r.expandInputs(r.rootDir(), inputs)
 	if err != nil {
 		log.Infof("error expanding inputs")
 		return err

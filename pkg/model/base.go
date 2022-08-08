@@ -81,7 +81,7 @@ type TypedNode struct {
 	Schema    `json:",inline" yaml:",inline"`
 }
 
-func NewTypeNode(n string, k Kind) *TypedNode {
+func NewTypedNode(n string, k Kind) *TypedNode {
 	return &TypedNode{
 		NamedNode: NamedNode{
 			Name: n,

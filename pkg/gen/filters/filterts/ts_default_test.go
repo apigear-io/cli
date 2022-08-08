@@ -1,4 +1,4 @@
-package filtergo
+package filterts
 
 import (
 	"testing"
@@ -20,16 +20,16 @@ func TestDefaultFromIdl(t *testing.T) {
 		{"test", "Test1", "propInt", "0"},
 		{"test", "Test1", "propFloat", "0.0"},
 		{"test", "Test1", "propString", "\"\""},
-		{"test", "Test1", "propBoolArray", "[]bool{}"},
-		{"test", "Test1", "propIntArray", "[]int{}"},
-		{"test", "Test1", "propFloatArray", "[]float64{}"},
-		{"test", "Test1", "propStringArray", "[]string{}"},
+		{"test", "Test1", "propBoolArray", "[]"},
+		{"test", "Test1", "propIntArray", "[]"},
+		{"test", "Test1", "propFloatArray", "[]"},
+		{"test", "Test1", "propStringArray", "[]"},
 	}
 	for _, tt := range propTests {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goDefault(prop, "")
+			r, err := tsDefault(prop, "")
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -44,18 +44,18 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1Default"},
-		{"test", "Test2", "propStruct", "Struct1{}"},
-		{"test", "Test2", "propInterface", "nil"},
-		{"test", "Test2", "propEnumArray", "[]Enum1{}"},
-		{"test", "Test2", "propStructArray", "[]Struct1{}"},
-		{"test", "Test2", "propInterfaceArray", "[]*Interface1{}"},
+		{"test", "Test2", "propEnum", "Enum1.Default"},
+		{"test", "Test2", "propStruct", "{}"},
+		{"test", "Test2", "propInterface", "null"},
+		{"test", "Test2", "propEnumArray", "[]"},
+		{"test", "Test2", "propStructArray", "[]"},
+		{"test", "Test2", "propInterfaceArray", "[]"},
 	}
 	for _, tt := range propTests {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goDefault(prop, "")
+			r, err := tsDefault(prop, "")
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -63,7 +63,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 }
 
 func TestDefaultWithErrors(t *testing.T) {
-	s, err := goDefault(nil, "")
+	s, err := tsDefault(nil, "")
 	assert.Error(t, err)
 	assert.Equal(t, "", s)
 }

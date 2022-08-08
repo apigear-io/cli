@@ -198,7 +198,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	}
 	// var force = doc.Force
 	// var transform = doc.Transform
-	log.Infof("render %s -> %s", source, target)
+	log.Debugf("render %s -> %s", source, target)
 	// render the template using the context
 	buf := bytes.NewBuffer(nil)
 	err = g.Template.ExecuteTemplate(buf, source, ctx)
@@ -207,7 +207,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 		return nil
 	}
 	// write the file
-	log.Infof("write %s", target)
+	log.Debugf("write %s", target)
 	err = g.Writer.WriteFile(target, buf.Bytes(), force)
 	if err != nil {
 		return fmt.Errorf("error writing file %s: %s", target, err)

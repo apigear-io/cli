@@ -1,4 +1,4 @@
-package filtercpp
+package filterts
 
 import (
 	"testing"

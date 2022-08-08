@@ -6,43 +6,48 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToParamString(schema *model.Schema, name string, prefix string) string {
+func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
+	if schema == nil {
+		return "", fmt.Errorf("ToParamString schema is nil")
+	}
 	t := schema.Type
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
-		return fmt.Sprintf("%s []%s", name, ToReturnString(&inner, prefix))
+		innerValue, err := ToReturnString(&inner, prefix)
+		if err != nil {
+			return "", fmt.Errorf("ToParamString inner value error: %s", err)
+		}
+		return fmt.Sprintf("%s []%s", name, innerValue), nil
 	}
 	switch t {
 	case "string":
-		return fmt.Sprintf("%s string", name)
+		return fmt.Sprintf("%s string", name), nil
 	case "int":
-		return fmt.Sprintf("%s int", name)
+		return fmt.Sprintf("%s int", name), nil
 	case "float":
-		return fmt.Sprintf("%s float64", name)
+		return fmt.Sprintf("%s float64", name), nil
 	case "bool":
-		return fmt.Sprintf("%s bool", name)
+		return fmt.Sprintf("%s bool", name), nil
 	}
 	e := schema.Module.LookupEnum(t)
 	if e != nil {
-		return fmt.Sprintf("%s %s%s", name, prefix, e.Name)
+		return fmt.Sprintf("%s %s%s", name, prefix, e.Name), nil
 	}
 	s := schema.Module.LookupStruct(t)
 	if s != nil {
-		return fmt.Sprintf("%s %s%s", name, prefix, s.Name)
+		return fmt.Sprintf("%s %s%s", name, prefix, s.Name), nil
 	}
 	i := schema.Module.LookupInterface(t)
 	if i != nil {
-		return fmt.Sprintf("%s *%s%s", name, prefix, i.Name)
+		return fmt.Sprintf("%s *%s%s", name, prefix, i.Name), nil
 	}
-	log.Fatalf("unknown type %s", t)
-	return "XXX"
+	return "XXX", fmt.Errorf("unknown type %s", t)
 }
 
-func goParam(node *model.TypedNode, prefix string) string {
+func goParam(node *model.TypedNode, prefix string) (string, error) {
 	if node == nil {
-		log.Warnf("goParam called with nil node")
-		return ""
+		return "", fmt.Errorf("goParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.GetName(), prefix)
 }

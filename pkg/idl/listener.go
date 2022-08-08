@@ -120,7 +120,7 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 	IsNil(o.property)
 	name := c.GetName().GetText()
 	o.kind = model.KindProperty
-	o.property = model.NewTypeNode(name, model.KindProperty)
+	o.property = model.NewTypedNode(name, model.KindProperty)
 }
 
 // ExitPropertyRule is called when exiting the propertyRule production.
@@ -157,7 +157,7 @@ func (o *ObjectApiListener) EnterOutputRule(c *parser.OutputRuleContext) {
 	IsNotNil(o.method)
 	IsNil(o.output)
 	IsNil(o.schema)
-	o.output = model.NewTypeNode("", model.KindOutput)
+	o.output = model.NewTypedNode("", model.KindOutput)
 }
 
 func (o *ObjectApiListener) ExitOutputRule(c *parser.OutputRuleContext) {
@@ -173,7 +173,7 @@ func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
 	IsNil(o.input)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.input = model.NewTypeNode(name, model.KindInput)
+	o.input = model.NewTypedNode(name, model.KindInput)
 }
 
 // ExitInputRule is called when exiting the inputRule production.
@@ -228,7 +228,7 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 	IsNil(o.schema)
 	IsNil(o.field)
 	name := c.GetName().GetText()
-	o.field = model.NewTypeNode(name, model.KindField)
+	o.field = model.NewTypedNode(name, model.KindField)
 }
 
 // ExitStructFieldRule is called when exiting the structFieldRule production.

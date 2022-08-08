@@ -46,7 +46,7 @@ func NewMethod(name string) *Method {
 			Kind: KindMethod,
 		},
 		Inputs: make([]*TypedNode, 0),
-		Output: NewTypeNode("", KindOutput),
+		Output: NewTypedNode("", KindOutput),
 	}
 }
 
@@ -66,7 +66,7 @@ func (m *Method) GetSchema() *Schema {
 
 func (m *Method) ResolveAll(mod *Module) error {
 	if m.Output == nil {
-		m.Output = NewTypeNode("", KindOutput)
+		m.Output = NewTypedNode("", KindOutput)
 	}
 	if m.Inputs == nil {
 		m.Inputs = make([]*TypedNode, 0)

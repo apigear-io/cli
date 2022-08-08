@@ -8,7 +8,7 @@ import (
 // and starts the solution runner
 // returns the dependencies of the solution
 func RunSolution(file string) ([]string, error) {
-	log.Infof("run solution %s", file)
+	log.Debugf("run solution %s", file)
 	doc, err := ReadSolutionDoc(file)
 	if err != nil {
 		log.Errorf("error reading solution: %s", err)

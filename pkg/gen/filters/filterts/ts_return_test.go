@@ -1,4 +1,4 @@
-package filtergo
+package filterts
 
 import (
 	"testing"
@@ -16,20 +16,21 @@ func TestReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "propBool", "bool"},
-		{"test", "Test1", "propInt", "int"},
-		{"test", "Test1", "propFloat", "float64"},
+
+		{"test", "Test1", "propBool", "boolean"},
+		{"test", "Test1", "propInt", "number"},
+		{"test", "Test1", "propFloat", "number"},
 		{"test", "Test1", "propString", "string"},
-		{"test", "Test1", "propBoolArray", "[]bool"},
-		{"test", "Test1", "propIntArray", "[]int"},
-		{"test", "Test1", "propFloatArray", "[]float64"},
-		{"test", "Test1", "propStringArray", "[]string"},
+		{"test", "Test1", "propBoolArray", "boolean[]"},
+		{"test", "Test1", "propIntArray", "number[]"},
+		{"test", "Test1", "propFloatArray", "number[]"},
+		{"test", "Test1", "propStringArray", "string[]"},
 	}
 	for _, tt := range propTests {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goReturn(prop, "")
+			r, err := tsReturn(prop, "")
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -46,24 +47,18 @@ func TestReturnSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "Enum1"},
 		{"test", "Test2", "propStruct", "Struct1"},
-		{"test", "Test2", "propInterface", "*Interface1"},
-		{"test", "Test2", "propEnumArray", "[]Enum1"},
-		{"test", "Test2", "propStructArray", "[]Struct1"},
-		{"test", "Test2", "propInterfaceArray", "[]*Interface1"},
+		{"test", "Test2", "propInterface", "Interface1"},
+		{"test", "Test2", "propEnumArray", "Enum1[]"},
+		{"test", "Test2", "propStructArray", "Struct1[]"},
+		{"test", "Test2", "propInterfaceArray", "Interface1[]"},
 	}
 	for _, tt := range propTests {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goReturn(prop, "")
+			r, err := tsReturn(prop, "")
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
 	}
-}
-
-func TestReturnWithErrors(t *testing.T) {
-	s, err := goReturn(nil, "")
-	assert.Error(t, err)
-	assert.Equal(t, "", s)
 }

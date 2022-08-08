@@ -6,10 +6,10 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToReturnString(schema *model.Schema, prefix string) string {
+// TODO: need to return error case
+func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
-		log.Debug("ToReturnString called with nil schema")
-		return ""
+		return "", fmt.Errorf("ToReturnString schema is nil")
 	}
 	var text string
 	switch schema.KindType {
@@ -30,19 +30,17 @@ func ToReturnString(schema *model.Schema, prefix string) string {
 	case model.TypeNull:
 		text = ""
 	default:
-		log.Fatalf("unknown schema kind type: %s", schema.KindType)
+		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("[]%s", text)
 	}
-	return text
+	return text, nil
 }
 
-// cast value to TypedNode and deduct the cpp return type
-func goReturn(node *model.TypedNode, prefix string) string {
+func goReturn(node *model.TypedNode, prefix string) (string, error) {
 	if node == nil {
-		log.Warnf("goReturn called with nil node")
-		return ""
+		return "", fmt.Errorf("goReturn node is nil")
 	}
 	return ToReturnString(&node.Schema, prefix)
 }

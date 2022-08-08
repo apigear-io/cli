@@ -6,10 +6,10 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToDefaultString(schema *model.Schema, prefix string) string {
+func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
 		log.Warn("ToDefaultString called with nil schema")
-		return ""
+		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	var text string
 	if schema.IsArray {
@@ -29,7 +29,7 @@ func ToDefaultString(schema *model.Schema, prefix string) string {
 		case model.TypeInterface:
 			text = fmt.Sprintf("[]*%s%s{}", prefix, schema.Type)
 		default:
-			log.Fatalf("unknown schema kind type: %s", schema.KindType)
+			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	} else {
 		switch schema.KindType {
@@ -53,16 +53,16 @@ func ToDefaultString(schema *model.Schema, prefix string) string {
 		case model.TypeNull:
 			text = ""
 		default:
-			log.Fatalf("unknown schema kind type: %s", schema.KindType)
+			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	}
-	return text
+	return text, nil
 }
 
-func goDefault(node *model.TypedNode, prefix string) string {
+func goDefault(node *model.TypedNode, prefix string) (string, error) {
 	if node == nil {
 		log.Warn("goDefault called with nil node")
-		return ""
+		return "", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(&node.Schema, prefix)
 }
