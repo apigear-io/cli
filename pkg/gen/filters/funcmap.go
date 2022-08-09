@@ -23,7 +23,9 @@ func PopulateFuncMap() template.FuncMap {
 	fm["kebap"] = KebabCaseLower
 	fm["Kebab"] = KebabCase
 	fm["KEBAP"] = KebabCaseUpper
-	fm["pathCase"] = PathCase
+	fm["path"] = PathCaseLower
+	fm["Path"] = PathCase
+	fm["PATH"] = PathCaseUpper
 	fm["lower"] = LowerCase
 	fm["upper"] = UpperCase
 	fm["upper1"] = UpperFirst

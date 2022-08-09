@@ -46,7 +46,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			}
 			text = "None"
 		case model.TypeNull:
-			text = ""
+			text = "None"
 		default:
 			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
@@ -58,7 +58,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 }
 
 // cppDefault returns the default value for a type
-func pyDefault(node *model.TypedNode, prefix string) (string, error) {
+func pyDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}

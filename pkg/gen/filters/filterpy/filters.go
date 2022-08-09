@@ -10,4 +10,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["pyDefault"] = pyDefault
 	fm["pyParam"] = pyParam
 	fm["pyParams"] = pyParams
+	fm["pyFuncParams"] = pyFuncParams
 }

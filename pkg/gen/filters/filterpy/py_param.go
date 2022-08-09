@@ -51,7 +51,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	}
 }
 
-func pyParam(node *model.TypedNode, prefix string) (string, error) {
+func pyParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}

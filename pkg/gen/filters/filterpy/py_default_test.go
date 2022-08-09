@@ -29,7 +29,7 @@ func TestDefaultFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := pyDefault(prop, "")
+			r, err := pyDefault("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -55,7 +55,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := pyDefault(prop, "")
+			r, err := pyDefault("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -63,7 +63,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 }
 
 func TestDefaultWithErrors(t *testing.T) {
-	s, err := pyDefault(nil, "")
+	s, err := pyDefault("", nil)
 	assert.Error(t, err)
 	assert.Equal(t, "", s)
 }
