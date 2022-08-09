@@ -27,7 +27,7 @@ func TestParams(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			m := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, m)
-			r, err := tsParams(m.Inputs)
+			r, err := tsParams("", m.Inputs)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -53,7 +53,7 @@ func TestParamsSymbols(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			m := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, m)
-			r, err := tsParams(m.Inputs)
+			r, err := tsParams("", m.Inputs)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -80,7 +80,7 @@ func TestParamsMultiple(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			m := sys.LookupMethod(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, m)
-			r, err := tsParams(m.Inputs)
+			r, err := tsParams("", m.Inputs)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})

@@ -1,8 +1,8 @@
 package tools
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/spec"
@@ -24,7 +24,7 @@ func NewJson2YamlCommand() *cobra.Command {
 			if ext != ".json" {
 				log.Fatalf("file %s is not a yaml file", file)
 			}
-			data, err := ioutil.ReadFile(file)
+			data, err := os.ReadFile(file)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -34,7 +34,7 @@ func NewJson2YamlCommand() *cobra.Command {
 			}
 			// replace the extension from yaml(yml) to json
 			yamlFile := file[:len(file)-len(ext)] + ".yaml"
-			err = ioutil.WriteFile(yamlFile, yamlData, 0644)
+			err = os.WriteFile(yamlFile, yamlData, 0644)
 			if err != nil {
 				log.Fatal(err)
 			}

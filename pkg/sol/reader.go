@@ -1,7 +1,7 @@
 package sol
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/spec"
@@ -10,7 +10,7 @@ import (
 )
 
 func ReadSolutionDoc(file string) (*spec.SolutionDoc, error) {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}

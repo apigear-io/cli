@@ -38,7 +38,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			if s == nil {
 				return "", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
 			}
-			text = "{}"
+			text = fmt.Sprintf("new %s%s()", prefix, s.Name)
 		case model.TypeInterface:
 			i := schema.Module.LookupInterface(schema.Type)
 			if i == nil {
@@ -51,14 +51,11 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	}
-	if text == "" {
-		return "", fmt.Errorf("unknown type %s", schema.Type)
-	}
 	return text, nil
 }
 
 // cppDefault returns the default value for a type
-func tsDefault(node *model.TypedNode, prefix string) (string, error) {
+func tsDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("tsDefault called with nil node")
 	}

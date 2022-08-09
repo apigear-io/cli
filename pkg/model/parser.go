@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"gopkg.in/yaml.v2"
@@ -14,7 +14,7 @@ type DataParser struct {
 }
 
 func (p *DataParser) ParseFile(file string) error {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", file, err)
 	}

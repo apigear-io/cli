@@ -29,7 +29,7 @@ func TestDefaultFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := tsDefault(prop, "")
+			r, err := tsDefault("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -45,7 +45,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test2", "propEnum", "Enum1.Default"},
-		{"test", "Test2", "propStruct", "{}"},
+		{"test", "Test2", "propStruct", "new Struct1()"},
 		{"test", "Test2", "propInterface", "null"},
 		{"test", "Test2", "propEnumArray", "[]"},
 		{"test", "Test2", "propStructArray", "[]"},
@@ -55,7 +55,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := tsDefault(prop, "")
+			r, err := tsDefault("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -63,7 +63,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 }
 
 func TestDefaultWithErrors(t *testing.T) {
-	s, err := tsDefault(nil, "")
+	s, err := tsDefault("", nil)
 	assert.Error(t, err)
 	assert.Equal(t, "", s)
 }

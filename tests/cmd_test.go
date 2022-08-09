@@ -17,7 +17,7 @@ var entries = []string{
 	"api/demo.module.yaml",
 	"api/demo.solution.yaml",
 	"tpl/rules.yaml",
-	"tpl/templates/api.json.tmpl",
+	"tpl/templates/api.json.tpl",
 }
 
 func setup(root string) error {

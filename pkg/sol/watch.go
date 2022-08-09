@@ -95,17 +95,23 @@ func WatchSolutionDocument(doc *spec.SolutionDoc) {
 				log.Fatal(err)
 			}
 		} else if info.IsDir() {
-			filepath.Walk(dep, func(path string, info os.FileInfo, err error) error {
+			err := filepath.Walk(dep, func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					log.Warnf("Error walking path %s: %s", path, err)
 					return nil
 				}
 				if info.IsDir() {
 					log.Debugf("Adding dir %s to watcher", path)
-					watcher.Add(path)
+					err := watcher.Add(path)
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 				return nil
 			})
+			if err != nil {
+				log.Warnf("Error walking path %s: %s", dep, err)
+			}
 		}
 	}
 	<-done

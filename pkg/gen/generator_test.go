@@ -1,7 +1,7 @@
 package gen
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 	"text/template"
 
@@ -16,8 +16,13 @@ type MockFileWriter struct {
 	Writes map[string]string
 }
 
-func (m *MockFileWriter) WriteFile(fn string, buf []byte, force bool) error {
-	m.Writes[fn] = string(buf)
+func (m *MockFileWriter) WriteFile(input []byte, target string, force bool) error {
+	m.Writes[target] = string(input)
+	return nil
+}
+
+func (w *MockFileWriter) CopyFile(source, target string, force bool) error {
+	w.Writes[target] = source
 	return nil
 }
 
@@ -28,7 +33,7 @@ func NewMockFileWriter() *MockFileWriter {
 }
 
 func readRules(t *testing.T, filename string) spec.RulesDoc {
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	assert.NoError(t, err)
 	var file spec.RulesDoc
 	err = yaml.Unmarshal(content, &file)

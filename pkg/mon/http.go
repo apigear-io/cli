@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -40,7 +39,7 @@ func HttpPost(url string, data any) error {
 	// close the response body
 	defer resp.Body.Close()
 	// read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error("failed to read response body: ", err)
 		return err

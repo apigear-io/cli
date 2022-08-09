@@ -3,7 +3,6 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -32,7 +31,7 @@ func IsExist(path string) bool {
 }
 
 func ReadDocument(path string, v interface{}) error {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -55,13 +54,13 @@ func WriteDocument(path string, v interface{}) error {
 		if err != nil {
 			return err
 		}
-		return ioutil.WriteFile(path, data, 0644)
+		return os.WriteFile(path, data, 0644)
 	case ".yaml", ".yml":
 		data, err := yaml.Marshal(v)
 		if err != nil {
 			return err
 		}
-		return ioutil.WriteFile(path, data, 0644)
+		return os.WriteFile(path, data, 0644)
 	default:
 		return fmt.Errorf("unsupported file extension: %s", ext)
 	}
@@ -79,7 +78,7 @@ func IsDocument(path string) bool {
 
 func FindDocuments(path string) ([]string, error) {
 	result := []string{}
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return []string{}, err
 	}
@@ -104,7 +103,7 @@ func YamlToJson(in []byte) ([]byte, error) {
 	out := make(map[string]interface{})
 	err := yaml.Unmarshal(in, &out)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling yaml: %w", err)
+		return nil, fmt.Errorf("error un marshalling yaml: %w", err)
 	}
 	return json.Marshal(out)
 }

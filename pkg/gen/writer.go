@@ -3,13 +3,15 @@ package gen
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 type Writer struct {
-	outputDir string
+	sourceDir string
+	targetDir string
 }
 
 func CompareContentWithFile(sourceBytes []byte, target string) (bool, error) {
@@ -23,10 +25,10 @@ func CompareContentWithFile(sourceBytes []byte, target string) (bool, error) {
 	return md5.Sum(sourceBytes) == md5.Sum(targetBytes), nil
 }
 
-func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
-	target := filepath.Join(w.outputDir, file)
+func (w *Writer) WriteFile(input []byte, target string, force bool) error {
+	target = filepath.Join(w.targetDir, target)
 	if !force {
-		same, err := CompareContentWithFile(bytes, target)
+		same, err := CompareContentWithFile(input, target)
 		if err != nil {
 			return fmt.Errorf("error comparing content to file %s: %s", target, err)
 		}
@@ -42,10 +44,19 @@ func (w *Writer) WriteFile(file string, bytes []byte, force bool) error {
 	if err != nil {
 		return fmt.Errorf("error creating directory: %s", err)
 	}
-	return ioutil.WriteFile(target, bytes, 0644)
+	return os.WriteFile(target, input, 0644)
+}
+
+func (w Writer) CopyFile(source, target string, force bool) error {
+	target = filepath.Join(w.targetDir, target)
+	source = filepath.Join(w.sourceDir, source)
+	return helper.CopyFile(source, target)
 }
 
 // NewFileWriter creates a new file writer
-func NewFileWriter(outputDir string) IFileWriter {
-	return &Writer{outputDir: outputDir}
+func NewFileWriter(sourceDir, targetDir string) IFileWriter {
+	return &Writer{
+		sourceDir: sourceDir,
+		targetDir: targetDir,
+	}
 }

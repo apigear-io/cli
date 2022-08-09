@@ -4,5 +4,5 @@ features:
     scopes:
       - match: module
         documents:
-          - source: "api.json.tmpl"
+          - source: "api.json.tpl"
             target: "{{.Module.Name}}.json"

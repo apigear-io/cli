@@ -6,10 +6,10 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func tsParams(nodes []*model.TypedNode) (string, error) {
+func tsParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	var inputs []string
 	for _, n := range nodes {
-		r, err := ToParamString(&n.Schema, n.Name, "")
+		r, err := ToParamString(&n.Schema, n.Name, prefix)
 		if err != nil {
 			return "", err
 		}

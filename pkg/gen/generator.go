@@ -3,7 +3,6 @@ package gen
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +22,8 @@ type DataMap = map[string]interface{}
 
 // IFileWriter writes a target file with content
 type IFileWriter interface {
-	WriteFile(fn string, buf []byte, force bool) error
+	WriteFile(input []byte, target string, force bool) error
+	CopyFile(source, target string, force bool) error
 }
 
 // generator applies template transformation on a set of files define in rules
@@ -38,7 +38,7 @@ type generator struct {
 
 func New(outputDir string, templatesDir string, system *model.System, userForce bool) (*generator, error) {
 	g := &generator{
-		Writer:       NewFileWriter(outputDir),
+		Writer:       NewFileWriter(templatesDir, outputDir),
 		Template:     template.New(""),
 		UserForce:    userForce,
 		System:       system,
@@ -80,7 +80,7 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		if strings.HasPrefix(filepath.Base(path), ".") {
 			return nil
 		}
-		if !strings.HasSuffix(filepath.Base(path), ".tmpl") {
+		if !strings.HasSuffix(filepath.Base(path), ".tpl") {
 			return nil
 		}
 		return g.ParseTemplate(path)
@@ -93,7 +93,7 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 
 func (g *generator) Run(filename string) error {
 	log.Debugf("processing file: %s", filename)
-	var bytes, err = ioutil.ReadFile(filename)
+	var bytes, err = os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("error reading file %s: %s", filename, err)
 	}
@@ -202,20 +202,19 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	if err != nil {
 		return fmt.Errorf("error rendering target %s: %s", target, err)
 	}
-	// var force = doc.Force
-	// var transform = doc.Transform
-	log.Debugf("render %s -> %s", source, target)
-	// render the template using the context
-	buf := bytes.NewBuffer(nil)
-	err = g.Template.ExecuteTemplate(buf, source, ctx)
-	if err != nil {
-		return err
-	}
-	// write the file
-	log.Debugf("write %s", target)
-	err = g.Writer.WriteFile(target, buf.Bytes(), force)
-	if err != nil {
-		return fmt.Errorf("error writing file %s: %s", target, err)
+	// TODO: when doc.Raw is set, we should just copy it to the target
+	if doc.Raw {
+		// copy the source to the target
+		err := g.CopyFile(source, target, force)
+		if err != nil {
+			return fmt.Errorf("error copying file %s to %s: %s", source, target, err)
+		}
+	} else {
+		// render the source file to the target
+		err := g.RenderFile(source, target, ctx, force)
+		if err != nil {
+			return fmt.Errorf("error rendering file %s to %s: %s", source, target, err)
+		}
 	}
 	return nil
 }
@@ -236,4 +235,27 @@ func (g *generator) RenderString(s string, ctx DataMap) (string, error) {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func (g generator) CopyFile(source, target string, force bool) error {
+	return g.Writer.CopyFile(source, target, force)
+}
+
+func (g generator) RenderFile(source, target string, ctx DataMap, force bool) error {
+	// var force = doc.Force
+	// var transform = doc.Transform
+	log.Debugf("render %s -> %s", source, target)
+	// render the template using the context
+	buf := bytes.NewBuffer(nil)
+	err := g.Template.ExecuteTemplate(buf, source, ctx)
+	if err != nil {
+		return err
+	}
+	// write the file
+	log.Debugf("write %s", target)
+	err = g.Writer.WriteFile(buf.Bytes(), target, force)
+	if err != nil {
+		return fmt.Errorf("error writing file %s: %s", target, err)
+	}
+	return nil
 }
