@@ -150,3 +150,19 @@ func (i *Interface) ResolveAll(mod *Module) error {
 	}
 	return nil
 }
+
+func (i Interface) NoProperties() bool {
+	return len(i.Properties) == 0
+}
+
+func (i Interface) NoMethods() bool {
+	return len(i.Methods) == 0
+}
+
+func (i Interface) NoSignals() bool {
+	return len(i.Signals) == 0
+}
+
+func (i Interface) NoMembers() bool {
+	return i.NoProperties() && i.NoMethods() && i.NoSignals()
+}
