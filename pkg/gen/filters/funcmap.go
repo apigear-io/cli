@@ -31,6 +31,7 @@ func PopulateFuncMap() template.FuncMap {
 	fm["first"] = FirstCharLower
 	fm["First"] = FirstChar
 	fm["FIRST"] = FirstCharUpper
+	fm["join"] = Join
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)

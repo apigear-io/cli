@@ -110,3 +110,7 @@ func FirstCharLower(s string) string {
 func FirstCharUpper(s string) string {
 	return strings.ToUpper(s[:1])
 }
+
+func Join(sep string, a ...string) string {
+	return strings.Join(a, sep)
+}
