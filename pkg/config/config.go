@@ -73,13 +73,25 @@ func WriteConfig() error {
 }
 
 func GetEditorCommand() string {
-	return viper.GetString(KeyEditorCommand)
+	cmd := viper.GetString(KeyEditorCommand)
+	if cmd == "" {
+		return "code"
+	}
+	return cmd
 }
 
-func GetServerPort() int {
-	return viper.GetInt(KeyServerPort)
+func GetServerPort() string {
+	port := viper.GetString(KeyServerPort)
+	if port == "" {
+		return "8082"
+	}
+	return port
 }
 
 func GetUpdateChannel() string {
-	return viper.GetString(KeyUpdateChannel)
+	ch := viper.GetString(KeyUpdateChannel)
+	if ch == "" {
+		return "stable"
+	}
+	return ch
 }

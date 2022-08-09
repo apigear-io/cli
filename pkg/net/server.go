@@ -52,6 +52,9 @@ func (s *Server) Restart(ctx context.Context, addr string) error {
 		return fmt.Errorf("server not started")
 	}
 	log.Debugf("restart http server at %s", addr)
+	s.server.RegisterOnShutdown(func() {
+		log.Infof("shutdown http server at %s", addr)
+	})
 	err := s.server.Shutdown(ctx)
 	if err != nil {
 		return fmt.Errorf("error shutting down server: %s", err)
