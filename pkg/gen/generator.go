@@ -170,7 +170,16 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 
 // processScope processes a scope rule (e.g. system, modules, ...) with the given context
 func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
+	prefix := scope.Prefix
 	for _, doc := range scope.Documents {
+		// clean doc target
+		if doc.Target == "" {
+			doc.Target = doc.Source
+		}
+		// apply prefix if set
+		if prefix != "" {
+			doc.Target = prefix + doc.Target
+		}
 		err := g.processDocument(doc, ctx)
 		if err != nil {
 			return fmt.Errorf("error processing document %s: %s", doc.Source, err)
@@ -188,9 +197,6 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	var target = filepath.Clean(doc.Target)
 	// either user can force an overwrite or the target or the rules document
 	force := doc.Force || g.UserForce
-	if target == "" {
-		target = source
-	}
 	// transform the target name using the context
 	target, err := g.RenderString(target, ctx)
 	if err != nil {
@@ -203,8 +209,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
 	buf := bytes.NewBuffer(nil)
 	err = g.Template.ExecuteTemplate(buf, source, ctx)
 	if err != nil {
-		log.Warnf("error executing template %s: %s", source, err)
-		return nil
+		return err
 	}
 	// write the file
 	log.Debugf("write %s", target)

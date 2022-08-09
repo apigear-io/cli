@@ -75,6 +75,9 @@ definitions:
         type: string
         enum: [system, module, interface, struct, enum]
         description: match defines the context where this scope is applied to.
+      prefix:
+        type: string
+        description: prefix defines the prefix for all document targets.
       documents:
         description: Documents defines a list of documents which will be transformed.
         type: array

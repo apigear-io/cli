@@ -78,12 +78,16 @@
             "enum"
           ],
           "type": "string"
+        },
+        "prefix": {
+          "description": "prefix defines the prefix for all document targets.",
+          "type": "string"
         }
       },
       "type": "object"
     }
   },
-  "description": "Rules engine to drive the object api generator\nA typical setup looks like this:\n```\nschema: apigear.rules: \"1.0\"\nfeatures:\n  - name: api\n    path: {{module|identifier}}/\n    scopes:\n      - match: module:\n        documents:\n          - source: api.h\n  - name: core\n    path: {{module|identifier}}/\n    scopes:\n      - match: module:\n        documents:\n          - source: core.h\n          - source: core.cpp\n  - name: init\n    path: {{module|identifier}}/\n    scopes:\n      - name: module:\n        documents:\n          - source: Makefile\n          - source: service.h\n            target: {{interface.name|lower}}.h\n          - source: service.cpp\n            target: {{interface.name|lower}}.cpp\n```\n",
+  "description": "Rules engine to drive the object api generator\nA typical setup looks like this:\n```\nschema: apigear.rules: \"1.0\"\nfeatures:\n  - name: api\n    path: {{module|identifier}}/\n    scopes:\n      - match: module\n        documents:\n          - source: api.h\n  - name: core\n    path: {{module|identifier}}/\n    scopes:\n      - match: module:\n        documents:\n          - source: core.h\n          - source: core.cpp\n  - name: init\n    path: {{module|identifier}}/\n    scopes:\n      - name: module:\n        documents:\n          - source: Makefile\n          - source: service.h\n            target: {{interface.name|lower}}.h\n          - source: service.cpp\n            target: {{interface.name|lower}}.cpp\n```\n",
   "properties": {
     "features": {
       "description": "Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.",
@@ -100,6 +104,6 @@
       "type": "string"
     }
   },
-  "title": "ApiGear rules engine",
+  "title": "ObjectAPI rules engine",
   "type": "object"
 }
