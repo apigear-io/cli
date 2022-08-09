@@ -7,7 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func goParams(nodes []*model.TypedNode, prefix string) (string, error) {
+func goParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
 		return "", fmt.Errorf("goParams called with nil nodes")
 	}

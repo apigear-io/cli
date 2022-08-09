@@ -59,7 +59,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	return text, nil
 }
 
-func goDefault(node *model.TypedNode, prefix string) (string, error) {
+func goDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		log.Warn("goDefault called with nil node")
 		return "", fmt.Errorf("goDefault node is nil")

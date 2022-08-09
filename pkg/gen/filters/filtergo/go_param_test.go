@@ -27,7 +27,7 @@ func TestParam(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goParam(prop, "")
+			r, err := goParam("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -53,7 +53,7 @@ func TestParamSymbols(t *testing.T) {
 		t.Run(tt.pn, func(t *testing.T) {
 			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
-			r, err := goParam(prop, "")
+			r, err := goParam("", prop)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.rt, r)
 		})
@@ -61,7 +61,7 @@ func TestParamSymbols(t *testing.T) {
 }
 
 func TestParamWithErrors(t *testing.T) {
-	s, err := goParam(nil, "")
+	s, err := goParam("", nil)
 	assert.Error(t, err)
 	assert.Equal(t, "", s)
 }

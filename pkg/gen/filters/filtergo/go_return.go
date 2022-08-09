@@ -7,7 +7,7 @@ import (
 )
 
 // TODO: need to return error case
-func ToReturnString(schema *model.Schema, prefix string) (string, error) {
+func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToReturnString schema is nil")
 	}
@@ -38,9 +38,9 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	return text, nil
 }
 
-func goReturn(node *model.TypedNode, prefix string) (string, error) {
+func goReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("goReturn node is nil")
 	}
-	return ToReturnString(&node.Schema, prefix)
+	return ToReturnString(prefix, &node.Schema)
 }

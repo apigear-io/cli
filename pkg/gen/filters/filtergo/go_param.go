@@ -14,7 +14,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
-		innerValue, err := ToReturnString(&inner, prefix)
+		innerValue, err := ToReturnString(prefix, &inner)
 		if err != nil {
 			return "", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
@@ -45,7 +45,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	return "XXX", fmt.Errorf("unknown type %s", t)
 }
 
-func goParam(node *model.TypedNode, prefix string) (string, error) {
+func goParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("goParam called with nil node")
 	}
