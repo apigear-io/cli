@@ -47,6 +47,8 @@ func (s *FeatureRule) FindScopeByMatch(match ScopeType) ScopeRule {
 type ScopeRule struct {
 	// Match is the type of the symbol to match
 	Match ScopeType `json:"match" yaml:"match"`
+	// Prefix is the prefix for all target documents
+	Prefix string `json:"prefix" yaml:"prefix"`
 	// Documents is a list of document rules to apply
 	Documents []DocumentRule `json:"documents" yaml:"documents"`
 }

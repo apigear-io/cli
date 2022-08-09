@@ -20,9 +20,9 @@ as also the other options. To create a demo module or solution use the 'project 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			file = args[0]
 			if watch {
-				sol.WatchSolution(file)
+				sol.WatchSolutionFile(file)
 			} else {
-				_, err := sol.RunSolution(file)
+				_, err := sol.RunSolutionFile(file)
 				if err != nil {
 					return err
 				}

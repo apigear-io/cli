@@ -36,11 +36,11 @@ func (r *runner) Run() ([]string, error) {
 		return nil, fmt.Errorf("solution doc root dir is empty")
 	}
 	// reset deps
-	r.deps = []string{}
+	r.deps = nil
 	for _, layer := range r.doc.Layers {
 		err := r.processLayer(layer)
 		if err != nil {
-			return nil, err
+			return r.deps, err
 		}
 	}
 	return r.deps, nil

@@ -38,7 +38,7 @@ func NewExpertCommand() *cobra.Command {
 
 			if options.watch {
 				// TODO: how to watch from a document and not from a file?
-				sol.WatchSolution(doc.RootDir)
+				sol.WatchSolutionDocument(doc)
 			} else {
 				_, err := sol.RunSolutionDocument(doc)
 				if err != nil {

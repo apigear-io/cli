@@ -4,10 +4,10 @@ import (
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
-// RunSolution reads the solution file
+// RunSolutionFile reads the solution file
 // and starts the solution runner
 // returns the dependencies of the solution
-func RunSolution(file string) ([]string, error) {
+func RunSolutionFile(file string) ([]string, error) {
 	log.Debugf("run solution %s", file)
 	doc, err := ReadSolutionDoc(file)
 	if err != nil {
