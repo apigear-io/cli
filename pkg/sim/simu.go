@@ -49,10 +49,10 @@ func (s Simulation) LookupMethod(ifaceName string, methodName string) *MethodEnt
 	return nil
 }
 
-func (s Simulation) LookupInterface(ifaceName string) *InterfaceEntry {
+func (s Simulation) LookupInterface(ifaceName string) *ServiceEntry {
 	log.Debugf("sim.lookupInterface: %s", ifaceName)
 	for _, scenario := range s.Scenarios {
-		for _, iface := range scenario.Interfaces {
+		for _, iface := range scenario.Services {
 			if iface.Name == ifaceName {
 				return &iface
 			}

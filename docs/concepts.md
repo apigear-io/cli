@@ -10,7 +10,7 @@ For API development ApiGear CLI provides also an API event monitor as also an AP
 
 ## API Monitoring
 
-The API monitor listens on http://localhost:5555/monitor/{deviceId}/. Events come in as HTTP post requests, where the body is an event structure.
+The API monitor listens on http://127.0.0.1:5555/monitor/{deviceId}/. Events come in as HTTP post requests, where the body is an event structure.
 
 The event structure is a json object with the following fields:
 

@@ -46,6 +46,6 @@ Using a scenario you can define additional static and scripted data and behavior
 			return s.Start(addr)
 		},
 	}
-	cmd.Flags().StringVarP(&addr, "addr", "a", ":5555", "address to listen on")
+	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:5555", "address to listen on")
 	return cmd
 }

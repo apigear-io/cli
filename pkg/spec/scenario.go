@@ -1,13 +1,15 @@
 package spec
 
-type ScenarioProperty struct {
-	Name  string `json:"name" yaml:"name"`
-	Value string `json:"value" yaml:"value"`
-}
+type ScenarioAction map[string][]string
 
+type ScenarioOperation struct {
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Actions     []ScenarioAction `json:"actions"`
+}
 type ScenarioInterface struct {
-	Name       string             `json:"name" yaml:"name"`
-	Properties []ScenarioProperty `json:"properties" yaml:"properties"`
+	Name       string         `json:"name" yaml:"name"`
+	Properties map[string]any `json:"properties" yaml:"properties"`
 }
 
 type ScenarioDoc struct {

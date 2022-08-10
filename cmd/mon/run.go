@@ -38,6 +38,6 @@ func NewServerCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVarP(&addr, "addr", "a", ":5555", "address to listen on")
+	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:5555", "address to listen on")
 	return cmd
 }

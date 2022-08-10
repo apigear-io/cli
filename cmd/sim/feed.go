@@ -20,9 +20,10 @@ func (c ConsoleHandler) HandleMessage(msg rpc.RpcMessage) error {
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
-		addr          string
-		script        string
-		sleepDuration time.Duration
+		addr   string
+		script string
+		sleep  time.Duration
+		repeat int
 	}
 	var options = &ClientOptions{}
 	// cmd represents the simCli command
@@ -43,13 +44,14 @@ func NewClientCommand() *cobra.Command {
 				if err != nil {
 					log.Fatalf("failed to connect to %s: %v", options.addr, err)
 				}
-				go rpc.ReadJsonMessagesFromFile(options.script, options.sleepDuration, emitter)
+				go rpc.ReadJsonMessagesFromFile(options.script, options.sleep, options.repeat, emitter)
 				go sender.ReadPump()
 				sender.SendMessages(emitter)
 			}
 		},
 	}
-	cmd.Flags().DurationVarP(&options.sleepDuration, "sleep", "", 200, "sleep duration between messages")
-	cmd.Flags().StringVarP(&options.addr, "addr", "", "localhost:5555", "address of the simulation server")
+	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 200, "sleep duration between messages")
+	cmd.Flags().StringVarP(&options.addr, "addr", "", "127.0.0.1:5555", "address of the simulation server")
+	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
 	return cmd
 }

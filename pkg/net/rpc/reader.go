@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func ReadJsonMessagesFromFile(fn string, sleepDuration time.Duration, emitter chan RpcMessage) {
+func ReadJsonMessagesFromFile(fn string, sleep time.Duration, repeat int, emitter chan RpcMessage) {
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {
@@ -18,14 +18,17 @@ func ReadJsonMessagesFromFile(fn string, sleepDuration time.Duration, emitter ch
 	}
 	defer file.Close()
 
-	err = ReadJsonMessages(file, sleepDuration, emitter)
-	if err != nil {
-		log.Error("failed to read file: ", fn, ": ", err)
-		return
+	for i := 0; i < repeat; i++ {
+		log.Debug("read file ", fn, ": ", i)
+		err = ReadJsonMessages(file, sleep, emitter)
+		if err != nil {
+			log.Error("failed to read file: ", fn, ": ", err)
+			return
+		}
 	}
 }
 
-func ReadJsonMessages(r io.Reader, sleepDuration time.Duration, emitter chan RpcMessage) error {
+func ReadJsonMessages(r io.Reader, sleep time.Duration, emitter chan RpcMessage) error {
 	scanner := bufio.NewScanner(r)
 	id := uint64(0)
 	for scanner.Scan() {
@@ -42,7 +45,7 @@ func ReadJsonMessages(r io.Reader, sleepDuration time.Duration, emitter chan Rpc
 			m.Id = id
 			id++
 		}
-		time.Sleep(sleepDuration)
+		time.Sleep(sleep)
 		emitter <- m
 	}
 	close(emitter)

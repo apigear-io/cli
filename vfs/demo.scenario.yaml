@@ -3,15 +3,16 @@ name: demo
 version: "1.0"
 
 interfaces:
-  demo.Counter:
+  - name: demo.Counter
     properties:
-      count: 0
+      - name: count
+        value: 0
     operations:
-      increment:
+      - name: increment
         actions:
           - set: [count, 0]
           - add: [count, $params.step]
-      decrement:
+      - name: decrement
         actions:
           - set: [count, 0]
           - sub: [count, $params.step]
