@@ -1,8 +1,8 @@
 package actions
 
 type ActionContext struct {
-	InterfaceId string
-	Data        map[string]any
+	ServiceId string
+	Data      map[string]any
 }
 
 func (c *ActionContext) Get(key string) any {

@@ -13,7 +13,11 @@ type Connection struct {
 }
 
 func NewConnection(server *Hub, conn *websocket.Conn) *Connection {
-	c := &Connection{hub: server, conn: conn}
+	c := &Connection{
+		hub:  server,
+		conn: conn,
+		send: make(chan RpcMessage),
+	}
 	server.register <- c
 	go c.writePump()
 	go c.readPump()
@@ -38,15 +42,8 @@ func (c *Connection) writePump() {
 	}()
 	for {
 		select {
-		case m, ok := <-c.send:
+		case m := <-c.send:
 			log.Debugf("writePump: %v", m)
-			if !ok {
-				err := c.conn.WriteMessage(websocket.CloseMessage, []byte{})
-				if err != nil {
-					log.Warnf("writePump: %s", err)
-				}
-				return
-			}
 			err := c.conn.WriteJSON(m)
 			if err != nil {
 				return

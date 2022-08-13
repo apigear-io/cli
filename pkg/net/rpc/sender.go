@@ -4,28 +4,25 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/gorilla/websocket"
+	"github.com/recws-org/recws"
 )
 
 type RpcSender struct {
-	conn   *websocket.Conn
+	conn   *recws.RecConn
 	writer RpcMessageHandler
 }
 
 func NewRpcSender(writer RpcMessageHandler) *RpcSender {
 	return &RpcSender{
 		writer: writer,
+		conn:   &recws.RecConn{},
 	}
 }
 
 func (s *RpcSender) Dial(addr string) error {
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/ws/"}
 	log.Infof("connecting to %s", u.String())
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		return err
-	}
-	s.conn = c
+	s.conn.Dial(u.String(), nil)
 	return nil
 }
 

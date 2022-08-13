@@ -35,41 +35,32 @@ func (s *Simulation) RemoveAll() {
 	fmt.Println("Simulation.stopAll")
 }
 
-func (s Simulation) LookupMethod(ifaceName string, methodName string) *MethodEntry {
-	log.Debugf("sim.lookupMethod: %s %s", ifaceName, methodName)
-	iface := s.LookupInterface(ifaceName)
-	if iface == nil {
+func (s Simulation) LookupMethod(serviceId string, methodName string) *MethodEntry {
+	log.Debugf("sim.lookupMethod: %s %s", serviceId, methodName)
+	service := s.LookupService(serviceId)
+	if service == nil {
 		return nil
 	}
-	for _, m := range iface.Methods {
-		if m.Name == methodName {
-			return &m
-		}
-	}
-	return nil
+	return service.LookupMethod(methodName)
 }
 
-func (s Simulation) LookupInterface(ifaceName string) *ServiceEntry {
-	log.Debugf("sim.lookupInterface: %s", ifaceName)
+func (s Simulation) LookupService(serviceId string) *ServiceEntry {
+	log.Debugf("sim.lookupInterface: %s", serviceId)
 	for _, scenario := range s.Scenarios {
-		for _, iface := range scenario.Services {
-			if iface.Name == ifaceName {
-				return &iface
-			}
-		}
+		return scenario.LookupService(serviceId)
 	}
 	return nil
 }
 
 func (s Simulation) CallMethod(service string, method string, params map[string]any) error {
 	log.Debugf("sim.call: %s#%s %v", service, method, params)
-	iface := s.LookupInterface(service)
+	iface := s.LookupService(service)
 	if iface == nil {
 		return fmt.Errorf("interface %s not found", service)
 	}
 	for _, m := range iface.Methods {
 		if m.Name == method {
-			log.Debugf("TODO: call method %s.%s", service, method)
+			log.Debugf("TODO: call method %s/%s", service, method)
 		}
 	}
 	return nil

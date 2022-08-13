@@ -21,9 +21,15 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 )
 
-require gopkg.in/natefinch/lumberjack.v2 v2.0.0
+require (
+	github.com/recws-org/recws v1.4.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+)
 
-require github.com/BurntSushi/toml v1.2.0 // indirect
+require (
+	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/jpillora/backoff v1.0.0 // indirect
+)
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

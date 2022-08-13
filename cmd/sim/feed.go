@@ -48,6 +48,7 @@ func NewClientCommand() *cobra.Command {
 				go sender.ReadPump()
 				sender.SendMessages(emitter)
 			}
+			log.Debug("done")
 		},
 	}
 	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 200, "sleep duration between messages")

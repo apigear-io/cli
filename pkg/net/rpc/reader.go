@@ -16,7 +16,10 @@ func ReadJsonMessagesFromFile(fn string, sleep time.Duration, repeat int, emitte
 		log.Error("failed to open file ", fn, ": ", err)
 		return
 	}
-	defer file.Close()
+	defer func() {
+		file.Close()
+		close(emitter)
+	}()
 
 	for i := 0; i < repeat; i++ {
 		log.Debug("read file ", fn, ": ", i)
@@ -29,6 +32,7 @@ func ReadJsonMessagesFromFile(fn string, sleep time.Duration, repeat int, emitte
 }
 
 func ReadJsonMessages(r io.Reader, sleep time.Duration, emitter chan RpcMessage) error {
+	log.Debugf("read json messages from %v", r)
 	scanner := bufio.NewScanner(r)
 	id := uint64(0)
 	for scanner.Scan() {
@@ -38,7 +42,7 @@ func ReadJsonMessages(r io.Reader, sleep time.Duration, emitter chan RpcMessage)
 		var m RpcMessage
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(&m)
 		if err != nil {
-			log.Fatalf("failed to decode line: %s: %v", line, err)
+			log.Warnf("failed to decode line: %s: %v", line, err)
 		}
 		m.Version = "2.0"
 		if m.Id == 0 {
@@ -48,11 +52,5 @@ func ReadJsonMessages(r io.Reader, sleep time.Duration, emitter chan RpcMessage)
 		time.Sleep(sleep)
 		emitter <- m
 	}
-	close(emitter)
-	err := scanner.Err()
-	if err != nil {
-		log.Error("failed to read messages: ", err)
-		return err
-	}
-	return nil
+	return scanner.Err()
 }
