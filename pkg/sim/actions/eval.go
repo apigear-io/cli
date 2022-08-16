@@ -6,7 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/sim/core"
 )
 
-type ActionHandler func(symbol string, args core.KWArgs, ctx core.KWArgs) (any, error)
+type ActionHandler func(symbol string, args core.KWArgs, ctx core.KWArgs) (core.KWArgs, error)
 
 type eval struct {
 	actions map[string]ActionHandler
@@ -24,8 +24,8 @@ func NewEval() *eval {
 	return e
 }
 
-func (e *eval) EvalActions(symbol string, actions []ActionEntry, ctx core.KWArgs) (any, error) {
-	var result any
+func (e *eval) EvalActions(symbol string, actions []ActionEntry, ctx core.KWArgs) (core.KWArgs, error) {
+	var result core.KWArgs
 	for _, action := range actions {
 		v, err := e.EvalAction(symbol, action, ctx)
 		if err != nil {
@@ -38,8 +38,8 @@ func (e *eval) EvalActions(symbol string, actions []ActionEntry, ctx core.KWArgs
 	return result, nil
 }
 
-func (e *eval) EvalAction(symbol string, action ActionEntry, ctx core.KWArgs) (any, error) {
-	var result any
+func (e *eval) EvalAction(symbol string, action ActionEntry, ctx core.KWArgs) (core.KWArgs, error) {
+	var result core.KWArgs
 	for k := range action {
 		if h, ok := e.actions[k]; ok {
 			v, err := h(symbol, action[k], ctx)
@@ -60,7 +60,7 @@ func (e *eval) register(name string, handler ActionHandler) {
 	e.actions[name] = handler
 }
 
-func (e *eval) actionSet(symbol string, args core.KWArgs, ctx core.KWArgs) (any, error) {
+func (e *eval) actionSet(symbol string, args core.KWArgs, ctx core.KWArgs) (core.KWArgs, error) {
 	log.Debugf("actionSet: %v\n", args)
 	for k := range args {
 		ctx[k] = args[k]
@@ -69,13 +69,13 @@ func (e *eval) actionSet(symbol string, args core.KWArgs, ctx core.KWArgs) (any,
 }
 
 // actionReturn sets a _return value for the action.
-func (e *eval) actionReturn(symbol string, args core.KWArgs, ctx core.KWArgs) (any, error) {
+func (e *eval) actionReturn(symbol string, args core.KWArgs, ctx core.KWArgs) (core.KWArgs, error) {
 	log.Debugf("actionReturn: %v\n", args)
 	return args, nil
 }
 
 // actionSignal sends a signal to the interface.
-func (e *eval) actionSignal(symbol string, args core.KWArgs, ctx core.KWArgs) (any, error) {
+func (e *eval) actionSignal(symbol string, args core.KWArgs, ctx core.KWArgs) (core.KWArgs, error) {
 	log.Debugf("actionSignal: %s\n", args)
 	for k := range args {
 		sigArgs, ok := args[k].(core.KWArgs)
@@ -88,7 +88,7 @@ func (e *eval) actionSignal(symbol string, args core.KWArgs, ctx core.KWArgs) (a
 }
 
 // actionChange sends a change to the interface.
-func (e *eval) actionChange(symbol string, args core.KWArgs, ctx core.KWArgs) (any, error) {
+func (e *eval) actionChange(symbol string, args core.KWArgs, ctx core.KWArgs) (core.KWArgs, error) {
 	log.Debugf("actionChange: %v\n", args)
 	for k := range args {
 		e.EmitOnChange(symbol, k, args[k])

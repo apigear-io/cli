@@ -15,3 +15,6 @@ interfaces:
         actions:
           - $set: { count: 0 }
           - $change: { count: 0 }
+      - name: getCount
+        actions:
+          - $return: { value: 2 }

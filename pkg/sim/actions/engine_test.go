@@ -13,7 +13,8 @@ func LoadTest(t *testing.T) *Engine {
 	assert.NotNil(t, e)
 	doc, err := ReadScenario("testdata/test1.scenario.yaml")
 	assert.NoError(t, err)
-	e.LoadScenario(doc)
+	err = e.LoadScenario(doc)
+	assert.NoError(t, err)
 	return e
 }
 
@@ -23,10 +24,11 @@ func TestInvokeOperation(t *testing.T) {
 		symbol    string
 		operation string
 		args      core.KWArgs
-		result    core.KWArgs
+		props     core.KWArgs
+		result    any
 	}{
-		{"demo.Counter", "increment", nil, core.KWArgs{"count": 1}},
-		{"demo.Counter", "decrement", nil, core.KWArgs{"count": 0}},
+		{"demo.Counter", "increment", nil, core.KWArgs{"count": 1}, nil},
+		{"demo.Counter", "decrement", nil, core.KWArgs{"count": 0}, nil},
 	}
 	for _, row := range table {
 		t.Run(row.symbol+"."+row.operation, func(t *testing.T) {
@@ -36,7 +38,29 @@ func TestInvokeOperation(t *testing.T) {
 			assert.Nil(t, result)
 			props, err := e.GetProperties(row.symbol)
 			assert.NoError(t, err)
-			assert.Equal(t, row.result, props)
+			assert.Equal(t, row.props, props)
+		})
+	}
+}
+
+func TestResultOfInvokeOperation(t *testing.T) {
+	e := LoadTest(t)
+	var table = []struct {
+		symbol    string
+		operation string
+		args      core.KWArgs
+		result    core.KWArgs
+	}{
+		{"demo.Counter", "increment", nil, nil},
+		{"demo.Counter", "decrement", nil, nil},
+		{"demo.Counter", "getCount", nil, core.KWArgs{"value": 2}},
+	}
+	for _, row := range table {
+		t.Run(row.symbol+"."+row.operation, func(t *testing.T) {
+			assert.True(t, e.HasInterface(row.symbol))
+			result, err := e.InvokeOperation(row.symbol, row.operation, row.args)
+			assert.NoError(t, err)
+			assert.Equal(t, row.result, result)
 		})
 	}
 }

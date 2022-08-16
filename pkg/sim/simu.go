@@ -30,8 +30,7 @@ func NewSimulation() *Simulation {
 }
 
 func (s *Simulation) LoadScenario(doc *actions.ScenarioDoc) error {
-	s.aEng.LoadScenario(doc)
-	return nil
+	return s.aEng.LoadScenario(doc)
 }
 
 func (s *Simulation) LoadScript(name string, script string) error {
