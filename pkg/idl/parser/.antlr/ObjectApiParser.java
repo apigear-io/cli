@@ -1,4 +1,4 @@
-// Generated from /Users/jryannel/work/apigear-go/apigear-cli-go/pkg/idl/parser/ObjectApi.g4 by ANTLR 4.8
+// Generated from /Users/jryannel/work/apigear-go/go-cli/pkg/idl/parser/ObjectApi.g4 by ANTLR 4.9.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ObjectApiParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -23,17 +23,18 @@ public class ObjectApiParser extends Parser {
 	public static final int
 		RULE_documentRule = 0, RULE_headerRule = 1, RULE_moduleRule = 2, RULE_importRule = 3, 
 		RULE_declarationsRule = 4, RULE_interfaceRule = 5, RULE_interfaceMembersRule = 6, 
-		RULE_propertyRule = 7, RULE_methodRule = 8, RULE_outputRule = 9, RULE_inputRule = 10, 
-		RULE_signalRule = 11, RULE_structRule = 12, RULE_structFieldRule = 13, 
-		RULE_enumRule = 14, RULE_enumMemberRule = 15, RULE_schemaRule = 16, RULE_arrayRule = 17, 
-		RULE_primitiveSchema = 18, RULE_symbolSchema = 19;
+		RULE_propertyRule = 7, RULE_operationRule = 8, RULE_operationReturnRule = 9, 
+		RULE_operationParamRule = 10, RULE_signalRule = 11, RULE_structRule = 12, 
+		RULE_structFieldRule = 13, RULE_enumRule = 14, RULE_enumMemberRule = 15, 
+		RULE_schemaRule = 16, RULE_arrayRule = 17, RULE_primitiveSchema = 18, 
+		RULE_symbolSchema = 19;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"documentRule", "headerRule", "moduleRule", "importRule", "declarationsRule", 
-			"interfaceRule", "interfaceMembersRule", "propertyRule", "methodRule", 
-			"outputRule", "inputRule", "signalRule", "structRule", "structFieldRule", 
-			"enumRule", "enumMemberRule", "schemaRule", "arrayRule", "primitiveSchema", 
-			"symbolSchema"
+			"interfaceRule", "interfaceMembersRule", "propertyRule", "operationRule", 
+			"operationReturnRule", "operationParamRule", "signalRule", "structRule", 
+			"structFieldRule", "enumRule", "enumMemberRule", "schemaRule", "arrayRule", 
+			"primitiveSchema", "symbolSchema"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -400,8 +401,8 @@ public class ObjectApiParser extends Parser {
 		public PropertyRuleContext propertyRule() {
 			return getRuleContext(PropertyRuleContext.class,0);
 		}
-		public MethodRuleContext methodRule() {
-			return getRuleContext(MethodRuleContext.class,0);
+		public OperationRuleContext operationRule() {
+			return getRuleContext(OperationRuleContext.class,0);
 		}
 		public SignalRuleContext signalRule() {
 			return getRuleContext(SignalRuleContext.class,0);
@@ -430,7 +431,7 @@ public class ObjectApiParser extends Parser {
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(79);
-				methodRule();
+				operationRule();
 				}
 				break;
 			case 3:
@@ -491,34 +492,34 @@ public class ObjectApiParser extends Parser {
 		return _localctx;
 	}
 
-	public static class MethodRuleContext extends ParserRuleContext {
+	public static class OperationRuleContext extends ParserRuleContext {
 		public Token name;
-		public InputRuleContext inputs;
+		public OperationParamRuleContext params;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public OutputRuleContext outputRule() {
-			return getRuleContext(OutputRuleContext.class,0);
+		public OperationReturnRuleContext operationReturnRule() {
+			return getRuleContext(OperationReturnRuleContext.class,0);
 		}
-		public List<InputRuleContext> inputRule() {
-			return getRuleContexts(InputRuleContext.class);
+		public List<OperationParamRuleContext> operationParamRule() {
+			return getRuleContexts(OperationParamRuleContext.class);
 		}
-		public InputRuleContext inputRule(int i) {
-			return getRuleContext(InputRuleContext.class,i);
+		public OperationParamRuleContext operationParamRule(int i) {
+			return getRuleContext(OperationParamRuleContext.class,i);
 		}
-		public MethodRuleContext(ParserRuleContext parent, int invokingState) {
+		public OperationRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_methodRule; }
+		@Override public int getRuleIndex() { return RULE_operationRule; }
 	}
 
-	public final MethodRuleContext methodRule() throws RecognitionException {
-		MethodRuleContext _localctx = new MethodRuleContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_methodRule);
+	public final OperationRuleContext operationRule() throws RecognitionException {
+		OperationRuleContext _localctx = new OperationRuleContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_operationRule);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(87);
-			((MethodRuleContext)_localctx).name = match(IDENTIFIER);
+			((OperationRuleContext)_localctx).name = match(IDENTIFIER);
 			setState(88);
 			match(T__6);
 			setState(92);
@@ -528,7 +529,7 @@ public class ObjectApiParser extends Parser {
 				{
 				{
 				setState(89);
-				((MethodRuleContext)_localctx).inputs = inputRule();
+				((OperationRuleContext)_localctx).params = operationParamRule();
 				}
 				}
 				setState(94);
@@ -543,7 +544,7 @@ public class ObjectApiParser extends Parser {
 			if (_la==T__5) {
 				{
 				setState(96);
-				outputRule();
+				operationReturnRule();
 				}
 			}
 
@@ -560,27 +561,27 @@ public class ObjectApiParser extends Parser {
 		return _localctx;
 	}
 
-	public static class OutputRuleContext extends ParserRuleContext {
+	public static class OperationReturnRuleContext extends ParserRuleContext {
 		public SchemaRuleContext schema;
 		public SchemaRuleContext schemaRule() {
 			return getRuleContext(SchemaRuleContext.class,0);
 		}
-		public OutputRuleContext(ParserRuleContext parent, int invokingState) {
+		public OperationReturnRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_outputRule; }
+		@Override public int getRuleIndex() { return RULE_operationReturnRule; }
 	}
 
-	public final OutputRuleContext outputRule() throws RecognitionException {
-		OutputRuleContext _localctx = new OutputRuleContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_outputRule);
+	public final OperationReturnRuleContext operationReturnRule() throws RecognitionException {
+		OperationReturnRuleContext _localctx = new OperationReturnRuleContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_operationReturnRule);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(99);
 			match(T__5);
 			setState(100);
-			((OutputRuleContext)_localctx).schema = schemaRule();
+			((OperationReturnRuleContext)_localctx).schema = schemaRule();
 			}
 		}
 		catch (RecognitionException re) {
@@ -594,32 +595,32 @@ public class ObjectApiParser extends Parser {
 		return _localctx;
 	}
 
-	public static class InputRuleContext extends ParserRuleContext {
+	public static class OperationParamRuleContext extends ParserRuleContext {
 		public Token name;
 		public SchemaRuleContext schema;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
 		public SchemaRuleContext schemaRule() {
 			return getRuleContext(SchemaRuleContext.class,0);
 		}
-		public InputRuleContext(ParserRuleContext parent, int invokingState) {
+		public OperationParamRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_inputRule; }
+		@Override public int getRuleIndex() { return RULE_operationParamRule; }
 	}
 
-	public final InputRuleContext inputRule() throws RecognitionException {
-		InputRuleContext _localctx = new InputRuleContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_inputRule);
+	public final OperationParamRuleContext operationParamRule() throws RecognitionException {
+		OperationParamRuleContext _localctx = new OperationParamRuleContext(_ctx, getState());
+		enterRule(_localctx, 20, RULE_operationParamRule);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(102);
-			((InputRuleContext)_localctx).name = match(IDENTIFIER);
+			((OperationParamRuleContext)_localctx).name = match(IDENTIFIER);
 			setState(103);
 			match(T__5);
 			setState(104);
-			((InputRuleContext)_localctx).schema = schemaRule();
+			((OperationParamRuleContext)_localctx).schema = schemaRule();
 			setState(106);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -645,13 +646,13 @@ public class ObjectApiParser extends Parser {
 
 	public static class SignalRuleContext extends ParserRuleContext {
 		public Token name;
-		public InputRuleContext inputs;
+		public OperationParamRuleContext params;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<InputRuleContext> inputRule() {
-			return getRuleContexts(InputRuleContext.class);
+		public List<OperationParamRuleContext> operationParamRule() {
+			return getRuleContexts(OperationParamRuleContext.class);
 		}
-		public InputRuleContext inputRule(int i) {
-			return getRuleContext(InputRuleContext.class,i);
+		public OperationParamRuleContext operationParamRule(int i) {
+			return getRuleContext(OperationParamRuleContext.class,i);
 		}
 		public SignalRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -679,7 +680,7 @@ public class ObjectApiParser extends Parser {
 				{
 				{
 				setState(111);
-				((SignalRuleContext)_localctx).inputs = inputRule();
+				((SignalRuleContext)_localctx).params = operationParamRule();
 				}
 				}
 				setState(116);

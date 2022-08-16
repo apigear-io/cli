@@ -47,17 +47,14 @@ type ReportEntry struct {
 	Time    time.Time `json:"time"`
 }
 
-var emitter = make(chan *ReportEntry)
+var emitter func(*ReportEntry)
 
-func reportEntry(entry *ReportEntry) {
-	select {
-	case emitter <- entry:
-		// if we can send the entry, we are good
-	default:
-		// if we can't send the entry, we drop it
-	}
+func OnReport(handler func(*ReportEntry)) {
+	emitter = handler
 }
 
-func Emitter() <-chan *ReportEntry {
-	return emitter
+func reportEntry(entry *ReportEntry) {
+	if emitter != nil {
+		emitter(entry)
+	}
 }

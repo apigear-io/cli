@@ -32,18 +32,18 @@ func TestProperties(t *testing.T) {
 
 }
 
-func TestMethods(t *testing.T) {
+func TestOperations(t *testing.T) {
 	var module Module
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, err)
 
-	assert.Equal(t, 1, len(module.Interfaces[1].Methods))
+	assert.Equal(t, 1, len(module.Interfaces[1].Operations))
 	iface1 := module.Interfaces[1]
-	method0 := iface1.Methods[0]
-	assert.Equal(t, "method01", method0.Name)
-	assert.Equal(t, 1, len(method0.Inputs))
-	assert.Equal(t, "input01", method0.Inputs[0].Name)
-	assert.Equal(t, "bool", method0.Inputs[0].Schema.Type)
-	assert.Equal(t, "bool", method0.Output.Schema.Type)
+	op0 := iface1.Operations[0]
+	assert.Equal(t, "operation01", op0.Name)
+	assert.Equal(t, 1, len(op0.Params))
+	assert.Equal(t, "param01", op0.Params[0].Name)
+	assert.Equal(t, "bool", op0.Params[0].Schema.Type)
+	assert.Equal(t, "bool", op0.Return.Schema.Type)
 
 }

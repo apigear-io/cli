@@ -1,38 +1,38 @@
 {
-    "name": "Module01",
-    "version": "1.0",
-    "interfaces": [
-      {
-        "name": "Interface001",
-        "properties": [
-          {
-            "name": "Property001",
-            "schema": {
-              "type": "bool"
-            }
+  "name": "Module01",
+  "version": "1.0",
+  "interfaces": [
+    {
+      "name": "Interface01",
+      "properties": [
+        {
+          "name": "prop01",
+          "schema": {
+            "type": "bool"
           }
-        ]
-      },
-      {
-        "name": "Interface002",
-        "methods": [
-          {
-            "name": "Method001",
-            "inputs": [
-              {
-                "name": "Input001",
-                "schema": {
-                  "type": "bool"
-                }
-              }
-            ],
-            "output": {
+        }
+      ]
+    },
+    {
+      "name": "Interface02",
+      "operations": [
+        {
+          "name": "operation01",
+          "params": [
+            {
+              "name": "param01",
               "schema": {
                 "type": "bool"
               }
             }
+          ],
+          "return": {
+            "schema": {
+              "type": "bool"
+            }
           }
-        ]
-      }
-    ]
-  }
+        }
+      ]
+    }
+  ]
+}

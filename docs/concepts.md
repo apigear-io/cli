@@ -4,7 +4,7 @@ ApiGear is a code generator based on the object api. The API describes a set of 
 
 Interface transformation can result into a simple local API or in more complex use cases result into a remote API.
 
-For API development ApiGear CLI provides also an API event monitor as also an API simulation. The monitor traces all API events and the simulation allows to test the API without the need of a service backend.
+For API development ApiGear CLI provides also an API event monitor as also an API simulation. The monitor traces all API events and the simulation allows to test the API without the need of a API backend.
 
 ## Code Generation
 

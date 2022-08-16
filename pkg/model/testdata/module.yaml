@@ -6,17 +6,17 @@ interfaces:
       - name: prop01
         type: bool
   - name: Interface02
-    methods:
-      - name: method01
-        inputs:
-          - name: input01
+    operations:
+      - name: operation01
+        params:
+          - name: param01
             type: bool
-        output:
+        return:
           type: bool
   - name: Interface03
     signals:
       - name: signal01
-        inputs:
+        params:
           - name: param01
             type: bool
           - name: param02

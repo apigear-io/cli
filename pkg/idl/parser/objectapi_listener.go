@@ -32,14 +32,14 @@ type ObjectApiListener interface {
 	// EnterPropertyRule is called when entering the propertyRule production.
 	EnterPropertyRule(c *PropertyRuleContext)
 
-	// EnterMethodRule is called when entering the methodRule production.
-	EnterMethodRule(c *MethodRuleContext)
+	// EnterOperationRule is called when entering the operationRule production.
+	EnterOperationRule(c *OperationRuleContext)
 
-	// EnterOutputRule is called when entering the outputRule production.
-	EnterOutputRule(c *OutputRuleContext)
+	// EnterOperationReturnRule is called when entering the operationReturnRule production.
+	EnterOperationReturnRule(c *OperationReturnRuleContext)
 
-	// EnterInputRule is called when entering the inputRule production.
-	EnterInputRule(c *InputRuleContext)
+	// EnterOperationParamRule is called when entering the operationParamRule production.
+	EnterOperationParamRule(c *OperationParamRuleContext)
 
 	// EnterSignalRule is called when entering the signalRule production.
 	EnterSignalRule(c *SignalRuleContext)
@@ -92,14 +92,14 @@ type ObjectApiListener interface {
 	// ExitPropertyRule is called when exiting the propertyRule production.
 	ExitPropertyRule(c *PropertyRuleContext)
 
-	// ExitMethodRule is called when exiting the methodRule production.
-	ExitMethodRule(c *MethodRuleContext)
+	// ExitOperationRule is called when exiting the operationRule production.
+	ExitOperationRule(c *OperationRuleContext)
 
-	// ExitOutputRule is called when exiting the outputRule production.
-	ExitOutputRule(c *OutputRuleContext)
+	// ExitOperationReturnRule is called when exiting the operationReturnRule production.
+	ExitOperationReturnRule(c *OperationReturnRuleContext)
 
-	// ExitInputRule is called when exiting the inputRule production.
-	ExitInputRule(c *InputRuleContext)
+	// ExitOperationParamRule is called when exiting the operationParamRule production.
+	ExitOperationParamRule(c *OperationParamRuleContext)
 
 	// ExitSignalRule is called when exiting the signalRule production.
 	ExitSignalRule(c *SignalRuleContext)

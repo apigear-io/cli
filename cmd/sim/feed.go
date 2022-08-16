@@ -35,6 +35,9 @@ func NewClientCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			options.script = args[0]
 			log.Debug("run script ", options.script)
+			log.OnReport(func(entry *log.ReportEntry) {
+				cmd.Print(entry.Message)
+			})
 			switch filepath.Ext(options.script) {
 			case ".ndjson":
 				emitter := make(chan rpc.RpcMessage)
@@ -48,10 +51,9 @@ func NewClientCommand() *cobra.Command {
 				go sender.ReadPump()
 				sender.SendMessages(emitter)
 			}
-			log.Debug("done")
 		},
 	}
-	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 200, "sleep duration between messages")
+	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 0, "sleep duration between messages")
 	cmd.Flags().StringVarP(&options.addr, "addr", "", "127.0.0.1:5555", "address of the simulation server")
 	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
 	return cmd

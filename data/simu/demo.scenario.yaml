@@ -3,45 +3,19 @@ schema: apigear.scenario/1.0
 name: demo
 version: "1.0"
 
-services:
+interfaces:
   - name: demo.Counter
     properties:
-      - name: demo
-        value: 0
-    methods:
+      count: 0
+    operations:
       - name: increment
         actions:
-          - name: set
-            params:
-              - name: count
-                value: 0
-          - name: add
-            params:
-              - name: count
-                value: $params.step
+          - $set: { count: 1 }
+          - $change: { count: 1 }
       - name: decrement
         actions:
-          - name: set
-            params:
-              - name: count
-                value: 0
-          - name: sub
-            params:
-              - name: count
-                value: $params.step
-    playbook:
-      loop: true
-      interval: 1000
-      sequence:
-        - name: count up
-          actions:
-            - name: set
-              params:
-                - name: count
-                  value: 1
-        - name: count down
-          actions:
-            - name: set
-              params:
-                - name: count
-                  value: 0
+          - $set: { count: 0 }
+          - $change: { count: 0 }
+sequences:
+  - name: counter
+    interface: demo.Counter

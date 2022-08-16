@@ -7,25 +7,25 @@ import (
 )
 
 func pyParams(prefix string, nodes []*model.TypedNode) (string, error) {
-	inputs := []string{"self"}
+	params := []string{"self"}
 	for _, n := range nodes {
 		r, err := ToParamString(&n.Schema, n.Name, prefix)
 		if err != nil {
 			return "", err
 		}
-		inputs = append(inputs, r)
+		params = append(params, r)
 	}
-	return strings.Join(inputs, ", "), nil
+	return strings.Join(params, ", "), nil
 }
 
 func pyFuncParams(prefix string, nodes []*model.TypedNode) (string, error) {
-	inputs := []string{}
+	params := []string{}
 	for _, n := range nodes {
 		r, err := ToParamString(&n.Schema, n.Name, prefix)
 		if err != nil {
 			return "", err
 		}
-		inputs = append(inputs, r)
+		params = append(params, r)
 	}
-	return strings.Join(inputs, ", "), nil
+	return strings.Join(params, ", "), nil
 }

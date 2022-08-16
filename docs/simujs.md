@@ -11,9 +11,9 @@
 - you can link an animation to a API modules to validate correctness and types
 - simulation can also be done using fake values
 
-## Method Behavior
+## Operation Behavior
 
-Behavior for methods can be attached using JS script. The script is called every time the method is called.
+Behavior for operations can be attached using JS script. The script is called every time the operation is called.
 
 ```javascript
 function add(a, b) {
@@ -37,7 +37,7 @@ function increment(value) {
 }
 ```
 
-As part of a method call, it is also possible to emit signals.
+As part of a operation call, it is also possible to emit signals.
 
 ```javascript
 function increment(value) {

@@ -8,7 +8,7 @@ import (
 )
 
 // test with all the types
-// properties, method inputs, method outputs, signal inputs, struct fields
+// properties, operations params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
 	sys := loadSystem(t)
 	var propTests = []struct {

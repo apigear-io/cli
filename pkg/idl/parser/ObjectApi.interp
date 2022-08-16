@@ -63,9 +63,9 @@ declarationsRule
 interfaceRule
 interfaceMembersRule
 propertyRule
-methodRule
-outputRule
-inputRule
+operationRule
+operationReturnRule
+operationParamRule
 signalRule
 structRule
 structFieldRule

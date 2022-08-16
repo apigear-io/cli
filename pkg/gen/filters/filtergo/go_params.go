@@ -11,13 +11,13 @@ func goParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
 		return "", fmt.Errorf("goParams called with nil nodes")
 	}
-	var inputs []string
+	var params []string
 	for _, p := range nodes {
 		r, err := ToParamString(&p.Schema, p.Name, prefix)
 		if err != nil {
 			return "", err
 		}
-		inputs = append(inputs, r)
+		params = append(params, r)
 	}
-	return strings.Join(inputs, ", "), nil
+	return strings.Join(params, ", "), nil
 }

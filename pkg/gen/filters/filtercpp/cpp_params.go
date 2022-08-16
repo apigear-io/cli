@@ -9,13 +9,13 @@ import (
 )
 
 func cppParams(node reflect.Value) (reflect.Value, error) {
-	m, ok := node.Interface().(*model.Method)
+	m, ok := node.Interface().(*model.Operation)
 	if !ok {
 		return reflect.Value{}, fmt.Errorf("expected method, got %s", node.Type())
 	}
-	var inputs []string
-	for _, p := range m.Inputs {
-		inputs = append(inputs, ToParamString(p.GetSchema(), p.GetName()))
+	var params []string
+	for _, p := range m.Params {
+		params = append(params, ToParamString(p.GetSchema(), p.GetName()))
 	}
-	return reflect.ValueOf(strings.Join(inputs, ", ")), nil
+	return reflect.ValueOf(strings.Join(params, ", ")), nil
 }

@@ -2,6 +2,7 @@ package log
 
 import (
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -11,6 +12,7 @@ import (
 var logger = logrus.New()
 
 func Config(verbose bool, debug bool) {
+	log.SetOutput(NewLogCapture(logger))
 	if verbose {
 		logger.SetLevel(logrus.DebugLevel)
 	} else {
@@ -27,7 +29,11 @@ func Config(verbose bool, debug bool) {
 	}
 	logFile := filepath.Join(home, ".apigear/logs/app.log")
 	ljack := newLogFileRotator(logFile)
-	logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
+	if debug {
+		logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
+	} else {
+		logger.SetOutput(ljack)
+	}
 }
 
 var Debug = logger.Debug

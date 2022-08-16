@@ -69,23 +69,23 @@ func (s *BaseObjectApiListener) EnterPropertyRule(ctx *PropertyRuleContext) {}
 // ExitPropertyRule is called when production propertyRule is exited.
 func (s *BaseObjectApiListener) ExitPropertyRule(ctx *PropertyRuleContext) {}
 
-// EnterMethodRule is called when production methodRule is entered.
-func (s *BaseObjectApiListener) EnterMethodRule(ctx *MethodRuleContext) {}
+// EnterOperationRule is called when production operationRule is entered.
+func (s *BaseObjectApiListener) EnterOperationRule(ctx *OperationRuleContext) {}
 
-// ExitMethodRule is called when production methodRule is exited.
-func (s *BaseObjectApiListener) ExitMethodRule(ctx *MethodRuleContext) {}
+// ExitOperationRule is called when production operationRule is exited.
+func (s *BaseObjectApiListener) ExitOperationRule(ctx *OperationRuleContext) {}
 
-// EnterOutputRule is called when production outputRule is entered.
-func (s *BaseObjectApiListener) EnterOutputRule(ctx *OutputRuleContext) {}
+// EnterOperationReturnRule is called when production operationReturnRule is entered.
+func (s *BaseObjectApiListener) EnterOperationReturnRule(ctx *OperationReturnRuleContext) {}
 
-// ExitOutputRule is called when production outputRule is exited.
-func (s *BaseObjectApiListener) ExitOutputRule(ctx *OutputRuleContext) {}
+// ExitOperationReturnRule is called when production operationReturnRule is exited.
+func (s *BaseObjectApiListener) ExitOperationReturnRule(ctx *OperationReturnRuleContext) {}
 
-// EnterInputRule is called when production inputRule is entered.
-func (s *BaseObjectApiListener) EnterInputRule(ctx *InputRuleContext) {}
+// EnterOperationParamRule is called when production operationParamRule is entered.
+func (s *BaseObjectApiListener) EnterOperationParamRule(ctx *OperationParamRuleContext) {}
 
-// ExitInputRule is called when production inputRule is exited.
-func (s *BaseObjectApiListener) ExitInputRule(ctx *InputRuleContext) {}
+// ExitOperationParamRule is called when production operationParamRule is exited.
+func (s *BaseObjectApiListener) ExitOperationParamRule(ctx *OperationParamRuleContext) {}
 
 // EnterSignalRule is called when production signalRule is entered.
 func (s *BaseObjectApiListener) EnterSignalRule(ctx *SignalRuleContext) {}

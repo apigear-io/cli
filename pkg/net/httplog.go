@@ -56,7 +56,7 @@ type StructuredLoggerEntry struct {
 	Logger logrus.FieldLogger
 }
 
-func (l *StructuredLoggerEntry) Write(status, bytes int, header http.Header, elapsed time.Duration, extra interface{}) {
+func (l *StructuredLoggerEntry) Write(status, bytes int, header http.Header, elapsed time.Duration, extra any) {
 	l.Logger = l.Logger.WithFields(logrus.Fields{
 		"resp_status": status, "resp_bytes_length": bytes,
 		"resp_elapsed_ms": float64(elapsed.Nanoseconds()) / 1000000.0,
@@ -65,7 +65,7 @@ func (l *StructuredLoggerEntry) Write(status, bytes int, header http.Header, ela
 	l.Logger.Debugln("request complete")
 }
 
-func (l *StructuredLoggerEntry) Panic(v interface{}, stack []byte) {
+func (l *StructuredLoggerEntry) Panic(v any, stack []byte) {
 	l.Logger = l.Logger.WithFields(logrus.Fields{
 		"stack": string(stack),
 		"panic": fmt.Sprintf("%+v", v),
@@ -84,13 +84,13 @@ func GetLogEntry(r *http.Request) logrus.FieldLogger {
 	return entry.Logger
 }
 
-func LogEntrySetField(r *http.Request, key string, value interface{}) {
+func LogEntrySetField(r *http.Request, key string, value any) {
 	if entry, ok := r.Context().Value(middleware.LogEntryCtxKey).(*StructuredLoggerEntry); ok {
 		entry.Logger = entry.Logger.WithField(key, value)
 	}
 }
 
-func LogEntrySetFields(r *http.Request, fields map[string]interface{}) {
+func LogEntrySetFields(r *http.Request, fields map[string]any) {
 	if entry, ok := r.Context().Value(middleware.LogEntryCtxKey).(*StructuredLoggerEntry); ok {
 		entry.Logger = entry.Logger.WithFields(fields)
 	}

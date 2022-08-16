@@ -18,7 +18,7 @@ import (
 // Generator parses documents and applies
 // template transformation on a set of files.
 
-type DataMap = map[string]interface{}
+type DataMap = map[string]any
 
 // IFileWriter writes a target file with content
 type IFileWriter interface {

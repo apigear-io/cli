@@ -21,33 +21,33 @@ interface Test2 {
 }
 
 interface Test3 {
-    funcBool(input1: bool): bool
-    funcInt(input1: int): int
-    funcFloat(input1: float): float
-    funcString(input1: string): string
-    funcBoolArray(input1: bool[]): bool[]
-    funcIntArray(input1: int[]): int[]
-    funcFloatArray(input1: float[]): float[]
-    funcStringArray(input1: string[]): string[]
+    opBool(param1: bool): bool
+    opInt(param1: int): int
+    opFloat(param1: float): float
+    opString(param1: string): string
+    opBoolArray(param1: bool[]): bool[]
+    opIntArray(param1: int[]): int[]
+    opFloatArray(param1: float[]): float[]
+    opStringArray(param1: string[]): string[]
 }
 
 interface Test4 {
-    funcEnum(input1: Enum1): Enum1
-    funcStruct(input1: Struct1): Struct1
-    funcInterface(input1: Interface1): Interface1
-    funcEnumArray(input1: Enum1[]): Enum1[]
-    funcStructArray(input1: Struct1[]): Struct1[]
-    funcInterfaceArray(input1: Interface1[]): Interface1[]
+    opEnum(param1: Enum1): Enum1
+    opStruct(param1: Struct1): Struct1
+    opInterface(param1: Interface1): Interface1
+    opEnumArray(param1: Enum1[]): Enum1[]
+    opStructArray(param1: Struct1[]): Struct1[]
+    opInterfaceArray(param1: Interface1[]): Interface1[]
 }
 
 interface Test5 {
-    funcBoolBool(input1: bool, input2: bool): bool
-    funcIntInt(input1: int, input2: int): int
-    funcFloatFloat(input1: float, input2: float): float
-    funcStringString(input1: string, input2: string): string
-    funcEnumEnum(input1: Enum1, input2: Enum1): Enum1    
-    funcStructStruct(input1: Struct1, input2: Struct1): Struct1
-    funcInterfaceInterface(input1: Interface1, input2: Interface1): Interface1
+    opBoolBool(param1: bool, param2: bool): bool
+    opIntInt(param1: int, param2: int): int
+    opFloatFloat(param1: float, param2: float): float
+    opStringString(param1: string, param2: string): string
+    opEnumEnum(param1: Enum1, param2: Enum1): Enum1    
+    opStructStruct(param1: Struct1, param2: Struct1): Struct1
+    opInterfaceInterface(param1: Interface1, param2: Interface1): Interface1
 }
 
 interface Interface1 { }

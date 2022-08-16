@@ -57,7 +57,7 @@ func LintJsonDoc(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 }
 
 func YamlToJson(data []byte) ([]byte, error) {
-	v := make(map[string]interface{})
+	v := make(map[string]any)
 	err := yaml.Unmarshal(data, &v)
 	if err != nil {
 		return nil, fmt.Errorf("error reading document: %w", err)
@@ -66,7 +66,7 @@ func YamlToJson(data []byte) ([]byte, error) {
 }
 
 func JsonToYaml(data []byte) ([]byte, error) {
-	v := make(map[string]interface{})
+	v := make(map[string]any)
 	err := json.Unmarshal(data, &v)
 	if err != nil {
 		return nil, fmt.Errorf("error reading document: %w", err)

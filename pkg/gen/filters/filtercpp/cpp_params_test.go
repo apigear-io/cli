@@ -14,19 +14,19 @@ func TestParams(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test3", "funcBool", "bool input1"},
-		{"test", "Test3", "funcInt", "int input1"},
-		{"test", "Test3", "funcFloat", "double input1"},
-		{"test", "Test3", "funcString", "const std::string &input1"},
-		{"test", "Test3", "funcBoolArray", "const std::vector<bool> &input1"},
-		{"test", "Test3", "funcIntArray", "const std::vector<int> &input1"},
-		{"test", "Test3", "funcFloatArray", "const std::vector<double> &input1"},
-		{"test", "Test3", "funcStringArray", "const std::vector<std::string> &input1"},
+		{"test", "Test3", "opBool", "bool param1"},
+		{"test", "Test3", "opInt", "int param1"},
+		{"test", "Test3", "opFloat", "double param1"},
+		{"test", "Test3", "opString", "const std::string &param1"},
+		{"test", "Test3", "opBoolArray", "const std::vector<bool> &param1"},
+		{"test", "Test3", "opIntArray", "const std::vector<int> &param1"},
+		{"test", "Test3", "opFloatArray", "const std::vector<double> &param1"},
+		{"test", "Test3", "opStringArray", "const std::vector<std::string> &param1"},
 	}
 	sys := loadSystem(t)
 	for _, tt := range table {
 		t.Run(tt.pn, func(t *testing.T) {
-			meth := sys.LookupMethod(tt.mn, tt.in, tt.pn)
+			meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, meth)
 			r, err := cppParams(reflect.ValueOf(meth))
 			assert.NoError(t, err)
@@ -42,17 +42,17 @@ func TestParamsSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test4", "funcEnum", "Enum1 input1"},
-		{"test", "Test4", "funcStruct", "const Struct1 &input1"},
-		{"test", "Test4", "funcInterface", "Interface1 *input1"},
-		{"test", "Test4", "funcEnumArray", "const std::vector<Enum1> &input1"},
-		{"test", "Test4", "funcStructArray", "const std::vector<Struct1> &input1"},
-		{"test", "Test4", "funcInterfaceArray", "const std::vector<Interface1*> &input1"},
+		{"test", "Test4", "opEnum", "Enum1 param1"},
+		{"test", "Test4", "opStruct", "const Struct1 &param1"},
+		{"test", "Test4", "opInterface", "Interface1 *param1"},
+		{"test", "Test4", "opEnumArray", "const std::vector<Enum1> &param1"},
+		{"test", "Test4", "opStructArray", "const std::vector<Struct1> &param1"},
+		{"test", "Test4", "opInterfaceArray", "const std::vector<Interface1*> &param1"},
 	}
 	sys := loadSystem(t)
 	for _, tt := range table {
 		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
+			prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
 			r, err := cppParams(reflect.ValueOf(prop))
 			assert.NoError(t, err)
@@ -68,18 +68,18 @@ func TestParamsMultiple(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test5", "funcBoolBool", "bool input1, bool input2"},
-		{"test", "Test5", "funcIntInt", "int input1, int input2"},
-		{"test", "Test5", "funcFloatFloat", "double input1, double input2"},
-		{"test", "Test5", "funcStringString", "const std::string &input1, const std::string &input2"},
-		{"test", "Test5", "funcEnumEnum", "Enum1 input1, Enum1 input2"},
-		{"test", "Test5", "funcStructStruct", "const Struct1 &input1, const Struct1 &input2"},
-		{"test", "Test5", "funcInterfaceInterface", "Interface1 *input1, Interface1 *input2"},
+		{"test", "Test5", "opBoolBool", "bool param1, bool param2"},
+		{"test", "Test5", "opIntInt", "int param1, int param2"},
+		{"test", "Test5", "opFloatFloat", "double param1, double param2"},
+		{"test", "Test5", "opStringString", "const std::string &param1, const std::string &param2"},
+		{"test", "Test5", "opEnumEnum", "Enum1 param1, Enum1 param2"},
+		{"test", "Test5", "opStructStruct", "const Struct1 &param1, const Struct1 &param2"},
+		{"test", "Test5", "opInterfaceInterface", "Interface1 *param1, Interface1 *param2"},
 	}
 	sys := loadSystem(t)
 	for _, tt := range table {
 		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupMethod(tt.mn, tt.in, tt.pn)
+			prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 			assert.NotNil(t, prop)
 			r, err := cppParams(reflect.ValueOf(prop))
 			assert.NoError(t, err)

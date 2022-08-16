@@ -60,7 +60,7 @@ func RemoveRecentEntry(d string) {
 	}
 }
 
-func Set(key string, value interface{}) {
+func Set(key string, value any) {
 	viper.Set(key, value)
 }
 

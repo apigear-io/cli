@@ -14,7 +14,7 @@ interfaces:
         schema:
           type: string
     methods:
-      - name: method01
+      - name: op01
     signals:
       - name: signal01
 structs:

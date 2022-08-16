@@ -45,7 +45,7 @@ func CheckNdjsonFile(name string) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 		// decode each line into an empty interface using json
-		var event interface{}
+		var event any
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(&event)
 		if err != nil {
 			return fmt.Errorf("failed to decode line %s: %w", line, err)

@@ -19,9 +19,9 @@ type ObjectApiListener struct {
 	iface        *model.Interface
 	struct_      *model.Struct
 	enum         *model.Enum
-	method       *model.Method
-	input        *model.TypedNode
-	output       *model.TypedNode
+	operation    *model.Operation
+	param        *model.TypedNode
+	_return      *model.TypedNode
 	signal       *model.Signal
 	property     *model.TypedNode
 	field        *model.TypedNode
@@ -29,18 +29,24 @@ type ObjectApiListener struct {
 	runningValue int
 }
 
-func IsNil(v interface{}) {
+func IsNil(v any) {
 	if reflect.ValueOf(v).IsNil() {
 		return
 	}
 	log.Fatalf("isNil: %v should be nil", v)
 }
 
-func IsNotNil(v interface{}) {
+func IsNotNil(v any) {
 	if !reflect.ValueOf(v).IsNil() {
 		return
 	}
 	log.Fatalf("isNotNil: %v is nil", v)
+}
+
+func NewObjectApiListener(system *model.System) parser.ObjectApiListener {
+	return &ObjectApiListener{
+		System: system,
+	}
 }
 
 func (o *ObjectApiListener) VisitTerminal(node antlr.TerminalNode) {
@@ -91,7 +97,7 @@ func (o *ObjectApiListener) EnterDeclarationsRule(c *parser.DeclarationsRuleCont
 	// nothing todo
 }
 
-// EnterInterfaceRule is called when entering the interfaceRule production.
+// EnterInterfaceRule is called when entering the InterfaceRule production.
 func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
 	IsNotNil(o.module)
 	IsNil(o.iface)
@@ -132,59 +138,61 @@ func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
 }
 
 // EnterMethodRule is called when entering the methodRule production.
-func (o *ObjectApiListener) EnterMethodRule(c *parser.MethodRuleContext) {
-	IsNil(o.method)
-	IsNil(o.input)
-	IsNil(o.output)
+func (o *ObjectApiListener) EnterOperationRule(c *parser.OperationRuleContext) {
+	IsNil(o.operation)
+	IsNil(o.param)
+	IsNil(o._return)
 	name := c.GetName().GetText()
-	o.kind = model.KindMethod
-	o.method = model.NewMethod(name)
+	o.kind = model.KindOperation
+	o.operation = model.NewOperation(name)
 }
 
-// ExitMethodRule is called when exiting the methodRule production.
-func (o *ObjectApiListener) ExitMethodRule(c *parser.MethodRuleContext) {
-	o.method.Output = o.output
-	o.iface.Methods = append(o.iface.Methods, o.method)
-	o.method = nil
-	o.input = nil
-	o.output = nil
+// ExitOperationRule is called when exiting the operationRule production.
+func (o *ObjectApiListener) ExitOperationRule(c *parser.OperationRuleContext) {
+	o.operation.Return = o._return
+	o.iface.Operations = append(o.iface.Operations, o.operation)
+	o.operation = nil
+	o.param = nil
+	o._return = nil
 	o.schema = nil
 }
 
-func (o *ObjectApiListener) EnterOutputRule(c *parser.OutputRuleContext) {
+// EnterOperationReturnRule is called when entering the operationReturnRule production.
+func (o *ObjectApiListener) EnterOperationReturnRule(c *parser.OperationReturnRuleContext) {
 	IsNotNil(o.module)
 	IsNotNil(o.iface)
-	IsNotNil(o.method)
-	IsNil(o.output)
+	IsNotNil(o.operation)
+	IsNil(o._return)
 	IsNil(o.schema)
-	o.output = model.NewTypedNode("", model.KindOutput)
+	o._return = model.NewTypedNode("", model.KindReturn)
 }
 
-func (o *ObjectApiListener) ExitOutputRule(c *parser.OutputRuleContext) {
-	o.output.Schema = *o.schema
-	o.method.Output = o.output
+// ExitOperationReturnRule is called when exiting the operationReturnRule production.
+func (o *ObjectApiListener) ExitOperationReturnRule(c *parser.OperationReturnRuleContext) {
+	o._return.Schema = *o.schema
+	o.operation.Return = o._return
 	o.schema = nil
 }
 
-// EnterInputRule is called when entering the inputRule production.
-func (o *ObjectApiListener) EnterInputRule(c *parser.InputRuleContext) {
+// EnterOperationParamRule is called when entering the operationArgRule production.
+func (o *ObjectApiListener) EnterOperationParamRule(c *parser.OperationParamRuleContext) {
 	IsNotNil(o.module)
 	IsNotNil(o.iface)
-	IsNil(o.input)
+	IsNil(o.param)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.input = model.NewTypedNode(name, model.KindInput)
+	o.param = model.NewTypedNode(name, model.KindParam)
 }
 
-// ExitInputRule is called when exiting the inputRule production.
-func (o *ObjectApiListener) ExitInputRule(c *parser.InputRuleContext) {
-	o.input.Schema = *o.schema
-	if o.method != nil {
-		o.method.Inputs = append(o.method.Inputs, o.input)
+// ExitOperationParamRule is called when exiting the operationArgRule production.
+func (o *ObjectApiListener) ExitOperationParamRule(c *parser.OperationParamRuleContext) {
+	o.param.Schema = *o.schema
+	if o.operation != nil {
+		o.operation.Params = append(o.operation.Params, o.param)
 	} else if o.signal != nil {
-		o.signal.Inputs = append(o.signal.Inputs, o.input)
+		o.signal.Params = append(o.signal.Params, o.param)
 	}
-	o.input = nil
+	o.param = nil
 	o.schema = nil
 }
 
@@ -362,10 +370,4 @@ func (o *ObjectApiListener) ExitPrimitiveSchema(c *parser.PrimitiveSchemaContext
 // ExitReferenceSchema is called when exiting the referenceSchema production.
 func (o *ObjectApiListener) ExitSymbolSchema(c *parser.SymbolSchemaContext) {
 	// nothing todo
-}
-
-func NewObjectApiListener(system *model.System) parser.ObjectApiListener {
-	return &ObjectApiListener{
-		System: system,
-	}
 }

@@ -10,3 +10,4 @@ x move cmds to sub folders
 - add template for web framework
 - add template for object link
 - add simulation engine
+- rename params to parameters (no abbreviations in public APIs)

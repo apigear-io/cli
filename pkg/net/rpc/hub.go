@@ -53,8 +53,7 @@ func (h *Hub) run() {
 			if h.writer != nil {
 				err := h.writer.HandleMessage(r)
 				if err != nil {
-
-					log.Printf("hub: write error: %v", err)
+					log.Printf("hub: incoming message error: %v", err)
 				}
 			}
 		case m := <-h.broadcast:

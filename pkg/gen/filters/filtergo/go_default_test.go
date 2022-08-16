@@ -7,7 +7,7 @@ import (
 )
 
 // test with all the types
-// properties, method inputs, method outputs, signal inputs, struct fields
+// properties, operation params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
 	sys := loadSystem(t)
 	var propTests = []struct {
@@ -39,10 +39,10 @@ func TestDefaultFromIdl(t *testing.T) {
 func TestDefaultSymbolsFromIdl(t *testing.T) {
 	sys := loadSystem(t)
 	var propTests = []struct {
-		mn string
-		in string
-		pn string
-		rt string
+		mn  string
+		in  string
+		pn  string
+		val string
 	}{
 		{"test", "Test2", "propEnum", "Enum1Default"},
 		{"test", "Test2", "propStruct", "Struct1{}"},
@@ -57,7 +57,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 			assert.NotNil(t, prop)
 			r, err := goDefault("", prop)
 			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
+			assert.Equal(t, tt.val, r)
 		})
 	}
 }

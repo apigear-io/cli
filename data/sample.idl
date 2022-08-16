@@ -1,18 +1,18 @@
 module demo 1.0
 
-type Demo02 interface {
+interface Demo02 {
     prop01 bool
-    method01(d Demo01)
+    op01(d Demo01)
     signal signal01()    
 }
 
-type Struct01 struct {
+struct Struct01 {
     field01 int
     field02 bool
     field03 string
 }
 
-type Enum01 enum {
+enum Enum01 {
     Member01
     Member02
     Member03

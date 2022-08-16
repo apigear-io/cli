@@ -1,12 +1,8 @@
 package model
 
-type InputsProvider interface {
-	GetInputs() []*TypedNode
-}
-
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Inputs    []*TypedNode `json:"inputs" yaml:"inputs"`
+	Params    []*TypedNode `json:"params" yaml:"params"`
 }
 
 func NewSignal(name string) *Signal {
@@ -18,12 +14,12 @@ func NewSignal(name string) *Signal {
 	}
 }
 
-func (s *Signal) GetInputs() []*TypedNode {
-	return s.Inputs
+func (s *Signal) GetParams() []*TypedNode {
+	return s.Params
 }
 
 func (s *Signal) ResolveAll(m *Module) error {
-	for _, i := range s.Inputs {
+	for _, i := range s.Params {
 		err := i.ResolveAll(m)
 		if err != nil {
 			return err
@@ -32,53 +28,52 @@ func (s *Signal) ResolveAll(m *Module) error {
 	return nil
 }
 
-type Method struct {
+type Operation struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	// maybe inputs and outputs should be a map of name to Parameter
-	Inputs []*TypedNode `json:"inputs" yaml:"inputs"`
-	Output *TypedNode   `json:"output" yaml:"output"`
+	Params    []*TypedNode `json:"params" yaml:"params"`
+	Return    *TypedNode   `json:"return" yaml:"return"`
 }
 
-func NewMethod(name string) *Method {
-	return &Method{
+func NewOperation(name string) *Operation {
+	return &Operation{
 		NamedNode: NamedNode{
 			Name: name,
-			Kind: KindMethod,
+			Kind: KindOperation,
 		},
-		Inputs: make([]*TypedNode, 0),
-		Output: NewTypedNode("", KindOutput),
+		Params: make([]*TypedNode, 0),
+		Return: NewTypedNode("", KindReturn),
 	}
 }
 
-func (m *Method) GetInputs() []*TypedNode {
-	return m.Inputs
+func (m *Operation) GetParams() []*TypedNode {
+	return m.Params
 }
 
-func (m *Method) GetName() string {
+func (m *Operation) GetName() string {
 	return m.Name
 }
-func (m *Method) GetKind() Kind {
-	return KindMethod
+func (m *Operation) GetKind() Kind {
+	return KindOperation
 }
-func (m *Method) GetSchema() *Schema {
-	return &m.Output.Schema
+func (m *Operation) GetSchema() *Schema {
+	return &m.Return.Schema
 }
 
-func (m *Method) ResolveAll(mod *Module) error {
-	if m.Output == nil {
-		m.Output = NewTypedNode("", KindOutput)
+func (m *Operation) ResolveAll(mod *Module) error {
+	if m.Return == nil {
+		m.Return = NewTypedNode("", KindReturn)
 	}
-	if m.Inputs == nil {
-		m.Inputs = make([]*TypedNode, 0)
+	if m.Params == nil {
+		m.Params = make([]*TypedNode, 0)
 	}
-	for _, p := range m.Inputs {
+	for _, p := range m.Params {
 		err := p.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
-	if m.Output != nil {
-		err := m.Output.ResolveAll(mod)
+	if m.Return != nil {
+		err := m.Return.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
@@ -89,7 +84,7 @@ func (m *Method) ResolveAll(mod *Module) error {
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Properties []*TypedNode `json:"properties" yaml:"properties"`
-	Methods    []*Method    `json:"methods" yaml:"methods"`
+	Operations []*Operation `json:"operations" yaml:"operations"`
 	Signals    []*Signal    `json:"signals" yaml:"signals"`
 }
 
@@ -102,8 +97,8 @@ func NewInterface(name string) *Interface {
 	}
 }
 
-func (i Interface) LookupMethod(name string) *Method {
-	for _, m := range i.Methods {
+func (i Interface) LookupOperation(name string) *Operation {
+	for _, m := range i.Operations {
 		if m.Name == name {
 			return m
 		}
@@ -136,8 +131,8 @@ func (i *Interface) ResolveAll(mod *Module) error {
 			return err
 		}
 	}
-	for _, meth := range i.Methods {
-		err := meth.ResolveAll(mod)
+	for _, op := range i.Operations {
+		err := op.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
@@ -155,8 +150,8 @@ func (i Interface) NoProperties() bool {
 	return len(i.Properties) == 0
 }
 
-func (i Interface) NoMethods() bool {
-	return len(i.Methods) == 0
+func (i Interface) NoOperations() bool {
+	return len(i.Operations) == 0
 }
 
 func (i Interface) NoSignals() bool {
@@ -164,5 +159,5 @@ func (i Interface) NoSignals() bool {
 }
 
 func (i Interface) NoMembers() bool {
-	return i.NoProperties() && i.NoMethods() && i.NoSignals()
+	return i.NoProperties() && i.NoOperations() && i.NoSignals()
 }

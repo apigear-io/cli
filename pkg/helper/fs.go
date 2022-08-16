@@ -30,7 +30,7 @@ func IsExist(path string) bool {
 	return err == nil || os.IsExist(err)
 }
 
-func ReadDocument(path string, v interface{}) error {
+func ReadDocument(path string, v any) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func ReadDocument(path string, v interface{}) error {
 	}
 }
 
-func WriteDocument(path string, v interface{}) error {
+func WriteDocument(path string, v any) error {
 	ext := filepath.Ext(path)
 	switch ext {
 	case ".json":
@@ -95,12 +95,12 @@ func FindDocuments(path string) ([]string, error) {
 	return result, nil
 }
 
-func ReadYamlFromData(in []byte, out interface{}) error {
+func ReadYamlFromData(in []byte, out any) error {
 	return yaml.Unmarshal(in, out)
 }
 
 func YamlToJson(in []byte) ([]byte, error) {
-	out := make(map[string]interface{})
+	out := make(map[string]any)
 	err := yaml.Unmarshal(in, &out)
 	if err != nil {
 		return nil, fmt.Errorf("error un marshalling yaml: %w", err)

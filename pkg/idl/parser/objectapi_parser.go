@@ -44,10 +44,10 @@ func objectapiParserInit() {
 	}
 	staticData.ruleNames = []string{
 		"documentRule", "headerRule", "moduleRule", "importRule", "declarationsRule",
-		"interfaceRule", "interfaceMembersRule", "propertyRule", "methodRule",
-		"outputRule", "inputRule", "signalRule", "structRule", "structFieldRule",
-		"enumRule", "enumMemberRule", "schemaRule", "arrayRule", "primitiveSchema",
-		"symbolSchema",
+		"interfaceRule", "interfaceMembersRule", "propertyRule", "operationRule",
+		"operationReturnRule", "operationParamRule", "signalRule", "structRule",
+		"structFieldRule", "enumRule", "enumMemberRule", "schemaRule", "arrayRule",
+		"primitiveSchema", "symbolSchema",
 	}
 	staticData.predictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
@@ -196,9 +196,9 @@ const (
 	ObjectApiParserRULE_interfaceRule        = 5
 	ObjectApiParserRULE_interfaceMembersRule = 6
 	ObjectApiParserRULE_propertyRule         = 7
-	ObjectApiParserRULE_methodRule           = 8
-	ObjectApiParserRULE_outputRule           = 9
-	ObjectApiParserRULE_inputRule            = 10
+	ObjectApiParserRULE_operationRule        = 8
+	ObjectApiParserRULE_operationReturnRule  = 9
+	ObjectApiParserRULE_operationParamRule   = 10
 	ObjectApiParserRULE_signalRule           = 11
 	ObjectApiParserRULE_structRule           = 12
 	ObjectApiParserRULE_structFieldRule      = 13
@@ -1193,10 +1193,10 @@ func (s *InterfaceMembersRuleContext) PropertyRule() IPropertyRuleContext {
 	return t.(IPropertyRuleContext)
 }
 
-func (s *InterfaceMembersRuleContext) MethodRule() IMethodRuleContext {
+func (s *InterfaceMembersRuleContext) OperationRule() IOperationRuleContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IMethodRuleContext); ok {
+		if _, ok := ctx.(IOperationRuleContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -1206,7 +1206,7 @@ func (s *InterfaceMembersRuleContext) MethodRule() IMethodRuleContext {
 		return nil
 	}
 
-	return t.(IMethodRuleContext)
+	return t.(IOperationRuleContext)
 }
 
 func (s *InterfaceMembersRuleContext) SignalRule() ISignalRuleContext {
@@ -1282,7 +1282,7 @@ func (p *ObjectApiParser) InterfaceMembersRule() (localctx IInterfaceMembersRule
 		p.EnterOuterAlt(localctx, 2)
 		{
 			p.SetState(79)
-			p.MethodRule()
+			p.OperationRule()
 		}
 
 	case 3:
@@ -1443,8 +1443,8 @@ func (p *ObjectApiParser) PropertyRule() (localctx IPropertyRuleContext) {
 	return localctx
 }
 
-// IMethodRuleContext is an interface to support dynamic dispatch.
-type IMethodRuleContext interface {
+// IOperationRuleContext is an interface to support dynamic dispatch.
+type IOperationRuleContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
@@ -1456,61 +1456,61 @@ type IMethodRuleContext interface {
 	// SetName sets the name token.
 	SetName(antlr.Token)
 
-	// GetInputs returns the inputs rule contexts.
-	GetInputs() IInputRuleContext
+	// GetParams returns the params rule contexts.
+	GetParams() IOperationParamRuleContext
 
-	// SetInputs sets the inputs rule contexts.
-	SetInputs(IInputRuleContext)
+	// SetParams sets the params rule contexts.
+	SetParams(IOperationParamRuleContext)
 
-	// IsMethodRuleContext differentiates from other interfaces.
-	IsMethodRuleContext()
+	// IsOperationRuleContext differentiates from other interfaces.
+	IsOperationRuleContext()
 }
 
-type MethodRuleContext struct {
+type OperationRuleContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	name   antlr.Token
-	inputs IInputRuleContext
+	params IOperationParamRuleContext
 }
 
-func NewEmptyMethodRuleContext() *MethodRuleContext {
-	var p = new(MethodRuleContext)
+func NewEmptyOperationRuleContext() *OperationRuleContext {
+	var p = new(OperationRuleContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = ObjectApiParserRULE_methodRule
+	p.RuleIndex = ObjectApiParserRULE_operationRule
 	return p
 }
 
-func (*MethodRuleContext) IsMethodRuleContext() {}
+func (*OperationRuleContext) IsOperationRuleContext() {}
 
-func NewMethodRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *MethodRuleContext {
-	var p = new(MethodRuleContext)
+func NewOperationRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *OperationRuleContext {
+	var p = new(OperationRuleContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = ObjectApiParserRULE_methodRule
+	p.RuleIndex = ObjectApiParserRULE_operationRule
 
 	return p
 }
 
-func (s *MethodRuleContext) GetParser() antlr.Parser { return s.parser }
+func (s *OperationRuleContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *MethodRuleContext) GetName() antlr.Token { return s.name }
+func (s *OperationRuleContext) GetName() antlr.Token { return s.name }
 
-func (s *MethodRuleContext) SetName(v antlr.Token) { s.name = v }
+func (s *OperationRuleContext) SetName(v antlr.Token) { s.name = v }
 
-func (s *MethodRuleContext) GetInputs() IInputRuleContext { return s.inputs }
+func (s *OperationRuleContext) GetParams() IOperationParamRuleContext { return s.params }
 
-func (s *MethodRuleContext) SetInputs(v IInputRuleContext) { s.inputs = v }
+func (s *OperationRuleContext) SetParams(v IOperationParamRuleContext) { s.params = v }
 
-func (s *MethodRuleContext) IDENTIFIER() antlr.TerminalNode {
+func (s *OperationRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
 }
 
-func (s *MethodRuleContext) OutputRule() IOutputRuleContext {
+func (s *OperationRuleContext) OperationReturnRule() IOperationReturnRuleContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IOutputRuleContext); ok {
+		if _, ok := ctx.(IOperationReturnRuleContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -1520,23 +1520,23 @@ func (s *MethodRuleContext) OutputRule() IOutputRuleContext {
 		return nil
 	}
 
-	return t.(IOutputRuleContext)
+	return t.(IOperationReturnRuleContext)
 }
 
-func (s *MethodRuleContext) AllInputRule() []IInputRuleContext {
+func (s *OperationRuleContext) AllOperationParamRule() []IOperationParamRuleContext {
 	children := s.GetChildren()
 	len := 0
 	for _, ctx := range children {
-		if _, ok := ctx.(IInputRuleContext); ok {
+		if _, ok := ctx.(IOperationParamRuleContext); ok {
 			len++
 		}
 	}
 
-	tst := make([]IInputRuleContext, len)
+	tst := make([]IOperationParamRuleContext, len)
 	i := 0
 	for _, ctx := range children {
-		if t, ok := ctx.(IInputRuleContext); ok {
-			tst[i] = t.(IInputRuleContext)
+		if t, ok := ctx.(IOperationParamRuleContext); ok {
+			tst[i] = t.(IOperationParamRuleContext)
 			i++
 		}
 	}
@@ -1544,11 +1544,11 @@ func (s *MethodRuleContext) AllInputRule() []IInputRuleContext {
 	return tst
 }
 
-func (s *MethodRuleContext) InputRule(i int) IInputRuleContext {
+func (s *OperationRuleContext) OperationParamRule(i int) IOperationParamRuleContext {
 	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IInputRuleContext); ok {
+		if _, ok := ctx.(IOperationParamRuleContext); ok {
 			if j == i {
 				t = ctx.(antlr.RuleContext)
 				break
@@ -1561,35 +1561,35 @@ func (s *MethodRuleContext) InputRule(i int) IInputRuleContext {
 		return nil
 	}
 
-	return t.(IInputRuleContext)
+	return t.(IOperationParamRuleContext)
 }
 
-func (s *MethodRuleContext) GetRuleContext() antlr.RuleContext {
+func (s *OperationRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *MethodRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *OperationRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *MethodRuleContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *OperationRuleContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.EnterMethodRule(s)
+		listenerT.EnterOperationRule(s)
 	}
 }
 
-func (s *MethodRuleContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *OperationRuleContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.ExitMethodRule(s)
+		listenerT.ExitOperationRule(s)
 	}
 }
 
-func (p *ObjectApiParser) MethodRule() (localctx IMethodRuleContext) {
+func (p *ObjectApiParser) OperationRule() (localctx IOperationRuleContext) {
 	this := p
 	_ = this
 
-	localctx = NewMethodRuleContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 16, ObjectApiParserRULE_methodRule)
+	localctx = NewOperationRuleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 16, ObjectApiParserRULE_operationRule)
 	var _la int
 
 	defer func() {
@@ -1614,7 +1614,7 @@ func (p *ObjectApiParser) MethodRule() (localctx IMethodRuleContext) {
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
-		localctx.(*MethodRuleContext).name = _m
+		localctx.(*OperationRuleContext).name = _m
 	}
 	{
 		p.SetState(88)
@@ -1628,9 +1628,9 @@ func (p *ObjectApiParser) MethodRule() (localctx IMethodRuleContext) {
 		{
 			p.SetState(89)
 
-			var _x = p.InputRule()
+			var _x = p.OperationParamRule()
 
-			localctx.(*MethodRuleContext).inputs = _x
+			localctx.(*OperationRuleContext).params = _x
 		}
 
 		p.SetState(94)
@@ -1648,7 +1648,7 @@ func (p *ObjectApiParser) MethodRule() (localctx IMethodRuleContext) {
 	if _la == ObjectApiParserT__5 {
 		{
 			p.SetState(96)
-			p.OutputRule()
+			p.OperationReturnRule()
 		}
 
 	}
@@ -1656,8 +1656,8 @@ func (p *ObjectApiParser) MethodRule() (localctx IMethodRuleContext) {
 	return localctx
 }
 
-// IOutputRuleContext is an interface to support dynamic dispatch.
-type IOutputRuleContext interface {
+// IOperationReturnRuleContext is an interface to support dynamic dispatch.
+type IOperationReturnRuleContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
@@ -1669,43 +1669,43 @@ type IOutputRuleContext interface {
 	// SetSchema sets the schema rule contexts.
 	SetSchema(ISchemaRuleContext)
 
-	// IsOutputRuleContext differentiates from other interfaces.
-	IsOutputRuleContext()
+	// IsOperationReturnRuleContext differentiates from other interfaces.
+	IsOperationReturnRuleContext()
 }
 
-type OutputRuleContext struct {
+type OperationReturnRuleContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	schema ISchemaRuleContext
 }
 
-func NewEmptyOutputRuleContext() *OutputRuleContext {
-	var p = new(OutputRuleContext)
+func NewEmptyOperationReturnRuleContext() *OperationReturnRuleContext {
+	var p = new(OperationReturnRuleContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = ObjectApiParserRULE_outputRule
+	p.RuleIndex = ObjectApiParserRULE_operationReturnRule
 	return p
 }
 
-func (*OutputRuleContext) IsOutputRuleContext() {}
+func (*OperationReturnRuleContext) IsOperationReturnRuleContext() {}
 
-func NewOutputRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *OutputRuleContext {
-	var p = new(OutputRuleContext)
+func NewOperationReturnRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *OperationReturnRuleContext {
+	var p = new(OperationReturnRuleContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = ObjectApiParserRULE_outputRule
+	p.RuleIndex = ObjectApiParserRULE_operationReturnRule
 
 	return p
 }
 
-func (s *OutputRuleContext) GetParser() antlr.Parser { return s.parser }
+func (s *OperationReturnRuleContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *OutputRuleContext) GetSchema() ISchemaRuleContext { return s.schema }
+func (s *OperationReturnRuleContext) GetSchema() ISchemaRuleContext { return s.schema }
 
-func (s *OutputRuleContext) SetSchema(v ISchemaRuleContext) { s.schema = v }
+func (s *OperationReturnRuleContext) SetSchema(v ISchemaRuleContext) { s.schema = v }
 
-func (s *OutputRuleContext) SchemaRule() ISchemaRuleContext {
+func (s *OperationReturnRuleContext) SchemaRule() ISchemaRuleContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(ISchemaRuleContext); ok {
@@ -1721,32 +1721,32 @@ func (s *OutputRuleContext) SchemaRule() ISchemaRuleContext {
 	return t.(ISchemaRuleContext)
 }
 
-func (s *OutputRuleContext) GetRuleContext() antlr.RuleContext {
+func (s *OperationReturnRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *OutputRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *OperationReturnRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *OutputRuleContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *OperationReturnRuleContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.EnterOutputRule(s)
+		listenerT.EnterOperationReturnRule(s)
 	}
 }
 
-func (s *OutputRuleContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *OperationReturnRuleContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.ExitOutputRule(s)
+		listenerT.ExitOperationReturnRule(s)
 	}
 }
 
-func (p *ObjectApiParser) OutputRule() (localctx IOutputRuleContext) {
+func (p *ObjectApiParser) OperationReturnRule() (localctx IOperationReturnRuleContext) {
 	this := p
 	_ = this
 
-	localctx = NewOutputRuleContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 18, ObjectApiParserRULE_outputRule)
+	localctx = NewOperationReturnRuleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 18, ObjectApiParserRULE_operationReturnRule)
 
 	defer func() {
 		p.ExitRule()
@@ -1774,14 +1774,14 @@ func (p *ObjectApiParser) OutputRule() (localctx IOutputRuleContext) {
 
 		var _x = p.SchemaRule()
 
-		localctx.(*OutputRuleContext).schema = _x
+		localctx.(*OperationReturnRuleContext).schema = _x
 	}
 
 	return localctx
 }
 
-// IInputRuleContext is an interface to support dynamic dispatch.
-type IInputRuleContext interface {
+// IOperationParamRuleContext is an interface to support dynamic dispatch.
+type IOperationParamRuleContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
@@ -1799,52 +1799,52 @@ type IInputRuleContext interface {
 	// SetSchema sets the schema rule contexts.
 	SetSchema(ISchemaRuleContext)
 
-	// IsInputRuleContext differentiates from other interfaces.
-	IsInputRuleContext()
+	// IsOperationParamRuleContext differentiates from other interfaces.
+	IsOperationParamRuleContext()
 }
 
-type InputRuleContext struct {
+type OperationParamRuleContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	name   antlr.Token
 	schema ISchemaRuleContext
 }
 
-func NewEmptyInputRuleContext() *InputRuleContext {
-	var p = new(InputRuleContext)
+func NewEmptyOperationParamRuleContext() *OperationParamRuleContext {
+	var p = new(OperationParamRuleContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = ObjectApiParserRULE_inputRule
+	p.RuleIndex = ObjectApiParserRULE_operationParamRule
 	return p
 }
 
-func (*InputRuleContext) IsInputRuleContext() {}
+func (*OperationParamRuleContext) IsOperationParamRuleContext() {}
 
-func NewInputRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *InputRuleContext {
-	var p = new(InputRuleContext)
+func NewOperationParamRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *OperationParamRuleContext {
+	var p = new(OperationParamRuleContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = ObjectApiParserRULE_inputRule
+	p.RuleIndex = ObjectApiParserRULE_operationParamRule
 
 	return p
 }
 
-func (s *InputRuleContext) GetParser() antlr.Parser { return s.parser }
+func (s *OperationParamRuleContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *InputRuleContext) GetName() antlr.Token { return s.name }
+func (s *OperationParamRuleContext) GetName() antlr.Token { return s.name }
 
-func (s *InputRuleContext) SetName(v antlr.Token) { s.name = v }
+func (s *OperationParamRuleContext) SetName(v antlr.Token) { s.name = v }
 
-func (s *InputRuleContext) GetSchema() ISchemaRuleContext { return s.schema }
+func (s *OperationParamRuleContext) GetSchema() ISchemaRuleContext { return s.schema }
 
-func (s *InputRuleContext) SetSchema(v ISchemaRuleContext) { s.schema = v }
+func (s *OperationParamRuleContext) SetSchema(v ISchemaRuleContext) { s.schema = v }
 
-func (s *InputRuleContext) IDENTIFIER() antlr.TerminalNode {
+func (s *OperationParamRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
 }
 
-func (s *InputRuleContext) SchemaRule() ISchemaRuleContext {
+func (s *OperationParamRuleContext) SchemaRule() ISchemaRuleContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(ISchemaRuleContext); ok {
@@ -1860,32 +1860,32 @@ func (s *InputRuleContext) SchemaRule() ISchemaRuleContext {
 	return t.(ISchemaRuleContext)
 }
 
-func (s *InputRuleContext) GetRuleContext() antlr.RuleContext {
+func (s *OperationParamRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *InputRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *OperationParamRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *InputRuleContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *OperationParamRuleContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.EnterInputRule(s)
+		listenerT.EnterOperationParamRule(s)
 	}
 }
 
-func (s *InputRuleContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *OperationParamRuleContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(ObjectApiListener); ok {
-		listenerT.ExitInputRule(s)
+		listenerT.ExitOperationParamRule(s)
 	}
 }
 
-func (p *ObjectApiParser) InputRule() (localctx IInputRuleContext) {
+func (p *ObjectApiParser) OperationParamRule() (localctx IOperationParamRuleContext) {
 	this := p
 	_ = this
 
-	localctx = NewInputRuleContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 20, ObjectApiParserRULE_inputRule)
+	localctx = NewOperationParamRuleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 20, ObjectApiParserRULE_operationParamRule)
 	var _la int
 
 	defer func() {
@@ -1910,7 +1910,7 @@ func (p *ObjectApiParser) InputRule() (localctx IInputRuleContext) {
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
-		localctx.(*InputRuleContext).name = _m
+		localctx.(*OperationParamRuleContext).name = _m
 	}
 	{
 		p.SetState(103)
@@ -1921,7 +1921,7 @@ func (p *ObjectApiParser) InputRule() (localctx IInputRuleContext) {
 
 		var _x = p.SchemaRule()
 
-		localctx.(*InputRuleContext).schema = _x
+		localctx.(*OperationParamRuleContext).schema = _x
 	}
 	p.SetState(106)
 	p.GetErrorHandler().Sync(p)
@@ -1951,11 +1951,11 @@ type ISignalRuleContext interface {
 	// SetName sets the name token.
 	SetName(antlr.Token)
 
-	// GetInputs returns the inputs rule contexts.
-	GetInputs() IInputRuleContext
+	// GetParams returns the params rule contexts.
+	GetParams() IOperationParamRuleContext
 
-	// SetInputs sets the inputs rule contexts.
-	SetInputs(IInputRuleContext)
+	// SetParams sets the params rule contexts.
+	SetParams(IOperationParamRuleContext)
 
 	// IsSignalRuleContext differentiates from other interfaces.
 	IsSignalRuleContext()
@@ -1965,7 +1965,7 @@ type SignalRuleContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	name   antlr.Token
-	inputs IInputRuleContext
+	params IOperationParamRuleContext
 }
 
 func NewEmptySignalRuleContext() *SignalRuleContext {
@@ -1994,28 +1994,28 @@ func (s *SignalRuleContext) GetName() antlr.Token { return s.name }
 
 func (s *SignalRuleContext) SetName(v antlr.Token) { s.name = v }
 
-func (s *SignalRuleContext) GetInputs() IInputRuleContext { return s.inputs }
+func (s *SignalRuleContext) GetParams() IOperationParamRuleContext { return s.params }
 
-func (s *SignalRuleContext) SetInputs(v IInputRuleContext) { s.inputs = v }
+func (s *SignalRuleContext) SetParams(v IOperationParamRuleContext) { s.params = v }
 
 func (s *SignalRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
 }
 
-func (s *SignalRuleContext) AllInputRule() []IInputRuleContext {
+func (s *SignalRuleContext) AllOperationParamRule() []IOperationParamRuleContext {
 	children := s.GetChildren()
 	len := 0
 	for _, ctx := range children {
-		if _, ok := ctx.(IInputRuleContext); ok {
+		if _, ok := ctx.(IOperationParamRuleContext); ok {
 			len++
 		}
 	}
 
-	tst := make([]IInputRuleContext, len)
+	tst := make([]IOperationParamRuleContext, len)
 	i := 0
 	for _, ctx := range children {
-		if t, ok := ctx.(IInputRuleContext); ok {
-			tst[i] = t.(IInputRuleContext)
+		if t, ok := ctx.(IOperationParamRuleContext); ok {
+			tst[i] = t.(IOperationParamRuleContext)
 			i++
 		}
 	}
@@ -2023,11 +2023,11 @@ func (s *SignalRuleContext) AllInputRule() []IInputRuleContext {
 	return tst
 }
 
-func (s *SignalRuleContext) InputRule(i int) IInputRuleContext {
+func (s *SignalRuleContext) OperationParamRule(i int) IOperationParamRuleContext {
 	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IInputRuleContext); ok {
+		if _, ok := ctx.(IOperationParamRuleContext); ok {
 			if j == i {
 				t = ctx.(antlr.RuleContext)
 				break
@@ -2040,7 +2040,7 @@ func (s *SignalRuleContext) InputRule(i int) IInputRuleContext {
 		return nil
 	}
 
-	return t.(IInputRuleContext)
+	return t.(IOperationParamRuleContext)
 }
 
 func (s *SignalRuleContext) GetRuleContext() antlr.RuleContext {
@@ -2111,9 +2111,9 @@ func (p *ObjectApiParser) SignalRule() (localctx ISignalRuleContext) {
 		{
 			p.SetState(111)
 
-			var _x = p.InputRule()
+			var _x = p.OperationParamRule()
 
-			localctx.(*SignalRuleContext).inputs = _x
+			localctx.(*SignalRuleContext).params = _x
 		}
 
 		p.SetState(116)

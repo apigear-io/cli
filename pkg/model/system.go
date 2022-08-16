@@ -58,12 +58,12 @@ func (s System) LookupProperty(moduleName string, ifaceName string, propName str
 	return i.LookupProperty(propName)
 }
 
-func (s System) LookupMethod(moduleName string, ifaceName string, methodName string) *Method {
+func (s System) LookupOperation(moduleName string, ifaceName string, operationName string) *Operation {
 	i := s.LookupInterface(moduleName, ifaceName)
 	if i == nil {
 		return nil
 	}
-	return i.LookupMethod(methodName)
+	return i.LookupOperation(operationName)
 }
 
 func (s System) LookupSignal(moduleName string, ifaceName string, eventName string) *Signal {

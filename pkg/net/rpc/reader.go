@@ -37,7 +37,7 @@ func ReadJsonMessages(r io.Reader, sleep time.Duration, emitter chan RpcMessage)
 	id := uint64(0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		log.Debug("read line: ", line)
+		log.Infof("send: %s\n", line)
 		// decode each line into an event using json
 		var m RpcMessage
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(&m)

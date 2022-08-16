@@ -12,16 +12,17 @@ declarationsRule: interfaceRule | structRule | enumRule;
 interfaceRule:
 	'interface' name = IDENTIFIER '{' interfaceMembersRule* '}';
 
-interfaceMembersRule: propertyRule | methodRule | signalRule;
+interfaceMembersRule: propertyRule | operationRule | signalRule;
 
 propertyRule: name = IDENTIFIER ':' schema = schemaRule;
-methodRule:
-	name = IDENTIFIER '(' inputs = inputRule* ')' outputRule?;
+operationRule:
+	name = IDENTIFIER '(' params = operationParamRule* ')' operationReturnRule?;
 
-outputRule: ':' schema = schemaRule;
-inputRule: name = IDENTIFIER ':' schema = schemaRule ','?;
+operationReturnRule: ':' schema = schemaRule;
+operationParamRule:
+	name = IDENTIFIER ':' schema = schemaRule ','?;
 signalRule:
-	'signal' name = IDENTIFIER '(' inputs = inputRule* ')';
+	'signal' name = IDENTIFIER '(' params = operationParamRule* ')';
 
 // structs
 structRule: 'struct' name = IDENTIFIER '{' structFieldRule* '}';

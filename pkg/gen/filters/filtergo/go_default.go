@@ -42,12 +42,12 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeBool:
 			text = "false"
 		case model.TypeEnum:
-			sym := schema.GetEnum()
-			member := sym.Members[0]
-			text = fmt.Sprintf("%s%s%s", prefix, sym.Name, member.Name)
+			symbol := schema.GetEnum()
+			member := symbol.Members[0]
+			text = fmt.Sprintf("%s%s%s", prefix, symbol.Name, member.Name)
 		case model.TypeStruct:
-			sym := schema.GetStruct()
-			text = fmt.Sprintf("%s%s{}", prefix, sym.Name)
+			symbol := schema.GetStruct()
+			text = fmt.Sprintf("%s%s{}", prefix, symbol.Name)
 		case model.TypeInterface:
 			text = "nil"
 		case model.TypeNull:
