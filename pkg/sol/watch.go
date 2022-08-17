@@ -18,15 +18,12 @@ func (t *task) startWatch() (chan<- bool, error) {
 	if err != nil {
 		return nil, err
 	}
-	t.watchForever()
+	go t.watchForever()
 	return t.done, nil
 }
 
 func (t *task) stopWatch() {
 	t.done <- true
-	if t.watcher != nil {
-		t.watcher.Close()
-	}
 }
 
 func (t *task) watchDeps() error {
@@ -75,7 +72,10 @@ func (t *task) watchForever() {
 	}
 	for {
 		select {
-		case event := <-t.watcher.Events:
+		case event, ok := <-t.watcher.Events:
+			if !ok {
+				return
+			}
 			log.Debugf("event: %s", event)
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				log.Debugf("modified file: %s", event.Name)
@@ -84,10 +84,16 @@ func (t *task) watchForever() {
 					log.Warnf("error running watched task: %s", err)
 				}
 			}
-		case err := <-t.watcher.Errors:
-			log.Errorf("watch error: %s", err)
+		case err, ok := <-t.watcher.Errors:
+			if !ok {
+				log.Debugf("watcher error: %s", err)
+				return
+			}
+			log.Warnf("watch error: %s", err)
 		case <-t.done:
+			t.watcher.Close()
 			return
+			// do nothing
 		}
 	}
 }

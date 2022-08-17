@@ -6,36 +6,34 @@ import (
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
-type runner struct {
+type Runner struct {
 	tasks map[string]*task
 }
 
-func NewRunner() *runner {
-	return &runner{
+func NewRunner() *Runner {
+	return &Runner{
 		tasks: make(map[string]*task),
 	}
 }
 
-func (r *runner) HasTask(file string) bool {
+func (r *Runner) HasTask(file string) bool {
 	return r.task(file) != nil
 }
 
-func (r *runner) TaskFiles() []string {
-	files := make([]string, len(r.tasks))
-	i := 0
-	for k := range r.tasks {
-		files[i] = k
-		i++
+func (r *Runner) TaskFiles() []string {
+	files := make([]string, 0, len(r.tasks))
+	for file := range r.tasks {
+		files = append(files, file)
 	}
 	return files
 }
 
-func (r *runner) task(file string) *task {
+func (r *Runner) task(file string) *task {
 	return r.tasks[file]
 }
 
 // RunDoc runs the given file task once.
-func (r *runner) RunDoc(file string, doc *spec.SolutionDoc) error {
+func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
 	t, err := newTask(file, doc)
 	if err != nil {
 		return err
@@ -43,7 +41,7 @@ func (r *runner) RunDoc(file string, doc *spec.SolutionDoc) error {
 	return t.run()
 }
 
-func (r *runner) ensureTask(file string, doc *spec.SolutionDoc) (*task, error) {
+func (r *Runner) ensureTask(file string, doc *spec.SolutionDoc) (*task, error) {
 	t := r.task(file)
 	if t != nil {
 		return t, nil
@@ -57,7 +55,7 @@ func (r *runner) ensureTask(file string, doc *spec.SolutionDoc) (*task, error) {
 }
 
 // StartWatch starts the watch of the given file task.
-func (r *runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, error) {
+func (r *Runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, error) {
 	t, err := r.ensureTask(file, doc)
 	if err != nil {
 		return nil, err
@@ -70,9 +68,11 @@ func (r *runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, er
 }
 
 // StopWatch stops the watch of the given file task.
-func (r *runner) StopWatch(file string) {
+func (r *Runner) StopWatch(file string) {
 	t := r.task(file)
 	if t != nil {
 		t.stopWatch()
+		// remove task from runner
+		delete(r.tasks, file)
 	}
 }
