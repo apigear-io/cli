@@ -5,6 +5,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
+	"gopkg.in/yaml.v3"
 )
 
 type ActionHandler func(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error)
@@ -55,6 +56,14 @@ func (e *eval) EvalAction(symbol string, action spec.ActionEntry, ctx map[string
 		}
 	}
 	return result, nil
+}
+
+func (e *eval) EvalActionString(symbol string, data []byte, ctx map[string]any) (map[string]any, error) {
+	var action spec.ActionEntry
+	if err := yaml.Unmarshal(data, &action); err != nil {
+		log.Printf("error: %v", err)
+	}
+	return e.EvalAction(symbol, action, ctx)
 }
 
 func (e *eval) register(name string, handler ActionHandler) {
