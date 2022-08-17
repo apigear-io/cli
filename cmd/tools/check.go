@@ -18,6 +18,9 @@ func NewCheckCommand() *cobra.Command {
 		Long:  `check documents and report errors`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			log.OnReport(func(l *log.ReportEntry) {
+				fmt.Println(l.Message)
+			})
 
 			var file = args[0]
 			switch filepath.Ext(file) {

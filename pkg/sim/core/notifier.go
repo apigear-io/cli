@@ -1,7 +1,7 @@
 package core
 
 type OnChangeFunc func(symbol string, name string, value any)
-type OnSignalFunc func(symbol string, name string, args KWArgs)
+type OnSignalFunc func(symbol string, name string, args map[string]any)
 
 type Notifier struct {
 	onChange OnChangeFunc
@@ -22,7 +22,7 @@ func (n *Notifier) EmitOnChange(symbol string, name string, value any) {
 	}
 }
 
-func (n *Notifier) EmitOnSignal(symbol string, name string, args KWArgs) {
+func (n *Notifier) EmitOnSignal(symbol string, name string, args map[string]any) {
 	if n.onSignal != nil {
 		n.onSignal(symbol, name, args)
 	}

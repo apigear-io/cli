@@ -26,7 +26,7 @@ func (e *MultiEngine) registerNotifier(engine IEngine) {
 	engine.OnChange(func(ifaceId string, name string, value any) {
 		e.EmitOnChange(ifaceId, name, value)
 	})
-	engine.OnSignal(func(ifaceId string, name string, args KWArgs) {
+	engine.OnSignal(func(ifaceId string, name string, args map[string]any) {
 		e.EmitOnSignal(ifaceId, name, args)
 	})
 }
@@ -42,7 +42,7 @@ func (e *MultiEngine) HasInterface(ifaceId string) bool {
 }
 
 // InvokeOperation invokes the operation of the interface.
-func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args KWArgs) (any, error) {
+func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.InvokeOperation(ifaceId, name, args)
@@ -52,7 +52,7 @@ func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args KWArgs) 
 }
 
 // SetProperties sets the properties of the interface.
-func (e *MultiEngine) SetProperties(ifaceId string, props KWArgs) error {
+func (e *MultiEngine) SetProperties(ifaceId string, props map[string]any) error {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.SetProperties(ifaceId, props)
@@ -62,7 +62,7 @@ func (e *MultiEngine) SetProperties(ifaceId string, props KWArgs) error {
 }
 
 // FetchProperties fetches the properties of the interface.
-func (e *MultiEngine) GetProperties(ifaceId string) (KWArgs, error) {
+func (e *MultiEngine) GetProperties(ifaceId string) (map[string]any, error) {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.GetProperties(ifaceId)

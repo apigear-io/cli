@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/net/rpc"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
 )
@@ -28,7 +29,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			log.OnReport(func(entry *log.ReportEntry) {
 				cmd.Print(entry.Message)
 			})
-			var scenario *actions.ScenarioDoc
+			var scenario *spec.ScenarioDoc
 			if len(args) == 1 {
 				file := args[0]
 				doc, err := actions.ReadScenario(file)

@@ -64,7 +64,7 @@ func (s SimuRpcHandler) HandleMessage(r rpc.RpcRequest) error {
 				return fmt.Errorf("get properties: %s", err)
 			}
 			// send the properties back to the client
-			r.Reply(rpc.MakeNotify("simu.state", rpc.RpcParams{"data": props}))
+			r.Reply(rpc.MakeNotify("simu.state", map[string]any{"data": props}))
 		}
 	}
 	return nil

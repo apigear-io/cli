@@ -7,54 +7,78 @@ properties:
     type: string
     enum: ["apigear.scenario/1.0"]
     description: "The simulation scenario specification version of this document."
-  name: { type: string }
-  version: { type: string }
+  name:
+    type: string
+  version:
+    type: string
   interfaces:
-    type: object
-    additionalProperties:
+    type: array
+    items:
       $ref: "#/definitions/Interface"
-        
+  sequences:
+    type: array
+    items:
+      $ref: "#/definitions/Sequence"
+  additionalProperties: false
+
 definitions:
   Interface:
     type: object
+    description: "An interface is a collection of endpoints."
     properties:
+      name:
+        type: string
+        description: "The name of the interface."
       properties:
         type: object
+        description: "The properties of the interface."
       operations:
-        type: object
-        additionalProperties:
+        type: array
+        description: "The operations of the interface."
+        items:
           $ref: "#/definitions/Operation"
-      playbook:
-        $ref: "#/definitions/Playbook"
     additionalProperties: false
   Operation:
     type: object
+    description: "An operation is a n endpoint inside an interface."
     properties:
-      actions: # are an array of objects with an array as value
+      name:
+        type: string
+        description: "The name of the operation."
+      description:
+        type: string
+        description: "The description of the operation."
+      actions:
         type: array
+        description: "The actions of the operation."
         items:
-          $ref: "#/definitions/Action"
+          type: object
+          description: "The action of the operation."
       return:
         type: object
-        properties:
-          schema: # is the JSON type schema
-            type: object
-          value: # can be anything
-            anyOf: [ { type: boolean} , { type: string} , { type: number} , { type: object } , { type: array }]
-        additionalProperties: false
+        description: "The return value of the operation."
       additionalProperties: false
-  Action:
-    type: object
-    additionalProperties:
-      type: array
-  Playbook:
+  Sequence:
+    description: "A sequence is a list of steps to be performed."
     type: object
     properties:
+      name:
+        description: "The name of the sequence."
+        type: string
+      interface:
+        description: "The default interface of the sequence."
+        type: string
       interval:
+        description: "The interval between each step."
         type: integer
       loop:
+        description: "If the sequence should be repeated forever"
         type: boolean
+      repeat:
+        description: "The number of times the sequence should be repeated."
+        type: integer
       steps:
+        description: "The steps of the sequence."
         type: array
         items:
           $ref: "#/definitions/Step"
@@ -63,11 +87,11 @@ definitions:
     type: object
     properties:
       name:
+        description: "The name of the step."
         type: string
-      sequence:
+      actions:
+        description: "The actions of the step."
         type: array
         items:
-          $ref: "#/definitions/Action"
+          type: object
     additionalProperties: false
-
-

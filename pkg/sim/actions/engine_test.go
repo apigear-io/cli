@@ -3,8 +3,6 @@ package actions
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/sim/core"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,12 +21,13 @@ func TestInvokeOperation(t *testing.T) {
 	var table = []struct {
 		symbol    string
 		operation string
-		args      core.KWArgs
-		props     core.KWArgs
-		result    any
+
+		args   map[string]any
+		props  map[string]any
+		result any
 	}{
-		{"demo.Counter", "increment", nil, core.KWArgs{"count": 1}, nil},
-		{"demo.Counter", "decrement", nil, core.KWArgs{"count": 0}, nil},
+		{"demo.Counter", "increment", nil, map[string]any{"count": 1}, nil},
+		{"demo.Counter", "decrement", nil, map[string]any{"count": 0}, nil},
 	}
 	for _, row := range table {
 		t.Run(row.symbol+"."+row.operation, func(t *testing.T) {
@@ -48,12 +47,12 @@ func TestResultOfInvokeOperation(t *testing.T) {
 	var table = []struct {
 		symbol    string
 		operation string
-		args      core.KWArgs
-		result    core.KWArgs
+		args      map[string]any
+		result    map[string]any
 	}{
 		{"demo.Counter", "increment", nil, nil},
 		{"demo.Counter", "decrement", nil, nil},
-		{"demo.Counter", "getCount", nil, core.KWArgs{"value": 2}},
+		{"demo.Counter", "getCount", nil, map[string]any{"value": 2}},
 	}
 	for _, row := range table {
 		t.Run(row.symbol+"."+row.operation, func(t *testing.T) {

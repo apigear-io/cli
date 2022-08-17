@@ -44,7 +44,7 @@ func (s *Engine) HasInterface(symbol string) bool {
 	return ok
 }
 
-func (s *Engine) InvokeOperation(symbol, name string, args core.KWArgs) (any, error) {
+func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
 	log.Infof("%s/%s invoke\n", symbol, name)
 	obj := s.interfaces[symbol]
 	if obj == nil {
@@ -65,7 +65,7 @@ func (s *Engine) InvokeOperation(symbol, name string, args core.KWArgs) (any, er
 	return result, nil
 }
 
-func (s *Engine) SetProperties(symbol string, props core.KWArgs) error {
+func (s *Engine) SetProperties(symbol string, props map[string]any) error {
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return fmt.Errorf("interface %s not found", symbol)
@@ -79,8 +79,8 @@ func (s *Engine) SetProperties(symbol string, props core.KWArgs) error {
 	return nil
 }
 
-func (s *Engine) GetProperties(symbol string) (core.KWArgs, error) {
-	props := core.KWArgs{}
+func (s *Engine) GetProperties(symbol string) (map[string]any, error) {
+	props := map[string]any{}
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return props, fmt.Errorf("interface %s not found", symbol)

@@ -4,6 +4,7 @@ import (
 	"github.com/apigear-io/cli/pkg/sim/actions"
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/sim/script"
+	"github.com/apigear-io/cli/pkg/spec"
 )
 
 // Simulate runs one or more simulation scenarios.
@@ -29,7 +30,7 @@ func NewSimulation() *Simulation {
 	return s
 }
 
-func (s *Simulation) LoadScenario(doc *actions.ScenarioDoc) error {
+func (s *Simulation) LoadScenario(doc *spec.ScenarioDoc) error {
 	return s.aEng.LoadScenario(doc)
 }
 

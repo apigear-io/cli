@@ -3,8 +3,6 @@ package script
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/sim/core"
-
 	js "github.com/dop251/goja"
 )
 
@@ -25,7 +23,7 @@ func (s *Engine) jsRegisterInterface(obj *js.Object) error {
 	return nil
 }
 
-func (s *Engine) jsSignal(interfaceId string, name string, args core.KWArgs) {
+func (s *Engine) jsSignal(interfaceId string, name string, args map[string]any) {
 
 	s.EmitOnSignal(interfaceId, name, args)
 }

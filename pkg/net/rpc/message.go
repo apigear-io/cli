@@ -4,8 +4,6 @@ var (
 	idSeq uint64 = 0
 )
 
-type RpcParams map[string]any
-
 func NextId() uint64 {
 	idSeq++
 	return idSeq
@@ -38,12 +36,12 @@ type RpcError struct {
 }
 
 type RpcMessage struct {
-	Version string    `json:"version"`
-	Method  string    `json:"method"`
-	Id      uint64    `json:"id"`
-	Params  RpcParams `json:"params"`
-	Result  any       `json:"result"`
-	Error   RpcError  `json:"error,omitempty"`
+	Version string         `json:"version"`
+	Method  string         `json:"method"`
+	Id      uint64         `json:"id"`
+	Params  map[string]any `json:"params"`
+	Result  any            `json:"result"`
+	Error   RpcError       `json:"error,omitempty"`
 }
 
 func MakeError(code int, msg string) RpcMessage {
@@ -53,7 +51,7 @@ func MakeError(code int, msg string) RpcMessage {
 	}
 }
 
-func MakeCall(method string, params RpcParams) RpcMessage {
+func MakeCall(method string, params map[string]any) RpcMessage {
 	return RpcMessage{
 		Version: "2.0",
 		Method:  method,
@@ -62,7 +60,7 @@ func MakeCall(method string, params RpcParams) RpcMessage {
 	}
 }
 
-func MakeNotify(method string, params RpcParams) RpcMessage {
+func MakeNotify(method string, params map[string]any) RpcMessage {
 	return RpcMessage{
 		Version: "2.0",
 		Method:  method,
