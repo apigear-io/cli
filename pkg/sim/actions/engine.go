@@ -36,11 +36,11 @@ func (e *Engine) init() {
 
 func (e *Engine) LoadScenario(doc *spec.ScenarioDoc) error {
 	e.docs[doc.Name] = doc
-	for _, s := range doc.Interfaces {
-		if s.Name == "" {
-			return fmt.Errorf("interface %v has no name", s)
+	for _, iface := range doc.Interfaces {
+		if iface.Name == "" {
+			return fmt.Errorf("interface %v has no name", iface)
 		}
-		log.Infof("registering interface %s\n", s.Name)
+		log.Infof("registering interface %s\n", iface.Name)
 	}
 	return nil
 }
@@ -66,15 +66,15 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 // InvokeOperation invokes a operation of the interface.
 func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
 	log.Infof("%s/%s invoke\n", symbol, name)
-	s := e.GetInterface(symbol)
-	if s == nil {
+	iface := e.GetInterface(symbol)
+	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
 	}
-	m := s.GetOperation(name)
-	if m == nil {
+	op := iface.GetOperation(name)
+	if op == nil {
 		return nil, fmt.Errorf("operation %s not found", name)
 	}
-	result, err := e.eval.EvalActions(symbol, m.Actions, s.Properties)
+	result, err := e.eval.EvalActions(symbol, op.Actions, iface.Properties)
 	if err != nil {
 		return nil, err
 	}
@@ -84,23 +84,23 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 
 // SetProperties sets the properties of the interface.
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
-	s := e.GetInterface(symbol)
-	if s == nil {
+	iface := e.GetInterface(symbol)
+	if iface == nil {
 		return fmt.Errorf("interface %s not found", symbol)
 	}
 	for name, value := range props {
-		s.Properties[name] = value
+		iface.Properties[name] = value
 	}
 	return nil
 }
 
 // FetchProperties returns a copy of the properties of the interface.
 func (e *Engine) GetProperties(symbol string) (map[string]any, error) {
-	s := e.GetInterface(symbol)
-	if s == nil {
+	iface := e.GetInterface(symbol)
+	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
 	}
-	return s.Properties, nil
+	return iface.Properties, nil
 }
 
 func (e *Engine) HasSequence(sequencerId string) bool {
