@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"os"
+	"sync"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
@@ -42,10 +43,14 @@ func NewExpertCommand() *cobra.Command {
 
 			if options.watch {
 				// TODO: how to watch from a document and not from a file?
-				_, err := runner.StartWatch(doc.RootDir, doc)
+				var wg sync.WaitGroup
+				wg.Add(1)
+				done, err := runner.StartWatch(doc.RootDir, doc)
 				if err != nil {
 					log.Fatal(err)
 				}
+				wg.Wait()
+				done <- true
 			} else {
 				err := runner.RunDoc(doc.RootDir, doc)
 				if err != nil {

@@ -1,6 +1,8 @@
 package sdk
 
 import (
+	"sync"
+
 	"github.com/apigear-io/cli/pkg/sol"
 
 	"github.com/spf13/cobra"
@@ -25,10 +27,14 @@ as also the other options. To create a demo module or solution use the 'project 
 			}
 			runner := sol.NewRunner()
 			if watch {
-				_, err := runner.StartWatch(file, doc)
+				var wg = sync.WaitGroup{}
+				wg.Add(1)
+				done, err := runner.StartWatch(file, doc)
 				if err != nil {
 					return err
 				}
+				wg.Wait()
+				done <- true
 			} else {
 				err := runner.RunDoc(file, doc)
 				if err != nil {
