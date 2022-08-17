@@ -34,13 +34,20 @@ func NewExpertCommand() *cobra.Command {
 		Short:   "generate code using expert mode",
 		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			log.OnReport(func(report *log.ReportEntry) {
+				cmd.Println(report.Message)
+			})
 			doc := makeSolution(options)
+			runner := sol.NewRunner()
 
 			if options.watch {
 				// TODO: how to watch from a document and not from a file?
-				sol.WatchSolutionDocument(doc)
+				_, err := runner.StartWatch(doc.RootDir, doc)
+				if err != nil {
+					log.Fatal(err)
+				}
 			} else {
-				_, err := sol.RunSolutionDocument(doc)
+				err := runner.RunDoc(doc.RootDir, doc)
 				if err != nil {
 					log.Fatalf("failed to run expert mode: %s", err)
 				}

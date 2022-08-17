@@ -10,7 +10,7 @@ Aliases:
 
 Available Commands:
   expert      generate code using expert mode
-  solution    generate code using a solution
+  solution    generate SDK using a solution document
 
 Flags:
   -h, --help   help for sdk
@@ -33,7 +33,7 @@ Aliases:
 
 Available Commands:
   expert      generate code using expert mode
-  solution    generate code using a solution
+  solution    generate SDK using a solution document
 
 Flags:
   -h, --help   help for sdk

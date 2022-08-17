@@ -7,38 +7,58 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/apigear-io/cli/pkg/gen/filters"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
-
-	"gopkg.in/yaml.v2"
 )
 
 // Generator parses documents and applies
 // template transformation on a set of files.
 
-type DataMap = map[string]any
+type DataMap map[string]any
 
-// IFileWriter writes a target file with content
-type IFileWriter interface {
-	WriteFile(input []byte, target string, force bool) error
-	CopyFile(source, target string, force bool) error
+type GeneratorStats struct {
+	FilesWritten int           `json:"files_written"`
+	FilesSkipped int           `json:"files_skipped"`
+	FilesCopied  int           `json:"files_copied"`
+	FilesTouched []string      `json:"files_touched"`
+	RunStart     time.Time     `json:"run_start"`
+	RunEnd       time.Time     `json:"run_end"`
+	Duration     time.Duration `json:"duration"`
+}
+
+func (g *GeneratorStats) Start() {
+	g.RunStart = time.Now()
+}
+
+func (g *GeneratorStats) Stop() {
+	g.RunEnd = time.Now()
+	g.Duration = g.RunEnd.Sub(g.RunStart)
+	log.Infof("generated %d files in %s", g.TotalFiles(), g.Duration)
+	log.Infof("written %d files, skipped %d files, copied %d files", g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
 // generator applies template transformation on a set of files define in rules
 type generator struct {
 	Template     *template.Template
-	Writer       IFileWriter
 	System       *model.System
 	UserForce    bool
 	TemplatesDir string
 	OutputDir    string
+	DryRun       bool
+	Stats        GeneratorStats
+}
+
+func (s *GeneratorStats) TotalFiles() int {
+	return s.FilesWritten + s.FilesSkipped + s.FilesCopied
 }
 
 func New(outputDir string, templatesDir string, system *model.System, userForce bool) (*generator, error) {
 	g := &generator{
-		Writer:       NewFileWriter(templatesDir, outputDir),
+		OutputDir:    outputDir,
 		Template:     template.New(""),
 		UserForce:    userForce,
 		System:       system,
@@ -91,22 +111,13 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 	return nil
 }
 
-func (g *generator) Run(filename string) error {
-	log.Debugf("processing file: %s", filename)
-	var bytes, err = os.ReadFile(filename)
-	if err != nil {
-		return fmt.Errorf("error reading file %s: %s", filename, err)
-	}
-	var rules = spec.RulesDoc{}
-	err = yaml.Unmarshal(bytes, &rules)
-	if err != nil {
-		return fmt.Errorf("error unmarshal file %s: %s", filename, err)
-	}
-	return g.ProcessRulesDoc(rules)
-}
-
-// ProcessRulesDoc processes a set of rules from a rules document
-func (g *generator) ProcessRulesDoc(rules spec.RulesDoc) error {
+// ProcessRules processes a set of rules from a rules document
+func (g *generator) ProcessRules(rules spec.RulesDoc) error {
+	g.Stats = GeneratorStats{}
+	g.Stats.Start()
+	defer func() {
+		g.Stats.Stop()
+	}()
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
@@ -237,11 +248,20 @@ func (g *generator) RenderString(s string, ctx DataMap) (string, error) {
 	return buf.String(), nil
 }
 
-func (g generator) CopyFile(source, target string, force bool) error {
-	return g.Writer.CopyFile(source, target, force)
+func (g *generator) CopyFile(source, target string, force bool) error {
+	g.Stats.FilesCopied++
+	if g.DryRun {
+		log.Infof("dry run: copying file %s to %s", source, target)
+		g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
+		return nil
+	}
+	target = filepath.Join(g.OutputDir, target)
+	source = filepath.Join(g.OutputDir, source)
+	return helper.CopyFile(source, target)
+
 }
 
-func (g generator) RenderFile(source, target string, ctx DataMap, force bool) error {
+func (g *generator) RenderFile(source, target string, ctx DataMap, force bool) error {
 	// var force = doc.Force
 	// var transform = doc.Transform
 	log.Debugf("render %s -> %s", source, target)
@@ -253,9 +273,38 @@ func (g generator) RenderFile(source, target string, ctx DataMap, force bool) er
 	}
 	// write the file
 	log.Debugf("write %s", target)
-	err = g.Writer.WriteFile(buf.Bytes(), target, force)
+	err = g.WriteFile(buf.Bytes(), target, force)
 	if err != nil {
 		return fmt.Errorf("error writing file %s: %s", target, err)
 	}
 	return nil
+}
+
+func (g *generator) WriteFile(input []byte, target string, force bool) error {
+	target = filepath.Join(g.OutputDir, target)
+	if !force {
+		same, err := CompareContentWithFile(input, target)
+		if err != nil {
+			return fmt.Errorf("error comparing content to file %s: %s", target, err)
+		}
+
+		if same {
+			g.Stats.FilesSkipped++
+			log.Infof("skipping file %s", target)
+			return nil
+		}
+	}
+	log.Debug("write file ", target)
+	g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
+	g.Stats.FilesWritten++
+	if g.DryRun {
+		log.Infof("dry run: writing file %s", target)
+		return nil
+	}
+	dir := filepath.Dir(target)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return fmt.Errorf("error creating directory: %s", err)
+	}
+	return os.WriteFile(target, input, 0644)
 }

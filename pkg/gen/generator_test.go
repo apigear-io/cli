@@ -12,26 +12,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type MockFileWriter struct {
-	Writes map[string]string
-}
-
-func (m *MockFileWriter) WriteFile(input []byte, target string, force bool) error {
-	m.Writes[target] = string(input)
-	return nil
-}
-
-func (w *MockFileWriter) CopyFile(source, target string, force bool) error {
-	w.Writes[target] = source
-	return nil
-}
-
-func NewMockFileWriter() *MockFileWriter {
-	return &MockFileWriter{
-		Writes: make(map[string]string),
-	}
-}
-
 func readRules(t *testing.T, filename string) spec.RulesDoc {
 	content, err := os.ReadFile(filename)
 	assert.NoError(t, err)
@@ -41,12 +21,11 @@ func readRules(t *testing.T, filename string) spec.RulesDoc {
 	return file
 }
 
-func createGenerator(t *testing.T, w IFileWriter) *generator {
+func createGenerator(t *testing.T) *generator {
 	var g = &generator{
-		Writer:       w,
 		Template:     template.New(""),
 		System:       model.NewSystem("test"),
-		UserForce:    false,
+		UserForce:    true,
 		TemplatesDir: "testdata/templates",
 		OutputDir:    "testdata/output",
 	}
@@ -55,26 +34,24 @@ func createGenerator(t *testing.T, w IFileWriter) *generator {
 	return g
 }
 func TestEmptyRules(t *testing.T) {
-	w := NewMockFileWriter()
-	g := createGenerator(t, w)
-	r := readRules(t, "testdata/empty.rules.yaml")
-	assert.NoError(t, g.ProcessRulesDoc(r))
+	g := createGenerator(t)
+	doc, err := ReadRulesDoc("testdata/empty.rules.yaml")
+	assert.NoError(t, err)
+	assert.NoError(t, g.ProcessRules(doc))
 }
 
 func TestHelloRules(t *testing.T) {
-	w := NewMockFileWriter()
-	g := createGenerator(t, w)
+	g := createGenerator(t)
 	r := readRules(t, "testdata/test.rules.yaml")
-	err := g.ProcessRulesDoc(r)
+	err := g.ProcessRules(r)
 	assert.NoError(t, err)
-	assert.Contains(t, w.Writes, "system.txt")
+	assert.Contains(t, g.Stats.FilesTouched, "testdata/output/system.txt")
 }
 
 func TestModules(t *testing.T) {
-	w := NewMockFileWriter()
-	g := createGenerator(t, w)
+	g := createGenerator(t)
 	r := readRules(t, "testdata/test.rules.yaml")
-	err := g.ProcessRulesDoc(r)
+	err := g.ProcessRules(r)
 	assert.NoError(t, err)
-	assert.Contains(t, w.Writes, "system.txt")
+	assert.Contains(t, g.Stats.FilesTouched, "testdata/output/system.txt")
 }

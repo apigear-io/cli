@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
+	"github.com/iancoleman/strcase"
 )
 
 func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
@@ -44,7 +45,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeEnum:
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]
-			text = fmt.Sprintf("%s%s%s", prefix, symbol.Name, member.Name)
+			// upper case first letter
+
+			text = fmt.Sprintf("%s%s%s", prefix, symbol.Name, strcase.ToCamel(member.Name))
 		case model.TypeStruct:
 			symbol := schema.GetStruct()
 			text = fmt.Sprintf("%s%s{}", prefix, symbol.Name)
