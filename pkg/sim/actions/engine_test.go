@@ -11,7 +11,7 @@ func LoadTest(t *testing.T) *Engine {
 	assert.NotNil(t, e)
 	doc, err := ReadScenario("testdata/test1.scenario.yaml")
 	assert.NoError(t, err)
-	err = e.LoadScenario(doc)
+	err = e.LoadScenario("123", doc)
 	assert.NoError(t, err)
 	return e
 }

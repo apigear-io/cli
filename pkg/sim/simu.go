@@ -30,14 +30,20 @@ func NewSimulation() *Simulation {
 	return s
 }
 
-func (s *Simulation) LoadScenario(doc *spec.ScenarioDoc) error {
-	return s.aEng.LoadScenario(doc)
+func (s *Simulation) LoadScenario(source string, doc *spec.ScenarioDoc) error {
+	log.Infof("simulation load scenario: %s", source)
+	return s.aEng.LoadScenario(source, doc)
 }
 
-func (s *Simulation) LoadScript(name string, script string) error {
-	_, err := s.sEng.LoadScript(name, script)
+func (s *Simulation) UnloadScenario(source string) error {
+	log.Infof("simulation unload scenario: %s", source)
+	return s.aEng.UnloadScenario(source)
+}
+
+func (s *Simulation) LoadScript(source string, script string) error {
+	_, err := s.sEng.LoadScript(source, script)
 	if err != nil {
-		log.Errorf("sim.loadScript: %s %s", name, err)
+		log.Errorf("sim.loadScript: %s %s", source, err)
 	}
 	return err
 }

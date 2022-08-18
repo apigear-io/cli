@@ -12,14 +12,14 @@ var _ core.IEngine = (*Engine)(nil)
 
 type Engine struct {
 	eval *eval
-	docs map[string]*spec.ScenarioDoc
+	docs []*spec.ScenarioDoc
 	core.Notifier
 }
 
 func NewEngine() *Engine {
 	e := &Engine{
 		eval: NewEval(),
-		docs: make(map[string]*spec.ScenarioDoc),
+		docs: make([]*spec.ScenarioDoc, 0),
 	}
 	e.init()
 	return e
@@ -34,8 +34,9 @@ func (e *Engine) init() {
 	})
 }
 
-func (e *Engine) LoadScenario(doc *spec.ScenarioDoc) error {
-	e.docs[doc.Name] = doc
+func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
+	doc.Source = source
+	e.docs = append(e.docs, doc)
 	for _, iface := range doc.Interfaces {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
@@ -43,6 +44,16 @@ func (e *Engine) LoadScenario(doc *spec.ScenarioDoc) error {
 		log.Infof("registering interface %s\n", iface.Name)
 	}
 	return nil
+}
+
+func (a *Engine) UnloadScenario(source string) error {
+	for i, d := range a.docs {
+		if d.Source == source {
+			a.docs = append(a.docs[:i], a.docs[i+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("scenario %s not found", source)
 }
 
 func (e *Engine) HasInterface(ifaceId string) bool {

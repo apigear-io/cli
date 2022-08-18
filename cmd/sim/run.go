@@ -29,18 +29,21 @@ Using a scenario you can define additional static and scripted data and behavior
 			log.OnReport(func(entry *log.ReportEntry) {
 				cmd.Print(entry.Message)
 			})
-			var scenario *spec.ScenarioDoc
+			var doc *spec.ScenarioDoc
 			if len(args) == 1 {
 				file := args[0]
-				doc, err := actions.ReadScenario(file)
+				tmpDoc, err := actions.ReadScenario(file)
 				if err != nil {
 					return fmt.Errorf("failed to read scenario file %s: %v", file, err)
 				}
+				if tmpDoc.Name == "" {
+					tmpDoc.Name = file
+				}
 				log.Infof("run simulation from scenario %s\n", file)
-				scenario = doc
+				doc = tmpDoc
 			}
 			simu := sim.NewSimulation()
-			err := simu.LoadScenario(scenario)
+			err := simu.LoadScenario(doc.Name, doc)
 			if err != nil {
 				return fmt.Errorf("failed to load scenario: %v", err)
 			}

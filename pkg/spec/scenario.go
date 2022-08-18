@@ -4,6 +4,7 @@ package spec
 type ScenarioDoc struct {
 	Schema      string            `json:"schema" yaml:"schema"`
 	Name        string            `json:"name" yaml:"name"`
+	Source      string            `json:"source" yaml:"source"`
 	Description string            `json:"description" yaml:"description"`
 	Version     string            `json:"version" yaml:"version"`
 	Interfaces  []*InterfaceEntry `json:"interfaces" yaml:"interfaces"`
@@ -50,19 +51,30 @@ func (e InterfaceEntry) GetOperation(name string) *ActionListEntry {
 
 // SequenceEntry represents a sequence in a scenario.
 type SequenceEntry struct {
-	Name             string             `json:"name" yaml:"name"`
-	DefaultInterface string             `json:"interface" yaml:"interface"`
-	Description      string             `json:"description" yaml:"description"`
-	Interval         int                `json:"interval" yaml:"interval"`
-	Repeat           int                `json:"repeat" yaml:"repeat"`
-	Steps            []*ActionListEntry `json:"steps" yaml:"steps"`
+	// Name is the name of the sequence.
+	Name string `json:"name" yaml:"name"`
+	// Description is the description of the sequence.
+	Description string `json:"description" yaml:"description"`
+	// DefaultInterface is the name of the default interface used.
+	DefaultInterface string `json:"interface" yaml:"interface"`
+	// AutoRun is true if the sequence should be run automatically on loading.
+	AutoRun bool `json:"autoRun" yaml:"autoRun"`
+	// Interval is the interval in milliseconds between runs.
+	Interval int `json:"interval" yaml:"interval"`
+	// Loops is the number of times the sequence should be run.
+	Loops int `json:"loops" yaml:"loops"`
+	// Steps is the list of steps in the sequence.
+	Steps []*ActionListEntry `json:"steps" yaml:"steps"`
 }
 
 // ActionListEntry represents a list of actions
 type ActionListEntry struct {
-	Name        string        `json:"name" yaml:"name"`
-	Description string        `json:"description" yaml:"description"`
-	Actions     []ActionEntry `json:"actions" yaml:"actions"`
+	// Name is the name of the action list.
+	Name string `json:"name" yaml:"name"`
+	// Description is the description of the action list.
+	Description string `json:"description" yaml:"description"`
+	// Actions is the list of actions in the action list.
+	Actions []ActionEntry `json:"actions" yaml:"actions"`
 }
 
 // ActionEntry represents an action in an operation or sequence.

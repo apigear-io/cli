@@ -8,8 +8,8 @@ import (
 )
 
 // ReadScenario reads a scenario from file.
-func ReadScenario(fn string) (*spec.ScenarioDoc, error) {
-	bytes, err := os.ReadFile(fn)
+func ReadScenario(source string) (*spec.ScenarioDoc, error) {
+	bytes, err := os.ReadFile(source)
 	if err != nil {
 		return nil, err
 	}

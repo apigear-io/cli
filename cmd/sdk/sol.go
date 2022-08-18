@@ -1,8 +1,10 @@
 package sdk
 
 import (
+	"fmt"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
 
 	"github.com/spf13/cobra"
@@ -20,6 +22,9 @@ func NewSolutionCommand() *cobra.Command {
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			log.OnReport(func(report *log.ReportEntry) {
+				fmt.Print(report.Message)
+			})
 			file = args[0]
 			doc, err := sol.ReadSolutionDoc(file)
 			if err != nil {

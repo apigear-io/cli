@@ -1,5 +1,0 @@
-$ apigear tools check api/demo.module.yaml
-valid: api/demo.module.yaml
-
-$ apigear tools check api/demo.solution.yaml
-valid: api/demo.solution.yaml

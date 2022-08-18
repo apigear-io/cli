@@ -9,7 +9,7 @@ import (
 	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func readRules(t *testing.T, filename string) spec.RulesDoc {

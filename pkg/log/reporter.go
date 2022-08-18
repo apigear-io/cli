@@ -1,6 +1,7 @@
 package log
 
 import (
+	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -48,6 +49,7 @@ type ReportEntry struct {
 }
 
 var emitter func(*ReportEntry)
+var mu = sync.Mutex{}
 
 func OnReport(handler func(*ReportEntry)) {
 	emitter = handler
@@ -55,6 +57,8 @@ func OnReport(handler func(*ReportEntry)) {
 
 func reportEntry(entry *ReportEntry) {
 	if emitter != nil {
+		mu.Lock()
 		emitter(entry)
+		mu.Unlock()
 	}
 }

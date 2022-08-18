@@ -10,13 +10,12 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.8.0
 	github.com/xeipuuv/gojsonschema v1.2.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/dop251/goja_nodejs v0.0.0-20220808115320-bac29516aae9
-	github.com/google/go-cmdtest v0.4.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/sirupsen/logrus v1.9.0
 )
@@ -32,8 +31,6 @@ require (
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/google/renameio v1.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/whilp/git-urls v1.0.0

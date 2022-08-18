@@ -37,8 +37,8 @@ func (g *GeneratorStats) Start() {
 func (g *GeneratorStats) Stop() {
 	g.RunEnd = time.Now()
 	g.Duration = g.RunEnd.Sub(g.RunStart)
-	log.Infof("generated %d files in %s", g.TotalFiles(), g.Duration)
-	log.Infof("written %d files, skipped %d files, copied %d files", g.FilesWritten, g.FilesSkipped, g.FilesCopied)
+	log.Infof("generated %d files in %s\n", g.TotalFiles(), g.Duration)
+	log.Infof("written %d files, skipped %d files, copied %d files\n", g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
 // generator applies template transformation on a set of files define in rules
