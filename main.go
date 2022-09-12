@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/apigear-io/cli/cmd"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 )
 
 func main() {
-	fmt.Printf("apigear-cli version %s, commit %s, built at %s\n", version, commit, date)
+	log.Debugf("version: %s-%s-%s", version, commit, date)
 	if cmd.Run() != 0 {
 		os.Exit(1)
 	}

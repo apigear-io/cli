@@ -30,6 +30,11 @@ func NewSimulation() *Simulation {
 	return s
 }
 
+func (s *Simulation) Stop() {
+	s.aEng.StopAllSequences()
+	s.sEng.StopAllSequences()
+}
+
 func (s *Simulation) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 	log.Infof("simulation load scenario: %s", source)
 	return s.aEng.LoadScenario(source, doc)

@@ -17,6 +17,7 @@ func NewSystem(name string) *System {
 	}
 }
 
+// LookupModule looks up a module by name
 func (s System) LookupModule(name string) *Module {
 	for _, m := range s.Modules {
 		if m.Name == name {

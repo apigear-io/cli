@@ -24,7 +24,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	case "string":
 		return fmt.Sprintf("%s string", name), nil
 	case "int":
-		return fmt.Sprintf("%s int", name), nil
+		return fmt.Sprintf("%s int64", name), nil
 	case "float":
 		return fmt.Sprintf("%s float64", name), nil
 	case "bool":

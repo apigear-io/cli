@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 // engine implements IEngine interface
@@ -80,10 +82,36 @@ func (e *MultiEngine) HasSequence(sequencerId string) bool {
 	return false
 }
 
-func (e *MultiEngine) PlaySequence(sequenceId string) {
+func (e *MultiEngine) PlaySequence(sequenceId string) error {
+
 	for _, entry := range e.entries {
 		if entry.HasSequence(sequenceId) {
-			entry.PlaySequence(sequenceId)
+			return entry.PlaySequence(sequenceId)
 		}
+	}
+	return fmt.Errorf("sequence %s not found", sequenceId)
+}
+
+func (e *MultiEngine) StopSequence(sequenceId string) {
+	for _, entry := range e.entries {
+		if entry.HasSequence(sequenceId) {
+			entry.StopSequence(sequenceId)
+		}
+	}
+	log.Warnf("sequence %s not found", sequenceId)
+}
+
+func (e *MultiEngine) PlayAllSequences() error {
+	for _, entry := range e.entries {
+		if err := entry.PlayAllSequences(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *MultiEngine) StopAllSequences() {
+	for _, entry := range e.entries {
+		entry.StopAllSequences()
 	}
 }

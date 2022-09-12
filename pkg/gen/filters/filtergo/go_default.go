@@ -18,7 +18,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeString:
 			text = "[]string{}"
 		case model.TypeInt:
-			text = "[]int{}"
+			text = "[]int64{}"
 		case model.TypeFloat:
 			text = "[]float64{}"
 		case model.TypeBool:
@@ -37,9 +37,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeString:
 			text = "\"\""
 		case model.TypeInt:
-			text = "0"
+			text = "int64(0)"
 		case model.TypeFloat:
-			text = "0.0"
+			text = "float64(0.0)"
 		case model.TypeBool:
 			text = "false"
 		case model.TypeEnum:

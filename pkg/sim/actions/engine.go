@@ -14,12 +14,14 @@ type Engine struct {
 	eval *eval
 	docs []*spec.ScenarioDoc
 	core.Notifier
+	players []*Player
 }
 
 func NewEngine() *Engine {
 	e := &Engine{
-		eval: NewEval(),
-		docs: make([]*spec.ScenarioDoc, 0),
+		eval:    NewEval(),
+		docs:    make([]*spec.ScenarioDoc, 0),
+		players: make([]*Player, 0),
 	}
 	e.init()
 	return e
@@ -41,7 +43,31 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
 		}
-		log.Infof("registering interface %s\n", iface.Name)
+		log.Infof("registering interface %s", iface.Name)
+	}
+	for _, seq := range doc.Sequences {
+		log.Infof("registering sequence %s", seq.Name)
+		if seq.Interface == "" {
+			return fmt.Errorf("sequence %v has no interface", seq)
+		}
+		iface := e.GetInterface(seq.Interface)
+		if iface == nil {
+			return fmt.Errorf("interface %s not found", seq.Interface)
+		}
+		p := NewPlayer(iface, seq)
+		go func() {
+			for frame := range p.FramesC {
+				iface := frame.Interface
+				if iface != nil {
+					_, err := e.eval.EvalAction(iface.Name, frame.Action, iface.Properties)
+					if err != nil {
+						log.Errorf("eval action %s: %v", frame.Action, err)
+					}
+				}
+			}
+			log.Infof("sequence %s stopped", seq.Name)
+		}()
+		e.players = append(e.players, p)
 	}
 	return nil
 }
@@ -76,7 +102,7 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 
 // InvokeOperation invokes a operation of the interface.
 func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
-	log.Infof("%s/%s invoke\n", symbol, name)
+	log.Infof("%s/%s invoke", symbol, name)
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -89,7 +115,7 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("%s/%s result %v\n", symbol, name, result)
+	log.Infof("%s/%s result %v", symbol, name, result)
 	return result, nil
 }
 
@@ -114,19 +140,53 @@ func (e *Engine) GetProperties(symbol string) (map[string]any, error) {
 	return iface.Properties, nil
 }
 
-func (e *Engine) HasSequence(sequencerId string) bool {
+func (e *Engine) HasSequence(name string) bool {
 	for _, d := range e.docs {
-		if d.GetSequence(sequencerId) != nil {
+		if d.GetSequence(name) != nil {
 			return true
 		}
 	}
 	return false
 }
 
-func (e *Engine) PlaySequence(sequencerId string) {
-	for _, d := range e.docs {
-		if s := d.GetSequence(sequencerId); s != nil {
-			log.Printf("playing sequencer %s", sequencerId)
+func (e *Engine) PlayAllSequences() error {
+	log.Infof("actions engine play all sequences")
+	for _, p := range e.players {
+		err := p.Play()
+		if err != nil {
+			return err
 		}
 	}
+	return nil
+}
+
+func (e *Engine) StopAllSequences() {
+	log.Infof("actions engine stop all sequences")
+	for _, p := range e.players {
+		err := p.Stop()
+		if err != nil {
+			log.Warnf("stop sequence %s: %v", p.SequenceName(), err)
+		}
+	}
+}
+
+func (e *Engine) PlaySequence(name string) error {
+	for _, p := range e.players {
+		if p.SequenceName() == name {
+			return p.Play()
+		}
+	}
+	return fmt.Errorf("sequence %s not found", name)
+}
+
+func (e *Engine) StopSequence(name string) {
+	for _, p := range e.players {
+		if p.SequenceName() == name {
+			err := p.Stop()
+			if err != nil {
+				log.Warnf("stop sequence %s: %v", name, err)
+			}
+		}
+	}
+	log.Warnf("sequence %s not found", name)
 }

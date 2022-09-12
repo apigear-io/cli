@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/apigear-io/cli/cmd/cfg"
+	"github.com/apigear-io/cli/cmd/gen"
 	"github.com/apigear-io/cli/cmd/mon"
 	"github.com/apigear-io/cli/cmd/prj"
-	"github.com/apigear-io/cli/cmd/sdk"
 	"github.com/apigear-io/cli/cmd/sim"
 	"github.com/apigear-io/cli/cmd/tools"
 	"github.com/apigear-io/cli/cmd/tpl"
@@ -38,7 +38,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
 	cmd.PersistentFlags().BoolVarP(&config.Verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&config.DryRun, "dry-run", false, "dry-run")
-	cmd.AddCommand(sdk.NewRootCommand())
+	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
 	cmd.AddCommand(tpl.NewRootCommand())

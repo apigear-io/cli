@@ -16,7 +16,7 @@ func NewInitCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]
-			log.Debugf("init project %s\n", dir)
+			log.Debugf("init project %s", dir)
 			info, err := prj.InitProject(dir)
 			if err != nil {
 				cmd.Printf("error: %s\n", err)

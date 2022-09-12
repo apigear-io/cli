@@ -62,3 +62,14 @@ func (s *Server) Restart(ctx context.Context, addr string) error {
 	s.server.Addr = addr
 	return s.server.ListenAndServe()
 }
+
+func (s *Server) Stop() {
+	if s.server == nil {
+		return
+	}
+	log.Debugf("stop http server at %s", s.server.Addr)
+	err := s.server.Shutdown(context.Background())
+	if err != nil {
+		log.Errorf("error shutting down server: %s", err)
+	}
+}

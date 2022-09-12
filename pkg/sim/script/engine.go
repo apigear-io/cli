@@ -45,7 +45,7 @@ func (s *Engine) HasInterface(symbol string) bool {
 }
 
 func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
-	log.Infof("%s/%s invoke\n", symbol, name)
+	log.Infof("%s/%s invoke", symbol, name)
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -57,11 +57,11 @@ func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 	jsArgs := s.vm.ToValue(args)
 	v, err := m(obj, jsArgs)
 	if err != nil {
-		log.Warnf("InvokeOperation: %s\n", err)
+		log.Warnf("InvokeOperation: %s", err)
 		return nil, err
 	}
 	result := v.Export()
-	log.Infof("%s/%s result: %v\n", symbol, name, result)
+	log.Infof("%s/%s result: %v", symbol, name, result)
 	return result, nil
 }
 
@@ -106,14 +106,18 @@ func (e *Engine) HasSequence(sequenceId string) bool {
 	return ok
 }
 
-func (e *Engine) PlaySequence(sequenceId string) {
+func (e *Engine) PlaySequence(sequenceId string) error {
 	obj := e.sequencers[sequenceId]
 	if obj == nil {
-		log.Printf("PlaySequencer: sequencer %s not found\n", sequenceId)
-		return
+		return fmt.Errorf("sequence %s not found", sequenceId)
 	}
 	jsSteps := obj.Get("steps").Export().([]any)
-	log.Printf("PlaySequencer: %d steps\n", len(jsSteps))
+	log.Printf("PlaySequencer: %d steps", len(jsSteps))
+	return nil
+}
+
+func (e *Engine) StopSequence(sequenceId string) {
+	log.Printf("StopSequencer: %s", sequenceId)
 }
 
 func (s *Engine) init() {
@@ -122,18 +126,27 @@ func (s *Engine) init() {
 	console.Enable(s.vm)
 	err := s.vm.Set("$registerInterface", s.jsRegisterInterface)
 	if err != nil {
-		log.Fatalf("Set $registerInterface: %s\n", err)
+		log.Fatalf("Set $registerInterface: %s", err)
 	}
 	err = s.vm.Set("$signal", s.jsSignal)
 	if err != nil {
-		log.Fatalf("Set $signal: %s\n", err)
+		log.Fatalf("Set $signal: %s", err)
 	}
 	err = s.vm.Set("$change", s.jsChange)
 	if err != nil {
-		log.Fatalf("Set $change: %s\n", err)
+		log.Fatalf("Set $change: %s", err)
 	}
 	err = s.vm.Set("$registerSequence", s.jsRegisterSequence)
 	if err != nil {
-		log.Fatalf("Set $registerSequence: %s\n", err)
+		log.Fatalf("Set $registerSequence: %s", err)
 	}
+}
+
+func (s *Engine) PlayAllSequences() error {
+	log.Infof("script engine play all sequences")
+	return nil
+}
+
+func (e *Engine) StopAllSequences() {
+	log.Printf("script engine stop all sequences")
 }

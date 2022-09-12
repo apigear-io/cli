@@ -106,3 +106,7 @@ func (t *task) runGenerator(name string, inputs []string, outputDir string, temp
 	}
 	return generator.ProcessRules(doc)
 }
+
+func (t *task) Clear() {
+	t.done <- true
+}

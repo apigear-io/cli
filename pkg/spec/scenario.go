@@ -55,14 +55,16 @@ type SequenceEntry struct {
 	Name string `json:"name" yaml:"name"`
 	// Description is the description of the sequence.
 	Description string `json:"description" yaml:"description"`
-	// DefaultInterface is the name of the default interface used.
-	DefaultInterface string `json:"interface" yaml:"interface"`
+	// Interface is the name of the default interface used.
+	Interface string `json:"interface" yaml:"interface"`
 	// AutoRun is true if the sequence should be run automatically on loading.
 	AutoRun bool `json:"autoRun" yaml:"autoRun"`
 	// Interval is the interval in milliseconds between runs.
 	Interval int `json:"interval" yaml:"interval"`
 	// Loops is the number of times the sequence should be run.
 	Loops int `json:"loops" yaml:"loops"`
+	// Forever is true if the sequence should be run forever.
+	Forever bool `json:"forever" yaml:"forever"`
 	// Steps is the list of steps in the sequence.
 	Steps []*ActionListEntry `json:"steps" yaml:"steps"`
 }

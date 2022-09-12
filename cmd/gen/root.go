@@ -1,4 +1,4 @@
-package sdk
+package gen
 
 import (
 	"github.com/spf13/cobra"
@@ -7,7 +7,7 @@ import (
 func NewRootCommand() *cobra.Command {
 	// genCmd represents the generate command
 	var cmd = &cobra.Command{
-		Use:     "sdk",
+		Use:     "generate",
 		Aliases: []string{"gen", "g"},
 		Short:   "SDK code generation",
 		Long:    `Code generation using templates for SDK creation.`,

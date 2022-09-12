@@ -19,3 +19,12 @@ interfaces:
 sequences:
   - name: counter
     interface: demo.Counter
+    loops: 3
+    interval: 1000
+    steps:
+      - name: inc
+        actions:
+          - $set: { count: 1 }
+      - name: dec
+        actions:
+          - $set: { count: 0 }

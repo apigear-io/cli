@@ -15,7 +15,7 @@ var Verbose bool
 var DryRun bool = false
 
 // initConfig reads in config file and ENV variables if set.
-func InitConfig() {	
+func InitConfig() {
 	debug := os.Getenv("DEBUG") == "1"
 	if ConfigFile != "" {
 		// Use config file from the flag.

@@ -31,7 +31,7 @@ func CheckFile(file string) (*gojsonschema.Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	return LintJsonDoc(t, data)
+	return CheckJson(t, data)
 }
 
 func CheckNdjsonFile(name string) error {

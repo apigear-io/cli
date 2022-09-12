@@ -11,11 +11,8 @@ func NewSignal(name string) *Signal {
 			Name: name,
 			Kind: KindSignal,
 		},
+		Params: make([]*TypedNode, 0),
 	}
-}
-
-func (s *Signal) GetParams() []*TypedNode {
-	return s.Params
 }
 
 func (s *Signal) ResolveAll(m *Module) error {
@@ -45,20 +42,6 @@ func NewOperation(name string) *Operation {
 	}
 }
 
-func (m *Operation) GetParams() []*TypedNode {
-	return m.Params
-}
-
-func (m *Operation) GetName() string {
-	return m.Name
-}
-func (m *Operation) GetKind() Kind {
-	return KindOperation
-}
-func (m *Operation) GetSchema() *Schema {
-	return &m.Return.Schema
-}
-
 func (m *Operation) ResolveAll(mod *Module) error {
 	if m.Return == nil {
 		m.Return = NewTypedNode("", KindReturn)
@@ -81,6 +64,14 @@ func (m *Operation) ResolveAll(mod *Module) error {
 	return nil
 }
 
+func (m *Operation) ParamNames() []string {
+	names := make([]string, 0)
+	for _, p := range m.Params {
+		names = append(names, p.Name)
+	}
+	return names
+}
+
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Properties []*TypedNode `json:"properties" yaml:"properties"`
@@ -94,6 +85,9 @@ func NewInterface(name string) *Interface {
 			Name: name,
 			Kind: KindInterface,
 		},
+		Properties: make([]*TypedNode, 0),
+		Operations: make([]*Operation, 0),
+		Signals:    make([]*Signal, 0),
 	}
 }
 

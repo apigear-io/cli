@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
@@ -13,6 +14,7 @@ type ActionHandler func(symbol string, args map[string]any, ctx map[string]any) 
 type eval struct {
 	actions map[string]ActionHandler
 	core.Notifier
+	mu sync.Mutex
 }
 
 func NewEval() *eval {
@@ -71,22 +73,25 @@ func (e *eval) register(name string, handler ActionHandler) {
 }
 
 func (e *eval) actionSet(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionSet: %v\n", args)
+	log.Debugf("actionSet: %v", args)
+	e.mu.Lock()
+	defer e.mu.Unlock()
 	for k := range args {
 		ctx[k] = args[k]
 	}
+
 	return nil, nil
 }
 
 // actionReturn sets a _return value for the action.
 func (e *eval) actionReturn(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionReturn: %v\n", args)
+	log.Debugf("actionReturn: %v", args)
 	return args, nil
 }
 
 // actionSignal sends a signal to the interface.
 func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionSignal: %s\n", args)
+	log.Debugf("actionSignal: %s", args)
 	for k := range args {
 		sigArgs, ok := args[k].(map[string]any)
 		if !ok {
@@ -99,7 +104,7 @@ func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]a
 
 // actionChange sends a change to the interface.
 func (e *eval) actionChange(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionChange: %v\n", args)
+	log.Debugf("actionChange: %v", args)
 	for k := range args {
 		e.EmitOnChange(symbol, k, args[k])
 	}

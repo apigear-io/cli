@@ -8,7 +8,7 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "tools",
 		Aliases: []string{"t"},
-		Short:   "assorted tool commands",
+		Short:   "assorted tools",
 		Long:    `General purpose tools used for various reasons.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()

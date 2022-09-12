@@ -17,11 +17,11 @@ func TestReturn(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test1", "propBool", "bool"},
-		{"test", "Test1", "propInt", "int"},
+		{"test", "Test1", "propInt", "int64"},
 		{"test", "Test1", "propFloat", "float64"},
 		{"test", "Test1", "propString", "string"},
 		{"test", "Test1", "propBoolArray", "[]bool"},
-		{"test", "Test1", "propIntArray", "[]int"},
+		{"test", "Test1", "propIntArray", "[]int64"},
 		{"test", "Test1", "propFloatArray", "[]float64"},
 		{"test", "Test1", "propStringArray", "[]string"},
 	}

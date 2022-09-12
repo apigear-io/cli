@@ -111,6 +111,18 @@ func FirstCharUpper(s string) string {
 	return strings.ToUpper(s[:1])
 }
 
-func Join(sep string, a ...string) string {
+func Join(sep string, a []string) string {
 	return strings.Join(a, sep)
+}
+
+func TrimPrefix(s, prefix string) string {
+	return strings.TrimPrefix(s, prefix)
+}
+
+func TrimSuffix(s, postfix string) string {
+	return strings.TrimSuffix(s, postfix)
+}
+
+func Replace(s, old, new string) string {
+	return strings.Replace(s, old, new, -1)
 }

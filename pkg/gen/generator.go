@@ -36,9 +36,8 @@ func (g *GeneratorStats) Start() {
 
 func (g *GeneratorStats) Stop() {
 	g.RunEnd = time.Now()
-	g.Duration = g.RunEnd.Sub(g.RunStart)
-	log.Infof("generated %d files in %s\n", g.TotalFiles(), g.Duration)
-	log.Infof("written %d files, skipped %d files, copied %d files\n", g.FilesWritten, g.FilesSkipped, g.FilesCopied)
+	g.Duration = g.RunEnd.Sub(g.RunStart).Truncate(time.Millisecond)
+	log.Infof("generated %d files in %s. (%d write, %d skip, %d copy)", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
 // generator applies template transformation on a set of files define in rules
@@ -106,13 +105,14 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		return g.ParseTemplate(path)
 	})
 	if err != nil {
-		return fmt.Errorf("error parsing templates dir %s: %s", dir, err)
+		log.Warnf("parse templates: %s", err)
+		return err
 	}
 	return nil
 }
 
 // ProcessRules processes a set of rules from a rules document
-func (g *generator) ProcessRules(rules spec.RulesDoc) error {
+func (g *generator) ProcessRules(doc spec.RulesDoc) error {
 	g.Stats = GeneratorStats{}
 	g.Stats.Start()
 	defer func() {
@@ -121,10 +121,10 @@ func (g *generator) ProcessRules(rules spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	for _, feature := range rules.Features {
+	for _, feature := range doc.Features {
 		err := g.processFeature(feature)
 		if err != nil {
-			return fmt.Errorf("error processing feature %s: %s", feature.Name, err)
+			return err
 		}
 	}
 	return nil
@@ -134,45 +134,62 @@ func (g *generator) ProcessRules(rules spec.RulesDoc) error {
 func (g *generator) processFeature(f spec.FeatureRule) error {
 	log.Debugf("processing feature %s", f.Name)
 	// process system
-	var data = DataMap{"System": g.System}
+	ctx := model.SystemScope{
+		System: g.System,
+	}
 	scope := f.FindScopeByMatch(spec.ScopeSystem)
-	err := g.processScope(scope, data)
+	err := g.processScope(scope, ctx)
 	if err != nil {
-		return fmt.Errorf("error processing system scope: %s", err)
+		return err
 	}
 	for _, module := range g.System.Modules {
 		// process module
 		scope := f.FindScopeByMatch(spec.ScopeModule)
-		data = DataMap{"System": g.System, "Module": module}
-		err := g.processScope(scope, data)
+		ctx := model.ModuleScope{
+			System: g.System,
+			Module: module,
+		}
+		err := g.processScope(scope, ctx)
 		if err != nil {
-			return fmt.Errorf("error processing module %s: %s", module.Name, err)
+			return err
 		}
 		for _, iface := range module.Interfaces {
 			// process interface
-			data = DataMap{"System": g.System, "Module": module, "Interface": iface}
+			ctx := model.InterfaceScope{
+				System:    g.System,
+				Module:    module,
+				Interface: iface,
+			}
 			scope := f.FindScopeByMatch(spec.ScopeInterface)
-			err := g.processScope(scope, data)
+			err := g.processScope(scope, ctx)
 			if err != nil {
-				return fmt.Errorf("error processing interface %s: %s", iface.Name, err)
+				return err
 			}
 		}
 		for _, struct_ := range module.Structs {
 			// process struct
-			data = DataMap{"System": g.System, "Module": module, "Struct": struct_}
+			ctx := model.StructScope{
+				System: g.System,
+				Module: module,
+				Struct: struct_,
+			}
 			scope := f.FindScopeByMatch(spec.ScopeStruct)
-			err := g.processScope(scope, data)
+			err := g.processScope(scope, ctx)
 			if err != nil {
-				return fmt.Errorf("error processing struct %s: %s", struct_.Name, err)
+				return err
 			}
 		}
 		for _, enum := range module.Enums {
 			// process enum
-			data = DataMap{"System": g.System, "Module": module, "Enum": enum}
+			ctx := model.EnumScope{
+				System: g.System,
+				Module: module,
+				Enum:   enum,
+			}
 			scope := f.FindScopeByMatch(spec.ScopeEnum)
-			err := g.processScope(scope, data)
+			err := g.processScope(scope, ctx)
 			if err != nil {
-				return fmt.Errorf("error processing enum %s: %s", enum.Name, err)
+				return err
 			}
 		}
 	}
@@ -180,7 +197,7 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 }
 
 // processScope processes a scope rule (e.g. system, modules, ...) with the given context
-func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
+func (g *generator) processScope(scope spec.ScopeRule, ctx any) error {
 	prefix := scope.Prefix
 	for _, doc := range scope.Documents {
 		// clean doc target
@@ -193,56 +210,57 @@ func (g *generator) processScope(scope spec.ScopeRule, ctx DataMap) error {
 		}
 		err := g.processDocument(doc, ctx)
 		if err != nil {
-			return fmt.Errorf("error processing document %s: %s", doc.Source, err)
+			return err
 		}
 	}
 	return nil
 }
 
 // processDocument processes a document rule with the given context
-func (g *generator) processDocument(doc spec.DocumentRule, ctx DataMap) error {
+func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	log.Debugf("processing document %s", doc.Source)
 	// the source file to render
 	var source = filepath.Clean(doc.Source)
-	// the target destination file
-	var target = filepath.Clean(doc.Target)
+	// the docTarget destination file
+	var docTarget = filepath.Clean(doc.Target)
 	// either user can force an overwrite or the target or the rules document
 	force := doc.Force || g.UserForce
 	// transform the target name using the context
-	target, err := g.RenderString(target, ctx)
+	target, err := g.RenderString(docTarget, ctx)
 	if err != nil {
-		return fmt.Errorf("error rendering target %s: %s", target, err)
+		return fmt.Errorf("render rules target %s: %s", docTarget, err)
 	}
 	// TODO: when doc.Raw is set, we should just copy it to the target
 	if doc.Raw {
 		// copy the source to the target
 		err := g.CopyFile(source, target, force)
 		if err != nil {
-			return fmt.Errorf("error copying file %s to %s: %s", source, target, err)
+			log.Warnf("copy file %s to %s: %s", source, target, err)
+			return err
 		}
 	} else {
 		// render the source file to the target
 		err := g.RenderFile(source, target, ctx, force)
 		if err != nil {
-			return fmt.Errorf("error rendering file %s to %s: %s", source, target, err)
+			return err
 		}
 	}
 	return nil
 }
 
 // Renders a string using the given context
-func (g *generator) RenderString(s string, ctx DataMap) (string, error) {
+func (g *generator) RenderString(s string, ctx any) (string, error) {
 	var buf = bytes.NewBuffer(nil)
 	t := template.New("target")
 	t.Funcs(filters.PopulateFuncMap())
 	_, err := t.Parse(s)
 	if err != nil {
-		log.Errorf("error parsing template %s: %s", s, err)
+		log.Warnf("render string: %s: %s", s, err)
 		return "", err
 	}
 	err = t.Execute(buf, ctx)
 	if err != nil {
-		log.Warnf("error executing template %s: %s", s, err)
+		log.Warnf("exec template %s: %s", s, err)
 		return "", err
 	}
 	return buf.String(), nil
@@ -255,13 +273,17 @@ func (g *generator) CopyFile(source, target string, force bool) error {
 		g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 		return nil
 	}
+	source = filepath.Join(g.TemplatesDir, source)
 	target = filepath.Join(g.OutputDir, target)
-	source = filepath.Join(g.OutputDir, source)
-	return helper.CopyFile(source, target)
+	err := helper.CopyFile(source, target)
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
-func (g *generator) RenderFile(source, target string, ctx DataMap, force bool) error {
+func (g *generator) RenderFile(source, target string, ctx any, force bool) error {
 	// var force = doc.Force
 	// var transform = doc.Transform
 	log.Debugf("render %s -> %s", source, target)
@@ -269,13 +291,15 @@ func (g *generator) RenderFile(source, target string, ctx DataMap, force bool) e
 	buf := bytes.NewBuffer(nil)
 	err := g.Template.ExecuteTemplate(buf, source, ctx)
 	if err != nil {
-		return err
+		log.Warnf("exec template %s: %s", source, err)
+		return fmt.Errorf("render template %s: %w", source, err)
 	}
 	// write the file
 	log.Debugf("write %s", target)
 	err = g.WriteFile(buf.Bytes(), target, force)
 	if err != nil {
-		return fmt.Errorf("error writing file %s: %s", target, err)
+		log.Warnf("write file %s: %s", target, err)
+		return fmt.Errorf("write file %s: %w", target, err)
 	}
 	return nil
 }
@@ -285,7 +309,7 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 	if !force {
 		same, err := CompareContentWithFile(input, target)
 		if err != nil {
-			return fmt.Errorf("error comparing content to file %s: %s", target, err)
+			return err
 		}
 
 		if same {
@@ -304,7 +328,7 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 	dir := filepath.Dir(target)
 	err := os.MkdirAll(dir, 0755)
 	if err != nil {
-		return fmt.Errorf("error creating directory: %s", err)
+		return err
 	}
 	return os.WriteFile(target, input, 0644)
 }

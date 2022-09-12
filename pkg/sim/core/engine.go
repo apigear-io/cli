@@ -7,7 +7,10 @@ type IEngine interface {
 	SetProperties(symbol string, params map[string]any) error
 	GetProperties(symbol string) (map[string]any, error)
 	HasSequence(name string) bool
-	PlaySequence(name string)
+	PlaySequence(name string) error
+	StopSequence(name string)
+	PlayAllSequences() error
+	StopAllSequences()
 	OnChange(f OnChangeFunc)
 	OnSignal(f OnSignalFunc)
 }

@@ -1,4 +1,4 @@
-package sdk
+package gen
 
 import (
 	"fmt"

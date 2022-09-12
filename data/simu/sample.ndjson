@@ -1,6 +1,7 @@
+{ "method": "simu.state", "params": { "symbol": "demo.Counter" }}
 { "method": "simu.call", "params": { "symbol": "demo.Counter/increment", "data": { "step": 1 } }}
 { "method": "simu.call", "params": { "symbol": "demo.Counter/decrement", "data": { "step": 2 } }}
 { "method": "simu.call", "params": { "symbol": "demo.Counter/increment", "data": { "step": 3 } }}
 { "method": "simu.call", "params": { "symbol": "demo.Counter/decrement", "data": { "step": 4 } }}
 { "method": "simu.state", "params": { "symbol": "demo.Counter", "data": { "count": 4 } }}
-{ "method": "simu.state", "params": { "symbol": "demo.Counter", "data": {} }}
+{ "method": "simu.state", "params": { "symbol": "demo.Counter" }}

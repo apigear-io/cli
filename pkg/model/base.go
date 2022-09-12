@@ -118,6 +118,22 @@ func (t TypedNode) HasType() bool {
 	return t.Type != ""
 }
 
+func (t TypedNode) TypeName() string {
+	// if IsArray prefix with Array
+	// is is isSymbol prefix with Interface, Struct, Enum
+	// if is primitive append primitive name
+	s := ""
+	if t.IsSymbol {
+		s += strcase.ToCamel(t.Type)
+	} else if t.IsPrimitive {
+		s += strcase.ToCamel(t.Type)
+	}
+	if t.IsArray {
+		s += "Array"
+	}
+	return s
+}
+
 // TypeNode is a node with type information.
 // { type: array, items: { type: string } }
 type Schema struct {

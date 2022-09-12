@@ -33,7 +33,7 @@ const (
 	DocumentTypeUnknown  DocumentType = "unknown"
 )
 
-func LintJsonDoc(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
+func CheckJson(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 	schemaLoader, err := LoadSchema(t)
 	if err != nil {
 		return nil, err

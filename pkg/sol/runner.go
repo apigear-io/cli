@@ -1,8 +1,6 @@
 package sol
 
 import (
-	"fmt"
-
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
@@ -34,6 +32,19 @@ func (r *Runner) task(file string) *task {
 
 // RunDoc runs the given file task once.
 func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
+	result, err := spec.CheckFile(file)
+	if err != nil {
+		log.Warnf("failed to check document %s: %s", file, err)
+		return err
+	}
+	if result.Valid() {
+		log.Infof("document %s is valid", file)
+	} else {
+		log.Warnf("document %s is invalid", file)
+		for _, desc := range result.Errors() {
+			log.Warnf("\t%s", desc)
+		}
+	}
 	t, err := newTask(file, doc)
 	if err != nil {
 		return err
@@ -62,7 +73,7 @@ func (r *Runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, er
 	}
 	err = t.run()
 	if err != nil {
-		return nil, fmt.Errorf("error running watched doc: %s", err)
+		log.Warnf("failed to run task %s: %s", file, err)
 	}
 	return t.startWatch()
 }
@@ -75,4 +86,11 @@ func (r *Runner) StopWatch(file string) {
 		// remove task from runner
 		delete(r.tasks, file)
 	}
+}
+
+func (r *Runner) Clear() {
+	for file := range r.tasks {
+		r.StopWatch(file)
+	}
+	r.tasks = make(map[string]*task)
 }

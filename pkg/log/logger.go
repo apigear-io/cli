@@ -13,6 +13,9 @@ var logger = logrus.New()
 
 func Config(verbose bool, debug bool) {
 	log.SetOutput(NewLogCapture(logger))
+	logger.Formatter = &logrus.TextFormatter{
+		DisableQuote: true,
+	}
 	if verbose {
 		logger.SetLevel(logrus.DebugLevel)
 	} else {
@@ -22,17 +25,18 @@ func Config(verbose bool, debug bool) {
 	if verbose || debug {
 		logger.Debugf("logger configured: verbose=%v, debug=%v", verbose, debug)
 	}
-	logger.AddHook(NewReportHook())
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
 	logFile := filepath.Join(home, ".apigear/logs/app.log")
 	ljack := newLogFileRotator(logFile)
-	if debug {
+
+	if verbose { // log to console and file
 		logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
-	} else {
+	} else { // log to reporter and file
 		logger.SetOutput(ljack)
+		logger.AddHook(NewReportHook())
 	}
 }
 
