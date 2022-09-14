@@ -41,8 +41,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/antlr/antlr4/runtime/Go/antlr v1.4.10 h1:yL7+Jz0jTC6yykIK/Wh74gnTJnrGr5AyrNMXuA0gves=
 github.com/antlr/antlr4/runtime/Go/antlr v1.4.10/go.mod h1:F7bn7fEU90QkQ3tnmaTx3LTKLEDqnwWODIYppRQ5hnY=
-github.com/apigear-io/lib v0.0.0-20220914141403-2c22a8cf8e43 h1:HvtHwm0u79bUiQ/Nf8F/jTHx8Iww13IvQCWKkej4wVg=
-github.com/apigear-io/lib v0.0.0-20220914141403-2c22a8cf8e43/go.mod h1:YbV5w+A6gTnty9jqAUh4w1npz5nU12QC9eMxJPyjJhE=
+github.com/apigear-io/lib v0.1.0 h1:JueYSvTGkJC/7bzjmjWaxCq3/6Yaaz7Xn6eFyRcUw2M=
+github.com/apigear-io/lib v0.1.0/go.mod h1:YbV5w+A6gTnty9jqAUh4w1npz5nU12QC9eMxJPyjJhE=
 github.com/apigear-io/log v0.2.0 h1:QpIIwo0kfazMQzfw9nt0QZAOhMIYZGCCfIVODuU5waQ=
 github.com/apigear-io/log v0.2.0/go.mod h1:KQtKji0t3BB9Zyoc2nr63B1LRVIwkJXrGwLLopwTytI=
 github.com/apigear-io/wsrpc v0.1.2 h1:NZMC1390R0W477z8kYaJZ9SN1Y5yI57VLOL9Ei07RII=
