@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOPRIVATE: "github.com/apigear-io/*"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
     steps:
       - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-latest
     env:
       GOPRIVATE: "github.com/apigear-io/*"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
     steps:
       - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
@@ -33,7 +33,7 @@ jobs:
   test-windows:
     env:
       GOPRIVATE: "github.com/apigear-io/*"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
     runs-on: windows-latest
     steps:
       - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOPRIVATE: "github.com/apigear-io/*"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
     steps:
       - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - name: checkout
