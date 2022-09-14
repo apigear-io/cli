@@ -4,10 +4,15 @@ on:
   push:
     tags:
       - "*"
+
 jobs:
   test-ubuntu:
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: "github.com/apigear-io/*"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18.x
@@ -15,15 +20,23 @@ jobs:
       - run: go test ./...
   test-macos:
     runs-on: macos-latest
+    env:
+      GOPRIVATE: "github.com/apigear-io/*"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18.x
       - uses: actions/checkout@v3
       - run: go test ./...
   test-windows:
+    env:
+      GOPRIVATE: "github.com/apigear-io/*"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: windows-latest
     steps:
+      - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18.x
@@ -32,7 +45,11 @@ jobs:
   release:
     needs: [test-ubuntu, test-macos, test-windows]
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: "github.com/apigear-io/*"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
       - name: checkout
         uses: actions/checkout@v3
         with:
