@@ -1,7 +1,13 @@
-on: [push, pull_request]
+# run on all pushes (but not push tags)
+# see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-to-specific-branches-occurs
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
 
 name: tests
-# tests for all pushs and pull requests
+# tests for all push and pull requests
 # tests only on linux, for release we test on linux and macos, windows
 
 env:
