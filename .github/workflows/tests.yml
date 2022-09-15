@@ -3,14 +3,16 @@ on: [push, pull_request]
 name: tests
 # tests for all pushs and pull requests
 # tests only on linux, for release we test on linux and macos, windows
+
+env:
+  GOPRIVATE: "github.com/apigear-io/*"
+  REPO_TOKEN: ${{ secrets.APIGEAR_REPOS }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GOPRIVATE: "github.com/apigear-io/*"
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - run: git config --global url.https://$GITHUB_TOKEN@github.com/.insteadOf https://github.com/
+      - run: git config --global url.https://$REPO_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
           go-version: ">=1.18.0"
