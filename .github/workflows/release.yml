@@ -6,42 +6,34 @@ on:
       - "*"
 
 env:
+  GITHUB_AUTH_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
   GOPRIVATE: "github.com/apigear-io/*"
-  REPO_TOKEN: ${{ secrets.APIGEAR_REPOS }}
+  GH_ACCESS_TOKEN: ${{ secrets.APIGEAR_REPOS }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  test-ubuntu:
-    runs-on: ubuntu-latest
-    steps:
-      - run: git config --global url.https://$REPO_TOKEN@github.com/.insteadOf https://github.com/
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18.x
-      - uses: actions/checkout@v3
-      - run: go test ./...
   test-macos:
     runs-on: macos-latest
     steps:
-      - run: git config --global url.https://$REPO_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18.x
+          go-version: 1.19.x
       - uses: actions/checkout@v3
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - run: go test ./...
   test-windows:
     runs-on: windows-latest
     steps:
-      - run: git config --global url.https://$REPO_TOKEN@github.com/.insteadOf https://github.com/
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18.x
+          go-version: 1.19.x
       - uses: actions/checkout@v3
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - run: go test ./... -tags windows_test
   release:
-    needs: [test-ubuntu, test-macos, test-windows]
+    needs: [test-macos, test-windows]
     runs-on: ubuntu-latest
     steps:
-      - run: git config --global url.https://$REPO_TOKEN@github.com/.insteadOf https://github.com/
       - name: checkout
         uses: actions/checkout@v3
         with:
@@ -49,7 +41,8 @@ jobs:
       - name: setup go
         uses: actions/setup-go@v3
         with:
-          go-version: ">=1.18.0"
+          go-version: 1.19.x
+      - run: git config --global url.https://$GH_ACCESS_TOKEN@github.com/.insteadOf https://github.com/
       - name: run all tests
         run: go test ./...
       - name: run go releaser
@@ -58,5 +51,3 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release --rm-dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
