@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: 1.19.x
       - uses: actions/checkout@v3
-      - run: git config --global url."https://jryannel:${GH_ACCESS_TOKEN}@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${GH_ACCESS_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./...
   test-windows:
     runs-on: windows-latest
@@ -29,7 +29,7 @@ jobs:
         with:
           go-version: 1.19.x
       - uses: actions/checkout@v3
-      - run: git config --global url."https://jryannel:${GH_ACCESS_TOKEN}@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${GH_ACCESS_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./... -tags windows_test
   release:
     needs: [test-macos, test-windows]
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.19.x
-      - run: git config --global url."https://jryannel:${GH_ACCESS_TOKEN}@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${GH_ACCESS_TOKEN}::x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./...
       - uses: goreleaser/goreleaser-action@v2
         with:

@@ -23,5 +23,5 @@ jobs:
             ~/.cache/go-build
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
-      - run: git config --global url."https://jryannel:${GH_ACCESS_TOKEN}@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${GH_ACCESS_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./...
