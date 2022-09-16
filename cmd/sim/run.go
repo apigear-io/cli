@@ -31,7 +31,7 @@ func NewServerCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "run [scenario to run]",
 		Args:  cobra.MaximumNArgs(1),
-		Short: "Runs the simulation server using am optional scenario file",
+		Short: "Runs the simulation server using an optional scenario file",
 		Long: `The simulation server simulates the API backend. 
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
