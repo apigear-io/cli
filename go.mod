@@ -11,7 +11,7 @@ require (
 )
 
 require (
-	github.com/apigear-io/lib v0.1.1
+	github.com/apigear-io/lib v0.1.2
 	github.com/apigear-io/wsrpc v0.1.2
 )
 
