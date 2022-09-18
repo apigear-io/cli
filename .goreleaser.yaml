@@ -25,7 +25,7 @@ builds:
       - goos: linux
         goarch: "386"
 
-    main: ./cmd/apigear/main.go
+    main: cmd/apigear/main.go
 archives:
   - replacements:
       darwin: Darwin

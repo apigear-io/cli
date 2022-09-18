@@ -20,10 +20,6 @@
 # Go workspace file
 go.work
 
-# standard binaries
-apigear
-main
-
 # Mac 
 .DS_Store
 
@@ -37,4 +33,3 @@ dist/
 
 # idea ide
 .idea/
-cli
