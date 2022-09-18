@@ -3,7 +3,7 @@ package tpl
 import (
 	"os"
 
-	"github.com/apigear-io/lib/tpl"
+	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/lib/log"
-	"github.com/apigear-io/lib/spec"
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
 )

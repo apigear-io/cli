@@ -1,8 +1,8 @@
 package tpl
 
 import (
-	"github.com/apigear-io/lib/git"
-	"github.com/apigear-io/lib/tpl"
+	"github.com/apigear-io/cli/pkg/git"
+	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )

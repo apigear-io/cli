@@ -1,0 +1,102 @@
+---
+"$id": https://apigear.co/schemas/rules.schema.json
+"$schema": http://json-schema.org/draft-07/schema#
+title: ObjectAPI rules engine
+description: |
+  Rules engine to drive the object api generator
+  A typical setup looks like this:
+  ```
+  schema: apigear.rules: "1.0"
+  features:
+    - name: api
+      path: {{module|identifier}}/
+      scopes:
+        - match: module
+          documents:
+            - source: api.h
+    - name: core
+      path: {{module|identifier}}/
+      scopes:
+        - match: module:
+          documents:
+            - source: core.h
+            - source: core.cpp
+    - name: init
+      path: {{module|identifier}}/
+      scopes:
+        - name: module:
+          documents:
+            - source: Makefile
+            - source: service.h
+              target: {{interface.name|lower}}.h
+            - source: service.cpp
+              target: {{interface.name|lower}}.cpp
+  ```
+
+type: object
+additionalProperties: false
+properties:
+  schema:
+    type: string
+    enum: ["apigear.rules/1.0"]
+    description: "The ApiGear Blueprint Rules specification version of this document."
+  features:
+    description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
+    type: array
+    items: # each feature is an object with at least a name
+      $ref: "#/definitions/Feature"
+definitions:
+  Feature:
+    description: Feature defines a section in a template which can be enabled.
+    type: object
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+        description: name defines the name of the feature.
+      depends:
+        type: array
+        items:
+          type: string
+        description: depends defines a list of features which must be enabled before this feature can be enabled.
+      path:
+        description: Path defines the base path (prefix) for all following selectors.
+        type: string
+      scopes:
+        description: Scopes define a list of selectors which can be enabled/disabled on the command line.
+        type: array
+        items:
+          $ref: "#/definitions/Scope"
+  Scope:
+    description: Scope defines a selector where the documents will be applied to
+    type: object
+    properties:
+      match:
+        type: string
+        enum: [system, module, interface, struct, enum]
+        description: match defines the context where this scope is applied to.
+      prefix:
+        type: string
+        description: prefix defines the prefix for all document targets.
+      documents:
+        description: Documents defines a list of documents which will be transformed.
+        type: array
+        items:
+          "$ref": "#/definitions/Document"
+  Document:
+    type: object
+    required: [source, target]
+    properties:
+      source:
+        type: string
+        description: source defines the source file name.
+      target:
+        type: string
+        description: target defines the document target path relative to the output folder
+      force:
+        type: boolean
+        description: force defines whether the document should be overwritten if it already exists.
+      raw:
+        type: boolean
+        description: raw defines whether the document should be written as is.
+    additionalProperties: false

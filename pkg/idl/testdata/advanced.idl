@@ -1,0 +1,110 @@
+module tb.adv 1.0
+
+enum Enum1 {
+    Value1 = 1,
+    Value2 = 2,
+    Value3 = 3,
+    Value4 = 4,    
+}
+
+enum Enum2 {
+    Value1 = 1,
+    Value2 = 2,
+    Value3 = 3,
+    Value4 = 4,    
+}
+
+enum Enum3 {
+    Value1 = 1,
+    Value2 = 2,
+    Value3 = 3,
+    Value4 = 4,
+}
+
+struct Struct1 {
+    field1: int
+}
+
+struct Struct2 {
+    field1: int
+    field2: int
+}
+
+struct Struct3 {
+    field1: int
+    field2: int
+    field3: int
+}
+
+struct Struct4 {
+    field1: int
+    field2: int
+    field3: int
+    field4: int
+}
+
+struct NestedStruct1 {
+    field1: Struct1
+}
+
+struct NestedStruct2 {
+    field1: Struct1
+    field2: Struct2
+}
+
+struct NestedStruct3 {
+    field1: Struct1
+    field2: Struct2
+    field3: Struct3
+}
+
+struct NestedStruct4 {
+    field1: Struct1
+    field2: Struct2
+    field3: Struct3
+    field4: Struct4
+}
+
+interface ManyParamInterface {
+    prop1: int
+    prop2: int
+    prop3: int
+    prop4: int
+    func0(): void
+    func1(param1: int): int
+    func2(param1: int, param2: int): int
+    func3(param1: int, param2: int, param3: int): int
+    func4(param1: int, param2: int, param3: int, param4: int): int
+    signal sig0()
+    signal sig1(param1: int)
+    signal sig2(param1: int, param2: int)
+    signal sig3(param1: int, param2: int, param3: int)
+    signal sig4(param1: int, param2: int, param3: int, param4: int)
+}
+
+interface NestedStruct1Interface {
+    prop1: NestedStruct1
+    func1(param1: NestedStruct1): NestedStruct1
+    signal sig1(param1: NestedStruct1)
+}
+
+interface NestedStruct2Interface {
+    prop1: NestedStruct1
+    prop2: NestedStruct2
+    func1(param1: NestedStruct1): NestedStruct1
+    func2(param1: NestedStruct1, param2: NestedStruct2): NestedStruct2
+    signal sig1(param1: NestedStruct1)
+    signal sig2(param1: NestedStruct1, param2: NestedStruct2)
+}
+
+interface NestedStruct3Interface {
+    prop1: NestedStruct1
+    prop2: NestedStruct2
+    prop3: NestedStruct3
+    func1(param1: NestedStruct1): NestedStruct1
+    func2(param1: NestedStruct1, param2: NestedStruct2): NestedStruct2
+    func3(param1: NestedStruct1, param2: NestedStruct2, param3: NestedStruct3): NestedStruct3
+    signal sig1(param1: NestedStruct1)
+    signal sig2(param1: NestedStruct1, param2: NestedStruct2)
+    signal sig3(param1: NestedStruct1, param2: NestedStruct2, param3: NestedStruct3)
+}

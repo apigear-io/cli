@@ -1,0 +1,47 @@
+module tb.data 1.0
+
+struct StructBool {
+    fieldBool: bool
+}
+
+struct StructInt {
+    fieldInt: int
+}
+
+struct StructFloat {
+    fieldFloat: float
+}
+
+struct StructString {
+    fieldString: string
+}
+
+interface StructInterface {
+    propBool: StructBool
+    propInt: StructInt
+    propFloat: StructFloat
+    propString: StructString
+    funcBool(paramBool: StructBool): StructBool
+    funcInt(paramInt: StructInt): StructInt
+    funcFloat(paramFloat: StructFloat): StructFloat
+    funcString(paramString: StructString): StructString
+    signal sigBool(paramBool: StructBool)
+    signal sigInt(paramInt: StructInt)
+    signal sigFloat(paramFloat: StructFloat)
+    signal sigString(paramString: StructString)
+}
+
+interface StructArrayInterface {
+    propBool: StructBool[]
+    propInt: StructInt[]
+    propFloat: StructFloat[]
+    propString: StructString[]
+    funcBool(paramBool: StructBool[]): StructBool[]
+    funcInt(paramInt: StructInt[]): StructInt[]
+    funcFloat(paramFloat: StructFloat[]): StructFloat[]
+    funcString(paramString: StructString[]): StructString[]
+    signal sigBool(paramBool: StructBool[])
+    signal sigInt(paramInt: StructInt[])
+    signal sigFloat(paramFloat: StructFloat[])
+    signal sigString(paramString: StructString[])
+}

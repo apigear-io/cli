@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Interface": {
+      "additionalProperties": false,
+      "description": "An interface is a collection of endpoints.",
+      "properties": {
+        "name": {
+          "description": "The name of the interface.",
+          "type": "string"
+        },
+        "operations": {
+          "description": "The operations of the interface.",
+          "items": {
+            "$ref": "#/definitions/Operation"
+          },
+          "type": "array"
+        },
+        "properties": {
+          "description": "The properties of the interface.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Operation": {
+      "description": "An operation is a n endpoint inside an interface.",
+      "properties": {
+        "actions": {
+          "description": "The actions of the operation.",
+          "items": {
+            "description": "The action of the operation.",
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "additionalProperties": false,
+        "description": {
+          "description": "The description of the operation.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the operation.",
+          "type": "string"
+        },
+        "return": {
+          "description": "The return value of the operation.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Sequence": {
+      "additionalProperties": false,
+      "description": "A sequence is a list of steps to be performed.",
+      "properties": {
+        "interface": {
+          "description": "The default interface of the sequence.",
+          "type": "string"
+        },
+        "interval": {
+          "description": "The interval between each step.",
+          "type": "integer"
+        },
+        "loop": {
+          "description": "If the sequence should be repeated forever",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the sequence.",
+          "type": "string"
+        },
+        "repeat": {
+          "description": "The number of times the sequence should be repeated.",
+          "type": "integer"
+        },
+        "steps": {
+          "description": "The steps of the sequence.",
+          "items": {
+            "$ref": "#/definitions/Step"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Step": {
+      "additionalProperties": false,
+      "properties": {
+        "actions": {
+          "description": "The actions of the step.",
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "The name of the step.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "properties": {
+    "additionalProperties": false,
+    "interfaces": {
+      "items": {
+        "$ref": "#/definitions/Interface"
+      },
+      "type": "array"
+    },
+    "name": {
+      "type": "string"
+    },
+    "schema": {
+      "description": "The simulation scenario specification version of this document.",
+      "enum": [
+        "apigear.scenario/1.0"
+      ],
+      "type": "string"
+    },
+    "sequences": {
+      "items": {
+        "$ref": "#/definitions/Sequence"
+      },
+      "type": "array"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "title": "Scenario 1.0 Schema",
+  "type": "object"
+}

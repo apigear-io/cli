@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/apigear-io/cli/cmd"
-	"github.com/apigear-io/lib/log"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 var (

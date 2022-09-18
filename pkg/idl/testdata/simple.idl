@@ -1,0 +1,31 @@
+module tb.simple 1.0
+
+interface SimpleInterface {
+    propBool: bool
+    propInt: int
+    propFloat: float
+    propString: string
+    funcBool(paramBool: bool): bool
+    funcInt(paramInt: int): int
+    funcFloat(paramFloat: float): float
+    funcString(paramString: string): string
+    signal sigBool(paramBool: bool)
+    signal sigInt(paramInt: int)
+    signal sigFloat(paramFloat: float)
+    signal sigString(paramString: string)
+}
+
+interface SimpleArrayInterface {
+    propBool: bool[]
+    propInt: int[]
+    propFloat: float[]
+    propString: string[]
+    funcBool(paramBool: bool[]): bool[]
+    funcInt(paramInt: int[]): int[]
+    funcFloat(paramFloat: float[]): float[]
+    funcString(paramString: string[]): string[]
+    signal sigBool(paramBool: bool[])
+    signal sigInt(paramInt: int[])
+    signal sigFloat(paramFloat: float[])
+    signal sigString(paramString: string[])
+}

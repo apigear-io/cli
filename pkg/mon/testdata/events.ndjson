@@ -1,0 +1,4 @@
+{ "id": "1", "kind": "call", "symbol": "demo.Counter/increment" }
+{ "id": "2", "kind": "state", "symbol": "demo.Counter", "props": { "count": 1 } } }
+{ "id": "3", "kind": "call", "symbol": "demo.Counter/increment" }
+{ "id": "4", "kind": "state", "symbol": "demo.Counter", "props": { "count": 2 } }

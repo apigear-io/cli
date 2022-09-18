@@ -8,8 +8,8 @@ import (
 	"github.com/apigear-io/cli/cmd/sim"
 	"github.com/apigear-io/cli/cmd/tools"
 	"github.com/apigear-io/cli/cmd/tpl"
-	"github.com/apigear-io/lib/config"
-	"github.com/apigear-io/lib/log"
+	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/spf13/cobra"
 

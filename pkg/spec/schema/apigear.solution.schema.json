@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Layer": {
+      "additionalProperties": false,
+      "description": "The Layer section defines a layer which is used to generate the solution.",
+      "properties": {
+        "description": {
+          "description": "description of the layer.",
+          "type": "string"
+        },
+        "dryRun": {
+          "description": "if true the layer will not be generated.",
+          "type": "boolean"
+        },
+        "features": {
+          "description": "a list of features which can be enabled/disabled on the command line.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "force": {
+          "description": "if true the layer will be generated even if it already exists.",
+          "type": "boolean"
+        },
+        "inputs": {
+          "description": "list of input files which are used to generate the layer.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "description": "meta data about the layer which will be passed on to the template.",
+          "type": "object"
+        },
+        "name": {
+          "description": "name of the layer.",
+          "type": "string"
+        },
+        "output": {
+          "description": "the output directory of the layer.",
+          "type": "string"
+        },
+        "template": {
+          "description": "path to the template which can be either template package name or a template folder with a rules document.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inputs",
+        "output",
+        "template"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "description": {
+      "description": "The description of the solution.",
+      "type": "string"
+    },
+    "layers": {
+      "description": "The layers section contains a list of layers which are used to generate the solution.",
+      "items": {
+        "$ref": "#/definitions/Layer"
+      },
+      "type": "array"
+    },
+    "meta": {
+      "description": "The meta section contains meta data about the solution.",
+      "type": "object"
+    },
+    "name": {
+      "description": "The name of the solution.",
+      "type": "string"
+    },
+    "rootDir": {
+      "description": "The root directory of the solution to map all other paths to.",
+      "type": "string"
+    },
+    "schema": {
+      "description": "The ApiGear solution specification version of this document.",
+      "enum": [
+        "apigear.solution/1.0"
+      ],
+      "type": "string"
+    },
+    "version": {
+      "description": "The version of the solution.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "layers"
+  ],
+  "title": "ApiGear Solution 1.0 Schema",
+  "type": "object"
+}

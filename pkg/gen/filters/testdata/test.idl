@@ -1,0 +1,59 @@
+module test 1.0
+
+interface Test1 {
+    propBool: bool
+    propInt: int
+    propFloat: float
+    propString: string
+    propBoolArray: bool[]
+    propIntArray: int[]
+    propFloatArray: float[]
+    propStringArray: string[]
+}
+
+interface Test2 {
+    propEnum: Enum1
+    propStruct: Struct1
+    propInterface: Interface1
+    propEnumArray: Enum1[]
+    propStructArray: Struct1[]
+    propInterfaceArray: Interface1[]
+}
+
+interface Test3 {
+    opBool(param1: bool): bool
+    opInt(param1: int): int
+    opFloat(param1: float): float
+    opString(param1: string): string
+    opBoolArray(param1: bool[]): bool[]
+    opIntArray(param1: int[]): int[]
+    opFloatArray(param1: float[]): float[]
+    opStringArray(param1: string[]): string[]
+}
+
+interface Test4 {
+    opEnum(param1: Enum1): Enum1
+    opStruct(param1: Struct1): Struct1
+    opInterface(param1: Interface1): Interface1
+    opEnumArray(param1: Enum1[]): Enum1[]
+    opStructArray(param1: Struct1[]): Struct1[]
+    opInterfaceArray(param1: Interface1[]): Interface1[]
+}
+
+interface Test5 {
+    opBoolBool(param1: bool, param2: bool): bool
+    opIntInt(param1: int, param2: int): int
+    opFloatFloat(param1: float, param2: float): float
+    opStringString(param1: string, param2: string): string
+    opEnumEnum(param1: Enum1, param2: Enum1): Enum1    
+    opStructStruct(param1: Struct1, param2: Struct1): Struct1
+    opInterfaceInterface(param1: Interface1, param2: Interface1): Interface1
+}
+
+interface Interface1 { }
+
+enum Enum1 { 
+    Default = 0,
+}
+
+struct Struct1 {}

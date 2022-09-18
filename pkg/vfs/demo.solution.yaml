@@ -1,0 +1,8 @@
+schema: apigear.solution/1.0
+layers:
+  - name: demo
+    output: ../tmp
+    inputs:
+      - demo.module.yaml
+    template: ../tpl
+    force: true

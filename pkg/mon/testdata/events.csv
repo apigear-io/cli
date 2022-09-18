@@ -1,0 +1,5 @@
+id,kind,symbol,props
+"1","call","demo.Counter/increment",""
+"2","state","demo.Counter","{""count"": 1}"
+"3","call","demo.Counter/increment",""
+"4","state","demo.Counter","{""count"": 2}"

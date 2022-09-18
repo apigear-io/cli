@@ -1,0 +1,330 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Contact": {
+      "additionalProperties": false,
+      "description": "Contact information for the owners of the API.",
+      "properties": {
+        "email": {
+          "description": "The email address of the contact person/organization.",
+          "format": "email",
+          "type": "string"
+        },
+        "name": {
+          "description": "The identifying name of the contact person/organization.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL pointing to the contact information.",
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Enum": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/definitions/EnumMember"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "EnumMember": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "FormatKey": {
+      "enum": [
+        "int32",
+        "int64",
+        "float32",
+        "float64",
+        "date"
+      ],
+      "type": "string"
+    },
+    "Info": {
+      "additionalProperties": false,
+      "description": "General information about the API.",
+      "properties": {
+        "contact": {
+          "$ref": "#/definitions/Contact"
+        },
+        "description": {
+          "description": "A longer description of the API. Should be different from the title. CommonMark is allowed.",
+          "type": "string"
+        },
+        "license": {
+          "$ref": "#/definitions/License"
+        },
+        "module": {
+          "description": "A unique URI reversed module identifier",
+          "type": "string"
+        },
+        "termsOfService": {
+          "description": "A URL to the Terms of Service for the API. MUST be in the format of a URL.",
+          "format": "uri",
+          "type": "string"
+        },
+        "title": {
+          "description": "A unique and precise title of the API.",
+          "type": "string"
+        },
+        "version": {
+          "description": "A semantic version number of the API.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Interface": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/definitions/Operation"
+          },
+          "type": "array"
+        },
+        "properties": {
+          "items": {
+            "$ref": "#/definitions/Type"
+          },
+          "type": "array"
+        },
+        "signals": {
+          "items": {
+            "$ref": "#/definitions/Operation"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "License": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "The name of the license type. It's encouraged to use an OSI compatible license.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL pointing to the license.",
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "Operation": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/definitions/FormatKey"
+        },
+        "items": {
+          "$ref": "#/definitions/TypeKey"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "params": {
+          "items": {
+            "$ref": "#/definitions/Type"
+          },
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/TypeKey"
+        }
+      },
+      "type": "object"
+    },
+    "Struct": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/definitions/Type"
+          },
+          "type": "array"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "Type": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/definitions/FormatKey"
+        },
+        "items": {
+          "$ref": "#/definitions/TypeKey"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/TypeKey"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "type": "object"
+    },
+    "TypeKey": {
+      "oneOf": [
+        {
+          "enum": [
+            "int",
+            "float",
+            "bool",
+            "string",
+            "array"
+          ],
+          "type": "string"
+        },
+        {
+          "properties": {
+            "additionalProperties": false,
+            "ref": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "description": {
+      "description": "the module description. Will be added to the module documentation",
+      "type": "string"
+    },
+    "enums": {
+      "description": "a list of enumerations, exported by this module",
+      "items": {
+        "$ref": "#/definitions/Enum"
+      },
+      "type": "array"
+    },
+    "info": {
+      "$ref": "#/definitions/Info"
+    },
+    "interfaces": {
+      "description": "a list of interfaces, exported by this module",
+      "items": {
+        "$ref": "#/definitions/Interface"
+      },
+      "type": "array"
+    },
+    "meta": {
+      "description": "meta information are read by the individual blueprint. Read the blueprint manual which meta tags are supported.",
+      "type": "object"
+    },
+    "name": {
+      "description": "module name, should be all lowercase and only contain letters and dots.",
+      "type": "string"
+    },
+    "schema": {
+      "description": "The ApiGear ObjectAPI specification version of this document.",
+      "enum": [
+        "apigear.module/1.0"
+      ],
+      "type": "string"
+    },
+    "structs": {
+      "description": "a list of data structures, exported by this module",
+      "items": {
+        "$ref": "#/definitions/Struct"
+      },
+      "type": "array"
+    },
+    "version": {
+      "description": "the version of this document as string, typically something like '1.0'",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version"
+  ],
+  "title": "ObjectAPI 1.0 Schema",
+  "type": "object"
+}
