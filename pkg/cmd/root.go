@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"github.com/apigear-io/cli/cmd/cfg"
-	"github.com/apigear-io/cli/cmd/gen"
-	"github.com/apigear-io/cli/cmd/mon"
-	"github.com/apigear-io/cli/cmd/prj"
-	"github.com/apigear-io/cli/cmd/sim"
-	"github.com/apigear-io/cli/cmd/tools"
-	"github.com/apigear-io/cli/cmd/tpl"
+	"github.com/apigear-io/cli/pkg/cmd/cfg"
+	"github.com/apigear-io/cli/pkg/cmd/gen"
+	"github.com/apigear-io/cli/pkg/cmd/mon"
+	"github.com/apigear-io/cli/pkg/cmd/prj"
+	"github.com/apigear-io/cli/pkg/cmd/sim"
+	"github.com/apigear-io/cli/pkg/cmd/tools"
+	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/log"
 

@@ -3,9 +3,9 @@ package net
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/net/rpc"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/core"
-	"github.com/apigear-io/wsrpc/rpc"
 )
 
 type SimuRpcHandler struct {

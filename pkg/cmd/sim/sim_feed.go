@@ -7,7 +7,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/apigear-io/wsrpc/rpc"
+	"github.com/apigear-io/cli/pkg/net/rpc"
 	"github.com/spf13/cobra"
 )
 

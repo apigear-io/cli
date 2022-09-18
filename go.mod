@@ -12,13 +12,13 @@ require (
 
 require (
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10
-	github.com/apigear-io/wsrpc v0.1.2
 	github.com/dop251/goja v0.0.0-20220915101355-d79e1b125a30
 	github.com/dop251/goja_nodejs v0.0.0-20220905124449-678b33ca5009
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gocarina/gocsv v0.0.0-20220914091333-ceebdd90b590
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/whilp/git-urls v1.0.0
@@ -27,7 +27,6 @@ require (
 )
 
 require (
-	github.com/apigear-io/log v0.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -42,7 +41,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect

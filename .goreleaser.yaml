@@ -1,6 +1,6 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-project_name: apigear-cli
+project_name: apigear
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -8,7 +8,7 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - id: cli
+  - id: apigear
     env:
       - CGO_ENABLED=0
     goos:
@@ -25,7 +25,7 @@ builds:
       - goos: linux
         goarch: "386"
 
-    main: ./main.go
+    main: ./cmd/apigear/main.go
 archives:
   - replacements:
       darwin: Darwin
