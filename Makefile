@@ -4,13 +4,17 @@
 test:
 	go test ./...
 
+cover:
+	go test ./... -coverprofile=./tmp/coverage.out
+
 build:
-	go build -o ./bin/apigear .
+	go build -o ./bin/apigear ./cmd/apigear
+
+run:
+	go run ./cmd/apigear
 
 watch:
 	air
-run:
-	go run main.go
 
 debug:
 	dlv debug

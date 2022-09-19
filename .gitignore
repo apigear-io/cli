@@ -22,14 +22,12 @@ go.work
 
 # Mac 
 .DS_Store
-
-# Out test folder
-out/
-tmp/
+.idea/
 .vscode/
 
-# dist folder
+# Out test folder
+tmp/
+bin/
 dist/
 
 # idea ide
-.idea/
