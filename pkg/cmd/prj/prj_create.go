@@ -12,7 +12,7 @@ func NewCreateCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "create doc-type doc-name",
 		Short: "Create a new document inside current project",
-		Long:  `The create command allows you to create a new document inside current project.`,
+		Long:  `Create a new document inside current project from a template.`,
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			docType := args[0]

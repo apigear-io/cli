@@ -15,7 +15,7 @@ func NewPackCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "pack",
 		Short: "Pack a project",
-		Long:  `The pack command allows you to pack a project.`,
+		Long:  `Pack the project and all files into a archive file`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			source := args[0]

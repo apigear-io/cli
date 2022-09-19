@@ -9,8 +9,8 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "project",
 		Aliases: []string{"prj"},
-		Short:   "Manages project creation and management",
-		Long:    `The project command allows you to create a new project and manage it.`,
+		Short:   "Manage apigear projects",
+		Long:    `Projects consist of API descriptions, SDK configuration, simulation documents and other files`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

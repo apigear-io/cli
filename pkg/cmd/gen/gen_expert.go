@@ -32,8 +32,8 @@ func NewExpertCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "expert",
 		Aliases: []string{"x"},
-		Short:   "generate code using expert mode",
-		Long:    `In expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
+		Short:   "Generate code using expert mode",
+		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			log.OnReport(func(report *log.ReportEntry) {
 				cmd.Println(report.Message)

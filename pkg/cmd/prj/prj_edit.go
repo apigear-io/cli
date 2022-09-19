@@ -13,7 +13,7 @@ func NewEditCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "edit",
 		Short: "Edit a project in the default editor (vscode)",
-		Long:  `The edit command allows you to edit a project in the default editor.`,
+		Long:  `Edit a project in the default editor (e.g.Visual Studio Code).`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]

@@ -7,10 +7,11 @@ import (
 
 func NewGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get",
-		Short: "prints a configuration value",
-		Args:  cobra.MaximumNArgs(1),
-		Long:  `prints the value of a configuration parameter or all configuration parameters if no key is given`,
+		Use:     "get",
+		Aliases: []string{"g"},
+		Short:   "Display configuration values",
+		Long:    `Display the value of a configuration variable`,
+		Args:    cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) == 0 {
 				// print all settings

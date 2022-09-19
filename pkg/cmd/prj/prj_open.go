@@ -13,7 +13,7 @@ func NewOpenCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "open project-path",
 		Short: "Open a project in studio",
-		Long:  `The open command allows you to open a project in studio.`,
+		Long:  `Open the given project in the desktop studio, if installed`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]

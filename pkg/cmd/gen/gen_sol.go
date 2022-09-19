@@ -15,7 +15,7 @@ func NewSolutionCommand() *cobra.Command {
 	var watch bool
 	var cmd = &cobra.Command{
 		Use:     "solution [solution-file]",
-		Short:   "generate SDK using a solution document",
+		Short:   "Generate SDK using a solution document",
 		Aliases: []string{"sol", "s"},
 		Args:    cobra.ExactArgs(1),
 		Long: `A solution is a yaml document which describes different layers. 

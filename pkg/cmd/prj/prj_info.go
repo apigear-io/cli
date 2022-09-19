@@ -10,8 +10,8 @@ import (
 func NewInfoCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "info",
-		Short: "Show project information",
-		Long:  `The info command allows you to show project information.`,
+		Short: "Display project information",
+		Long:  `Display detailed project information`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]

@@ -16,7 +16,7 @@ func NewServerCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "run",
 		Short: "Run the monitor server",
-		Long:  `A monitor server runs on a HTTP port and listens for API calls.`,
+		Long:  `The monitor server runs on a HTTP port and listens for API calls.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			log.Debugf("start server on %s", addr)
 			go func() {

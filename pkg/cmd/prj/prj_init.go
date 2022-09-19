@@ -12,7 +12,7 @@ func NewInitCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "init",
 		Short: "Initialize a new project",
-		Long:  `The init command allows you to initialize a new project.`,
+		Long:  `Initialize a project with a default project files`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			dir := args[0]

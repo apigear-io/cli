@@ -9,8 +9,8 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "generate",
 		Aliases: []string{"gen", "g"},
-		Short:   "SDK code generation",
-		Long:    `Code generation using templates for SDK creation.`,
+		Short:   "Generate code from APIs",
+		Long:    `generate API SDKs from API descriptions using templates`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

@@ -8,9 +8,9 @@ func NewRootCommand() *cobra.Command {
 	// cmd represents the conf command
 	cmd := &cobra.Command{
 		Use:     "config",
-		Aliases: []string{"cfg"},
-		Short:   "commands related to application configuration",
-		Long:    `The config command allows you to manage application configurations.`,
+		Aliases: []string{"cfg", "c"},
+		Short:   "Display the config vars",
+		Long:    `Display and edit the configuration variables`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

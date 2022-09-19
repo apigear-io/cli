@@ -6,8 +6,9 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/mon"
 	"github.com/apigear-io/cli/pkg/cmd/prj"
 	"github.com/apigear-io/cli/pkg/cmd/sim"
-	"github.com/apigear-io/cli/pkg/cmd/tools"
+	"github.com/apigear-io/cli/pkg/cmd/spec"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
+	"github.com/apigear-io/cli/pkg/cmd/x"
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/log"
 
@@ -34,7 +35,6 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 	cobra.OnInitialize(config.InitConfig)
-
 	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
 	cmd.PersistentFlags().BoolVarP(&config.Verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&config.DryRun, "dry-run", false, "dry-run")
@@ -43,8 +43,9 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(cfg.NewRootCommand())
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(sim.NewRootCommand())
+	cmd.AddCommand(spec.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())
-	cmd.AddCommand(tools.NewRootCommand())
+	cmd.AddCommand(x.NewRootCommand())
 
 	viper.Set("version", cmd.Version)
 

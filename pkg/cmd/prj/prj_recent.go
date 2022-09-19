@@ -10,8 +10,8 @@ import (
 func NewRecentCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "recent",
-		Short: "Show recent projects",
-		Long:  `The recent command allows you to show recent projects.`,
+		Short: "Display recent projects",
+		Long:  `Display recently used projects and their locations`,
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, _ []string) {
 			cmd.Println("recent projects:")

@@ -18,8 +18,8 @@ func NewImportCommand() *cobra.Command {
 	var target string
 	var cmd = &cobra.Command{
 		Use:   "import source --target target",
-		Short: "Import a project from a git url into a local directory.",
-		Long:  `The import command allows you to import a project from git url into a local a directory.`,
+		Short: "Import a remote project",
+		Long:  `Import a remote project from a repository to the local file system`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			source := args[0]
