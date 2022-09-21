@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,7 +28,7 @@ func InitConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigType("json")
 		viper.SetConfigName(".apigear")
-		viper.SetConfigFile(filepath.Join(home, ".apigear", "config.json"))
+		viper.SetConfigFile(helper.Join(home, ".apigear", "config.json"))
 		if debug {
 			fmt.Printf("config path dir: %s\n", home)
 		}

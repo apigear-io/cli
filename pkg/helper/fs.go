@@ -9,8 +9,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func IsDir(path string) bool {
-	fi, err := os.Stat(path)
+func Join(elem ...string) string {
+	// if last elem isAbs then return it
+	if filepath.IsAbs(elem[len(elem)-1]) {
+		return elem[len(elem)-1]
+	}
+	// otherwise join all elem
+	return filepath.Join(elem...)
+}
+
+func IsDir(elem string) bool {
+	fi, err := os.Stat(elem)
 	if err != nil {
 		return false
 	}
@@ -90,7 +99,7 @@ func FindDocuments(path string) ([]string, error) {
 		if !IsDocument(filepath.Ext(name)) {
 			continue
 		}
-		result = append(result, filepath.Join(path, name))
+		result = append(result, Join(path, name))
 	}
 	return result, nil
 }

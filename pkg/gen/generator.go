@@ -137,21 +137,25 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 	ctx := model.SystemScope{
 		System: g.System,
 	}
-	scope := f.FindScopeByMatch(spec.ScopeSystem)
-	err := g.processScope(scope, ctx)
-	if err != nil {
-		return err
+	scopes := f.FindScopesByMatch(spec.ScopeSystem)
+	for _, scope := range scopes {
+		err := g.processScope(scope, ctx)
+		if err != nil {
+			return err
+		}
 	}
 	for _, module := range g.System.Modules {
 		// process module
-		scope := f.FindScopeByMatch(spec.ScopeModule)
+		scopes := f.FindScopesByMatch(spec.ScopeModule)
 		ctx := model.ModuleScope{
 			System: g.System,
 			Module: module,
 		}
-		err := g.processScope(scope, ctx)
-		if err != nil {
-			return err
+		for _, scope := range scopes {
+			err := g.processScope(scope, ctx)
+			if err != nil {
+				return err
+			}
 		}
 		for _, iface := range module.Interfaces {
 			// process interface
@@ -160,10 +164,12 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 				Module:    module,
 				Interface: iface,
 			}
-			scope := f.FindScopeByMatch(spec.ScopeInterface)
-			err := g.processScope(scope, ctx)
-			if err != nil {
-				return err
+			scopes := f.FindScopesByMatch(spec.ScopeInterface)
+			for _, scope := range scopes {
+				err := g.processScope(scope, ctx)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		for _, struct_ := range module.Structs {
@@ -173,10 +179,12 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 				Module: module,
 				Struct: struct_,
 			}
-			scope := f.FindScopeByMatch(spec.ScopeStruct)
-			err := g.processScope(scope, ctx)
-			if err != nil {
-				return err
+			scopes := f.FindScopesByMatch(spec.ScopeStruct)
+			for _, scope := range scopes {
+				err := g.processScope(scope, ctx)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		for _, enum := range module.Enums {
@@ -186,10 +194,12 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 				Module: module,
 				Enum:   enum,
 			}
-			scope := f.FindScopeByMatch(spec.ScopeEnum)
-			err := g.processScope(scope, ctx)
-			if err != nil {
-				return err
+			scopes := f.FindScopesByMatch(spec.ScopeEnum)
+			for _, scope := range scopes {
+				err := g.processScope(scope, ctx)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -273,8 +283,8 @@ func (g *generator) CopyFile(source, target string, force bool) error {
 		g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 		return nil
 	}
-	source = filepath.Join(g.TemplatesDir, source)
-	target = filepath.Join(g.OutputDir, target)
+	source = helper.Join(g.TemplatesDir, source)
+	target = helper.Join(g.OutputDir, target)
 	err := helper.CopyFile(source, target)
 	if err != nil {
 		return err
@@ -305,7 +315,7 @@ func (g *generator) RenderFile(source, target string, ctx any, force bool) error
 }
 
 func (g *generator) WriteFile(input []byte, target string, force bool) error {
-	target = filepath.Join(g.OutputDir, target)
+	target = helper.Join(g.OutputDir, target)
 	if !force {
 		same, err := CompareContentWithFile(input, target)
 		if err != nil {

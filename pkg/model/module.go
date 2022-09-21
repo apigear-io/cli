@@ -82,6 +82,14 @@ func (m Module) LookupEnum(name string) *Enum {
 	return nil
 }
 
+func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
+	e := m.LookupEnum(name)
+	if e != nil {
+		return e.Members[0]
+	}
+	return nil
+}
+
 func (m *Module) ResolveAll() error {
 	log.Debugf("Resolving module %s", m.Name)
 	for _, i := range m.Interfaces {

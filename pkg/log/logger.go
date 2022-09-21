@@ -4,8 +4,8 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,7 +29,7 @@ func Config(verbose bool, debug bool) {
 	if err != nil {
 		panic(err)
 	}
-	logFile := filepath.Join(home, ".apigear/logs/app.log")
+	logFile := helper.Join(home, ".apigear/logs/app.log")
 	ljack := newLogFileRotator(logFile)
 
 	if verbose { // log to console and file

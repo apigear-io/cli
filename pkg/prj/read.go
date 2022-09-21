@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 func readProject(d string) (*ProjectInfo, error) {
@@ -14,11 +15,11 @@ func readProject(d string) (*ProjectInfo, error) {
 		return nil, err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(filepath.Join(d, "apigear")); err != nil {
+	if _, err := os.Stat(helper.Join(d, "apigear")); err != nil {
 		return nil, err
 	}
 	// read apigear directory
-	entries, err := os.ReadDir(filepath.Join(d, "apigear"))
+	entries, err := os.ReadDir(helper.Join(d, "apigear"))
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func readProject(d string) (*ProjectInfo, error) {
 		}
 		docs = append(docs, DocumentInfo{
 			Name: entry.Name(),
-			Path: filepath.Join(d, "apigear", entry.Name()),
+			Path: helper.Join(d, "apigear", entry.Name()),
 			Type: "module",
 		})
 	}

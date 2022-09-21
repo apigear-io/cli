@@ -1,8 +1,10 @@
 package filters
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/gertd/go-pluralize"
 	"github.com/iancoleman/strcase"
 )
 
@@ -29,6 +31,10 @@ func CamelCase(s string) string {
 // CamelCase returns a string representation of the value in CamelCase.
 func CamelCaseLower(s string) string {
 	return strcase.ToLowerCamel(s)
+}
+
+func CamelCaseUpper(s string) string {
+	return UpperCase(strcase.ToCamel(s))
 }
 
 // DotCaseLower returns a string representation of the value in dot.case
@@ -125,4 +131,29 @@ func TrimSuffix(s, postfix string) string {
 
 func Replace(s, old, new string) string {
 	return strings.Replace(s, old, new, -1)
+}
+
+var WORDS = []string{
+	"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
+}
+
+func IntToWord(i int, postfix string) string {
+	if i < 0 || i >= len(WORDS) {
+		return postfix
+	}
+	if postfix == "" {
+		return WORDS[i]
+	}
+	plural := Pluralize(postfix, i)
+	return fmt.Sprintf("%s%s", WORDS[i], plural)
+}
+
+var plural = pluralize.NewClient()
+
+func Pluralize(s string, i int) string {
+	if i <= 1 {
+		return s
+	}
+	return plural.Plural(s)
 }

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/gen"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/fsnotify/fsnotify"
@@ -65,9 +66,9 @@ func (t *task) processLayer(layer spec.SolutionLayer) error {
 		return err
 	}
 	templateDir = td
-	var templatesDir = filepath.Join(templateDir, "templates")
-	var rulesFile = filepath.Join(templateDir, "rules.yaml")
-	var outputDir = filepath.Join(rootDir, layer.Output)
+	var templatesDir = helper.Join(templateDir, "templates")
+	var rulesFile = helper.Join(templateDir, "rules.yaml")
+	var outputDir = helper.Join(rootDir, layer.Output)
 	// add templates dir and rules file as dependency
 	t.deps = append(t.deps, templatesDir, rulesFile)
 	var force = layer.Force
@@ -83,8 +84,8 @@ func (t *task) processLayer(layer spec.SolutionLayer) error {
 }
 
 func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, force bool) error {
-	var templatesDir = filepath.Join(templateDir, "templates")
-	var rulesFile = filepath.Join(templateDir, "rules.yaml")
+	var templatesDir = helper.Join(templateDir, "templates")
+	var rulesFile = helper.Join(templateDir, "rules.yaml")
 	system := model.NewSystem(name)
 	err := t.parseInputs(system, inputs)
 	if err != nil {

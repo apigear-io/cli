@@ -1,6 +1,8 @@
 package sol
 
 import (
+	"fmt"
+
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
@@ -35,13 +37,14 @@ func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
 	result, err := spec.CheckSolutionDoc(doc)
 	if err != nil {
 		log.Warnf("failed to check document %s: %s", file, err)
-		return err
+		return fmt.Errorf("failed to check document %s: %s", file, err)
 	}
 	if !result.Valid() {
 		log.Warnf("document %s is invalid", file)
 		for _, desc := range result.Errors() {
 			log.Warnf("\t%s", desc)
 		}
+		return fmt.Errorf("document %s is invalid", file)
 	}
 	t, err := newTask(file, doc)
 	if err != nil {

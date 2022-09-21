@@ -2,8 +2,8 @@ package tpl
 
 import (
 	"os"
-	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/spf13/viper"
 )
 
@@ -12,7 +12,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	packageDir := filepath.Join(home, ".apigear", "templates")
+	packageDir := helper.Join(home, ".apigear", "templates")
 	viper.SetDefault("packageDir", packageDir)
 	err = os.MkdirAll(packageDir, 0755)
 	if err != nil {

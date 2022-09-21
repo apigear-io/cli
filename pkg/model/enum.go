@@ -35,6 +35,13 @@ func (e *Enum) LookupMember(name string) *EnumMember {
 	return nil
 }
 
+func (e *Enum) Default() *EnumMember {
+	if len(e.Members) > 0 {
+		return e.Members[0]
+	}
+	return &EnumMember{}
+}
+
 // EnumMember is a member of an enumeration.
 type EnumMember struct {
 	NamedNode `json:",inline" yaml:",inline"`

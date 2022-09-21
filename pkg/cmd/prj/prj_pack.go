@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/prj"
 
 	"github.com/spf13/cobra"
@@ -26,7 +27,7 @@ func NewPackCommand() *cobra.Command {
 				os.Exit(1)
 			}
 			base := filepath.Base(source)
-			target := filepath.Join(cwd, fmt.Sprintf("%s.tgz", base))
+			target := helper.Join(cwd, fmt.Sprintf("%s.tgz", base))
 
 			target, err = prj.PackProject(source, target)
 			if err != nil {

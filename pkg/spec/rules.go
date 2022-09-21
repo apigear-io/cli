@@ -34,13 +34,14 @@ type FeatureRule struct {
 }
 
 // FindScopeByMatch returns the first scope that matches the given match.
-func (s *FeatureRule) FindScopeByMatch(match ScopeType) ScopeRule {
+func (s *FeatureRule) FindScopesByMatch(match ScopeType) []ScopeRule {
+	var scopes []ScopeRule
 	for _, scope := range s.Scopes {
 		if scope.Match == match {
-			return scope
+			scopes = append(scopes, scope)
 		}
 	}
-	return ScopeRule{}
+	return scopes
 }
 
 // ScopeRule defines a scope rule which is matched based on the symbol type.

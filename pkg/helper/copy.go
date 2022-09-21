@@ -12,8 +12,8 @@ func CopyFiles(source, target string) error {
 		return err
 	}
 	for _, entry := range entries {
-		s := filepath.Join(source, entry.Name())
-		t := filepath.Join(target, entry.Name())
+		s := Join(source, entry.Name())
+		t := Join(target, entry.Name())
 		if entry.IsDir() {
 			if err := CopyFiles(s, t); err != nil {
 				return err
@@ -33,6 +33,11 @@ func CopyFile(source, target string) error {
 		return err
 	}
 	defer in.Close()
+	// ensure target directory exists
+	err = os.MkdirAll(filepath.Dir(target), 0755)
+	if err != nil {
+		return err
+	}
 	out, err := os.Create(target)
 	if err != nil {
 		return err

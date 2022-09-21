@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 type TemplateInfo struct {
@@ -25,7 +26,7 @@ func ListTemplates() ([]TemplateInfo, error) {
 			return fmt.Errorf("failed to walk template dir: %s", err)
 		}
 		if info.IsDir() && info.Name() != "." && info.Name() != ".." {
-			if _, err := os.Stat(filepath.Join(path, ".git")); err == nil {
+			if _, err := os.Stat(helper.Join(path, ".git")); err == nil {
 				name, err := filepath.Rel(dir, path)
 				if err != nil {
 					return fmt.Errorf("failed to get relative path for %s", path)

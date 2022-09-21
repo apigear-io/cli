@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/config"
@@ -11,10 +10,10 @@ import (
 
 func GetTemplateDir(rootDir string, template string) (string, error) {
 	var templateDir string
-	if helper.IsDir(filepath.Join(rootDir, template)) {
-		templateDir = filepath.Join(rootDir, template)
-	} else if helper.IsDir(filepath.Join(config.GetPackageDir(), template)) {
-		templateDir = filepath.Join(config.GetPackageDir(), template)
+	if helper.IsDir(helper.Join(rootDir, template)) {
+		templateDir = helper.Join(rootDir, template)
+	} else if helper.IsDir(helper.Join(config.GetPackageDir(), template)) {
+		templateDir = helper.Join(config.GetPackageDir(), template)
 	} else {
 		return "", fmt.Errorf("template %s not found", template)
 	}

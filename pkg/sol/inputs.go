@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/idl"
 	"github.com/apigear-io/cli/pkg/model"
 )
@@ -53,7 +54,7 @@ func (t *task) parseInputs(s *model.System, inputs []string) error {
 func (t *task) expandInputs(rootDir string, inputs []string) ([]string, error) {
 	var files []string
 	for _, input := range inputs {
-		entry := filepath.Join(rootDir, input)
+		entry := helper.Join(rootDir, input)
 		info, err := os.Stat(entry)
 		if err != nil {
 			log.Infof("error resolving input: %s", entry)

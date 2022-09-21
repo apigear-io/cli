@@ -13,6 +13,7 @@ import (
 func NewSolutionCommand() *cobra.Command {
 	var file string
 	var watch bool
+	var exec string
 	var cmd = &cobra.Command{
 		Use:     "solution [solution-file]",
 		Short:   "Generate SDK using a solution document",
@@ -50,5 +51,6 @@ as also the other options. To create a demo module or solution use the 'project 
 		},
 	}
 	cmd.Flags().BoolVarP(&watch, "watch", "", false, "watch solution file for changes")
+	cmd.Flags().StringVarP(&exec, "exec", "", "", "execute a command after generation")
 	return cmd
 }

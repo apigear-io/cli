@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/git"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/vfs"
 )
 
@@ -20,7 +20,7 @@ func OpenProject(source string) (*ProjectInfo, error) {
 		return nil, err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
+	if _, err := os.Stat(helper.Join(source, "apigear")); err != nil {
 		return nil, err
 	}
 
@@ -42,23 +42,23 @@ func InitProject(d string) (*ProjectInfo, error) {
 		}
 	}
 	// create apigear directory
-	if err := os.Mkdir(filepath.Join(d, "apigear"), 0755); err != nil {
+	if err := os.Mkdir(helper.Join(d, "apigear"), 0755); err != nil {
 		if !os.IsExist(err) {
 			return nil, err
 		}
 	}
 	// write demo module
-	target := filepath.Join(d, "apigear", "demo.module.yaml")
+	target := helper.Join(d, "apigear", "demo.module.yaml")
 	if err := writeDemo(target, vfs.DemoModule); err != nil {
 		log.Debugf("Failed to write demo module: %s", err)
 	}
 	// write demo solution
-	target = filepath.Join(d, "apigear", "demo.solution.yaml")
+	target = helper.Join(d, "apigear", "demo.solution.yaml")
 	if err := writeDemo(target, vfs.DemoSolution); err != nil {
 		log.Debugf("Failed to write demo solution: %s", err)
 	}
 	// write demo scenario
-	target = filepath.Join(d, "apigear", "demo.scenario.yaml")
+	target = helper.Join(d, "apigear", "demo.scenario.yaml")
 	if err := writeDemo(target, vfs.DemoScenario); err != nil {
 		log.Debugf("Failed to write demo scenario: %s", err)
 	}
@@ -88,7 +88,7 @@ func OpenEditor(d string) error {
 	editor := config.GetEditorCommand()
 	path, err := exec.LookPath(editor)
 	if err != nil {
-		return fmt.Errorf("Failed to find editor %s: %s", editor, err)
+		return fmt.Errorf("failed to find editor %s: %s", editor, err)
 	}
 	cmd := exec.Command(path, d)
 	return cmd.Run()
@@ -129,7 +129,7 @@ func PackProject(source string, target string) (string, error) {
 		return "", err
 	}
 	// check if source contains apigear directory
-	if _, err := os.Stat(filepath.Join(source, "apigear")); err != nil {
+	if _, err := os.Stat(helper.Join(source, "apigear")); err != nil {
 		return "", err
 	}
 	// create archive file
@@ -141,7 +141,7 @@ func PackProject(source string, target string) (string, error) {
 
 // CreateDocument creates a new document inside the project
 func CreateProjectDocument(prjDir string, docType string, name string) (string, error) {
-	target := filepath.Join(prjDir, "apigear", MakeDocumentName(docType, name))
+	target := helper.Join(prjDir, "apigear", MakeDocumentName(docType, name))
 	var err error
 	switch docType {
 	case "module":

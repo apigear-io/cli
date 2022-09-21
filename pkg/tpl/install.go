@@ -3,16 +3,16 @@ package tpl
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/git"
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 // InstallTemplate clones a template using git from an url into a local directory.
 func InstallTemplate(name string, repo string) error {
 	// check if repo is a local dir or an url
-	dir := filepath.Join(config.GetPackageDir(), name)
+	dir := helper.Join(config.GetPackageDir(), name)
 	_, err := os.Stat(dir)
 	if err == nil {
 		return fmt.Errorf("%s already exists", name)
