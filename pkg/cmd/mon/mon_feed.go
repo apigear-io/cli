@@ -26,7 +26,7 @@ func NewClientCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(_ *cobra.Command, args []string) {
 			options.script = args[0]
-			log.Debug().Msgf("run script %S", options.script)
+			log.Debug().Msgf("run script %s", options.script)
 			wg := &sync.WaitGroup{}
 			switch filepath.Ext(options.script) {
 			case ".json", ".ndjson":
@@ -74,7 +74,7 @@ func NewClientCommand() *cobra.Command {
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
 			default:
-				log.Error().Msgf("unknown file type: ", options.script)
+				log.Error().Msgf("unknown file type: %s", options.script)
 			}
 		},
 	}
