@@ -19,7 +19,7 @@ func NewCreateCommand() *cobra.Command {
 			name := args[1]
 			target, err := prj.CreateProjectDocument(prjDir, docType, name)
 			if err != nil {
-				log.Errorf("error: %s", err)
+				log.Error().Msgf("error: %s", err)
 				return
 			}
 			cmd.Printf("document %s created\n", target)

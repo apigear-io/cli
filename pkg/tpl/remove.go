@@ -10,7 +10,7 @@ import (
 
 func RemoveTemplate(name string) error {
 	dir := config.GetPackageDir()
-	log.Infof("remove template %s from %s", name, dir)
+	log.Info().Msgf("remove template %s from %s", name, dir)
 	// remove dir from packageDir
 	// check if dir exists
 	target := helper.Join(dir, name)

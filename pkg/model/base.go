@@ -208,7 +208,7 @@ func (s *Schema) resolveSymbol() {
 			s.KindType = TypeInterface
 			return
 		}
-		log.Warnf("unknown symbol %s", s.Type)
+		log.Warn().Msgf("unknown symbol %s", s.Type)
 	}
 }
 

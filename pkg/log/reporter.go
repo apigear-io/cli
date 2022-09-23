@@ -1,64 +1,49 @@
 package log
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"sync"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
-type ReportHook struct {
-	LogLevels []logrus.Level
-}
+var (
+	emitter func(*ReportEvent)
+	mu      = sync.Mutex{}
+)
 
-func (h *ReportHook) Levels() []logrus.Level {
-	return h.LogLevels
-}
-
-func (h *ReportHook) Fire(entry *logrus.Entry) error {
-	var topic string
-	if val, ok := entry.Data["topic"]; ok {
-		topic = val.(string)
-	}
-	reportEntry(&ReportEntry{
-		Level:   entry.Level.String(),
-		Message: entry.Message,
-		Time:    entry.Time,
-		Topic:   topic,
-	})
-	return nil
-}
-
-func NewReportHook() *ReportHook {
-	return &ReportHook{
-		LogLevels: []logrus.Level{
-			logrus.InfoLevel,
-			logrus.WarnLevel,
-			logrus.ErrorLevel,
-			logrus.PanicLevel,
-			logrus.FatalLevel,
-		},
-	}
-}
-
-type ReportEntry struct {
+type ReportEvent struct {
 	Level   string    `json:"level"`
 	Topic   string    `json:"topic"`
 	Message string    `json:"message"`
 	Time    time.Time `json:"time"`
 }
 
-var emitter func(*ReportEntry)
-var mu = sync.Mutex{}
-
-func OnReport(handler func(*ReportEntry)) {
-	emitter = handler
+type ReportWriter struct {
+	Level string
 }
 
-func reportEntry(entry *ReportEntry) {
+func NewReportWriter(level string) io.Writer {
+	return &ReportWriter{Level: level}
+}
+
+func (w *ReportWriter) Write(p []byte) (n int, err error) {
+	var event ReportEvent
+	d := json.NewDecoder(bytes.NewReader(p))
+	d.UseNumber()
+	err = d.Decode(&event)
+	if err != nil {
+		return 0, err
+	}
 	if emitter != nil {
 		mu.Lock()
-		emitter(entry)
+		emitter(&event)
 		mu.Unlock()
 	}
+	return len(p), nil
+}
+
+func OnReport(handler func(*ReportEvent)) {
+	emitter = handler
 }

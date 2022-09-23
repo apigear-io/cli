@@ -44,7 +44,7 @@ func (h *Hub) run() {
 		case <-h.ctx.Done():
 			return
 		case conn := <-h.register:
-			log.Infof("register: %s", conn.Id())
+			log.Info().Msgf("register: %s", conn.Id())
 			h.connections[conn] = true
 		case conn := <-h.unregister:
 			if _, ok := h.connections[conn]; ok {
@@ -81,11 +81,11 @@ func (h *Hub) BroadcastJSON(v interface{}) error {
 func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Infof("upgrade: %s", err)
+		log.Info().Msgf("upgrade: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err := w.Write([]byte(err.Error()))
 		if err != nil {
-			log.Errorf("error writing response: %v", err)
+			log.Error().Msgf("error writing response: %v", err)
 		}
 		return
 	}
@@ -93,7 +93,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		// unregister connection when it is done
 		<-conn.Done()
-		log.Infof("unregister: %s", conn.Id())
+		log.Info().Msgf("unregister: %s", conn.Id())
 		h.unregister <- conn
 	}()
 	go func() {

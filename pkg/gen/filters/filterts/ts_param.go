@@ -53,7 +53,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 
 func tsParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		log.Warnf("tsParam called with nil node")
+		log.Warn().Msgf("tsParam called with nil node")
 		return "", fmt.Errorf("tsParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.Name, prefix)

@@ -1,5 +1,5 @@
 package tpl
 
-import logger "github.com/apigear-io/cli/pkg/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = logger.TopicLogger("tpl")
+var log = zlog.Topic("tpl")

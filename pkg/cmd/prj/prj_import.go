@@ -9,7 +9,7 @@ import (
 
 func Must(err error) {
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		log.Fatal().Msgf("error: %s", err)
 	}
 }
 
@@ -23,10 +23,10 @@ func NewImportCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			source := args[0]
-			log.Debug("import project %s to %s", source, target)
+			log.Debug().Msgf("import project %s to %s", source, target)
 			info, err := prj.ImportProject(source, target)
 			if err != nil {
-				log.Fatalf("error: %s", err)
+				log.Fatal().Msgf("error: %s", err)
 			}
 			cmd.Printf("project %s imported to %s\n", source, info.Path)
 		},

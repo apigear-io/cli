@@ -98,7 +98,7 @@ func (e *MultiEngine) StopSequence(sequenceId string) {
 			entry.StopSequence(sequenceId)
 		}
 	}
-	log.Warnf("sequence %s not found", sequenceId)
+	log.Warn().Msgf("sequence %s not found", sequenceId)
 }
 
 func (e *MultiEngine) PlayAllSequences() error {

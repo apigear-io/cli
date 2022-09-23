@@ -23,7 +23,7 @@ func Run() int {
 	rootCmd.Version = fmt.Sprintf("%s-%s-%s", version, commit, date)
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Warn(err)
+		log.Warn().Err(err).Msg("failed to execute command")
 		return -1
 	}
 	return 0

@@ -14,7 +14,7 @@ import (
 // HandleMonitorRequest handles the monitor http request.
 // events are emitted to the monitor event channel.
 func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
-	log.Debug("handle monitor request")
+	log.Debug().Msg("handle monitor request")
 	source := chi.URLParam(r, "source")
 	if source == "" {
 		http.Error(w, "source id is required", http.StatusBadRequest)
@@ -22,7 +22,7 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	event := &mon.Event{}
 	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-		log.Infof("failed to decode event: %v", err)
+		log.Info().Msgf("failed to decode event: %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -31,6 +31,6 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 	if event.Timestamp.IsZero() {
 		event.Timestamp = time.Now()
 	}
-	log.Debugf("emit event: %+v", event)
+	log.Debug().Msgf("emit event: %+v", event)
 	mon.EmitEvent(event)
 }

@@ -62,7 +62,7 @@ func (s *EventScript) init() {
 }
 
 func (s *EventScript) jsCall(symbol string, data Payload) {
-	log.Debugf("call: %s %v", symbol, data)
+	log.Debug().Msgf("call: %s %v", symbol, data)
 	evt := &Event{
 		Id:        uuid.New().String(),
 		Type:      TypeCall,
@@ -75,7 +75,7 @@ func (s *EventScript) jsCall(symbol string, data Payload) {
 }
 
 func (s *EventScript) jsSignal(symbol string, data Payload) {
-	log.Debugf("signal: %s %v", symbol, data)
+	log.Debug().Msgf("signal: %s %v", symbol, data)
 	evt := &Event{
 		Id:        uuid.New().String(),
 		Type:      TypeSignal,
@@ -88,7 +88,7 @@ func (s *EventScript) jsSignal(symbol string, data Payload) {
 }
 
 func (s *EventScript) jsSet(symbol string, data Payload) {
-	log.Debugf("set: %s", symbol)
+	log.Debug().Msgf("set: %s", symbol)
 	evt := &Event{
 		Id:        uuid.New().String(),
 		Type:      TypeState,
@@ -101,5 +101,5 @@ func (s *EventScript) jsSet(symbol string, data Payload) {
 }
 
 func (s *EventScript) jsSleep(duration int) {
-	log.Debugf("sleep: %d", duration)
+	log.Debug().Msgf("sleep: %d", duration)
 }

@@ -13,7 +13,7 @@ import (
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("failed to parse command line")
 	}
 }
 
@@ -35,7 +35,7 @@ func NewExpertCommand() *cobra.Command {
 		Short:   "Generate code using expert mode",
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			log.OnReport(func(report *log.ReportEntry) {
+			log.OnReport(func(report *log.ReportEvent) {
 				cmd.Println(report.Message)
 			})
 			doc := makeSolution(options)
@@ -47,14 +47,14 @@ func NewExpertCommand() *cobra.Command {
 				wg.Add(1)
 				done, err := runner.StartWatch(doc.RootDir, doc)
 				if err != nil {
-					log.Fatal(err)
+					log.Fatal().Err(err).Msg("failed to start watch")
 				}
 				wg.Wait()
 				done <- true
 			} else {
 				err := runner.RunDoc(doc.RootDir, doc)
 				if err != nil {
-					log.Fatalf("failed to run expert mode: %s", err)
+					log.Fatal().Msgf("failed to run expert mode: %s", err)
 				}
 			}
 		},
@@ -74,7 +74,7 @@ func NewExpertCommand() *cobra.Command {
 func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	rootDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("failed to get current working directory")
 	}
 	return &spec.SolutionDoc{
 		Schema:  "apigear.solution/1.0",
@@ -92,7 +92,7 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 }
 
 // func runExpert(options *ExpertOptions) error {
-// 	log.Debug("run expert code generation")
+// 	log.Debug().Msg("run expert code generation")
 // 	rootDir, err := os.Getwd()
 // 	if err != nil {
 // 		return err
@@ -116,11 +116,11 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 // func watchExpert(options *ExpertOptions) {
 // 	err := runExpert(options)
 // 	if err != nil {
-// 		log.Errorf("failed to run expert mode: %s", err)
+// 		log.Error().Msgf("failed to run expert mode: %s", err)
 // 	}
 // 	watcher, err := fsnotify.NewWatcher()
 // 	if err != nil {
-// 		log.Fatal(err)
+// 		log.Fatal().Err(err)
 // 	}
 // 	defer watcher.Close()
 // 	done := make(chan bool)
@@ -129,21 +129,21 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 // 			select {
 // 			case event := <-watcher.Events:
 // 				if event.Op&fsnotify.Write == fsnotify.Write {
-// 					log.Infof("[%s] modified", event.Name)
+// 					log.Info().Msgf("[%s] modified", event.Name)
 // 					err := runExpert(options)
 // 					if err != nil {
-// 						log.Errorf("failed to run expert mode: %s", err)
+// 						log.Error().Msgf("failed to run expert mode: %s", err)
 // 					}
 // 				}
 // 			case err := <-watcher.Errors:
-// 				log.Error(err)
+// 				log.Error().Err(err)
 // 			}
 // 		}
 // 	}()
 // 	for _, input := range options.inputs {
 // 		err = watcher.Add(input)
 // 		if err != nil {
-// 			log.Fatal(err)
+// 			log.Fatal().Err(err)
 // 		}
 // 	}
 // 	// add directories of template dir recursively
@@ -160,7 +160,7 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 // 		return nil
 // 	})
 // 	if err != nil {
-// 		log.Fatalf("failed to watch template directory: %s", err)
+// 		log.Fatal().Msgf("failed to watch template directory: %s", err)
 // 	}
 // 	<-done
 // }

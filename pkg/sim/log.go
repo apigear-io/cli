@@ -1,5 +1,5 @@
 package sim
 
-import logger "github.com/apigear-io/cli/pkg/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = logger.TopicLogger("sim")
+var log = zlog.Topic("sim")

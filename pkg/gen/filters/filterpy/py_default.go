@@ -62,6 +62,6 @@ func pyDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}
-	log.Debugf("pyDefault: %s", node.Name)
+	log.Debug().Msgf("pyDefault: %s", node.Name)
 	return ToDefaultString(&node.Schema, prefix)
 }

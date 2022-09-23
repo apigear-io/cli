@@ -76,7 +76,7 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 }
 
 func (s *System) ResolveAll() error {
-	log.Debugf("Resolving system %s", s.Name)
+	log.Debug().Msgf("Resolving system %s", s.Name)
 	for _, m := range s.Modules {
 		err := m.ResolveAll()
 		if err != nil {

@@ -14,7 +14,7 @@ func HttpPost(url string, data any) error {
 	// create a new http request
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		log.Error("failed to create http request: ", err)
+		log.Error().Err(err).Msg("failed to create http request")
 		return err
 	}
 	// set the content type to json
@@ -24,16 +24,16 @@ func HttpPost(url string, data any) error {
 	// encode the event into json
 	json, err := json.Marshal(data)
 	if err != nil {
-		log.Errorf("failed to encode data: %v: %v", data, err)
+		log.Error().Err(err).Msgf("failed to encode data: %v", data)
 		return err
 	}
 	// set the body of the request to the json encoded event
 	req.Body = io.NopCloser(bytes.NewReader(json))
 	// send the request to the monitor server
-	log.Debugf("http post %s %s", url, json)
+	log.Debug().Msgf("http post %s %s", url, json)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Error("failed to send request: ", err)
+		log.Error().Err(err).Msg("failed to send request")
 		return err
 	}
 	// close the response body
@@ -41,10 +41,10 @@ func HttpPost(url string, data any) error {
 	// read the response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Error("failed to read response body: ", err)
+		log.Error().Err(err).Msg("failed to read response body")
 		return err
 	}
 	// log the response
-	log.Debug("response: ", string(body))
+	log.Debug().Msgf("response: %s", string(body))
 	return nil
 }

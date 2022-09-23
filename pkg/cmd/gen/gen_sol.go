@@ -23,7 +23,7 @@ func NewSolutionCommand() *cobra.Command {
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.OnReport(func(report *log.ReportEntry) {
+			log.OnReport(func(report *log.ReportEvent) {
 				fmt.Print(report.Message)
 			})
 			file = args[0]

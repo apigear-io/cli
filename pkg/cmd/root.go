@@ -13,13 +13,11 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/spf13/cobra"
-
-	"github.com/spf13/viper"
 )
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("fatal error")
 	}
 }
 
@@ -34,9 +32,7 @@ func NewRootCommand() *cobra.Command {
 			return cmd.Usage()
 		},
 	}
-	cobra.OnInitialize(config.InitConfig)
 	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
-	cmd.PersistentFlags().BoolVarP(&config.Verbose, "verbose", "v", false, "verbose output")
 	cmd.PersistentFlags().BoolVar(&config.DryRun, "dry-run", false, "dry-run")
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
@@ -47,7 +43,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(prj.NewRootCommand())
 	cmd.AddCommand(x.NewRootCommand())
 
-	viper.Set("version", cmd.Version)
-
+	config.SetVersion(cmd.Version)
 	return cmd
 }

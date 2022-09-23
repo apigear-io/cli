@@ -1,9 +1,9 @@
 package x
 
 import (
-	"log"
 	"os"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -23,7 +23,7 @@ func NewDocsCommand() *cobra.Command {
 			if force {
 				err := os.MkdirAll(dir, 0755)
 				if err != nil {
-					log.Fatalf("failed to create dir: %v", err)
+					log.Fatal().Msgf("failed to create dir: %v", err)
 				}
 			}
 			if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -33,7 +33,7 @@ func NewDocsCommand() *cobra.Command {
 			cmd.Printf("exporting docs to %s\n", dir)
 			err := doc.GenMarkdownTree(cmd.Root(), dir)
 			if err != nil {
-				log.Fatalf("error exporting docs: %v", err)
+				log.Fatal().Msgf("error exporting docs: %v", err)
 			}
 		},
 	}

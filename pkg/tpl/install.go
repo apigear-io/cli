@@ -17,10 +17,10 @@ func InstallTemplate(name string, repo string) error {
 	if err == nil {
 		return fmt.Errorf("%s already exists", name)
 	}
-	log.Infof("clone template from %s into %s", repo, dir)
+	log.Info().Msgf("clone template from %s into %s", repo, dir)
 	err = git.Clone(repo, dir)
 	if err != nil {
-		log.Warnf("failed to clone template from %s into %s", repo, dir)
+		log.Warn().Msgf("failed to clone template from %s into %s", repo, dir)
 	}
 	return err
 }

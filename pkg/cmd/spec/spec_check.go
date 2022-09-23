@@ -19,7 +19,7 @@ func NewCheckCommand() *cobra.Command {
 		Long:    `Check documents and report errors`,
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			log.OnReport(func(l *log.ReportEntry) {
+			log.OnReport(func(l *log.ReportEvent) {
 				fmt.Println(l.Message)
 			})
 
@@ -28,7 +28,7 @@ func NewCheckCommand() *cobra.Command {
 			case ".json", ".yaml":
 				result, err := spec.CheckFile(file)
 				if err != nil {
-					log.Warnf("failed to check json file %s: %s", file, err)
+					log.Warn().Msgf("failed to check json file %s: %s", file, err)
 					break
 				}
 				if result.Valid() {
@@ -42,21 +42,21 @@ func NewCheckCommand() *cobra.Command {
 			case ".csv":
 				err := spec.CheckCsvFile(file)
 				if err != nil {
-					log.Warnf("failed to check csv file %s: %s", file, err)
+					log.Warn().Msgf("failed to check csv file %s: %s", file, err)
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}
 			case ".ndjson":
 				err := spec.CheckNdjsonFile(file)
 				if err != nil {
-					log.Warnf("failed to check ndjson file %s: %s", file, err)
+					log.Warn().Msgf("failed to check ndjson file %s: %s", file, err)
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}
 			case ".idl":
 				err := spec.CheckIdlFile(file)
 				if err != nil {
-					log.Warnf("failed to check idl file %s: %s", file, err)
+					log.Warn().Msgf("failed to check idl file %s: %s", file, err)
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}

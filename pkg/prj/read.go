@@ -9,7 +9,7 @@ import (
 )
 
 func readProject(d string) (*ProjectInfo, error) {
-	log.Debugf("Read Project %s", d)
+	log.Debug().Msgf("Read Project %s", d)
 	// check if source is directory
 	if _, err := os.Stat(d); err != nil {
 		return nil, err

@@ -45,7 +45,7 @@ func (s *Engine) HasInterface(symbol string) bool {
 }
 
 func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
-	log.Infof("%s/%s invoke", symbol, name)
+	log.Info().Msgf("%s/%s invoke", symbol, name)
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -57,11 +57,11 @@ func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 	jsArgs := s.vm.ToValue(args)
 	v, err := m(obj, jsArgs)
 	if err != nil {
-		log.Warnf("InvokeOperation: %s", err)
+		log.Warn().Msgf("InvokeOperation: %s", err)
 		return nil, err
 	}
 	result := v.Export()
-	log.Infof("%s/%s result: %v", symbol, name, result)
+	log.Info().Msgf("%s/%s result: %v", symbol, name, result)
 	return result, nil
 }
 
@@ -112,12 +112,12 @@ func (e *Engine) PlaySequence(sequenceId string) error {
 		return fmt.Errorf("sequence %s not found", sequenceId)
 	}
 	jsSteps := obj.Get("steps").Export().([]any)
-	log.Printf("PlaySequencer: %d steps", len(jsSteps))
+	log.Info().Msgf("PlaySequencer: %d steps", len(jsSteps))
 	return nil
 }
 
 func (e *Engine) StopSequence(sequenceId string) {
-	log.Printf("StopSequencer: %s", sequenceId)
+	log.Info().Msgf("StopSequencer: %s", sequenceId)
 }
 
 func (s *Engine) init() {
@@ -126,27 +126,27 @@ func (s *Engine) init() {
 	console.Enable(s.vm)
 	err := s.vm.Set("$registerInterface", s.jsRegisterInterface)
 	if err != nil {
-		log.Fatalf("Set $registerInterface: %s", err)
+		log.Fatal().Msgf("Set $registerInterface: %s", err)
 	}
 	err = s.vm.Set("$signal", s.jsSignal)
 	if err != nil {
-		log.Fatalf("Set $signal: %s", err)
+		log.Fatal().Msgf("Set $signal: %s", err)
 	}
 	err = s.vm.Set("$change", s.jsChange)
 	if err != nil {
-		log.Fatalf("Set $change: %s", err)
+		log.Fatal().Msgf("Set $change: %s", err)
 	}
 	err = s.vm.Set("$registerSequence", s.jsRegisterSequence)
 	if err != nil {
-		log.Fatalf("Set $registerSequence: %s", err)
+		log.Fatal().Msgf("Set $registerSequence: %s", err)
 	}
 }
 
 func (s *Engine) PlayAllSequences() error {
-	log.Infof("script engine play all sequences")
+	log.Info().Msgf("script engine play all sequences")
 	return nil
 }
 
 func (e *Engine) StopAllSequences() {
-	log.Printf("script engine stop all sequences")
+	log.Info().Msgf("script engine stop all sequences")
 }

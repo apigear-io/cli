@@ -15,29 +15,29 @@ import (
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
 func (t *task) parseInputs(s *model.System, inputs []string) error {
-	log.Debugf("parse inputs %v", inputs)
+	log.Debug().Msgf("parse inputs %v", inputs)
 	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
 	files, err := t.expandInputs(t.doc.RootDir, inputs)
 	if err != nil {
-		log.Infof("error expanding inputs")
+		log.Info().Msgf("error expanding inputs")
 		return err
 	}
 	for _, file := range files {
-		log.Debugf("parse input %s", file)
+		log.Debug().Msgf("parse input %s", file)
 		switch filepath.Ext(file) {
 		case ".yaml", ".yml", ".json":
 			err := dataParser.ParseFile(file)
 			if err != nil {
-				log.Warnf("error parsing data file: %s. skip", err)
+				log.Warn().Msgf("error parsing data file: %s. skip", err)
 			}
 		case ".idl":
 			err := idlParser.ParseFile(file)
 			if err != nil {
-				log.Warnf("error parsing idl file: %s. skip", err)
+				log.Warn().Msgf("error parsing idl file: %s. skip", err)
 			}
 		default:
-			log.Warnf("unknown file type %s. skip", file)
+			log.Warn().Msgf("unknown file type %s. skip", file)
 		}
 	}
 	err = s.ResolveAll()
@@ -57,7 +57,7 @@ func (t *task) expandInputs(rootDir string, inputs []string) ([]string, error) {
 		entry := helper.Join(rootDir, input)
 		info, err := os.Stat(entry)
 		if err != nil {
-			log.Infof("error resolving input: %s", entry)
+			log.Info().Msgf("error resolving input: %s", entry)
 			continue
 		}
 

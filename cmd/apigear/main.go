@@ -14,7 +14,7 @@ var (
 )
 
 func main() {
-	log.Debugf("version: %s-%s-%s", version, commit, date)
+	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
 	if cmd.Run() != 0 {
 		os.Exit(1)
 	}

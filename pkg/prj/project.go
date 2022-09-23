@@ -14,7 +14,7 @@ import (
 var currentProject *ProjectInfo
 
 func OpenProject(source string) (*ProjectInfo, error) {
-	log.Infof("Open Project %s", source)
+	log.Info().Msgf("Open Project %s", source)
 	// check if source is directory
 	if _, err := os.Stat(source); err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func CurrentProject() *ProjectInfo {
 
 // InitProject initializes a new project inside destination
 func InitProject(d string) (*ProjectInfo, error) {
-	log.Debugf("Init Project %s", d)
+	log.Debug().Msgf("Init Project %s", d)
 	// create destination if not exists
 	if _, err := os.Stat(d); os.IsNotExist(err) {
 		err := os.MkdirAll(d, 0755)
@@ -50,17 +50,17 @@ func InitProject(d string) (*ProjectInfo, error) {
 	// write demo module
 	target := helper.Join(d, "apigear", "demo.module.yaml")
 	if err := writeDemo(target, vfs.DemoModule); err != nil {
-		log.Debugf("Failed to write demo module: %s", err)
+		log.Debug().Msgf("Failed to write demo module: %s", err)
 	}
 	// write demo solution
 	target = helper.Join(d, "apigear", "demo.solution.yaml")
 	if err := writeDemo(target, vfs.DemoSolution); err != nil {
-		log.Debugf("Failed to write demo solution: %s", err)
+		log.Debug().Msgf("Failed to write demo solution: %s", err)
 	}
 	// write demo scenario
 	target = helper.Join(d, "apigear", "demo.scenario.yaml")
 	if err := writeDemo(target, vfs.DemoScenario); err != nil {
-		log.Debugf("Failed to write demo scenario: %s", err)
+		log.Debug().Msgf("Failed to write demo scenario: %s", err)
 	}
 	return readProject(d)
 }
@@ -74,7 +74,7 @@ func RecentProjectInfos() []*ProjectInfo {
 	for _, d := range config.GetRecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
-			log.Warnf("Failed to read project %s: %s", d, err)
+			log.Warn().Msgf("Failed to read project %s: %s", d, err)
 			config.RemoveRecentEntry(d)
 			continue
 		}
@@ -105,7 +105,7 @@ func OpenStudio(d string) error {
 
 // ImportProject imports a project from a zip file
 func ImportProject(repo string, dir string) (*ProjectInfo, error) {
-	log.Infof("Import Project %s", repo)
+	log.Info().Msgf("Import Project %s", repo)
 	// check if directory exists
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return nil, fmt.Errorf("target directory %s does not exist", dir)
@@ -123,7 +123,7 @@ func ImportProject(repo string, dir string) (*ProjectInfo, error) {
 
 // PackProject packs the project into a zip file
 func PackProject(source string, target string) (string, error) {
-	log.Infof("Pack Project %s", source)
+	log.Info().Msgf("Pack Project %s", source)
 	// check if source is directory
 	if _, err := os.Stat(source); os.IsNotExist(err) {
 		return "", err

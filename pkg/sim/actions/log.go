@@ -1,5 +1,5 @@
 package actions
 
-import logger "github.com/apigear-io/cli/pkg/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = logger.TopicLogger("sim/actions")
+var log = zlog.Topic("sim/actions")

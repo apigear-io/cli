@@ -39,11 +39,11 @@ func MessageFromJson(data []byte, m *Message) error {
 		return err
 	}
 	if m.Version != "2.0" {
-		log.Debugf("invalid rpc version: %s. fix to 2.0", m.Version)
+		log.Debug().Msgf("invalid rpc version: %s. fix to 2.0", m.Version)
 		m.Version = "2.0"
 	}
 	if m.Id == 0 {
-		log.Debugf("invalid rpc id: %d. fix to auto id", m.Id)
+		log.Debug().Msgf("invalid rpc id: %d. fix to auto id", m.Id)
 		m.Id = NextId()
 	}
 	return nil

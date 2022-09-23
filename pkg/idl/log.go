@@ -1,5 +1,5 @@
 package idl
 
-import logger "github.com/apigear-io/cli/pkg/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = logger.TopicLogger("idl")
+var log = zlog.Topic("idl")

@@ -7,21 +7,18 @@ import (
 )
 
 func NewUpdateCommand() *cobra.Command {
-	var name string
 	// cmd represents the pkgInstall command
 	var cmd = &cobra.Command{
 		Use:     "update [template]",
 		Aliases: []string{"up"},
-		Short:   "Update installed templates.",
-		Long:    `Update installed templates.`,
-		Args:    cobra.ExactArgs(1),
+		Short:   "Update template registry.",
+		Long:    `Fetch latest template registry.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			name = args[0]
-			err := tpl.UpdateTemplate(name)
+			err := tpl.UpdateRegistry()
 			if err != nil {
 				cmd.PrintErrln(err)
 			}
-			cmd.Printf("template %s updated\n", name)
+			cmd.Printf("local template registry updated\n")
 		},
 	}
 	return cmd

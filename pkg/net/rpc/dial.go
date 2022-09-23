@@ -12,7 +12,7 @@ import (
 // Dial creates a new client connection.
 // It tries repeatedly to connect to the server until successful or context is done.
 func Dial(ctx context.Context, url string) (*Connection, error) {
-	log.Infof("dial: %s", url)
+	log.Info().Msgf("dial: %s", url)
 	socket, _, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
 	if err == nil {
 		conn := NewConnection(ctx, socket)
@@ -27,10 +27,10 @@ func Dial(ctx context.Context, url string) (*Connection, error) {
 		default:
 			socket, _, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
 			if err == nil {
-				log.Debugf("connected to: %s", url)
+				log.Debug().Msgf("connected to: %s", url)
 				return NewConnection(ctx, socket), nil
 			} else {
-				log.Debugf("dial: %s", err)
+				log.Debug().Msgf("dial: %s", err)
 			}
 		}
 	}

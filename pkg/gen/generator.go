@@ -37,7 +37,7 @@ func (g *GeneratorStats) Start() {
 func (g *GeneratorStats) Stop() {
 	g.RunEnd = time.Now()
 	g.Duration = g.RunEnd.Sub(g.RunStart).Truncate(time.Millisecond)
-	log.Infof("generated %d files in %s. (%d write, %d skip, %d copy)\n", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
+	log.Info().Msgf("generated %d files in %s. (%d write, %d skip, %d copy)\n", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
 // generator applies template transformation on a set of files define in rules
@@ -85,7 +85,7 @@ func (g *generator) ParseTemplate(path string) error {
 }
 
 func (g *generator) ParseTemplatesDir(dir string) error {
-	log.Debugf("parsing templates dir: %s", dir)
+	log.Debug().Msgf("parsing templates dir: %s", dir)
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Println("error walking dir:", err)
@@ -105,7 +105,7 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		return g.ParseTemplate(path)
 	})
 	if err != nil {
-		log.Warnf("parse templates: %s", err)
+		log.Warn().Msgf("parse templates: %s", err)
 		return err
 	}
 	return nil
@@ -132,7 +132,7 @@ func (g *generator) ProcessRules(doc spec.RulesDoc) error {
 
 // processFeature processes a feature rule
 func (g *generator) processFeature(f spec.FeatureRule) error {
-	log.Debugf("processing feature %s", f.Name)
+	log.Debug().Msgf("processing feature %s", f.Name)
 	// process system
 	ctx := model.SystemScope{
 		System: g.System,
@@ -228,7 +228,7 @@ func (g *generator) processScope(scope spec.ScopeRule, ctx any) error {
 
 // processDocument processes a document rule with the given context
 func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
-	log.Debugf("processing document %s", doc.Source)
+	log.Debug().Msgf("processing document %s", doc.Source)
 	// the source file to render
 	var source = filepath.Clean(doc.Source)
 	// the docTarget destination file
@@ -245,7 +245,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 		// copy the source to the target
 		err := g.CopyFile(source, target, force)
 		if err != nil {
-			log.Warnf("copy file %s to %s: %s", source, target, err)
+			log.Warn().Msgf("copy file %s to %s: %s", source, target, err)
 			return err
 		}
 	} else {
@@ -265,12 +265,12 @@ func (g *generator) RenderString(s string, ctx any) (string, error) {
 	t.Funcs(filters.PopulateFuncMap())
 	_, err := t.Parse(s)
 	if err != nil {
-		log.Warnf("render string: %s: %s", s, err)
+		log.Warn().Msgf("render string: %s: %s", s, err)
 		return "", err
 	}
 	err = t.Execute(buf, ctx)
 	if err != nil {
-		log.Warnf("exec template %s: %s", s, err)
+		log.Warn().Msgf("exec template %s: %s", s, err)
 		return "", err
 	}
 	return buf.String(), nil
@@ -279,7 +279,7 @@ func (g *generator) RenderString(s string, ctx any) (string, error) {
 func (g *generator) CopyFile(source, target string, force bool) error {
 	g.Stats.FilesCopied++
 	if g.DryRun {
-		log.Infof("dry run: copying file %s to %s", source, target)
+		log.Info().Msgf("dry run: copying file %s to %s", source, target)
 		g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 		return nil
 	}
@@ -296,19 +296,19 @@ func (g *generator) CopyFile(source, target string, force bool) error {
 func (g *generator) RenderFile(source, target string, ctx any, force bool) error {
 	// var force = doc.Force
 	// var transform = doc.Transform
-	log.Debugf("render %s -> %s", source, target)
+	log.Debug().Msgf("render %s -> %s", source, target)
 	// render the template using the context
 	buf := bytes.NewBuffer(nil)
 	err := g.Template.ExecuteTemplate(buf, source, ctx)
 	if err != nil {
-		log.Warnf("exec template %s: %s", source, err)
+		log.Warn().Msgf("exec template %s: %s", source, err)
 		return fmt.Errorf("render template %s: %w", source, err)
 	}
 	// write the file
-	log.Debugf("write %s", target)
+	log.Debug().Msgf("write %s", target)
 	err = g.WriteFile(buf.Bytes(), target, force)
 	if err != nil {
-		log.Warnf("write file %s: %s", target, err)
+		log.Warn().Msgf("write file %s: %s", target, err)
 		return fmt.Errorf("write file %s: %w", target, err)
 	}
 	return nil
@@ -324,15 +324,15 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 
 		if same {
 			g.Stats.FilesSkipped++
-			log.Infof("skipping file %s", target)
+			log.Info().Msgf("skipping file %s", target)
 			return nil
 		}
 	}
-	log.Debug("write file ", target)
+	log.Debug().Msgf("write file %s", target)
 	g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 	g.Stats.FilesWritten++
 	if g.DryRun {
-		log.Infof("dry run: writing file %s", target)
+		log.Info().Msgf("dry run: writing file %s", target)
 		return nil
 	}
 	dir := filepath.Dir(target)

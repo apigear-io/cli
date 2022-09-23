@@ -10,4 +10,9 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["goDefault"] = goDefault
 	fm["goParam"] = goParam
 	fm["goParams"] = goParams
+	fm["goType"] = goType
+	fm["goVar"] = goVar
+	fm["goVars"] = goVars
+	fm["goPublicVar"] = goPublicVar
+	fm["goPublicVars"] = goPublicVars
 }

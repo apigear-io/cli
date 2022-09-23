@@ -51,6 +51,6 @@ func pyReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}
-	log.Debugf("pyReturn node: %s", node.Name)
+	log.Debug().Msgf("pyReturn node: %s", node.Name)
 	return ToReturnString(&node.Schema, prefix)
 }

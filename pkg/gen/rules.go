@@ -37,13 +37,13 @@ func CheckRulesJson(file string, bytes []byte) error {
 	}
 	result, err := spec.CheckJson(spec.DocumentTypeRules, bytes)
 	if err != nil {
-		log.Warnf("failed to check document %s: %s", file, err)
+		log.Warn().Msgf("failed to check document %s: %s", file, err)
 		return err
 	}
 	if !result.Valid() {
-		log.Warnf("document %s is invalid", file)
+		log.Warn().Msgf("document %s is invalid", file)
 		for _, desc := range result.Errors() {
-			log.Warn(desc.String())
+			log.Warn().Msg(desc.String())
 			err = fmt.Errorf("%s", desc.String())
 		}
 	}

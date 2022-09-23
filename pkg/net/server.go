@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog"
 )
 
 type Server struct {
@@ -18,8 +19,7 @@ func NewHTTPServer() *Server {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(NewHttpLogger())
-	// r.Use(middleware.Logger)
+	r.Use(httplog.RequestLogger(httplog.NewLogger("http", httplog.Options{})))
 	r.Use(middleware.Recoverer)
 	return &Server{
 		router: r,
@@ -34,7 +34,7 @@ func (s *Server) Start(addr string) error {
 	if s.server != nil {
 		return fmt.Errorf("server already started")
 	}
-	log.Debugf("start http server at %s", addr)
+	log.Debug().Msgf("start http server at %s", addr)
 	server := &http.Server{Addr: addr, Handler: s.router}
 	s.server = server
 	return server.ListenAndServe()
@@ -51,9 +51,9 @@ func (s *Server) Restart(ctx context.Context, addr string) error {
 	if s.server == nil {
 		return fmt.Errorf("server not started")
 	}
-	log.Debugf("restart http server at %s", addr)
+	log.Debug().Msgf("restart http server at %s", addr)
 	s.server.RegisterOnShutdown(func() {
-		log.Infof("shutdown http server at %s", addr)
+		log.Info().Msgf("shutdown http server at %s", addr)
 	})
 	err := s.server.Shutdown(ctx)
 	if err != nil {
@@ -67,9 +67,9 @@ func (s *Server) Stop() {
 	if s.server == nil {
 		return
 	}
-	log.Debugf("stop http server at %s", s.server.Addr)
+	log.Debug().Msgf("stop http server at %s", s.server.Addr)
 	err := s.server.Shutdown(context.Background())
 	if err != nil {
-		log.Errorf("error shutting down server: %s", err)
+		log.Error().Msgf("error shutting down server: %s", err)
 	}
 }

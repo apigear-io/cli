@@ -11,7 +11,7 @@ import (
 )
 
 func PopulateFuncMap() template.FuncMap {
-	log.Debug("populate func map")
+	log.Debug().Msg("populate func map")
 	fm := make(template.FuncMap)
 	fm["snake"] = SnakeCaseLower
 	fm["Snake"] = SnakeCase

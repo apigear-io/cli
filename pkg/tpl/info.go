@@ -14,11 +14,11 @@ func GetInfo(name string) (TemplateInfo, error) {
 	target := helper.Join(dir, name)
 	sha1, err := git.LastCommit(target)
 	if err != nil {
-		log.Warnf("failed to get git info for template %s", name)
+		log.Warn().Msgf("failed to get git info for template %s", name)
 	}
 	url, err := git.RemoteUrl(target)
 	if err != nil {
-		log.Warnf("failed to get git info for template %s", name)
+		log.Warn().Msgf("failed to get git info for template %s", name)
 	}
 	return TemplateInfo{
 		Name:   strings.TrimSpace(name),

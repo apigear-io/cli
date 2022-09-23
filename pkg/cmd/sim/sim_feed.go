@@ -15,12 +15,12 @@ type ConsoleHandler struct{}
 
 // Very similar to message handler
 func (c ConsoleHandler) HandleMessage(msg rpc.Message) error {
-	log.Debugf("handle message: %+v", msg)
+	log.Debug().Msgf("handle message: %+v", msg)
 	switch msg.Method {
 	case "simu.state":
-		log.Infof("<- state: %v", msg.Params)
+		log.Info().Msgf("<- state: %v", msg.Params)
 	case "simu.call":
-		log.Infof("<- reply[%d]: %v", msg.Id, msg.Params)
+		log.Info().Msgf("<- reply[%d]: %v", msg.Id, msg.Params)
 	}
 	return nil
 }
@@ -43,8 +43,8 @@ func NewClientCommand() *cobra.Command {
 			options.script = args[0]
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			log.Debug("run script ", options.script)
-			log.OnReport(func(entry *log.ReportEntry) {
+			log.Debug().Msgf("run script %s", options.script)
+			log.OnReport(func(entry *log.ReportEvent) {
 				cmd.Println(entry.Message)
 			})
 			switch filepath.Ext(options.script) {
@@ -53,27 +53,27 @@ func NewClientCommand() *cobra.Command {
 				writer := ConsoleHandler{}
 				conn, err := rpc.Dial(ctx, options.addr)
 				if err != nil {
-					log.Fatalf("failed to connect to %s: %v", options.addr, err)
+					log.Fatal().Msgf("failed to connect to %s: %v", options.addr, err)
 				}
 				go func() {
 					net.ScanJsonDelimitedFile(options.script, options.sleep, options.repeat, emitter)
 				}()
 				go func() {
 					for data := range emitter {
-						log.Infof("-> %s", data)
+						log.Info().Msgf("-> %s", data)
 						var m rpc.Message
 						err := rpc.MessageFromJson(data, &m)
 						if err != nil {
-							log.Errorf("failed to parse message: %v", err)
+							log.Error().Msgf("failed to parse message: %v", err)
 							continue
 						}
 						err = conn.WriteJSON(m)
 						if err != nil {
-							log.Warnf("write message: %v", err)
+							log.Warn().Msgf("write message: %v", err)
 						}
 					}
 					// wait for all messages to be sent
-					log.Info("wait for all messages sent and exit...")
+					log.Info().Msg("wait for all messages sent and exit...")
 					time.Sleep(1 * time.Second)
 					cancel()
 				}()
@@ -86,12 +86,12 @@ func NewClientCommand() *cobra.Command {
 							var msg rpc.Message
 							err := conn.ReadJSON(&msg)
 							if err != nil {
-								log.Warnf("failed to read message: %v", err)
+								log.Warn().Msgf("failed to read message: %v", err)
 								return
 							}
 							err = writer.HandleMessage(msg)
 							if err != nil {
-								log.Warnf("failed to handle message: %v", err)
+								log.Warn().Msgf("failed to handle message: %v", err)
 							}
 						}
 					}

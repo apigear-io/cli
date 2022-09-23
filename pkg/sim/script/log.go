@@ -1,5 +1,5 @@
 package script
 
-import logger "github.com/apigear-io/cli/pkg/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = logger.TopicLogger("sim/script")
+var log = zlog.Topic("sim/script")

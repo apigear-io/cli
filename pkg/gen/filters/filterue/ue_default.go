@@ -11,7 +11,7 @@ import (
 
 func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
-		log.Warn("ToDefaultString called with nil schema")
+		log.Warn().Msg("ToDefaultString called with nil schema")
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	moduleId := strcase.ToCamel(schema.Module.Name)
@@ -49,7 +49,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]
 			// upper case first letter
-			// EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
+			// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
 			text = fmt.Sprintf("%sE%s%s::%s", prefix, moduleId, symbol.Name, strings.ToUpper(member.Name))
 		case model.TypeStruct:
 			symbol := schema.GetStruct()
@@ -68,7 +68,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 
 func ueDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		log.Warn("goDefault called with nil node")
+		log.Warn().Msg("goDefault called with nil node")
 		return "", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(prefix, &node.Schema)

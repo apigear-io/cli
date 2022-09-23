@@ -19,11 +19,11 @@ func NewEventSender(url string) *EventSender {
 // The events are sent to the monitor server using a http post message
 func (s *EventSender) SendEvents(emitter chan *Event, sleep time.Duration) {
 	for event := range emitter {
-		log.Infof("send event: %+v", event)
+		log.Info().Msgf("send event: %+v", event)
 		// capture url, event for closure
 		err := HttpPost(s.url, event)
 		if err != nil {
-			log.Warnf("failed to send event: %s", err)
+			log.Warn().Msgf("failed to send event: %s", err)
 		}
 		if sleep > 0 {
 			time.Sleep(sleep)

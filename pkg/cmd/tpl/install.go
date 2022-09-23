@@ -13,8 +13,8 @@ func NewGetCommand() *cobra.Command {
 
 	// cmd represents the pkgInstall command
 	var cmd = &cobra.Command{
-		Use:   "get [name]",
-		Short: "Download a template from a source to the local cache.",
+		Use:   "install [name]",
+		Short: "Installs a template",
 		Long: `Download a template from a source to the local cache. 
 Templates cached can be easily used in a solutions document 
 by using the template name.`,

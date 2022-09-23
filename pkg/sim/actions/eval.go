@@ -48,13 +48,13 @@ func (e *eval) EvalAction(symbol string, action spec.ActionEntry, ctx map[string
 		if h, ok := e.actions[k]; ok {
 			v, err := h(symbol, action[k], ctx)
 			if err != nil {
-				log.Printf("error: %v", err)
+				log.Info().Msgf("error: %v", err)
 			}
 			if v != nil {
 				result = v
 			}
 		} else {
-			log.Printf("action %s not found", k)
+			log.Info().Msgf("action %s not found", k)
 		}
 	}
 	return result, nil
@@ -63,7 +63,7 @@ func (e *eval) EvalAction(symbol string, action spec.ActionEntry, ctx map[string
 func (e *eval) EvalActionString(symbol string, data []byte, ctx map[string]any) (map[string]any, error) {
 	var action spec.ActionEntry
 	if err := yaml.Unmarshal(data, &action); err != nil {
-		log.Printf("error: %v", err)
+		log.Info().Msgf("error: %v", err)
 	}
 	return e.EvalAction(symbol, action, ctx)
 }
@@ -73,7 +73,7 @@ func (e *eval) register(name string, handler ActionHandler) {
 }
 
 func (e *eval) actionSet(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionSet: %v", args)
+	log.Debug().Msgf("actionSet: %v", args)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	for k := range args {
@@ -85,13 +85,13 @@ func (e *eval) actionSet(symbol string, args map[string]any, ctx map[string]any)
 
 // actionReturn sets a _return value for the action.
 func (e *eval) actionReturn(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionReturn: %v", args)
+	log.Debug().Msgf("actionReturn: %v", args)
 	return args, nil
 }
 
 // actionSignal sends a signal to the interface.
 func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionSignal: %s", args)
+	log.Debug().Msgf("actionSignal: %s", args)
 	for k := range args {
 		sigArgs, ok := args[k].(map[string]any)
 		if !ok {
@@ -104,7 +104,7 @@ func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]a
 
 // actionChange sends a change to the interface.
 func (e *eval) actionChange(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
-	log.Debugf("actionChange: %v", args)
+	log.Debug().Msgf("actionChange: %v", args)
 	for k := range args {
 		e.EmitOnChange(symbol, k, args[k])
 	}

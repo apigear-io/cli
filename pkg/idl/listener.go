@@ -33,14 +33,14 @@ func IsNil(v any) {
 	if reflect.ValueOf(v).IsNil() {
 		return
 	}
-	log.Fatalf("isNil: %v should be nil", v)
+	log.Fatal().Msgf("isNil: %v should be nil", v)
 }
 
 func IsNotNil(v any) {
 	if !reflect.ValueOf(v).IsNil() {
 		return
 	}
-	log.Fatalf("isNotNil: %v is nil", v)
+	log.Fatal().Msgf("isNotNil: %v is nil", v)
 }
 
 func NewObjectApiListener(system *model.System) parser.ObjectApiListener {

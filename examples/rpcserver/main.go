@@ -24,7 +24,7 @@ func main() {
 	defer func() {
 		err := s.Shutdown(ctx)
 		if err != nil {
-			log.Errorf("error shutting down server: %s", err)
+			log.Error().Msgf("error shutting down server: %s", err)
 		}
 	}()
 	go func() {

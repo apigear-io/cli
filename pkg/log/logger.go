@@ -1,68 +1,44 @@
 package log
 
 import (
-	"io"
-	"log"
 	"os"
 
+	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	zlog "github.com/rs/zerolog/log"
 )
 
-var logger = logrus.New()
+func Topic(topic string) zerolog.Logger {
+	return zlog.With().Str("topic", topic).Logger()
+}
 
-func Config(verbose bool, debug bool) {
-	log.SetOutput(NewLogCapture(logger))
-	logger.Formatter = &logrus.TextFormatter{
-		DisableQuote: true,
+func init() {
+	level := zerolog.InfoLevel
+	debug := os.Getenv("DEBUG") != ""
+	verbose := os.Getenv("VERBOSE") != ""
+	if debug {
+		level = zerolog.DebugLevel
 	}
 	if verbose {
-		logger.SetLevel(logrus.DebugLevel)
-	} else {
-		logger.SetLevel(logrus.InfoLevel)
+		level = zerolog.TraceLevel
 	}
-	logger.SetReportCaller(debug)
-	if verbose || debug {
-		logger.Debugf("logger configured: verbose=%v, debug=%v", verbose, debug)
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-	logFile := helper.Join(home, ".apigear/logs/app.log")
-	ljack := newLogFileRotator(logFile)
 
-	if verbose { // log to console and file
-		logger.SetOutput(io.MultiWriter(os.Stderr, ljack))
-	} else { // log to reporter and file
-		logger.SetOutput(ljack)
-		logger.AddHook(NewReportHook())
+	logFile := helper.Join(config.ConfigDir, "apigear.log")
+	multi := zerolog.MultiLevelWriter(
+		zerolog.ConsoleWriter{Out: os.Stderr},
+		NewReportWriter("info"),
+		newRollingFile(logFile),
+	)
+	zlog.Logger = zlog.Output(multi).Level(level)
+	if verbose {
+		zlog.Logger = zlog.Logger.With().Caller().Logger()
 	}
 }
 
-var Debug = logger.Debug
-var Debugf = logger.Debugf
-var Debugln = logger.Debugln
-var Info = logger.Info
-var Infof = logger.Infof
-var Infoln = logger.Infoln
-var Warn = logger.Warn
-var Warnf = logger.Warnf
-var Warnln = logger.Warnln
-var Error = logger.Error
-var Errorf = logger.Errorf
-var Errorln = logger.Errorln
-var Panic = logger.Panic
-var Panicf = logger.Panicf
-var Panicln = logger.Panicln
-var Fatal = logger.Fatal
-var Fatalf = logger.Fatalf
-var Fatalln = logger.Fatalln
-
-func TopicLogger(topic string) *logrus.Entry {
-	return logger.WithField("topic", topic)
-}
-
-func Logger() *logrus.Logger {
-	return logger
-}
+var Debug = zlog.Debug
+var Info = zlog.Info
+var Warn = zlog.Warn
+var Error = zlog.Error
+var Fatal = zlog.Fatal
+var Panic = zlog.Panic

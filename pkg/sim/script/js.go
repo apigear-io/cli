@@ -18,7 +18,7 @@ func (s *Engine) jsRegisterInterface(obj *js.Object) error {
 	if _, ok := s.interfaces[id]; ok {
 		return fmt.Errorf("interface %s already registered", id)
 	}
-	log.Infof("registering interface %s", id)
+	log.Info().Msgf("registering interface %s", id)
 	s.interfaces[id] = obj
 	return nil
 }

@@ -36,13 +36,13 @@ func (r *Runner) task(file string) *task {
 func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
 	result, err := spec.CheckSolutionDoc(doc)
 	if err != nil {
-		log.Warnf("failed to check document %s: %s", file, err)
+		log.Warn().Msgf("failed to check document %s: %s", file, err)
 		return fmt.Errorf("failed to check document %s: %s", file, err)
 	}
 	if !result.Valid() {
-		log.Warnf("document %s is invalid", file)
+		log.Warn().Msgf("document %s is invalid", file)
 		for _, desc := range result.Errors() {
-			log.Warnf("\t%s", desc)
+			log.Warn().Msgf("\t%s", desc)
 		}
 		return fmt.Errorf("document %s is invalid", file)
 	}
@@ -74,7 +74,7 @@ func (r *Runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, er
 	}
 	err = t.run()
 	if err != nil {
-		log.Warnf("failed to run task %s: %s", file, err)
+		log.Warn().Msgf("failed to run task %s: %s", file, err)
 	}
 	return t.startWatch()
 }

@@ -4,9 +4,9 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func newLogFileRotator(filename string) *lumberjack.Logger {
+func newRollingFile(fname string) *lumberjack.Logger {
 	return &lumberjack.Logger{
-		Filename:   filename,
+		Filename:   fname,
 		MaxSize:    100, // megabytes
 		MaxBackups: 52,
 		MaxAge:     7,     //days

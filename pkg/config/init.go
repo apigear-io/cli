@@ -5,30 +5,31 @@ import (
 	"os"
 
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var ConfigFile string
-var Verbose bool
+var ConfigDir string
 var DryRun bool = false
 
 // initConfig reads in config file and ENV variables if set.
-func InitConfig() {
+func init() {
 	debug := os.Getenv("DEBUG") == "1"
 	if ConfigFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(ConfigFile)
 	} else {
 		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
 		// Search config in home directory with name ".apigear" (without extension).
+		home, err := os.UserHomeDir()
+		ConfigDir = helper.Join(home, ".apigear")
+		ConfigFile = viper.ConfigFileUsed()
+		cobra.CheckErr(err)
 		viper.AddConfigPath(home)
 		viper.SetConfigType("json")
 		viper.SetConfigName(".apigear")
-		viper.SetConfigFile(helper.Join(home, ".apigear", "config.json"))
+		viper.SetConfigFile(ConfigFile)
 		if debug {
 			fmt.Printf("config path dir: %s\n", home)
 		}
@@ -39,10 +40,33 @@ func InitConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
-		log.Debugf("no config file: %s", err)
+		fmt.Printf("failed to read config file: %v\n", err)
 	}
 
 	viper.SetEnvPrefix("apigear")
 	viper.AutomaticEnv() // read in environment variables that match
-	log.Config(Verbose, debug)
+	initPackageDir()
+	initRegistryDir()
+}
+
+func initPackageDir() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	packageDir := helper.Join(home, ".apigear", "templates")
+	viper.SetDefault(KeyPackageDir, packageDir)
+	err = os.MkdirAll(packageDir, 0755)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initRegistryDir() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	registryDir := helper.Join(home, ".apigear", "registry")
+	viper.SetDefault(KeyRegistryDir, registryDir)
 }

@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/apigear-io/cli/pkg/log"
+	"path/filepath"
+
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +13,7 @@ const (
 	KeyRecent        = "recent"
 	KeyVersion       = "version"
 	KeyPackageDir    = "package_dir"
+	KeyRegistryDir   = "registry_dir"
 )
 
 func GetRecentEntries() []string {
@@ -23,14 +25,12 @@ func GetRecentEntries() []string {
 	return entries
 }
 
-func AppendRecentEntry(file string) {
-	log.Debugf("Append recent project: %s", file)
+func AppendRecentEntry(file string) error {
 	// check if file is already in recent
 	recent := GetRecentEntries()
 	for _, f := range recent {
 		if f == file {
-			log.Debugf("File %s is already in recent", file)
-			return
+			return nil
 		}
 	}
 	// limit to 5 entries
@@ -39,13 +39,10 @@ func AppendRecentEntry(file string) {
 	}
 	recent = append(recent, file)
 	viper.Set(KeyRecent, recent)
-	err := viper.WriteConfig()
-	if err != nil {
-		log.Warnf("Failed to write config: %s", err)
-	}
+	return viper.WriteConfig()
 }
 
-func RemoveRecentEntry(d string) {
+func RemoveRecentEntry(d string) error {
 	recent := GetRecentEntries()
 	for i, f := range recent {
 		if f == d {
@@ -54,10 +51,7 @@ func RemoveRecentEntry(d string) {
 		}
 	}
 	viper.Set(KeyRecent, recent)
-	err := viper.WriteConfig()
-	if err != nil {
-		log.Warnf("Failed to write config: %s", err)
-	}
+	return viper.WriteConfig()
 }
 
 func Set(key string, value any) {
@@ -65,11 +59,7 @@ func Set(key string, value any) {
 }
 
 func WriteConfig() error {
-	err := viper.WriteConfig()
-	if err != nil {
-		log.Warnf("Failed to write config: %s", err)
-	}
-	return err
+	return viper.WriteConfig()
 }
 
 func GetEditorCommand() string {
@@ -94,4 +84,44 @@ func GetUpdateChannel() string {
 		return "stable"
 	}
 	return ch
+}
+
+func GetTemplateRegistryDir() string {
+	dir := viper.GetString(KeyRegistryDir)
+	if dir == "" {
+		return "registry"
+	}
+	return dir
+}
+
+func GetTempleRegistryFile() string {
+	return filepath.Join(GetTemplateRegistryDir(), "registry.json")
+}
+
+func AllSettings() map[string]interface{} {
+	return viper.AllSettings()
+}
+
+func ConfigFileUsed() string {
+	return viper.ConfigFileUsed()
+}
+
+func SetVersion(version string) {
+	viper.Set(KeyVersion, version)
+}
+
+func IsSet(key string) bool {
+	return viper.IsSet(key)
+}
+
+func Get(key string) string {
+	return viper.GetString(key)
+}
+
+func GetAuthToken() string {
+	return viper.GetString("auth_token")
+}
+
+func GetPackageDir() string {
+	return viper.GetString(KeyPackageDir)
 }

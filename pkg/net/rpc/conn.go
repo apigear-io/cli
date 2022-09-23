@@ -93,20 +93,20 @@ func (c *Connection) writePump() {
 		case <-ticker.C:
 			err := c.socket.WriteMessage(websocket.PingMessage, []byte{})
 			if err != nil {
-				log.Errorf("conn: write ping error %v", err)
+				log.Error().Msgf("conn: write ping error %v", err)
 				return
 			}
 		case data, ok := <-c.send:
 			if !ok {
 				err := c.socket.WriteMessage(websocket.CloseMessage, []byte{})
 				if err != nil {
-					log.Errorf("conn: write close message: %v", err)
+					log.Error().Msgf("conn: write close message: %v", err)
 				}
 				return
 			}
 			err := c.socket.WriteMessage(websocket.TextMessage, data)
 			if err != nil {
-				log.Errorf("conn: write error %v", err)
+				log.Error().Msgf("conn: write error %v", err)
 				return
 			}
 		}
@@ -130,7 +130,7 @@ func (c *Connection) readPump() {
 	for {
 		_, data, err := c.socket.ReadMessage()
 		if err != nil {
-			log.Errorf("conn: read error %v", err)
+			log.Error().Msgf("conn: read error %v", err)
 			return
 		}
 		c.recv <- data
@@ -144,7 +144,7 @@ func (c *Connection) Done() <-chan struct{} {
 
 // Close closes the connection and the underlying socket.
 func (c *Connection) Close() {
-	log.Debugf("%s: close", c.id)
+	log.Debug().Msgf("%s: close", c.id)
 	c.cancel()
 	c.socket.Close()
 }

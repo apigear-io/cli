@@ -1,4 +1,4 @@
-package config
+package helper
 
 func Must(err error) {
 	if err != nil {

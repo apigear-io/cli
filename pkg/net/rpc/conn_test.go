@@ -22,14 +22,14 @@ func CreateHubWithServer(ctx context.Context) (*Hub, int, error) {
 	go func() {
 		err = s.ListenAndServe()
 		if err != nil {
-			log.Errorf("server error: %v", err)
+			log.Error().Msgf("server error: %v", err)
 		}
 	}()
 	go func() {
 		<-ctx.Done()
 		err := s.Shutdown(ctx)
 		if err != nil {
-			log.Errorf("error shutting down server: %v", err)
+			log.Error().Msgf("error shutting down server: %v", err)
 		}
 	}()
 	return hub, port, nil

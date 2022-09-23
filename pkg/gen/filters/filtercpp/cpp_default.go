@@ -22,7 +22,7 @@ func ToDefaultString(schema *model.Schema) string {
 		text = "false"
 	default:
 		if schema.Module == nil {
-			log.Fatal("schema.Module is nil")
+			log.Fatal().Msg("schema.Module is nil")
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {

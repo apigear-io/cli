@@ -1,11 +1,11 @@
 package git
 
 func Clone(repo string, target string) error {
-	log.Infof("clone %s to %s", repo, target)
+	log.Info().Msgf("clone %s to %s", repo, target)
 	out, err := ExecGit([]string{"clone", repo, target}, "")
 	if err != nil {
-		log.Warnf("failed to clone %s to %s", repo, target)
-		log.Warnf("clone out: %s", out)
+		log.Warn().Msgf("failed to clone %s to %s", repo, target)
+		log.Warn().Msgf("clone out: %s", out)
 	}
 	return err
 }

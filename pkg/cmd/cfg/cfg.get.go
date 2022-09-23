@@ -1,8 +1,8 @@
 package cfg
 
 import (
+	"github.com/apigear-io/cli/pkg/config"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func NewGetCmd() *cobra.Command {
@@ -16,14 +16,14 @@ func NewGetCmd() *cobra.Command {
 			if len(args) == 0 {
 				// print all settings
 				cmd.Println("all settings:")
-				for k, v := range viper.AllSettings() {
+				for k, v := range config.AllSettings() {
 					cmd.Printf("  %s: %s\n", k, v)
 				}
 			} else {
 				// print setting by key
 				key := args[0]
-				if viper.IsSet(key) {
-					cmd.Printf("%s: %s\n", key, viper.Get(key))
+				if config.IsSet(key) {
+					cmd.Printf("%s: %s\n", key, config.Get(key))
 				} else {
 					cmd.Printf("key '%s' was never set\n", key)
 				}

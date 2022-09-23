@@ -16,8 +16,8 @@ import (
 var addr = flag.String("addr", "ws://localhost:8080", "ws service address")
 
 func main() {
-	log.Debug("starting")
-	log.Info("starting")
+	log.Debug().Msg("starting")
+	log.Info().Msg("starting")
 	flag.Parse()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

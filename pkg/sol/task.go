@@ -42,7 +42,7 @@ func (t *task) addDep(dep string) {
 }
 
 func (t *task) run() error {
-	log.Debugf("run task %s", t.file)
+	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
 	for _, layer := range t.doc.Layers {
@@ -58,7 +58,7 @@ func (t *task) run() error {
 // A layer contains information about the inputs, used template and output.
 func (t *task) processLayer(layer spec.SolutionLayer) error {
 	rootDir := t.doc.RootDir
-	log.Debugf("process layer %s", layer.Name)
+	log.Debug().Msgf("process layer %s", layer.Name)
 	// TODO: template can be a dir or a name of a template
 	var templateDir string
 	td, err := GetTemplateDir(rootDir, layer.Template)

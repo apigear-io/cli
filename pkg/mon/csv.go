@@ -10,11 +10,11 @@ import (
 // ReadCsvEvents reads events from a csv file
 // and sends them to the emitter channel.
 func ReadCsvEvents(fn string, emitter chan *Event) error {
-	log.Debugf("read csv events from %s", fn)
+	log.Debug().Msgf("read csv events from %s", fn)
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {
-		log.Error("failed to open file ", fn, ": ", err)
+		log.Error().Err(err).Msgf("failed to open file %s", fn)
 		return err
 	}
 	defer file.Close()
@@ -28,7 +28,7 @@ func ReadCsvEvents(fn string, emitter chan *Event) error {
 	events := []*csvEvent{}
 	err = gocsv.UnmarshalFile(file, &events)
 	if err != nil {
-		log.Error("failed to unmarshal file ", fn, ": ", err)
+		log.Error().Err(err).Msgf("failed to unmarshal file %s", fn)
 	}
 
 	// send events to emitter channel
@@ -38,7 +38,7 @@ func ReadCsvEvents(fn string, emitter chan *Event) error {
 		if event.Data != "" {
 			err = json.Unmarshal([]byte(event.Data), &data)
 			if err != nil {
-				log.Error("failed to unmarshal data: ", err)
+				log.Error().Err(err).Msg("failed to unmarshal data")
 				continue
 			}
 		}

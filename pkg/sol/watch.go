@@ -34,32 +34,32 @@ func (t *task) watchDeps() error {
 		// check if dep is a file and if add to watcher
 		info, err := os.Stat(dep)
 		if err != nil {
-			log.Warnf("file info for %s: %s", dep, err)
+			log.Warn().Msgf("file info for %s: %s", dep, err)
 			continue
 		}
 		if info.Mode().IsRegular() {
-			log.Debugf("add file %s to watcher", dep)
+			log.Debug().Msgf("add file %s to watcher", dep)
 			err = t.watcher.Add(dep)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal().Err(err).Msg("failed to add file to watcher")
 			}
 		} else if info.IsDir() {
 			err := filepath.Walk(dep, func(path string, info os.FileInfo, err error) error {
 				if err != nil {
-					log.Warnf("walk path %s: %s", path, err)
+					log.Warn().Msgf("walk path %s: %s", path, err)
 					return nil
 				}
 				if info.IsDir() {
-					log.Debugf("add dir %s to watcher", path)
+					log.Debug().Msgf("add dir %s to watcher", path)
 					err := t.watcher.Add(path)
 					if err != nil {
-						log.Fatal(err)
+						log.Fatal().Err(err).Msg("failed to add dir to watcher")
 					}
 				}
 				return nil
 			})
 			if err != nil {
-				log.Warnf("walk path %s: %s", dep, err)
+				log.Warn().Msgf("walk path %s: %s", dep, err)
 			}
 		}
 	}
@@ -68,7 +68,7 @@ func (t *task) watchDeps() error {
 
 func (t *task) watchForever() {
 	if t.watcher == nil {
-		log.Warnf("watcher is not initialized")
+		log.Warn().Msgf("watcher is not initialized")
 	}
 	for {
 		select {
@@ -76,20 +76,20 @@ func (t *task) watchForever() {
 			if !ok {
 				return
 			}
-			log.Debugf("event: %s", event)
+			log.Debug().Msgf("event: %s", event)
 			if event.Op&fsnotify.Write == fsnotify.Write {
-				log.Debugf("modified file: %s", event.Name)
+				log.Debug().Msgf("modified file: %s", event.Name)
 				err := t.run()
 				if err != nil {
-					log.Warnf("error running watched task: %s", err)
+					log.Warn().Msgf("error running watched task: %s", err)
 				}
 			}
 		case err, ok := <-t.watcher.Errors:
 			if !ok {
-				log.Debugf("watcher error: %s", err)
+				log.Debug().Msgf("watcher error: %s", err)
 				return
 			}
-			log.Warnf("watch error: %s", err)
+			log.Warn().Msgf("watch error: %s", err)
 		case <-t.done:
 			t.watcher.Close()
 			return

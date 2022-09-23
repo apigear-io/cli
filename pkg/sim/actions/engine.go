@@ -43,10 +43,10 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
 		}
-		log.Infof("registering interface %s", iface.Name)
+		log.Info().Msgf("registering interface %s", iface.Name)
 	}
 	for _, seq := range doc.Sequences {
-		log.Infof("registering sequence %s", seq.Name)
+		log.Info().Msgf("registering sequence %s", seq.Name)
 		if seq.Interface == "" {
 			return fmt.Errorf("sequence %v has no interface", seq)
 		}
@@ -61,11 +61,11 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 				if iface != nil {
 					_, err := e.eval.EvalAction(iface.Name, frame.Action, iface.Properties)
 					if err != nil {
-						log.Errorf("eval action %s: %v", frame.Action, err)
+						log.Error().Msgf("eval action %s: %v", frame.Action, err)
 					}
 				}
 			}
-			log.Infof("sequence %s stopped", seq.Name)
+			log.Info().Msgf("sequence %s stopped", seq.Name)
 		}()
 		e.players = append(e.players, p)
 	}
@@ -102,7 +102,7 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 
 // InvokeOperation invokes a operation of the interface.
 func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
-	log.Infof("%s/%s invoke", symbol, name)
+	log.Info().Msgf("%s/%s invoke", symbol, name)
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -115,7 +115,7 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("%s/%s result %v", symbol, name, result)
+	log.Info().Msgf("%s/%s result %v", symbol, name, result)
 	return result, nil
 }
 
@@ -150,7 +150,7 @@ func (e *Engine) HasSequence(name string) bool {
 }
 
 func (e *Engine) PlayAllSequences() error {
-	log.Infof("actions engine play all sequences")
+	log.Info().Msgf("actions engine play all sequences")
 	for _, p := range e.players {
 		err := p.Play()
 		if err != nil {
@@ -161,11 +161,11 @@ func (e *Engine) PlayAllSequences() error {
 }
 
 func (e *Engine) StopAllSequences() {
-	log.Infof("actions engine stop all sequences")
+	log.Info().Msgf("actions engine stop all sequences")
 	for _, p := range e.players {
 		err := p.Stop()
 		if err != nil {
-			log.Warnf("stop sequence %s: %v", p.SequenceName(), err)
+			log.Warn().Msgf("stop sequence %s: %v", p.SequenceName(), err)
 		}
 	}
 }
@@ -184,9 +184,9 @@ func (e *Engine) StopSequence(name string) {
 		if p.SequenceName() == name {
 			err := p.Stop()
 			if err != nil {
-				log.Warnf("stop sequence %s: %v", name, err)
+				log.Warn().Msgf("stop sequence %s: %v", name, err)
 			}
 		}
 	}
-	log.Warnf("sequence %s not found", name)
+	log.Warn().Msgf("sequence %s not found", name)
 }

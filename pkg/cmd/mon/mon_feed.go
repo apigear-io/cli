@@ -26,7 +26,7 @@ func NewClientCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(_ *cobra.Command, args []string) {
 			options.script = args[0]
-			log.Debug("run script ", options.script)
+			log.Debug().Msgf("run script %S", options.script)
 			wg := &sync.WaitGroup{}
 			switch filepath.Ext(options.script) {
 			case ".json", ".ndjson":
@@ -41,7 +41,7 @@ func NewClientCommand() *cobra.Command {
 					for i := 0; i < options.repeat; i++ {
 						err := mon.ReadJsonEvents(fn, emitter)
 						if err != nil {
-							log.Error(err)
+							log.Error().Err(err).Msg("error reading events")
 						}
 					}
 				}(options.script, emitter)
@@ -59,7 +59,7 @@ func NewClientCommand() *cobra.Command {
 					vm := mon.NewEventScript(emitter)
 					err := vm.RunScriptFromFile(script)
 					if err != nil {
-						log.Error(err)
+						log.Error().Err(err).Msg("error running script")
 					}
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
@@ -69,12 +69,12 @@ func NewClientCommand() *cobra.Command {
 				go func(fn string, emitter chan *mon.Event) {
 					err := mon.ReadCsvEvents(fn, emitter)
 					if err != nil {
-						log.Error(err)
+						log.Error().Err(err).Msg("error reading events")
 					}
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
 			default:
-				log.Error("unknown file type: ", options.script)
+				log.Error().Msgf("unknown file type: ", options.script)
 			}
 		},
 	}

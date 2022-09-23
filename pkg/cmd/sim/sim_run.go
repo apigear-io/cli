@@ -39,8 +39,8 @@ Using a scenario you can define additional static and scripted data and behavior
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			go handleSignal(cancel)
-			log.Infoln("run simulation server")
-			log.OnReport(func(entry *log.ReportEntry) {
+			log.Info().Msgf("run simulation server")
+			log.OnReport(func(entry *log.ReportEvent) {
 				cmd.Println(entry.Message)
 			})
 			var doc *spec.ScenarioDoc
@@ -65,7 +65,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				if aDoc.Name == "" {
 					aDoc.Name = file
 				}
-				log.Infof("run simulation from scenario %s", file)
+				log.Info().Msgf("run simulation from scenario %s", file)
 				doc = aDoc
 			}
 			simu := sim.NewSimulation()
@@ -77,38 +77,38 @@ Using a scenario you can define additional static and scripted data and behavior
 				go func() {
 					err = simu.PlayAllSequences()
 					if err != nil {
-						log.Errorf("failed to play scenario: %v", err)
+						log.Error().Msgf("failed to play scenario: %v", err)
 					}
 				}()
 			}
 			// start rpc server
-			log.Info("start rpc hub")
+			log.Info().Msg("start rpc hub")
 			handler := net.NewSimuRpcHandler(simu)
 			hub := rpc.NewHub(ctx)
 			go func() {
 				for req := range hub.Requests() {
 					err := handler.HandleMessage(req)
 					if err != nil {
-						log.Error(err)
+						log.Error().Err(err).Msg("failed to handle rpc request")
 					}
 				}
 			}()
 			s := net.NewHTTPServer()
 			s.Router().HandleFunc("/ws", hub.ServeHTTP)
-			log.Infof("rpc server ws://%s/ws", addr)
+			log.Info().Msgf("rpc server ws://%s/ws", addr)
 			go func() {
 				err := s.Start(addr)
 				if err != nil {
-					log.Error(err)
+					log.Error().Err(err).Msg("failed to start rpc server")
 				}
 			}()
 			<-ctx.Done()
-			log.Infof("shutting down rpc hub")
+			log.Info().Msgf("shutting down rpc hub")
 			return nil
 		},
 	}
 	cmd.PostRun = func(cmd *cobra.Command, args []string) {
-		log.Debugln("stop simulation server")
+		log.Debug().Msg("stop simulation server")
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:8081", "address to listen on")
 	return cmd

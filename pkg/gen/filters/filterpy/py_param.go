@@ -55,6 +55,6 @@ func pyParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}
-	log.Debugf("pyParam called with node: %s", node.Name)
+	log.Debug().Msgf("pyParam called with node: %s", node.Name)
 	return ToParamString(&node.Schema, node.Name, prefix)
 }

@@ -91,7 +91,7 @@ func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
 }
 
 func (m *Module) ResolveAll() error {
-	log.Debugf("Resolving module %s", m.Name)
+	log.Debug().Msgf("Resolving module %s", m.Name)
 	for _, i := range m.Interfaces {
 		err := i.ResolveAll(m)
 		if err != nil {
