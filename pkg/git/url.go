@@ -2,8 +2,8 @@ package git
 
 import (
 	"net/url"
-	"strings"
 
+	"github.com/gitsight/go-vcsurl"
 	urls "github.com/whilp/git-urls"
 )
 
@@ -16,13 +16,6 @@ func IsValidGitUrl(url string) bool {
 	return err == nil
 }
 
-func RepositoryNameFromGitUrl(url string) (string, error) {
-	u, err := ParseGitUrl(url)
-	if err != nil {
-		return "", err
-	}
-	if strings.HasSuffix(u.Path, ".git") {
-		return strings.TrimSuffix(u.Path, ".git"), nil
-	}
-	return u.Path, nil
+func GitUrlInfo(url string) (*vcsurl.VCS, error) {
+	return vcsurl.Parse(url)
 }

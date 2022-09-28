@@ -9,9 +9,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-var ConfigFile string
-var ConfigDir string
-var DryRun bool = false
+var (
+	registryUrl = "https://github.com/apigear-io/template-registry.git"
+	ConfigFile  string
+	ConfigDir   string
+	DryRun      bool = false
+)
 
 // initConfig reads in config file and ENV variables if set.
 func init() {
@@ -45,24 +48,25 @@ func init() {
 
 	viper.SetEnvPrefix("apigear")
 	viper.AutomaticEnv() // read in environment variables that match
-	initPackageDir()
-	initRegistryDir()
+	initTemplates()
+	initRegistry()
 }
 
-func initPackageDir() {
+func initTemplates() {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
 	packageDir := helper.Join(home, ".apigear", "templates")
-	viper.SetDefault(KeyPackageDir, packageDir)
+	viper.SetDefault(KeyTemplatesDir, packageDir)
 	err = os.MkdirAll(packageDir, 0755)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func initRegistryDir() {
+func initRegistry() {
+	viper.SetDefault(KeyRegistryUrl, registryUrl)
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)

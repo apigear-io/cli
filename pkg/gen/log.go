@@ -1,5 +1,5 @@
 package gen
 
-import zlog "github.com/rs/zerolog/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-var log = zlog.With().Str("topic", "gen").Logger()
+var log = zlog.Topic("gen")

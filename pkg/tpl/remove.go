@@ -9,7 +9,7 @@ import (
 )
 
 func RemoveTemplate(name string) error {
-	dir := config.GetPackageDir()
+	dir := config.TemplatesDir()
 	log.Info().Msgf("remove template %s from %s", name, dir)
 	// remove dir from packageDir
 	// check if dir exists

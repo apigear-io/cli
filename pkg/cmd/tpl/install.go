@@ -1,41 +1,29 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/tpl"
 
 	"github.com/spf13/cobra"
 )
 
-func NewGetCommand() *cobra.Command {
-	var url string
-	var name string
-
+func NewInstallCommand() *cobra.Command {
 	// cmd represents the pkgInstall command
 	var cmd = &cobra.Command{
-		Use:   "install [name]",
-		Short: "Installs a template",
-		Long: `Download a template from a source to the local cache. 
-Templates cached can be easily used in a solutions document 
-by using the template name.`,
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			url = args[0]
-			if name == "" {
-				path, err := git.RepositoryNameFromGitUrl(url)
-				if err != nil {
-					return err
+		Use:     "install [name]",
+		Short:   "install template",
+		Long:    `install template from registry using a name`,
+		Aliases: []string{"i"},
+		Args:    cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) > 0 {
+				for _, name := range args {
+					err := tpl.InstallTemplate(name)
+					if err != nil {
+						cmd.PrintErrln(err)
+					}
 				}
-				name = path
 			}
-			err := tpl.InstallTemplate(name, url)
-			if err != nil {
-				return err
-			}
-			cmd.Printf("template %s installed\n", name)
-			return nil
 		},
 	}
-	cmd.Flags().StringVarP(&name, "name", "", "", "name of the template repository")
 	return cmd
 }

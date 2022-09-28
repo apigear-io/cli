@@ -1,5 +1,28 @@
 package git
 
-func Pull(target string) (string, error) {
-	return ExecGit([]string{"pull"}, target)
+import (
+	"errors"
+	"os"
+
+	"github.com/go-git/go-git/v5"
+)
+
+func Pull(dst string) error {
+	log.Debug().Msgf("pull %s", dst)
+	repo, err := git.PlainOpen(dst)
+	if err != nil {
+		return err
+	}
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+	err = w.Pull(&git.PullOptions{
+		Auth:     auth,
+		Progress: os.Stdout,
+	})
+	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		return err
+	}
+	return nil
 }

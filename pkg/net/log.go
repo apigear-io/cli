@@ -1,7 +1,7 @@
 package net
 
 import (
-	logger "github.com/apigear-io/cli/pkg/log"
+	zlog "github.com/apigear-io/cli/pkg/log"
 )
 
-var log = logger.Topic("net")
+var log = zlog.Topic("net")

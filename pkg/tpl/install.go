@@ -2,25 +2,38 @@ package tpl
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-// InstallTemplate clones a template using git from an url into a local directory.
-func InstallTemplate(name string, repo string) error {
-	// check if repo is a local dir or an url
-	dir := helper.Join(config.GetPackageDir(), name)
-	_, err := os.Stat(dir)
-	if err == nil {
-		return fmt.Errorf("%s already exists", name)
+func InstallTemplate(name string) error {
+	// check if name is a local dst in the cache
+	dst := helper.Join(config.TemplatesDir(), name)
+	if helper.IsDir(dst) {
+		return fmt.Errorf("template %s already exists", name)
 	}
-	log.Info().Msgf("clone template from %s into %s", repo, dir)
-	err = git.Clone(repo, dir)
+	// name should exists in the registry
+	reg, err := ReadRegistry()
 	if err != nil {
-		log.Warn().Msgf("failed to clone template from %s into %s", repo, dir)
+		return err
 	}
-	return err
+	for _, t := range reg.Entries {
+		if t.Name == name {
+			// clone the repo
+			err := git.Clone(t.Git, dst)
+			if err != nil {
+				return err
+			}
+			if t.Latest != "" {
+				err = git.CheckoutCommit(dst, t.Latest)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}
+	return fmt.Errorf("template %s not found in registry", name)
 }

@@ -1,11 +1,26 @@
 package git
 
-func Clone(repo string, target string) error {
-	log.Info().Msgf("clone %s to %s", repo, target)
-	out, err := ExecGit([]string{"clone", repo, target}, "")
-	if err != nil {
-		log.Warn().Msgf("failed to clone %s to %s", repo, target)
-		log.Warn().Msgf("clone out: %s", out)
-	}
+import (
+	"os"
+
+	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/go-git/go-git/v5"
+)
+
+func Clone(src string, dst string) error {
+	log.Info().Msgf("clone %s to %s", src, dst)
+	_, err := git.PlainClone(dst, false, &git.CloneOptions{
+		URL:      src,
+		Auth:     auth,
+		Progress: os.Stdout,
+	})
 	return err
+}
+
+func CloneOrPull(src string, dst string) error {
+	log.Debug().Msgf("clone or pull %s to %s", src, dst)
+	if helper.IsDir(dst) {
+		return Pull(dst)
+	}
+	return Clone(src, dst)
 }

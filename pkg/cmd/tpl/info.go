@@ -1,31 +1,52 @@
 package tpl
 
 import (
-	"os"
+	"strconv"
 
 	"github.com/apigear-io/cli/pkg/tpl"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
-func NewOpenCommand() *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "info",
-		Short: "Shows information about a template.",
-		Long:  `Shows the information and local path of the named template.`,
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			name := args[0]
-			t, err := tpl.GetInfo(name)
-			if err != nil {
-				cmd.PrintErrln(err)
-				os.Exit(-1)
-			}
-			cmd.Println("Template Information:")
-			cmd.Printf("  Name:\t%s\n", t.Name)
-			cmd.Printf("  Path:\t%s\n", t.Path)
-			cmd.Printf("  Source:\t%s\n", t.URL)
-			cmd.Printf("  Commit:\t%s\n", t.Commit)
+func DisplayTemplateInfos(infos []tpl.TemplateInfo) {
+	cells := make([][]string, len(infos)+1)
+	cells[0] = []string{"name", "url", "cached", "registry"}
+	for i, info := range infos {
+		cells[i+1] = []string{
+			info.Name,
+			info.Git,
+			strconv.FormatBool(info.InCache),
+			strconv.FormatBool(info.InRegistry),
+		}
+	}
 
+	pterm.DefaultTable.WithHasHeader().WithData(cells).Render()
+}
+
+func NewInfoCommand() *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "info [name]",
+		Short: "display template information",
+		Long:  `display template information for named templates. I no name is given all templates are listed.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			infos := []tpl.TemplateInfo{}
+			if len(args) == 0 {
+				list, err := tpl.ListTemplates()
+				if err != nil {
+					cmd.PrintErrln(err)
+				}
+				infos = list
+			} else {
+				for _, name := range args {
+					info, err := tpl.GetLocalTemplateInfo(name)
+					if err != nil {
+						cmd.PrintErrln(err)
+						return
+					}
+					infos = append(infos, info)
+				}
+			}
+			DisplayTemplateInfos(infos)
 		},
 	}
 	return cmd

@@ -12,8 +12,10 @@ const (
 	KeyUpdateChannel = "update_channel"
 	KeyRecent        = "recent"
 	KeyVersion       = "version"
-	KeyPackageDir    = "package_dir"
+	KeyTemplatesDir  = "templates_dir"
 	KeyRegistryDir   = "registry_dir"
+	KeyRegistryUrl   = "registry_url"
+	KeyGitAuthToken  = "git_auth_token"
 )
 
 func GetRecentEntries() []string {
@@ -86,7 +88,7 @@ func GetUpdateChannel() string {
 	return ch
 }
 
-func GetTemplateRegistryDir() string {
+func RegistryDir() string {
 	dir := viper.GetString(KeyRegistryDir)
 	if dir == "" {
 		return "registry"
@@ -94,8 +96,8 @@ func GetTemplateRegistryDir() string {
 	return dir
 }
 
-func GetTempleRegistryFile() string {
-	return filepath.Join(GetTemplateRegistryDir(), "registry.json")
+func CachedRegistryPath() string {
+	return filepath.Join(RegistryDir(), "registry.json")
 }
 
 func AllSettings() map[string]interface{} {
@@ -118,10 +120,14 @@ func Get(key string) string {
 	return viper.GetString(key)
 }
 
-func GetAuthToken() string {
-	return viper.GetString("auth_token")
+func GitAuthToken() string {
+	return viper.GetString(KeyGitAuthToken)
 }
 
-func GetPackageDir() string {
-	return viper.GetString(KeyPackageDir)
+func TemplatesDir() string {
+	return viper.GetString(KeyTemplatesDir)
+}
+
+func RegistryUrl() string {
+	return viper.GetString(KeyRegistryUrl)
 }

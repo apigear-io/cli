@@ -1,9 +1,5 @@
 package git
 
-import zlog "github.com/rs/zerolog/log"
+import zlog "github.com/apigear-io/cli/pkg/log"
 
-// import logger "github.com/apigear-io/cli/pkg/log"
-
-// var log = logger.TopicLogger("git")
-
-var log = zlog.With().Str("topic", "git").Logger()
+var log = zlog.Topic("git")

@@ -116,3 +116,7 @@ func YamlToJson(in []byte) ([]byte, error) {
 	}
 	return json.Marshal(out)
 }
+
+func RemoveDir(dst string) error {
+	return os.RemoveAll(dst)
+}

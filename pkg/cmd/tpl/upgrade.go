@@ -7,22 +7,29 @@ import (
 )
 
 func NewUpgradeCommand() *cobra.Command {
-	var name string
+	var all bool
 	// cmd represents the pkgInstall command
 	var cmd = &cobra.Command{
-		Use:     "upgrade [template]",
+		Use:     "upgrade [name]",
 		Aliases: []string{"up"},
-		Short:   "Upgrade installed templates.",
-		Long:    `Upgrade installed templates.`,
-		Args:    cobra.ExactArgs(1),
+		Short:   "upgrade installed template",
+		Long:    `upgrade installed template. If name is not specified, all installed templates will be upgraded.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			name = args[0]
-			err := tpl.UpgradeTemplate(name)
-			if err != nil {
-				cmd.PrintErrln(err)
+			if len(args) > 0 {
+				err := tpl.UpgradeTemplates(args)
+				if err != nil {
+					cmd.PrintErrln(err)
+				}
+			} else if all {
+				err := tpl.UpgradeAllTemplates()
+				if err != nil {
+					cmd.PrintErrln(err)
+				}
+			} else {
+				cmd.Usage()
 			}
-			cmd.Printf("template %s upgraded\n", name)
 		},
 	}
+	cmd.Flags().BoolVarP(&all, "all", "a", false, "upgrade all installed templates")
 	return cmd
 }
