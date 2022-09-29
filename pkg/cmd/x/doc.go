@@ -16,7 +16,7 @@ func NewDocsCommand() *cobra.Command {
 		Long:  `export the cli docs as markdown document into a dir`,
 		Args:  cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			dir := "docs/cli"
+			dir := "docs"
 			if len(args) > 0 {
 				dir = args[0]
 			}
