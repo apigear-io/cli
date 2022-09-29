@@ -10,6 +10,7 @@ import (
 )
 
 func NewUpdateCommand() *cobra.Command {
+	var force bool
 	var cmd = &cobra.Command{
 		Use:   "update",
 		Short: "update the program",
@@ -31,14 +32,19 @@ func NewUpdateCommand() *cobra.Command {
 				cmd.Println("no new release available")
 				return
 			}
-			result, err := pterm.DefaultInteractiveConfirm.Show(fmt.Sprintf("do you want to update to version %s?", release.Version()))
-			if err != nil {
-				cmd.PrintErrln(err)
-				return
+			cmd.Printf("New release %s available.\n", release.Version())
+			cmd.Printf("See %s.\n", release.URL)
+			if !force {
+				result, err := pterm.DefaultInteractiveConfirm.Show("do you want to update?")
+				if err != nil {
+					cmd.PrintErrln(err)
+					return
+				}
+				if !result {
+					return
+				}
 			}
-			if !result {
-				return
-			}
+			fmt.Printf("updating to %s\n", release.Version())
 			err = u.Update(release)
 			if err != nil {
 				cmd.PrintErrln(err)
@@ -47,5 +53,6 @@ func NewUpdateCommand() *cobra.Command {
 
 		},
 	}
+	cmd.Flags().BoolVarP(&force, "force", "f", false, "force update")
 	return cmd
 }
