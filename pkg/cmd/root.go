@@ -24,16 +24,14 @@ func Must(err error) {
 func NewRootCommand() *cobra.Command {
 	// cmd represents the base command when called without any subcommands
 	cmd := &cobra.Command{
-		Use:     "apigear",
-		Short:   "apigear creates instrumented SDKs from an API description",
-		Long:    `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
-		Version: "0.0.1",
+		Use:   "apigear",
+		Short: "apigear creates instrumented SDKs from an API description",
+		Long:  `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},
 	}
 	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
-	cmd.PersistentFlags().BoolVar(&config.DryRun, "dry-run", false, "dry-run")
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
@@ -42,7 +40,8 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(spec.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())
 	cmd.AddCommand(x.NewRootCommand())
+	cmd.AddCommand(NewUpdateCommand())
+	cmd.AddCommand(NewVersionCommand())
 
-	config.SetVersion(cmd.Version)
 	return cmd
 }

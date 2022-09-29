@@ -13,6 +13,7 @@ require (
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10
+	github.com/creativeprojects/go-selfupdate v0.6.1
 	github.com/dop251/goja v0.0.0-20220915101355-d79e1b125a30
 	github.com/dop251/goja_nodejs v0.0.0-20220905124449-678b33ca5009
 	github.com/fsnotify/fsnotify v1.5.4
@@ -37,8 +38,19 @@ require (
 )
 
 require (
+	code.gitea.io/sdk/gitea v0.13.2 // indirect
+	github.com/Masterminds/semver/v3 v3.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-github/v30 v30.1.0 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/hashicorp/go-version v1.2.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/ulikunitz/xz v0.5.8 // indirect
+	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 )
 
 require (
@@ -51,7 +63,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
-	github.com/gitsight/go-vcsurl v1.0.0 // indirect
+	github.com/gitsight/go-vcsurl v1.0.0
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
@@ -70,7 +82,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/pterm/pterm v0.12.47 // indirect
+	github.com/pterm/pterm v0.12.47
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect

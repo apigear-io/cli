@@ -16,6 +16,8 @@ const (
 	KeyRegistryDir   = "registry_dir"
 	KeyRegistryUrl   = "registry_url"
 	KeyGitAuthToken  = "git_auth_token"
+	KeyCommit        = "commit"
+	KeyDate          = "date"
 )
 
 func GetRecentEntries() []string {

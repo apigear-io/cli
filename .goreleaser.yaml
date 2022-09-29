@@ -1,15 +1,16 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
+# see https://goreleaser.com
 project_name: apigear
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
+release:
+  github:
+    owner: apigear-io
+    name: cli-releases
+  discussion_category_name: General
 builds:
-  - id: apigear
-    env:
+  - env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -24,16 +25,8 @@ builds:
         goarch: "386"
       - goos: linux
         goarch: "386"
-
     main: cmd/apigear/main.go
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
-    format: zip
+    binary: apigear
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -44,3 +37,9 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+brews:  
+  - name: apigear
+    tap:
+      owner: apigear-io
+      name: homebrew-tap
+    folder: Formula

@@ -13,7 +13,6 @@ var (
 	registryUrl = "https://github.com/apigear-io/template-registry.git"
 	ConfigFile  string
 	ConfigDir   string
-	DryRun      bool = false
 )
 
 // initConfig reads in config file and ENV variables if set.
