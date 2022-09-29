@@ -41,6 +41,7 @@ require (
 	code.gitea.io/sdk/gitea v0.13.2 // indirect
 	github.com/Masterminds/semver/v3 v3.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/getsentry/sentry-go v0.13.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/go-github/v30 v30.1.0 // indirect
