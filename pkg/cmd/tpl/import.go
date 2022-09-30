@@ -16,10 +16,12 @@ func NewImportCommand() *cobra.Command {
 			if len(args) > 0 {
 				for _, dst := range args {
 					cmd.Printf("importing template from %s\n", dst)
-					err := tpl.ImportTemplate(dst)
+					vcs, err := tpl.ImportTemplate(dst)
 					if err != nil {
 						cmd.PrintErrln(err)
+						continue
 					}
+					cmd.Printf("imported template %s\n", vcs.FullName)
 				}
 			}
 		},

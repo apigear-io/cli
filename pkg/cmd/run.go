@@ -1,11 +1,5 @@
 package cmd
 
-import (
-	"fmt"
-
-	"github.com/apigear-io/cli/pkg/log"
-)
-
 var (
 	version = "dev"
 	commit  = "none"
@@ -18,13 +12,8 @@ type VersionInfo struct {
 	Date    string `json:"date"`
 }
 
-func Run() int {
-	rootCmd := NewRootCommand()
-	rootCmd.Version = fmt.Sprintf("%s-%s-%s", version, commit, date)
+var root = NewRootCommand()
 
-	if err := rootCmd.Execute(); err != nil {
-		log.Warn().Err(err).Msg("failed to execute command")
-		return -1
-	}
-	return 0
+func Run() error {
+	return root.Execute()
 }
