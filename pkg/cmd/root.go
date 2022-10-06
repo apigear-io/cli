@@ -22,6 +22,7 @@ func Must(err error) {
 }
 
 func NewRootCommand() *cobra.Command {
+	cobra.OnInitialize(config.InitConfig)
 	// cmd represents the base command when called without any subcommands
 	cmd := &cobra.Command{
 		Use:   "apigear",
@@ -31,7 +32,7 @@ func NewRootCommand() *cobra.Command {
 			return cmd.Usage()
 		},
 	}
-	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear.yaml)")
+	cmd.PersistentFlags().StringVar(&config.ConfigFile, "config", "", "config file (default is $HOME/.apigear/config.json)")
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())

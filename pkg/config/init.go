@@ -16,24 +16,35 @@ var (
 )
 
 // initConfig reads in config file and ENV variables if set.
-func init() {
+func InitConfig() {
 	debug := os.Getenv("DEBUG") == "1"
 	if ConfigFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(ConfigFile)
+		ConfigDir = helper.Dir(ConfigFile)
 	} else {
 		// Find home directory.
 		// Search config in home directory with name ".apigear" (without extension).
 		home, err := os.UserHomeDir()
-		ConfigDir = helper.Join(home, ".apigear")
-		ConfigFile = viper.ConfigFileUsed()
 		cobra.CheckErr(err)
-		viper.AddConfigPath(home)
+		ConfigDir = helper.Join(home, ".apigear")
+		ConfigFile = helper.Join(ConfigDir, "config.json")
+		cobra.CheckErr(err)
+		viper.AddConfigPath(ConfigDir)
 		viper.SetConfigType("json")
-		viper.SetConfigName(".apigear")
-		viper.SetConfigFile(ConfigFile)
+		viper.SetConfigName("config")
 		if debug {
 			fmt.Printf("config path dir: %s\n", home)
+		}
+	}
+	if !helper.IsFile(ConfigFile) {
+		err := helper.MakeDir(ConfigDir)
+		if err != nil {
+			fmt.Printf("failed to create config dir: %s\n", ConfigDir)
+		}
+		err = helper.WriteFile(ConfigFile, []byte("{}"))
+		if err != nil {
+			fmt.Printf("failed to create config file: %s\n", ConfigFile)
 		}
 	}
 	if debug {

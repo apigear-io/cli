@@ -120,3 +120,15 @@ func YamlToJson(in []byte) ([]byte, error) {
 func RemoveDir(dst string) error {
 	return os.RemoveAll(dst)
 }
+
+func MakeDir(dst string) error {
+	return os.MkdirAll(dst, 0755)
+}
+
+func Dir(path string) string {
+	return filepath.Dir(path)
+}
+
+func WriteFile(dst string, data []byte) error {
+	return os.WriteFile(dst, data, 0644)
+}
