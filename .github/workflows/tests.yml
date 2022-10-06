@@ -3,8 +3,10 @@
 on:
   push:
     branches:
-      - "*"
-  pull_request:
+      - '!*'
+    tags:
+      - '!v0.*'
+      - 'v*'
 
 name: tests
 # tests for all push and pull requests
