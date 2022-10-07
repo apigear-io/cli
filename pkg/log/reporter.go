@@ -3,47 +3,52 @@ package log
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
-	"sync"
 	"time"
 )
 
 var (
-	emitter func(*ReportEvent)
-	mu      = sync.Mutex{}
+	eventEmitter func(*ReportEvent)
+	bytesEmitter func(s string)
 )
 
 type ReportEvent struct {
-	Level   string    `json:"level"`
-	Topic   string    `json:"topic"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
+	Level     string    `json:"level"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Error     string    `json:"error,omitempty"`
 }
 
 type ReportWriter struct {
-	Level string
 }
 
-func NewReportWriter(level string) io.Writer {
-	return &ReportWriter{Level: level}
+func NewReportWriter() io.Writer {
+	return &ReportWriter{}
 }
 
 func (w *ReportWriter) Write(p []byte) (n int, err error) {
-	var event ReportEvent
-	d := json.NewDecoder(bytes.NewReader(p))
-	d.UseNumber()
-	err = d.Decode(&event)
-	if err != nil {
-		return 0, err
+	fmt.Printf("event=%s \n", string(p))
+	if bytesEmitter != nil {
+		bytesEmitter(string(p))
 	}
-	if emitter != nil {
-		mu.Lock()
-		emitter(&event)
-		mu.Unlock()
+	if eventEmitter != nil {
+		var event ReportEvent
+		d := json.NewDecoder(bytes.NewReader(p))
+		d.UseNumber()
+		err = d.Decode(&event)
+		if err != nil {
+			return 0, err
+		}
+		eventEmitter(&event)
 	}
 	return len(p), nil
 }
 
-func OnReport(handler func(*ReportEvent)) {
-	emitter = handler
+func OnReportEvent(handler func(*ReportEvent)) {
+	eventEmitter = handler
+}
+
+func OnReportBytes(handler func(s string)) {
+	bytesEmitter = handler
 }

@@ -21,7 +21,7 @@ func (t *task) parseInputs(s *model.System, inputs []string) error {
 	dataParser := model.NewDataParser(s)
 	files, err := t.expandInputs(t.doc.RootDir, inputs)
 	if err != nil {
-		log.Info().Msgf("error expanding inputs")
+		log.Error().Err(err).Msgf("error expanding inputs")
 		return err
 	}
 	for _, file := range files {
@@ -58,7 +58,7 @@ func (t *task) expandInputs(rootDir string, inputs []string) ([]string, error) {
 		entry := helper.Join(rootDir, input)
 		info, err := os.Stat(entry)
 		if err != nil {
-			log.Info().Msgf("error resolving input: %s", entry)
+			log.Error().Err(err).Msgf("error getting file info for %s", entry)
 			continue
 		}
 

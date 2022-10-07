@@ -6,19 +6,14 @@ import (
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/rs/zerolog"
-	zlog "github.com/rs/zerolog/log"
 )
 
 var (
-	Debug = zlog.Debug
-	Info  = zlog.Info
-	Warn  = zlog.Warn
-	Error = zlog.Error
-	Fatal = zlog.Fatal
-	Panic = zlog.Panic
+	logger zerolog.Logger
 )
 
 func init() {
+	logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
 	verbose := os.Getenv("VERBOSE") == "1"
@@ -31,12 +26,35 @@ func init() {
 	logFile := helper.Join(config.ConfigDir, "apigear.log")
 	multi := zerolog.MultiLevelWriter(
 		zerolog.ConsoleWriter{Out: os.Stderr},
-		NewReportWriter("info"),
+		NewReportWriter(),
 		newRollingFile(logFile),
 	)
-	zlog.Logger = zlog.Output(multi).Level(level)
+	logger = logger.Output(multi).Level(level)
 	if verbose {
-		zlog.Logger = zlog.Logger.With().Caller().Logger()
+		logger = logger.With().Caller().Logger()
 	}
-	Debug().Msgf("log level: %s", level)
+}
+
+func Debug() *zerolog.Event {
+	return logger.Debug()
+}
+
+func Info() *zerolog.Event {
+	return logger.Info()
+}
+
+func Warn() *zerolog.Event {
+	return logger.Warn()
+}
+
+func Error() *zerolog.Event {
+	return logger.Error()
+}
+
+func Fatal() *zerolog.Event {
+	return logger.Fatal()
+}
+
+func Panic() *zerolog.Event {
+	return logger.Panic()
 }
