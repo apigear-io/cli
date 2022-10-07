@@ -11,9 +11,6 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"prj"},
 		Short:   "Manage apigear projects",
 		Long:    `Projects consist of API descriptions, SDK configuration, simulation documents and other files`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewCreateCommand())
 	cmd.AddCommand(NewEditCommand())

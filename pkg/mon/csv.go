@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gocarina/gocsv"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 // ReadCsvEvents reads events from a csv file

@@ -3,6 +3,7 @@ package sol
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/spec"
 )
 

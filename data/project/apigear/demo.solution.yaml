@@ -1,6 +1,6 @@
 schema: apigear.solution/1.0
 layers:
-  - template: ./template
+  - template: template
     inputs:
       - sample.module.yaml
     output: ../out

@@ -11,9 +11,6 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"sim", "s"},
 		Short:   "Simulate API calls",
 		Long:    `Simulate api calls using either a dynamic JS script or a static YAML document`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewClientCommand())
 	cmd.AddCommand(NewServerCommand())

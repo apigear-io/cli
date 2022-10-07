@@ -44,9 +44,6 @@ func NewClientCommand() *cobra.Command {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			log.Debug().Msgf("run script %s", options.script)
-			log.OnReport(func(entry *log.ReportEvent) {
-				cmd.Println(entry.Message)
-			})
 			switch filepath.Ext(options.script) {
 			case ".ndjson":
 				emitter := make(chan []byte)

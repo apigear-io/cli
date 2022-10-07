@@ -5,6 +5,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/go-git/go-git/v5"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func Clone(src string, dst string) error {

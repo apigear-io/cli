@@ -1,6 +1,7 @@
 package sim
 
 import (
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/actions"
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/sim/script"

@@ -15,6 +15,7 @@
           "type": "boolean"
         },
         "features": {
+          "default": [],
           "description": "a list of features which can be enabled/disabled on the command line.",
           "items": {
             "type": "string"
@@ -26,6 +27,7 @@
           "type": "boolean"
         },
         "inputs": {
+          "default": [],
           "description": "list of input files which are used to generate the layer.",
           "items": {
             "type": "string"

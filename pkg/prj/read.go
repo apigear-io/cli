@@ -6,6 +6,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func readProject(d string) (*ProjectInfo, error) {

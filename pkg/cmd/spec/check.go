@@ -19,10 +19,6 @@ func NewCheckCommand() *cobra.Command {
 		Long:    `Check documents and report errors`,
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			log.OnReport(func(l *log.ReportEvent) {
-				fmt.Println(l.Message)
-			})
-
 			var file = args[0]
 			switch filepath.Ext(file) {
 			case ".json", ".yaml":

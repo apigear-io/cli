@@ -11,9 +11,6 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"gen", "g"},
 		Short:   "Generate code from APIs",
 		Long:    `generate API SDKs from API descriptions using templates`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())
 	return cmd

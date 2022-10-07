@@ -35,32 +35,29 @@ func NewServerCommand() *cobra.Command {
 		Long: `Simulation server simulates the API backend. 
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			go handleSignal(cancel)
 			log.Info().Msgf("run simulation server")
-			log.OnReport(func(entry *log.ReportEvent) {
-				cmd.Println(entry.Message)
-			})
 			var doc *spec.ScenarioDoc
 			if len(args) == 1 {
 				file := args[0]
 				result, err := spec.CheckFile(file)
 				if err != nil {
-					return err
+					log.Error().Msgf("failed to check scenario file: %v", err)
+					return
 				}
 				if !result.Valid() {
-					fmt.Printf("scenario file %s is not valid\n", file)
+					log.Error().Msgf("scenario file is not valid: %v", result.Errors)
 					for _, err := range result.Errors() {
 						entry := fmt.Sprintf("%s: %s", err.Field(), err.Description())
-						fmt.Printf("- %s\n", entry)
+						log.Error().Msg(entry)
 					}
-					return nil
 				}
 				aDoc, err := actions.ReadScenario(file)
 				if err != nil {
-					return fmt.Errorf("failed to read scenario file %s: %v", file, err)
+					log.Error().Msgf("failed to read scenario file: %v", err)
 				}
 				if aDoc.Name == "" {
 					aDoc.Name = file
@@ -72,7 +69,8 @@ Using a scenario you can define additional static and scripted data and behavior
 			if doc != nil {
 				err := simu.LoadScenario(doc.Name, doc)
 				if err != nil {
-					return fmt.Errorf("failed to load scenario: %v", err)
+					log.Error().Msgf("failed to load scenario: %v", err)
+					return
 				}
 				go func() {
 					err = simu.PlayAllSequences()
@@ -104,7 +102,6 @@ Using a scenario you can define additional static and scripted data and behavior
 			}()
 			<-ctx.Done()
 			log.Info().Msgf("shutting down rpc hub")
-			return nil
 		},
 	}
 	cmd.PostRun = func(cmd *cobra.Command, args []string) {

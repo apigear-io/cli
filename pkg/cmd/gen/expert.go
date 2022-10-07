@@ -35,9 +35,6 @@ func NewExpertCommand() *cobra.Command {
 		Short:   "Generate code using expert mode",
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			log.OnReport(func(report *log.ReportEvent) {
-				cmd.Println(report.Message)
-			})
 			doc := makeSolution(options)
 			runner := sol.NewRunner()
 

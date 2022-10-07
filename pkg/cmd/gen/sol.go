@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/apigear-io/cli/pkg/log"
@@ -22,14 +21,11 @@ func NewSolutionCommand() *cobra.Command {
 		Long: `A solution is a yaml document which describes different layers. 
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			log.OnReport(func(report *log.ReportEvent) {
-				fmt.Print(report.Message)
-			})
+		Run: func(cmd *cobra.Command, args []string) {
 			file = args[0]
 			doc, err := sol.ReadSolutionDoc(file)
 			if err != nil {
-				return err
+				log.Fatal().Err(err).Msg("failed to read solution document")
 			}
 			runner := sol.NewRunner()
 			if watch {
@@ -37,17 +33,16 @@ as also the other options. To create a demo module or solution use the 'project 
 				wg.Add(1)
 				done, err := runner.StartWatch(file, doc)
 				if err != nil {
-					return err
+					log.Fatal().Err(err).Msg("failed to start watch")
 				}
 				wg.Wait()
 				done <- true
 			} else {
 				err := runner.RunDoc(file, doc)
 				if err != nil {
-					return err
+					log.Fatal().Err(err).Msg("failed to run solution document")
 				}
 			}
-			return nil
 		},
 	}
 	cmd.Flags().BoolVarP(&watch, "watch", "", false, "watch solution file for changes")

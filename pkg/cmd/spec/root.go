@@ -11,9 +11,6 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"simulate", "s"},
 		Short:   "Load and validate files",
 		Long:    `Specification defines the file formats used inside apigear`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewCheckCommand())
 	return cmd

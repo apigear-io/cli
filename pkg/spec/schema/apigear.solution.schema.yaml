@@ -51,6 +51,7 @@ definitions:
         items:
           type: string
         description: "list of input files which are used to generate the layer."
+        default: []
       output:
         type: string
         description: "the output directory of the layer."
@@ -65,6 +66,7 @@ definitions:
         items:
           type: string
         description: "a list of features which can be enabled/disabled on the command line."
+        default: []
       dryRun:
         type: boolean
         description: "if true the layer will not be generated."

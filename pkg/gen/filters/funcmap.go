@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/gen/filters/filterpy"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterts"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterue"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func PopulateFuncMap() template.FuncMap {

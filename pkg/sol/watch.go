@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/fsnotify/fsnotify"
 )
 

@@ -27,5 +27,9 @@ func ReadSolutionDoc(file string) (*spec.SolutionDoc, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = doc.Resolve()
+	if err != nil {
+		return nil, err
+	}
 	return doc, nil
 }

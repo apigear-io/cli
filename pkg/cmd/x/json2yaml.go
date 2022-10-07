@@ -49,9 +49,6 @@ func NewJson2YamlCommand() *cobra.Command {
 		Long:    `convert one or many json documents to yaml documents`,
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			log.OnReport(func(l *log.ReportEvent) {
-				fmt.Println(l.Message)
-			})
 			err := Json2Yaml(args[0])
 			if err != nil {
 				log.Fatal().Err(err).Msg("failed to convert json to yaml")

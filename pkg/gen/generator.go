@@ -13,6 +13,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 // Generator parses documents and applies

@@ -10,9 +10,6 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"experimental"},
 		Short:   "Experimental commands",
 		Long:    `Command which are under development or experimental`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewDocsCommand())
 	cmd.AddCommand(NewJson2YamlCommand())

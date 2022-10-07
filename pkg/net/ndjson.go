@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"time"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func ScanJsonDelimitedFile(fn string, sleep time.Duration, repeat int, emitter chan []byte) {

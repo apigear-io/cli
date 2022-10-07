@@ -9,6 +9,7 @@ import (
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/require"
 	"github.com/google/uuid"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 func Must(err error) {

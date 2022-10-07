@@ -11,14 +11,8 @@ func NewRootCommand() *cobra.Command {
 		Aliases: []string{"cfg", "c"},
 		Short:   "Display the config vars",
 		Long:    `Display and edit the configuration variables`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(NewInfoCmd())
 	cmd.AddCommand(NewGetCmd())
 	return cmd
-}
-
-func init() {
 }

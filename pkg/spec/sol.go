@@ -10,6 +10,16 @@ type SolutionLayer struct {
 	Force       bool     `json:"force" yaml:"force"`
 }
 
+func (l *SolutionLayer) Resolve() error {
+	if l.Inputs == nil {
+		l.Inputs = make([]string, 0)
+	}
+	if l.Features == nil {
+		l.Features = make([]string, 0)
+	}
+	return nil
+}
+
 type SolutionDoc struct {
 	Schema      string          `json:"schema" yaml:"schema"`
 	Version     string          `json:"version" yaml:"version"`
@@ -17,4 +27,14 @@ type SolutionDoc struct {
 	Description string          `json:"description" yaml:"description"`
 	RootDir     string          `json:"rootDir" yaml:"rootDir"`
 	Layers      []SolutionLayer `json:"layers" yaml:"layers"`
+}
+
+func (s *SolutionDoc) Resolve() error {
+	if s.Layers == nil {
+		s.Layers = make([]SolutionLayer, 0)
+	}
+	for _, l := range s.Layers {
+		l.Resolve()
+	}
+	return nil
 }

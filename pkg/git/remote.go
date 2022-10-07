@@ -5,6 +5,7 @@ import (
 	"github.com/go-git/go-git/v5"
 	gconf "github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/storage/memory"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 // VersionCollection is a collection of tags

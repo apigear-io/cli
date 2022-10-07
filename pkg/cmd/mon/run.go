@@ -2,7 +2,6 @@ package mon
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
@@ -17,7 +16,7 @@ func NewServerCommand() *cobra.Command {
 		Use:   "run",
 		Short: "Run the monitor server",
 		Long:  `The monitor server runs on a HTTP port and listens for API calls.`,
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		Run: func(cmd *cobra.Command, _ []string) {
 			log.Debug().Msgf("start server on %s", addr)
 			go func() {
 				for event := range mon.Emitter() {
@@ -33,9 +32,8 @@ func NewServerCommand() *cobra.Command {
 			log.Info().Msgf("handle monitor request on %s/monitor/{source}", addr)
 			err := s.Start(addr)
 			if err != nil {
-				return fmt.Errorf("error starting server: %s", err)
+				log.Error().Msgf("failed to start server: %v", err)
 			}
-			return nil
 		},
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:5555", "address to listen on")

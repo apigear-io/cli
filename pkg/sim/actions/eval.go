@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
 	"gopkg.in/yaml.v3"

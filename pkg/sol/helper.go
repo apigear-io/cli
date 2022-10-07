@@ -15,7 +15,7 @@ func GetTemplateDir(rootDir string, template string) (string, error) {
 	} else if helper.IsDir(helper.Join(config.TemplatesDir(), template)) {
 		templateDir = helper.Join(config.TemplatesDir(), template)
 	} else {
-		return "", fmt.Errorf("template %s not found", template)
+		return "", fmt.Errorf("template dir %s not found", template)
 	}
 	return templateDir, nil
 }
