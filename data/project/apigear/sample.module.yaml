@@ -4,7 +4,7 @@ version: "1.0"
 interfaces:
   - name: Interface01
     properties:
-      - { name: prop01, type: bool }
+      - { name: prop01, type: bool }xx
       - { name: prop02, type: int }
       - { name: prop03, type: string }
     operations:

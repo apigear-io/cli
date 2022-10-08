@@ -90,7 +90,7 @@ func (t *task) runGenerator(name string, inputs []string, outputDir string, temp
 	system := model.NewSystem(name)
 	err := t.parseInputs(system, inputs)
 	if err != nil {
-		return fmt.Errorf("error parsing inputs: %w", err)
+		return fmt.Errorf("parsing inputs: %w", err)
 	}
 
 	err = os.MkdirAll(outputDir, os.ModePerm)

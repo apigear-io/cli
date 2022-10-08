@@ -127,19 +127,19 @@ func (s *Engine) init() {
 	console.Enable(s.vm)
 	err := s.vm.Set("$registerInterface", s.jsRegisterInterface)
 	if err != nil {
-		log.Fatal().Msgf("Set $registerInterface: %s", err)
+		log.Error().Msgf("Set $registerInterface: %s", err)
 	}
 	err = s.vm.Set("$signal", s.jsSignal)
 	if err != nil {
-		log.Fatal().Msgf("Set $signal: %s", err)
+		log.Error().Msgf("Set $signal: %s", err)
 	}
 	err = s.vm.Set("$change", s.jsChange)
 	if err != nil {
-		log.Fatal().Msgf("Set $change: %s", err)
+		log.Error().Msgf("Set $change: %s", err)
 	}
 	err = s.vm.Set("$registerSequence", s.jsRegisterSequence)
 	if err != nil {
-		log.Fatal().Msgf("Set $registerSequence: %s", err)
+		log.Error().Msgf("Set $registerSequence: %s", err)
 	}
 }
 

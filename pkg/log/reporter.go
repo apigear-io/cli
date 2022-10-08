@@ -3,7 +3,6 @@ package log
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"time"
 )
@@ -28,7 +27,6 @@ func NewReportWriter() io.Writer {
 }
 
 func (w *ReportWriter) Write(p []byte) (n int, err error) {
-	fmt.Printf("event=%s \n", string(p))
 	if bytesEmitter != nil {
 		bytesEmitter(string(p))
 	}

@@ -31,7 +31,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	case model.TypeNull:
-		text = ""
+		text = "void"
 	default:
 		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}

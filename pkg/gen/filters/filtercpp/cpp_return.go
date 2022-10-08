@@ -22,7 +22,7 @@ func ToReturnString(schema *model.Schema) string {
 		text = "bool"
 	default:
 		if schema.Module == nil {
-			log.Fatal().Msg("schema.Module is nil")
+			log.Error().Msg("schema.Module is nil")
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
