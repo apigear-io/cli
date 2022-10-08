@@ -54,7 +54,7 @@ func (t *task) watchDeps() error {
 					log.Debug().Msgf("add dir %s to watcher", path)
 					err := t.watcher.Add(path)
 					if err != nil {
-						log.Fatal().Err(err).Msg("failed to add dir to watcher")
+						log.Error().Err(err).Msg("failed to add dir to watcher")
 					}
 				}
 				return nil

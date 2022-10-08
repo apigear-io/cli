@@ -37,7 +37,7 @@ func ToParamString(schema *model.Schema, name string) string {
 	if i != nil {
 		return fmt.Sprintf("%s *%s", i.Name, name)
 	}
-	log.Fatal().Msgf("unknown type %s", t)
+	log.Error().Msgf("unknown type %s", t)
 	return "XXX"
 }
 
