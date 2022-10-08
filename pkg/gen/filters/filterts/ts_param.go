@@ -3,7 +3,6 @@ package filterts
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -54,7 +53,6 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 
 func tsParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		log.Warn().Msgf("tsParam called with nil node")
 		return "", fmt.Errorf("tsParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.Name, prefix)

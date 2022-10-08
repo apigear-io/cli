@@ -7,7 +7,6 @@ import (
 	"github.com/apigear-io/cli/pkg/config"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // GetLocalTemplateInfo returns information about a template

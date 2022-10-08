@@ -3,7 +3,6 @@ package filterpy
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -52,6 +51,5 @@ func pyReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}
-	log.Debug().Msgf("pyReturn node: %s", node.Name)
 	return ToReturnString(&node.Schema, prefix)
 }

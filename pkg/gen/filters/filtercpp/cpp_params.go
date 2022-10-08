@@ -15,7 +15,11 @@ func cppParams(node reflect.Value) (reflect.Value, error) {
 	}
 	var params []string
 	for _, p := range m.Params {
-		params = append(params, ToParamString(p.GetSchema(), p.GetName()))
+		ps, err := ToParamString(p.GetSchema(), p.GetName())
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		params = append(params, ps)
 	}
 	return reflect.ValueOf(strings.Join(params, ", ")), nil
 }

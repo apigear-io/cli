@@ -3,7 +3,6 @@ package filterpy
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -56,6 +55,5 @@ func pyParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("called with nil node")
 	}
-	log.Debug().Msgf("pyParam called with node: %s", node.Name)
 	return ToParamString(&node.Schema, node.Name, prefix)
 }

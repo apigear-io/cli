@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 func Pull(dst string) error {

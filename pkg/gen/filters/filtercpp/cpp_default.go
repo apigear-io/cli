@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(schema *model.Schema) string {
+func ToDefaultString(schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
@@ -23,7 +22,7 @@ func ToDefaultString(schema *model.Schema) string {
 		text = "false"
 	default:
 		if schema.Module == nil {
-			log.Error().Msg("schema.Module is nil")
+			return "xxx", fmt.Errorf("schema.Module is nil")
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
@@ -40,14 +39,18 @@ func ToDefaultString(schema *model.Schema) string {
 	}
 	if schema.IsArray {
 		inner := model.Schema{Type: t, Module: schema.Module}
-		text = fmt.Sprintf("std::vector<%s>()", ToReturnString(&inner))
+		ret, err := ToReturnString(&inner)
+		if err != nil {
+			return "", fmt.Errorf("ToDefaultString inner value error: %s", err)
+		}
+		text = fmt.Sprintf("std::vector<%s>()", ret)
 	}
-	return text
+	return text, nil
 }
 
 // cppDefault returns the default value for a type
 func cppDefault(node reflect.Value) (reflect.Value, error) {
 	p := node.Interface().(model.ITypeProvider)
-	t := ToDefaultString(p.GetSchema())
-	return reflect.ValueOf(t), nil
+	t, err := ToDefaultString(p.GetSchema())
+	return reflect.ValueOf(t), err
 }

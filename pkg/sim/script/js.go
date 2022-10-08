@@ -3,7 +3,6 @@ package script
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
 	js "github.com/dop251/goja"
 )
 

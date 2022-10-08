@@ -1,7 +1,5 @@
 package model
 
-import "github.com/apigear-io/cli/pkg/log"
-
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Version   string `json:"version" yaml:"version"`
@@ -91,7 +89,6 @@ func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
 }
 
 func (m *Module) ResolveAll() error {
-	log.Debug().Msgf("Resolving module %s", m.Name)
 	for _, i := range m.Interfaces {
 		err := i.ResolveAll(m)
 		if err != nil {

@@ -10,7 +10,6 @@ import (
 
 func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
-		log.Warn().Msg("ToDefaultString called with nil schema")
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	var text string

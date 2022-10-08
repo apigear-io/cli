@@ -13,7 +13,6 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // Generator parses documents and applies
@@ -38,7 +37,7 @@ func (g *GeneratorStats) Start() {
 func (g *GeneratorStats) Stop() {
 	g.RunEnd = time.Now()
 	g.Duration = g.RunEnd.Sub(g.RunStart).Truncate(time.Millisecond)
-	log.Info().Msgf("generated %d files in %s. (%d write, %d skip, %d copy)\n", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
+	log.Info().Msgf("generated %d files in %s. (%d write, %d skip, %d copy)", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
 // generator applies template transformation on a set of files define in rules

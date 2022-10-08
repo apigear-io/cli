@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/iancoleman/strcase"
 )
 
 func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
-		log.Warn().Msg("ToDefaultString called with nil schema")
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	moduleId := strcase.ToCamel(schema.Module.Name)
@@ -68,7 +66,6 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 
 func ueDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		log.Warn().Msg("goDefault called with nil node")
 		return "", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(prefix, &node.Schema)

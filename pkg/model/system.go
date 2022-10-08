@@ -1,7 +1,5 @@
 package model
 
-import "github.com/apigear-io/cli/pkg/log"
-
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
@@ -76,7 +74,6 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 }
 
 func (s *System) ResolveAll() error {
-	log.Debug().Msgf("Resolving system %s", s.Name)
 	for _, m := range s.Modules {
 		err := m.ResolveAll()
 		if err != nil {

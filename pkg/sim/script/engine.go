@@ -6,7 +6,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/sim/core"
 
-	"github.com/apigear-io/cli/pkg/log"
 	js "github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/require"

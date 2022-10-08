@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToReturnString(schema *model.Schema) string {
+func ToReturnString(schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
@@ -22,7 +21,7 @@ func ToReturnString(schema *model.Schema) string {
 		text = "bool"
 	default:
 		if schema.Module == nil {
-			log.Error().Msg("schema.Module is nil")
+			return "xxx", fmt.Errorf("schema.Module is nil")
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
@@ -40,7 +39,7 @@ func ToReturnString(schema *model.Schema) string {
 	if schema.IsArray {
 		text = fmt.Sprintf("std::vector<%s>", text)
 	}
-	return text
+	return text, nil
 }
 
 // cast value to TypedNode and deduct the cpp return type
@@ -49,6 +48,6 @@ func cppReturn(node reflect.Value) (reflect.Value, error) {
 	if !ok {
 		return reflect.ValueOf(""), fmt.Errorf("%s is not a schema provider", node.Type())
 	}
-	t := ToReturnString(p.GetSchema())
-	return reflect.ValueOf(t), nil
+	t, err := ToReturnString(p.GetSchema())
+	return reflect.ValueOf(t), err
 }

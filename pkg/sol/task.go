@@ -7,7 +7,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/gen"
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/fsnotify/fsnotify"

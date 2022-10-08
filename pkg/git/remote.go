@@ -5,7 +5,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	gconf "github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // VersionCollection is a collection of tags
@@ -52,7 +51,7 @@ type RemoteInfo struct {
 }
 
 func RemoteRepoInfo(url string) (RemoteInfo, error) {
-	log.Debug().Msgf("getting remote repo info for %s", url)
+	log.Debug().Msgf("remote repo info for %s", url)
 	result := RemoteInfo{
 		Git: url,
 	}

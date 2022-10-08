@@ -1,9 +1,8 @@
 package model
 
 import (
+	"fmt"
 	"strings"
-
-	"github.com/apigear-io/cli/pkg/log"
 
 	"github.com/iancoleman/strcase"
 )
@@ -179,56 +178,60 @@ func (s *Schema) ResolveAll(m *Module) error {
 		s.IsPrimitive = false
 		s.IsSymbol = true
 	}
-	s.resolveSymbol()
+	err := s.resolveSymbol()
+	if err != nil {
+		return err
+	}
 	s.resolveType()
 	s.IsResolved = true
 	return nil
 }
 
-func (s *Schema) resolveSymbol() {
+func (s *Schema) resolveSymbol() error {
 	if s.IsResolved {
-		return
+		return nil
 	}
 	if s.IsSymbol {
 		le := s.Module.LookupEnum(s.Type)
 		if le != nil {
 			s.enum = le
 			s.KindType = TypeEnum
-			return
+			return nil
 		}
 		ls := s.Module.LookupStruct(s.Type)
 		if ls != nil {
 			s.struct_ = ls
 			s.KindType = TypeStruct
-			return
+			return nil
 		}
 		li := s.Module.LookupInterface(s.Type)
 		if li != nil {
 			s.interface_ = li
 			s.KindType = TypeInterface
-			return
+			return nil
 		}
-		log.Warn().Msgf("unknown symbol %s", s.Type)
+		return fmt.Errorf("symbol %s not found", s.Type)
 	}
+	return nil
 }
 
 func (s *Schema) resolveType() {
 	if s.IsResolved {
 		return
 	}
-	kind := ""
+	var kind KindType
 	if s.IsPrimitive {
-		kind = s.Type
+		kind = KindType(s.Type)
 	} else if s.IsSymbol {
 		if s.IsInterface() {
-			kind = "interface"
+			kind = TypeInterface
 		} else if s.IsStruct() {
-			kind = "struct"
+			kind = TypeStruct
 		} else if s.IsEnum() {
-			kind = "enum"
+			kind = TypeEnum
 		}
 	} else {
-		kind = "null"
+		kind = TypeNull
 	}
 	s.KindType = KindType(kind)
 }

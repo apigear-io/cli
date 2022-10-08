@@ -16,8 +16,8 @@ func init() {
 	logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
-	verbose := os.Getenv("VERBOSE") == "1"
-	if debug {
+	verbose := os.Getenv("DEBUG") == "2"
+	if debug || verbose {
 		level = zerolog.DebugLevel
 	}
 	if verbose {
@@ -25,7 +25,7 @@ func init() {
 	}
 	logFile := helper.Join(config.ConfigDir, "apigear.log")
 	multi := zerolog.MultiLevelWriter(
-		zerolog.ConsoleWriter{Out: os.Stderr},
+		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.000"},
 		NewReportWriter(),
 		newRollingFile(logFile),
 	)
@@ -57,4 +57,8 @@ func Fatal() *zerolog.Event {
 
 func Panic() *zerolog.Event {
 	return logger.Panic()
+}
+
+func Topic(topic string) zerolog.Logger {
+	return logger.With().Str("topic", topic).Logger()
 }

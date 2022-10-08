@@ -5,11 +5,10 @@ import (
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/go-git/go-git/v5"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 func Clone(src string, dst string) error {
-	log.Info().Msgf("clone %s to %s", src, dst)
+	log.Debug().Msgf("clone %s %s", src, dst)
 	_, err := git.PlainClone(dst, false, &git.CloneOptions{
 		URL:      src,
 		Auth:     auth,
@@ -19,7 +18,7 @@ func Clone(src string, dst string) error {
 }
 
 func CloneOrPull(src string, dst string) error {
-	log.Debug().Msgf("clone or pull %s to %s", src, dst)
+	log.Debug().Msgf("clone or pull %s %s", src, dst)
 	if helper.IsDir(dst) {
 		return Pull(dst)
 	}
