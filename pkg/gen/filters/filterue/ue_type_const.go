@@ -28,7 +28,7 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("const %sF%s%s&", prefix, moduleId, schema.Type)
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
-	case model.TypeNull:
+	case model.TypeVoid:
 		text = ""
 	default:
 		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)

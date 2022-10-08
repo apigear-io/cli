@@ -35,7 +35,7 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 			return "", fmt.Errorf("ToReturnString interface %s not found", schema.Type)
 		}
 		text = fmt.Sprintf("%s%s", prefix, i.Name)
-	case model.TypeNull:
+	case model.TypeVoid:
 		text = "void"
 	default:
 		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)

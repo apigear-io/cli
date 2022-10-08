@@ -45,7 +45,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 				return "", fmt.Errorf("ToDefaultString interface %s not found", schema.Type)
 			}
 			text = "null"
-		case model.TypeNull:
+		case model.TypeVoid:
 			text = ""
 		default:
 			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)

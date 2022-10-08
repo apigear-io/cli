@@ -29,7 +29,7 @@ const (
 type KindType string
 
 const (
-	TypeNull      KindType = "null"
+	TypeVoid      KindType = "null"
 	TypeBool      KindType = "bool"
 	TypeInt       KindType = "int"
 	TypeFloat     KindType = "float"
@@ -89,7 +89,7 @@ func NewTypedNode(n string, k Kind) *TypedNode {
 		},
 		Schema: Schema{
 			Type:     "",
-			KindType: TypeNull,
+			KindType: TypeVoid,
 		},
 	}
 }
@@ -231,7 +231,7 @@ func (s *Schema) resolveType() {
 			kind = TypeEnum
 		}
 	} else {
-		kind = TypeNull
+		kind = TypeVoid
 	}
 	s.KindType = KindType(kind)
 }

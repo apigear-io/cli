@@ -55,7 +55,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			symbol := schema.GetInterface()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-		case model.TypeNull:
+		case model.TypeVoid:
 			text = ""
 		default:
 			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
