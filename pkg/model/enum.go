@@ -17,10 +17,19 @@ func NewEnum(name string) *Enum {
 }
 
 func (e *Enum) ResolveAll(mod *Module) error {
+	autoValue := true
 	for _, mem := range e.Members {
 		err := mem.ResolveAll(mod)
 		if err != nil {
 			return err
+		}
+		if mem.Value != 0 {
+			autoValue = false
+		}
+	}
+	if autoValue {
+		for i, mem := range e.Members {
+			mem.Value = i
 		}
 	}
 	return nil
