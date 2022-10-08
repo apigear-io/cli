@@ -34,10 +34,10 @@ func (r *Runner) task(file string) *task {
 
 // RunDoc runs the given file task once.
 func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
-	result, err := spec.CheckSolutionDoc(doc)
+	result, err := spec.CheckFile(file)
 	if err != nil {
-		log.Warn().Msgf("failed to check document %s: %s", file, err)
-		return fmt.Errorf("failed to check document %s: %s", file, err)
+		log.Warn().Msgf("check document %s: %s", file, err)
+		return fmt.Errorf("check document %s: %s", file, err)
 	}
 	if !result.Valid() {
 		log.Warn().Msgf("document %s is invalid", file)
@@ -74,7 +74,7 @@ func (r *Runner) StartWatch(file string, doc *spec.SolutionDoc) (chan<- bool, er
 	}
 	err = t.run()
 	if err != nil {
-		log.Warn().Msgf("failed to run task %s: %s", file, err)
+		log.Warn().Msgf("task %s: %s", file, err)
 	}
 	return t.startWatch()
 }

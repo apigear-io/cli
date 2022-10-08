@@ -23,7 +23,7 @@ func NewDocsCommand() *cobra.Command {
 			if force {
 				err := os.MkdirAll(dir, 0755)
 				if err != nil {
-					log.Fatal().Msgf("failed to create dir: %v", err)
+					log.Fatal().Msgf("create dir: %v", err)
 				}
 			}
 			if _, err := os.Stat(dir); os.IsNotExist(err) {

@@ -51,7 +51,7 @@ func CheckJson(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 	}
 	result, err := gojsonschema.Validate(schemaLoader, jsonLoader)
 	if err != nil {
-		return nil, fmt.Errorf("failed to validate document: %w", err)
+		return nil, fmt.Errorf("validate document: %w", err)
 	}
 	return result, nil
 }

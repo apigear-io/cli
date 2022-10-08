@@ -13,7 +13,7 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to open file %s", fn)
+		log.Error().Err(err).Msgf("open file %s", fn)
 		return err
 	}
 	defer func() {
@@ -28,13 +28,13 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 		event := &Event{}
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(event)
 		if err != nil {
-			log.Error().Err(err).Msgf("failed to decode line: %s", line)
+			log.Error().Err(err).Msgf("decode line: %s", line)
 			continue
 		}
 		emitter <- event
 	}
 	if err := scanner.Err(); err != nil {
-		log.Error().Err(err).Msgf("failed to read file: %s", fn)
+		log.Error().Err(err).Msgf("read file: %s", fn)
 		return err
 	}
 	return nil

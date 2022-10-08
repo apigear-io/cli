@@ -25,7 +25,7 @@ as also the other options. To create a demo module or solution use the 'project 
 			file = args[0]
 			doc, err := sol.ReadSolutionDoc(file)
 			if err != nil {
-				log.Fatal().Err(err).Msg("failed to read solution document")
+				log.Fatal().Err(err).Msg("read solution document")
 			}
 			runner := sol.NewRunner()
 			if watch {
@@ -33,14 +33,14 @@ as also the other options. To create a demo module or solution use the 'project 
 				wg.Add(1)
 				done, err := runner.StartWatch(file, doc)
 				if err != nil {
-					log.Fatal().Err(err).Msg("failed to start watch")
+					log.Fatal().Err(err).Msg("start watch")
 				}
 				wg.Wait()
 				done <- true
 			} else {
 				err := runner.RunDoc(file, doc)
 				if err != nil {
-					log.Fatal().Err(err).Msg("failed to run solution document")
+					log.Fatal().Err(err).Msg("solution")
 				}
 			}
 		},

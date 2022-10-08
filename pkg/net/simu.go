@@ -47,7 +47,7 @@ func (s SimuRpcHandler) HandleMessage(r *rpc.Request) error {
 			log.Info().Msgf("reply[%d]  %s/%s: %v", m.Id, iface, op, result)
 			err := r.ReplyJSON(rpc.MakeResult(m.Id, result))
 			if err != nil {
-				log.Error().Msgf("failed to reply: %v", err)
+				log.Error().Msgf("reply: %v", err)
 			}
 		}
 	case "simu.state":
@@ -65,7 +65,7 @@ func (s SimuRpcHandler) HandleMessage(r *rpc.Request) error {
 			// send the properties back to the client
 			err = r.ReplyJSON(rpc.MakeNotify("simu.state", map[string]any{"data": props, "symbol": symbol}))
 			if err != nil {
-				log.Error().Msgf("failed to reply: %v", err)
+				log.Error().Msgf("reply: %v", err)
 			}
 		} else {
 			// simu.state with data sets the properties of the interface

@@ -32,7 +32,7 @@ func NewServerCommand() *cobra.Command {
 			log.Info().Msgf("handle monitor request on %s/monitor/{source}", addr)
 			err := s.Start(addr)
 			if err != nil {
-				log.Error().Msgf("failed to start server: %v", err)
+				log.Error().Msgf("start server: %v", err)
 			}
 		},
 	}

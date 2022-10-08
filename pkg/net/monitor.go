@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/mon"
 	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/mon"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -23,7 +23,7 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	event := &mon.Event{}
 	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-		log.Info().Msgf("failed to decode event: %v", err)
+		log.Info().Msgf("decode event: %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

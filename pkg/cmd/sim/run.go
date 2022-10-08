@@ -45,7 +45,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				file := args[0]
 				result, err := spec.CheckFile(file)
 				if err != nil {
-					log.Error().Msgf("failed to check scenario file: %v", err)
+					log.Error().Msgf("check scenario file: %v", err)
 					return
 				}
 				if !result.Valid() {
@@ -57,7 +57,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				}
 				aDoc, err := actions.ReadScenario(file)
 				if err != nil {
-					log.Error().Msgf("failed to read scenario file: %v", err)
+					log.Error().Msgf("read scenario file: %v", err)
 				}
 				if aDoc.Name == "" {
 					aDoc.Name = file
@@ -69,13 +69,13 @@ Using a scenario you can define additional static and scripted data and behavior
 			if doc != nil {
 				err := simu.LoadScenario(doc.Name, doc)
 				if err != nil {
-					log.Error().Msgf("failed to load scenario: %v", err)
+					log.Error().Msgf("load scenario: %v", err)
 					return
 				}
 				go func() {
 					err = simu.PlayAllSequences()
 					if err != nil {
-						log.Error().Msgf("failed to play scenario: %v", err)
+						log.Error().Msgf("play scenario: %v", err)
 					}
 				}()
 			}
@@ -87,7 +87,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				for req := range hub.Requests() {
 					err := handler.HandleMessage(req)
 					if err != nil {
-						log.Error().Err(err).Msg("failed to handle rpc request")
+						log.Error().Err(err).Msg("handle rpc request")
 					}
 				}
 			}()
@@ -97,7 +97,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			go func() {
 				err := s.Start(addr)
 				if err != nil {
-					log.Error().Err(err).Msg("failed to start rpc server")
+					log.Error().Err(err).Msg("start rpc server")
 				}
 			}()
 			<-ctx.Done()

@@ -37,7 +37,7 @@ func CheckRulesJson(file string, bytes []byte) error {
 	}
 	result, err := spec.CheckJson(spec.DocumentTypeRules, bytes)
 	if err != nil {
-		log.Warn().Msgf("failed to check document %s: %s", file, err)
+		log.Warn().Msgf("check document %s: %s", file, err)
 		return err
 	}
 	if !result.Valid() {

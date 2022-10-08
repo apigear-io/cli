@@ -34,7 +34,7 @@ func NewEventScript(emitter chan *Event) *EventScript {
 func (s *EventScript) RunScriptFromFile(file string) error {
 	content, err := os.ReadFile(file)
 	if err != nil {
-		return fmt.Errorf("failed to read script file: %v", err)
+		return fmt.Errorf("read script file: %v", err)
 	}
 	return s.RunScript(string(content))
 }
@@ -49,7 +49,7 @@ func (s *EventScript) RunScript(script string) error {
 	}
 	_, err = s.vm.RunProgram(prog)
 	if err != nil {
-		return fmt.Errorf("failed to run script: %v", err)
+		return fmt.Errorf("run script: %v", err)
 	}
 	return nil
 }

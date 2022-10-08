@@ -20,11 +20,11 @@ func GetLocalTemplateInfo(name string) (TemplateInfo, error) {
 	}
 	sha1, err := git.RepoLastCommit(target)
 	if err != nil {
-		log.Warn().Msgf("failed to get git info for template %s", name)
+		log.Warn().Msgf("get git info for template %s", name)
 	}
 	url, err := git.RepoRemoteUrl(target)
 	if err != nil {
-		log.Warn().Msgf("failed to get git info for template %s", name)
+		log.Warn().Msgf("get git info for template %s", name)
 	}
 	return TemplateInfo{
 		Name:   strings.TrimSpace(name),

@@ -30,16 +30,16 @@ func (t *task) parseInputs(s *model.System, inputs []string) error {
 			err := dataParser.ParseFile(file)
 			if err != nil {
 				log.Error().Err(err).Msgf("input file: %s. skip", file)
-				return err
+				return fmt.Errorf("parse %s: %w", file, err)
 			}
 		case ".idl":
 			err := idlParser.ParseFile(file)
 			if err != nil {
-				log.Error().Err(err).Msgf("input file: %s. skip", file)
+				log.Error().Err(err).Msgf("input: %s. skip", file)
 				return err
 			}
 		default:
-			log.Error().Msgf("unknown file type %s. skip", file)
+			log.Error().Msgf("unknown type %s. skip", file)
 		}
 	}
 	err = s.ResolveAll()

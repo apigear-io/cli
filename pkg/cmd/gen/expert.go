@@ -13,7 +13,7 @@ import (
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to parse command line")
+		log.Fatal().Err(err).Msg("parse command line")
 	}
 }
 
@@ -44,14 +44,14 @@ func NewExpertCommand() *cobra.Command {
 				wg.Add(1)
 				done, err := runner.StartWatch(doc.RootDir, doc)
 				if err != nil {
-					log.Fatal().Err(err).Msg("failed to start watch")
+					log.Fatal().Err(err).Msg("start watch")
 				}
 				wg.Wait()
 				done <- true
 			} else {
 				err := runner.RunDoc(doc.RootDir, doc)
 				if err != nil {
-					log.Fatal().Msgf("failed to run expert mode: %s", err)
+					log.Fatal().Msgf("expert mode: %s", err)
 				}
 			}
 		},
@@ -71,7 +71,7 @@ func NewExpertCommand() *cobra.Command {
 func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	rootDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to get current working directory")
+		log.Fatal().Err(err).Msg("get current working directory")
 	}
 	return &spec.SolutionDoc{
 		Schema:  "apigear.solution/1.0",

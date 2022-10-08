@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"time"
+
 	"github.com/apigear-io/cli/pkg/log"
 )
 
@@ -17,7 +18,7 @@ func ScanJsonDelimitedFile(fn string, sleep time.Duration, repeat int, emitter c
 		close(emitter)
 	}()
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to open file %s", fn)
+		log.Error().Err(err).Msgf("open file %s", fn)
 		return
 	}
 	if repeat == 0 {
@@ -27,7 +28,7 @@ func ScanJsonDelimitedFile(fn string, sleep time.Duration, repeat int, emitter c
 		log.Debug().Msgf("read json messages from file %s", fn)
 		err = readJsonLines(file, sleep, emitter)
 		if err != nil {
-			log.Error().Msgf("failed to read messages from file %s: %v", fn, err)
+			log.Error().Msgf("read messages from file %s: %v", fn, err)
 			return
 		}
 	}

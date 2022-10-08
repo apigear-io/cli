@@ -50,17 +50,17 @@ func InitProject(d string) (*ProjectInfo, error) {
 	// write demo module
 	target := helper.Join(d, "apigear", "demo.module.yaml")
 	if err := writeDemo(target, vfs.DemoModule); err != nil {
-		log.Debug().Msgf("Failed to write demo module: %s", err)
+		log.Debug().Msgf("write demo module: %s", err)
 	}
 	// write demo solution
 	target = helper.Join(d, "apigear", "demo.solution.yaml")
 	if err := writeDemo(target, vfs.DemoSolution); err != nil {
-		log.Debug().Msgf("Failed to write demo solution: %s", err)
+		log.Debug().Msgf("write demo solution: %s", err)
 	}
 	// write demo scenario
 	target = helper.Join(d, "apigear", "demo.scenario.yaml")
 	if err := writeDemo(target, vfs.DemoScenario); err != nil {
-		log.Debug().Msgf("Failed to write demo scenario: %s", err)
+		log.Debug().Msgf("write demo scenario: %s", err)
 	}
 	return readProject(d)
 }
@@ -74,7 +74,7 @@ func RecentProjectInfos() []*ProjectInfo {
 	for _, d := range config.GetRecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
-			log.Warn().Msgf("Failed to read project %s: %s", d, err)
+			log.Warn().Msgf("read project %s: %s", d, err)
 			config.RemoveRecentEntry(d)
 			continue
 		}
@@ -88,7 +88,7 @@ func OpenEditor(d string) error {
 	editor := config.GetEditorCommand()
 	path, err := exec.LookPath(editor)
 	if err != nil {
-		return fmt.Errorf("failed to find editor %s: %s", editor, err)
+		return fmt.Errorf("find editor %s: %s", editor, err)
 	}
 	cmd := exec.Command(path, d)
 	return cmd.Run()
@@ -116,7 +116,7 @@ func ImportProject(repo string, dir string) (*ProjectInfo, error) {
 	}
 	err := git.Clone(repo, dir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to clone project repository: %s", err)
+		return nil, fmt.Errorf("clone project repository: %s", err)
 	}
 	return readProject(dir)
 }

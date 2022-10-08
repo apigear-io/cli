@@ -41,7 +41,7 @@ func (t *task) watchDeps() error {
 			log.Debug().Msgf("add file %s to watcher", dep)
 			err = t.watcher.Add(dep)
 			if err != nil {
-				log.Error().Err(err).Msg("failed to add file to watcher")
+				log.Error().Err(err).Msg("add file to watcher")
 			}
 		} else if info.IsDir() {
 			err := filepath.Walk(dep, func(path string, info os.FileInfo, err error) error {
@@ -53,7 +53,7 @@ func (t *task) watchDeps() error {
 					log.Debug().Msgf("add dir %s to watcher", path)
 					err := t.watcher.Add(path)
 					if err != nil {
-						log.Error().Err(err).Msg("failed to add dir to watcher")
+						log.Error().Err(err).Msg("add dir to watcher")
 					}
 				}
 				return nil

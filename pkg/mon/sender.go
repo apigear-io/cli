@@ -23,7 +23,7 @@ func (s *EventSender) SendEvents(emitter chan *Event, sleep time.Duration) {
 		// capture url, event for closure
 		err := HttpPost(s.url, event)
 		if err != nil {
-			log.Warn().Msgf("failed to send event: %s", err)
+			log.Warn().Msgf("send event: %s", err)
 		}
 		if sleep > 0 {
 			time.Sleep(sleep)

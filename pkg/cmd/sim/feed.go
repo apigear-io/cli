@@ -50,7 +50,7 @@ func NewClientCommand() *cobra.Command {
 				writer := ConsoleHandler{}
 				conn, err := rpc.Dial(ctx, options.addr)
 				if err != nil {
-					log.Fatal().Msgf("failed to connect to %s: %v", options.addr, err)
+					log.Fatal().Msgf("connect to %s: %v", options.addr, err)
 				}
 				go func() {
 					net.ScanJsonDelimitedFile(options.script, options.sleep, options.repeat, emitter)
@@ -61,7 +61,7 @@ func NewClientCommand() *cobra.Command {
 						var m rpc.Message
 						err := rpc.MessageFromJson(data, &m)
 						if err != nil {
-							log.Error().Msgf("failed to parse message: %v", err)
+							log.Error().Msgf("parse message: %v", err)
 							continue
 						}
 						err = conn.WriteJSON(m)
@@ -83,12 +83,12 @@ func NewClientCommand() *cobra.Command {
 							var msg rpc.Message
 							err := conn.ReadJSON(&msg)
 							if err != nil {
-								log.Warn().Msgf("failed to read message: %v", err)
+								log.Warn().Msgf("read message: %v", err)
 								return
 							}
 							err = writer.HandleMessage(msg)
 							if err != nil {
-								log.Warn().Msgf("failed to handle message: %v", err)
+								log.Warn().Msgf("handle message: %v", err)
 							}
 						}
 					}

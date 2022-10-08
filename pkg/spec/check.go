@@ -38,7 +38,7 @@ func CheckNdjsonFile(name string) error {
 	// read file line by line with scanner
 	file, err := os.Open(name)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %w", name, err)
+		return fmt.Errorf("open file %s: %w", name, err)
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -48,11 +48,11 @@ func CheckNdjsonFile(name string) error {
 		var event any
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(&event)
 		if err != nil {
-			return fmt.Errorf("failed to decode line %s: %w", line, err)
+			return fmt.Errorf("decode line %s: %w", line, err)
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("failed to read file %s: %w", name, err)
+		return fmt.Errorf("read file %s: %w", name, err)
 	}
 	return nil
 }
@@ -61,13 +61,13 @@ func CheckCsvFile(name string) error {
 	// read file line by line using scanner
 	file, err := os.Open(name)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %w", name, err)
+		return fmt.Errorf("open file %s: %w", name, err)
 	}
 	defer file.Close()
 	var data []any
 	err = gocsv.UnmarshalFile(file, &data)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal file %s: %w", name, err)
+		return fmt.Errorf("unmarshal file %s: %w", name, err)
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func CheckIdlFile(name string) error {
 	parser := idl.NewParser(s)
 	err := parser.ParseFile(name)
 	if err != nil {
-		return fmt.Errorf("failed to parse file %s: %w", name, err)
+		return fmt.Errorf("parse file %s: %w", name, err)
 	}
 	return s.ResolveAll()
 }
