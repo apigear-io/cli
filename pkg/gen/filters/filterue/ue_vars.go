@@ -9,13 +9,13 @@ import (
 
 func ueVars(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "", fmt.Errorf("ueNames called with nil nodes")
+		return "xxx", fmt.Errorf("ueNames called with nil nodes")
 	}
 	names := make([]string, len(nodes))
 	for idx, p := range nodes {
 		name, err := ToVarString(prefix, p)
 		if err != nil {
-			return "", err
+			return "xxx", err
 		}
 		names[idx] = name
 	}

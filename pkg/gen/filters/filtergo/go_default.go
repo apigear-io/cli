@@ -10,7 +10,7 @@ import (
 
 func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
-		return "", fmt.Errorf("ToDefaultString schema is nil")
+		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	var text string
 	if schema.IsArray {
@@ -30,7 +30,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("[]*%s%s{}", prefix, schema.Type)
 		default:
-			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	} else {
 		switch schema.KindType {
@@ -56,7 +56,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeVoid:
 			text = ""
 		default:
-			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	}
 	return text, nil
@@ -65,7 +65,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 func goDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		log.Warn().Msg("goDefault called with nil node")
-		return "", fmt.Errorf("goDefault node is nil")
+		return "xxx", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(&node.Schema, prefix)
 }

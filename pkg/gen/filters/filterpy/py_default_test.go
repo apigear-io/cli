@@ -65,5 +65,5 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 func TestDefaultWithErrors(t *testing.T) {
 	s, err := pyDefault("", nil)
 	assert.Error(t, err)
-	assert.Equal(t, "", s)
+	assert.Equal(t, "xxx", s)
 }

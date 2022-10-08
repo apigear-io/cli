@@ -8,7 +8,7 @@ import (
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
-		return "", fmt.Errorf("ToParamString schema is nil")
+		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
 	t := schema.Type
 	if schema.IsArray {
@@ -16,7 +16,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		inner.IsArray = false
 		innerValue, err := ToReturnString(prefix, &inner)
 		if err != nil {
-			return "", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
 		return fmt.Sprintf("%s []%s", name, innerValue), nil
 	}
@@ -42,12 +42,12 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	if i != nil {
 		return fmt.Sprintf("%s *%s%s", name, prefix, i.Name), nil
 	}
-	return "XXX", fmt.Errorf("unknown type %s", t)
+	return "xxx", fmt.Errorf("unknown type %s", t)
 }
 
 func goParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("goParam called with nil node")
+		return "xxx", fmt.Errorf("goParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.GetName(), prefix)
 }

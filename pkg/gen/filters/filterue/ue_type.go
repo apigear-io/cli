@@ -9,7 +9,7 @@ import (
 
 func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
-		return "", fmt.Errorf("ToReturnString schema is nil")
+		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
 	moduleId := strcase.ToCamel(schema.Module.Name)
 	var text string
@@ -22,16 +22,16 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = "float"
 	case model.TypeBool:
 		text = "bool"
+	case model.TypeVoid:
+		text = "void"
 	case model.TypeEnum:
 		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("%sF%s%s", prefix, moduleId, schema.Type)
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
-	case model.TypeVoid:
-		text = ""
 	default:
-		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}
 	if schema.IsArray {
 		switch schema.KindType {
@@ -46,7 +46,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("TArray<%sF%s%s*>", prefix, moduleId, schema.Type)
 		default:
-			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	}
 	return text, nil
@@ -54,7 +54,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 
 func ueType(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("ueType node is nil")
+		return "xxx", fmt.Errorf("ueType node is nil")
 	}
 	return ToTypeString(prefix, &node.Schema)
 }

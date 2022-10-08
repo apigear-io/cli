@@ -9,14 +9,14 @@ import (
 
 func ToVarString(node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("ToVarString node is nil")
+		return "xxx", fmt.Errorf("ToVarString node is nil")
 	}
 	return strcase.ToLowerCamel(node.Name), nil
 }
 
 func ToPublicVarString(node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("ToPublicVarString node is nil")
+		return "xxx", fmt.Errorf("ToPublicVarString node is nil")
 	}
 	return strcase.ToCamel(node.Name), nil
 }

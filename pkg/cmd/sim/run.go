@@ -49,7 +49,7 @@ Using a scenario you can define additional static and scripted data and behavior
 					return
 				}
 				if !result.Valid() {
-					log.Error().Msgf("scenario file is not valid: %v", result.Errors)
+					log.Error().Msgf("scenario file is not valid: %v", result.Errors())
 					for _, err := range result.Errors() {
 						entry := fmt.Sprintf("%s: %s", err.Field(), err.Description())
 						log.Error().Msg(entry)

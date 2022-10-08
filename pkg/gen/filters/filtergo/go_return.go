@@ -9,7 +9,7 @@ import (
 // TODO: need to return error case
 func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
-		return "", fmt.Errorf("ToReturnString schema is nil")
+		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
 	var text string
 	switch schema.KindType {
@@ -30,7 +30,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeVoid:
 		text = ""
 	default:
-		return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("[]%s", text)
@@ -40,7 +40,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 
 func goReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("goReturn node is nil")
+		return "xxx", fmt.Errorf("goReturn node is nil")
 	}
 	return ToReturnString(prefix, &node.Schema)
 }

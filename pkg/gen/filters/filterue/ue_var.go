@@ -9,7 +9,7 @@ import (
 
 func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("ToVarString node is nil")
+		return "xxx", fmt.Errorf("ToVarString node is nil")
 	}
 	var text string
 	schema := &node.Schema
@@ -21,7 +21,7 @@ func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 
 func ueVar(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("ueType node is nil")
+		return "xxx", fmt.Errorf("ueType node is nil")
 	}
 	return ToVarString(prefix, node)
 }

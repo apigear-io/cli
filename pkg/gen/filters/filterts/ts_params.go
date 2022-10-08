@@ -11,7 +11,7 @@ func tsParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	for _, n := range nodes {
 		r, err := ToParamString(&n.Schema, n.Name, prefix)
 		if err != nil {
-			return "", err
+			return "xxx", err
 		}
 		params = append(params, r)
 	}

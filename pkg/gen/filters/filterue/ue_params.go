@@ -15,7 +15,7 @@ func ueParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	for _, p := range nodes {
 		r, err := ToParamString(&p.Schema, p.Name, prefix)
 		if err != nil {
-			return "", err
+			return "xxx", err
 		}
 		params = append(params, r)
 	}

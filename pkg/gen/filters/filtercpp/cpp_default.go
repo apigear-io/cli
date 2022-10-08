@@ -41,7 +41,7 @@ func ToDefaultString(schema *model.Schema) (string, error) {
 		inner := model.Schema{Type: t, Module: schema.Module}
 		ret, err := ToReturnString(&inner)
 		if err != nil {
-			return "", fmt.Errorf("ToDefaultString inner value error: %s", err)
+			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)
 		}
 		text = fmt.Sprintf("std::vector<%s>()", ret)
 	}

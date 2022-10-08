@@ -31,7 +31,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("TArray<%sF%s%s>()", prefix, moduleId, schema.Type)
 		default:
-			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	} else {
 		switch schema.KindType {
@@ -43,6 +43,8 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 			text = "0.0f"
 		case model.TypeBool:
 			text = "false"
+		case model.TypeVoid:
+			return "xxx", fmt.Errorf("void type not allowed as default value")
 		case model.TypeEnum:
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]
@@ -55,10 +57,8 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			symbol := schema.GetInterface()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-		case model.TypeVoid:
-			text = ""
 		default:
-			return "", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}
 	}
 	return text, nil
@@ -66,7 +66,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 
 func ueDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "", fmt.Errorf("goDefault node is nil")
+		return "xxx", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(prefix, &node.Schema)
 }

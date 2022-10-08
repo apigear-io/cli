@@ -14,7 +14,7 @@ func ToParamString(schema *model.Schema, name string) (string, error) {
 		inner.IsArray = false
 		ret, err := ToReturnString(&inner)
 		if err != nil {
-			return "", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
 		return fmt.Sprintf("const std::vector<%s> &%s", ret, name), nil
 	}
@@ -40,7 +40,7 @@ func ToParamString(schema *model.Schema, name string) (string, error) {
 	if i != nil {
 		return fmt.Sprintf("%s *%s", i.Name, name), nil
 	}
-	return "XXX", fmt.Errorf("ToParamString: unknown type %s", t)
+	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
 }
 
 func cppParam(node reflect.Value) (reflect.Value, error) {

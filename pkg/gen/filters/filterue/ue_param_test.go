@@ -63,5 +63,5 @@ func TestParamSymbols(t *testing.T) {
 func TestParamWithErrors(t *testing.T) {
 	s, err := ueParam("", nil)
 	assert.Error(t, err)
-	assert.Equal(t, "", s)
+	assert.Equal(t, "xxx", s)
 }
