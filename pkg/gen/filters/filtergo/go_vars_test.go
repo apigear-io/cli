@@ -22,15 +22,17 @@ func TestVars(t *testing.T) {
 		{"test", "Test3", "opFloatArray", "param1"},
 		{"test", "Test3", "opStringArray", "param1"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, meth)
-			r, err := goVars(meth.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, meth)
+				r, err := goVars(meth.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -49,15 +51,17 @@ func TestVarsSymbols(t *testing.T) {
 		{"test", "Test4", "opStructArray", "param1"},
 		{"test", "Test4", "opInterfaceArray", "param1"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := goVars(prop.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goVars(prop.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -76,14 +80,16 @@ func TestVarsMultiple(t *testing.T) {
 		{"test", "Test5", "opStructStruct", "param1, param2"},
 		{"test", "Test5", "opInterfaceInterface", "param1, param2"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := goVars(prop.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goVars(prop.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }

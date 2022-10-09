@@ -9,7 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestConstType(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -26,19 +26,21 @@ func TestConstType(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "const TArray<float>&"},
 		{"test", "Test1", "propStringArray", "const TArray<FString>&"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueConstType("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueConstType("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
 func TestConstTypeSymbols(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -52,13 +54,15 @@ func TestConstTypeSymbols(t *testing.T) {
 		{"test", "Test2", "propStructArray", "const TArray<FTestStruct1>&"},
 		{"test", "Test2", "propInterfaceArray", "const TArray<FTestInterface1*>&"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueConstType("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueConstType("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }

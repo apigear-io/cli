@@ -22,15 +22,17 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "const TArray<float>& PropFloatArray"},
 		{"test", "Test1", "propStringArray", "const TArray<FString>& PropStringArray"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueParam("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueParam("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -48,15 +50,17 @@ func TestParamSymbols(t *testing.T) {
 		{"test", "Test2", "propStructArray", "const TArray<FTestStruct1>& PropStructArray"},
 		{"test", "Test2", "propInterfaceArray", "const TArray<FTestInterface1*>& PropInterfaceArray"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueParam("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueParam("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 

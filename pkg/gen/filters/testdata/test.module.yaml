@@ -1,0 +1,244 @@
+schema: apigear-io.module/1.0
+name: test
+version: 1.0
+
+interfaces:
+  - name: Test1
+    properties:
+      - { name: propBool, type: bool }
+      - { name: propInt, type: int }
+      - { name: propFloat, type: float }
+      - { name: propString, type: string }
+      - { name: propBoolArray, type: bool, array: true }
+      - { name: propIntArray, type: int, array: true }
+      - { name: propFloatArray, type: float, array: true }
+      - { name: propStringArray, type: string, array: true }
+  - name: Test2
+    properties:
+      - { name: propEnum, type: Enum1 }
+      - { name: propStruct, type: Struct1 }
+      - { name: propInterface, type: Interface1 }
+      - { name: propEnumArray, type: Enum1, array: true }
+      - { name: propStructArray, type: Struct1, array: true }
+      - { name: propInterfaceArray, type: Interface1, array: true }
+  - name: Test3
+    operations:
+      - name: opBool
+        params:
+          - name: param1
+            type: bool
+        return:
+          type: bool
+      - name: opInt
+        params:
+          - name: param1
+            type: int
+        return:
+          type: int
+      - name: opFloat
+        params:
+          - name: param1
+            type: float
+        return:
+          type: float
+      - name: opString
+        params:
+          - name: param1
+            type: string
+        return:
+          type: string
+      - name: opBoolArray
+        params:
+          - name: param1
+            type: bool
+            array: true
+        return:
+          type: bool
+          array: true
+      - name: opIntArray
+        params:
+          - name: param1
+            type: int
+            array: true
+        return:
+          type: int
+          array: true
+      - name: opFloatArray
+        params:
+          - name: param1
+            type: float
+            array: true
+        return:
+          type: float
+          array: true
+      - name: opStringArray
+        params:
+          - name: param1
+            type: string
+            array: true
+        return:
+          type: string
+          array: true
+  - name: Test4
+    operations:
+      - name: opEnum
+        params:
+          - name: param1
+            type: Enum1
+        return:
+          type: Enum1
+      - name: opStruct
+        params:
+          - name: param1
+            type: Struct1
+        return:
+          type: Struct1
+      - name: opInterface
+        params:
+          - name: param1
+            type: Interface1
+        return:
+          type: Interface1
+      - name: opEnumArray
+        params:
+          - name: param1
+            type: Enum1
+            array: true
+        return:
+          type: Enum1
+          array: true
+      - name: opStructArray
+        params:
+          - name: param1
+            type: Struct1
+            array: true
+        return:
+          type: Struct1
+          array: true
+      - name: opInterfaceArray
+        params:
+          - name: param1
+            type: Interface1
+            array: true
+        return:
+          type: Interface1
+          array: true
+  - name: Test5
+    operations:
+      - name: opBoolBool
+        params:
+          - name: param1
+            type: bool
+          - name: param2
+            type: bool
+        return:
+          type: bool
+      - name: opIntInt
+        params:
+          - name: param1
+            type: int
+          - name: param2
+            type: int
+        return:
+          type: int
+      - name: opFloatFloat
+        params:
+          - name: param1
+            type: float
+          - name: param2
+            type: float
+        return:
+          type: float
+      - name: opStringString
+        params:
+          - name: param1
+            type: string
+          - name: param2
+            type: string
+        return:
+          type: string
+      - name: opEnumEnum
+        params:
+          - name: param1
+            type: Enum1
+          - name: param2
+            type: Enum1
+        return:
+          type: Enum1
+      - name: opStructStruct
+        params:
+          - name: param1
+            type: Struct1
+          - name: param2
+            type: Struct1
+        return:
+          type: Struct1
+      - name: opInterfaceInterface
+        params:
+          - name: param1
+            type: Interface1
+          - name: param2
+            type: Interface1
+        return:
+          type: Interface1 
+  - name: Test6
+    operations:
+      - name: opBool
+        return:
+          type: bool
+      - name: opInt
+        return:
+          type: int
+      - name: opFloat
+        return:
+          type: float
+      - name: opString
+        return:
+          type: string
+      - name: opVoid
+      - name: opEnum
+        return:
+          type: Enum1
+      - name: opStruct
+        return:
+          type: Struct1
+      - name: opInterface
+        return:
+          type: Interface1
+      - name: opBoolArray
+        return:
+          type: bool
+          array: true
+      - name: opIntArray
+        return:
+          type: int
+          array: true
+      - name: opFloatArray
+        return:
+          type: float
+          array: true
+      - name: opStringArray
+        return:
+          type: string
+          array: true
+      - name: opEnumArray
+        return:
+          type: Enum1
+          array: true
+      - name: opStructArray
+        return:
+          type: Struct1
+          array: true
+      - name: opInterfaceArray
+        return:
+          type: Interface1
+          array: true
+  - name: Interface1
+
+enums:
+  - name: Enum1
+    members:
+      - name: Default
+
+structs:
+  - name: Struct1

@@ -50,6 +50,25 @@ interface Test5 {
     opInterfaceInterface(param1: Interface1, param2: Interface1): Interface1
 }
 
+interface Test6 {
+    opBool(): bool
+    opInt(): int
+    opFloat(): float
+    opString(): string
+    opVoid()
+    opEnum(): Enum1
+    opStruct(): Struct1
+    opInterface(): Interface1
+    opBoolArray(): bool[]
+    opIntArray(): int[]
+    opFloatArray(): float[]
+    opStringArray(): string[]
+    opEnumArray(): Enum1[]
+    opStructArray(): Struct1[]
+    opInterfaceArray(): Interface1[]
+}
+
+
 interface Interface1 { }
 
 enum Enum1 { 

@@ -10,7 +10,7 @@ import (
 // test with all the types
 // properties, operations params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -26,19 +26,21 @@ func TestDefaultFromIdl(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "std::vector<double>()"},
 		{"test", "Test1", "propStringArray", "std::vector<std::string>()"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := cppDefault(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := cppDefault(reflect.ValueOf(prop))
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r.String())
+			})
+		}
 	}
 }
 
 func TestDefaultSymbolsFromIdl(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -52,13 +54,15 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		{"test", "Test2", "propStructArray", "std::vector<Struct1>()"},
 		{"test", "Test2", "propInterfaceArray", "std::vector<Interface1*>()"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := cppDefault(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := cppDefault(reflect.ValueOf(prop))
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r.String())
+			})
+		}
 	}
 }

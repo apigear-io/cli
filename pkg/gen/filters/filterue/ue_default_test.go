@@ -9,7 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -25,19 +25,21 @@ func TestDefaultFromIdl(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "TArray<float>()"},
 		{"test", "Test1", "propStringArray", "TArray<FString>()"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueDefault("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueDefault("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
 func TestDefaultSymbolsFromIdl(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn  string
 		in  string
@@ -52,14 +54,16 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		{"test", "Test2", "propStructArray", "TArray<FTestStruct1>()"},
 		{"test", "Test2", "propInterfaceArray", "TArray<FTestInterface1>()"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueDefault("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.val, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueDefault("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.val, r)
+			})
+		}
 	}
 }
 

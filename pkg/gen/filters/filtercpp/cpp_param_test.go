@@ -23,15 +23,17 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "const std::vector<double> &propFloatArray"},
 		{"test", "Test1", "propStringArray", "const std::vector<std::string> &propStringArray"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := cppParam(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := cppParam(reflect.ValueOf(prop))
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r.String())
+			})
+		}
 	}
 }
 
@@ -49,14 +51,16 @@ func TestParamSymbols(t *testing.T) {
 		{"test", "Test2", "propStructArray", "const std::vector<Struct1> &propStructArray"},
 		{"test", "Test2", "propInterfaceArray", "const std::vector<Interface1*> &propInterfaceArray"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := cppParam(reflect.ValueOf(prop))
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r.String())
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := cppParam(reflect.ValueOf(prop))
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r.String())
+			})
+		}
 	}
 }

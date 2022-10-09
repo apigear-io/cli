@@ -22,15 +22,17 @@ func TestParams(t *testing.T) {
 		{"test", "Test3", "opFloatArray", "param1: number[]"},
 		{"test", "Test3", "opStringArray", "param1: string[]"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := tsParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := tsParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -48,15 +50,17 @@ func TestParamsSymbols(t *testing.T) {
 		{"test", "Test4", "opStructArray", "param1: Struct1[]"},
 		{"test", "Test4", "opInterfaceArray", "param1: Interface1[]"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := tsParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := tsParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -75,14 +79,16 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opStructStruct", "param1: Struct1, param2: Struct1"},
 		{"test", "Test5", "opInterfaceInterface", "param1: Interface1, param2: Interface1"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := tsParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := tsParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }

@@ -22,15 +22,17 @@ func TestParams(t *testing.T) {
 		{"test", "Test3", "opFloatArray", "self, param1: list[float]"},
 		{"test", "Test3", "opStringArray", "self, param1: list[str]"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := pyParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := pyParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -48,15 +50,17 @@ func TestParamsSymbols(t *testing.T) {
 		{"test", "Test4", "opStructArray", "self, param1: list[Struct1]"},
 		{"test", "Test4", "opInterfaceArray", "self, param1: list[Interface1]"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := pyParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := pyParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -75,15 +79,17 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opStructStruct", "self, param1: Struct1, param2: Struct1"},
 		{"test", "Test5", "opInterfaceInterface", "self, param1: Interface1, param2: Interface1"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := pyParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := pyParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
@@ -102,14 +108,16 @@ func TestFuncParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opStructStruct", "param1: Struct1, param2: Struct1"},
 		{"test", "Test5", "opInterfaceInterface", "param1: Interface1, param2: Interface1"},
 	}
-	sys := loadSystem(t)
-	for _, tt := range table {
-		t.Run(tt.pn, func(t *testing.T) {
-			m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, m)
-			r, err := pyFuncParams("", m.Params)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				m := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, m)
+				r, err := pyFuncParams("", m.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }

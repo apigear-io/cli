@@ -9,7 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestVar(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -26,19 +26,21 @@ func TestVar(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "PropFloatArray"},
 		{"test", "Test1", "propStringArray", "PropStringArray"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueVar("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueVar("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
 func TestVarSymbols(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -52,13 +54,15 @@ func TestVarSymbols(t *testing.T) {
 		{"test", "Test2", "propStructArray", "PropStructArray"},
 		{"test", "Test2", "propInterfaceArray", "PropInterfaceArray"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := ueVar("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := ueVar("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }

@@ -24,7 +24,7 @@ func (p *DataParser) ParseFile(file string) error {
 	case ".yaml", ".yml":
 		return p.ParseYaml(data)
 	default:
-		return fmt.Errorf("unknown file extension %s", filepath.Ext(file))
+		return fmt.Errorf("unknown %s", filepath.Ext(file))
 	}
 }
 

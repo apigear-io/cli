@@ -9,7 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestReturn(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -25,19 +25,21 @@ func TestReturn(t *testing.T) {
 		{"test", "Test1", "propFloatArray", "[]float64"},
 		{"test", "Test1", "propStringArray", "[]string"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := goReturn("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
 func TestReturnSymbols(t *testing.T) {
-	sys := loadSystem(t)
+	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
 		in string
@@ -51,19 +53,21 @@ func TestReturnSymbols(t *testing.T) {
 		{"test", "Test2", "propStructArray", "[]Struct1"},
 		{"test", "Test2", "propInterfaceArray", "[]*Interface1"},
 	}
-	for _, tt := range propTests {
-		t.Run(tt.pn, func(t *testing.T) {
-			prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-			assert.NotNil(t, prop)
-			r, err := goReturn("", prop)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rt, r)
-		})
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
 	}
 }
 
 func TestReturnWithErrors(t *testing.T) {
 	s, err := goReturn("", nil)
 	assert.Error(t, err)
-	assert.Equal(t, "", s)
+	assert.Equal(t, "xxx", s)
 }
