@@ -27,11 +27,11 @@ func CheckFile(file string) (*gojsonschema.Result, error) {
 			return nil, err
 		}
 	}
-	t, err := GetDocumentType(file)
+	typ, err := GetDocumentType(file)
 	if err != nil {
 		return nil, err
 	}
-	return CheckJson(t, data)
+	return CheckJson(typ, data)
 }
 
 func CheckNdjsonFile(name string) error {
@@ -80,24 +80,4 @@ func CheckIdlFile(name string) error {
 		return fmt.Errorf("parse file %s: %w", name, err)
 	}
 	return s.ResolveAll()
-}
-
-func CheckSolutionDoc(doc *SolutionDoc) (*gojsonschema.Result, error) {
-	// convert doc into json
-	data, err := json.Marshal(doc)
-	if err != nil {
-		return nil, err
-	}
-	// check json
-	return CheckJson("solution", data)
-}
-
-func CheckRulesDoc(doc *RulesDoc) (*gojsonschema.Result, error) {
-	// convert doc into json
-	data, err := json.Marshal(doc)
-	if err != nil {
-		return nil, err
-	}
-	// check json
-	return CheckJson("rules", data)
 }
