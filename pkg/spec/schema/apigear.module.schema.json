@@ -2,27 +2,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "definitions": {
-    "Contact": {
-      "additionalProperties": false,
-      "description": "Contact information for the owners of the API.",
-      "properties": {
-        "email": {
-          "description": "The email address of the contact person/organization.",
-          "format": "email",
-          "type": "string"
-        },
-        "name": {
-          "description": "The identifying name of the contact person/organization.",
-          "type": "string"
-        },
-        "url": {
-          "description": "The URL pointing to the contact information.",
-          "format": "uri",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "Enum": {
       "additionalProperties": false,
       "properties": {
@@ -68,50 +47,6 @@
       ],
       "type": "object"
     },
-    "FormatKey": {
-      "enum": [
-        "int32",
-        "int64",
-        "float32",
-        "float64",
-        "date"
-      ],
-      "type": "string"
-    },
-    "Info": {
-      "additionalProperties": false,
-      "description": "General information about the API.",
-      "properties": {
-        "contact": {
-          "$ref": "#/definitions/Contact"
-        },
-        "description": {
-          "description": "A longer description of the API. Should be different from the title. CommonMark is allowed.",
-          "type": "string"
-        },
-        "license": {
-          "$ref": "#/definitions/License"
-        },
-        "module": {
-          "description": "A unique URI reversed module identifier",
-          "type": "string"
-        },
-        "termsOfService": {
-          "description": "A URL to the Terms of Service for the API. MUST be in the format of a URL.",
-          "format": "uri",
-          "type": "string"
-        },
-        "title": {
-          "description": "A unique and precise title of the API.",
-          "type": "string"
-        },
-        "version": {
-          "description": "A semantic version number of the API.",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "Interface": {
       "additionalProperties": false,
       "properties": {
@@ -148,35 +83,11 @@
       ],
       "type": "object"
     },
-    "License": {
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "description": "The name of the license type. It's encouraged to use an OSI compatible license.",
-          "type": "string"
-        },
-        "url": {
-          "description": "The URL pointing to the license.",
-          "format": "uri",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
-      "type": "object"
-    },
     "Operation": {
       "additionalProperties": false,
       "properties": {
         "description": {
           "type": "string"
-        },
-        "format": {
-          "$ref": "#/definitions/FormatKey"
-        },
-        "items": {
-          "$ref": "#/definitions/TypeKey"
         },
         "meta": {
           "type": "object"
@@ -184,14 +95,14 @@
         "name": {
           "type": "string"
         },
-        "params": {
+        "parameters": {
           "items": {
             "$ref": "#/definitions/Type"
           },
           "type": "array"
         },
-        "type": {
-          "$ref": "#/definitions/TypeKey"
+        "return": {
+          "$ref": "#/definitions/Type"
         }
       },
       "type": "object"
@@ -223,14 +134,11 @@
     "Type": {
       "additionalProperties": false,
       "properties": {
+        "array": {
+          "type": "boolean"
+        },
         "description": {
           "type": "string"
-        },
-        "format": {
-          "$ref": "#/definitions/FormatKey"
-        },
-        "items": {
-          "$ref": "#/definitions/TypeKey"
         },
         "meta": {
           "type": "object"
@@ -255,19 +163,13 @@
             "int",
             "float",
             "bool",
-            "string",
-            "array"
+            "string"
           ],
           "type": "string"
         },
         {
-          "properties": {
-            "additionalProperties": false,
-            "ref": {
-              "type": "string"
-            }
-          },
-          "type": "object"
+          "pattern": "^[A-Z][0-9A-Za-z_]+$",
+          "type": "string"
         }
       ]
     }
@@ -283,9 +185,6 @@
         "$ref": "#/definitions/Enum"
       },
       "type": "array"
-    },
-    "info": {
-      "$ref": "#/definitions/Info"
     },
     "interfaces": {
       "description": "a list of interfaces, exported by this module",
