@@ -2,11 +2,10 @@
 # see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-to-specific-branches-occurs
 on:
   push:
-    branches:
-      - '!*'
-    tags:
-      - '!v0.*'
-      - 'v*'
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 
 name: tests
 # tests for all push and pull requests
