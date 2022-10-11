@@ -9,6 +9,9 @@ import (
 	"github.com/creativeprojects/go-selfupdate"
 )
 
+// populated during build-process
+var token = ""
+
 // Updater checks a github repository for new releases
 // and updates the current executable
 // It is a wrapper around github.com/creativeprojects/go-selfupdate
@@ -20,7 +23,9 @@ type Updater struct {
 
 // NewUpdater creates a new updater for a github repository
 func NewUpdater(repo string, version string) (*Updater, error) {
-	source, err := selfupdate.NewGitHubSource(selfupdate.GitHubConfig{})
+	source, err := selfupdate.NewGitHubSource(selfupdate.GitHubConfig{
+		APIToken: token,
+	})
 	if err != nil {
 		return nil, err
 	}
