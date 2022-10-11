@@ -133,6 +133,10 @@ func Replace(s, old, new string) string {
 	return strings.Replace(s, old, new, -1)
 }
 
+func NewLine() string {
+	return "\n"
+}
+
 var WORDS = []string{
 	"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
