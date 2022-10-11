@@ -27,6 +27,12 @@ builds:
         goarch: "386"
     main: cmd/apigear/main.go
     binary: apigear
+    ldflags:
+      - -s -w 
+      - -X main.version={{.Version}} 
+      - -X main.commit={{.Commit}} 
+      - -X main.date={{.Date}}
+      - -X github.com/apigear-io/cli/pkg/up.token={{.Env.PUBLIC_TOKEN}}
 checksum:
   name_template: "checksums.txt"
 snapshot:
