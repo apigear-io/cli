@@ -48,6 +48,7 @@ func PopulateFuncMap() template.FuncMap {
 		return UpperCase(IntToWord(i, postfix))
 	}
 	fm["plural"] = Pluralize
+	fm["nl"] = NewLine
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)
