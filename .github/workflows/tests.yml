@@ -2,11 +2,10 @@
 # see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-workflow-only-when-a-push-to-specific-branches-occurs
 on:
   push:
-    branches:
-      - '!*'
-    tags:
-      - '!v0.*'
-      - 'v*'
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 
 name: tests
 # tests for all push and pull requests
@@ -14,7 +13,6 @@ name: tests
 
 env:
   GOPRIVATE: "github.com/apigear-io/*"
-  GH_ACCESS_TOKEN: ${{ secrets.APIGEAR_REPOS }}
 
 jobs:
   test:
@@ -24,12 +22,14 @@ jobs:
         with:
           go-version: "1.19.x"
       - uses: actions/checkout@v3
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
-      - run: git config --global url."https://${GH_ACCESS_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${{secrets.APIGEAR_REPOS}}:x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./...
+        env:
+          GITHUB_TOKEN: ${{ secrets.APIGEAR_REPOS }}
