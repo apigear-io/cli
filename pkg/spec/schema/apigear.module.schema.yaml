@@ -14,7 +14,6 @@ properties:
   version:
     type: string
     description: the version of this document as string, typically something like '1.0'
-  info: { $ref: "#/definitions/Info" }
   description:
     type: string
     description: the module description. Will be added to the module documentation
@@ -38,18 +37,13 @@ properties:
       $ref: "#/definitions/Enum"
 
 definitions:
-  FormatKey:
-    type: string
-    enum: [int32, int64, float32, float64, date]
   TypeKey:
     oneOf:
       - type: string
-        enum: [int, float, bool, string, array]
-      - type: object
-        properties:
-          ref: { type: string }
-          additionalProperties: false
-  Type: # type information
+        enum: [int, float, bool, string]
+      - type: string
+        pattern: "^[A-Z][0-9A-Za-z_]+$"
+  Type:
     type: object
     required: [name, type]
     additionalProperties: false
@@ -58,9 +52,7 @@ definitions:
       description: { type: string }
       meta: { type: object }
       type: { $ref: "#/definitions/TypeKey" }
-      items: { $ref: "#/definitions/TypeKey" }
-      format: { $ref: "#/definitions/FormatKey" }
-
+      array: { type: boolean }
   Interface:
     type: object
     required: [name]
@@ -81,7 +73,6 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Operation"
-
   Struct:
     type: object
     required: [name]
@@ -94,7 +85,6 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/Type"
-
   Enum:
     type: object
     required: [name]
@@ -107,20 +97,15 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/EnumMember"
-
   Operation: # a operation or signal inside an interface
     type: object
     additionalProperties: false
     properties:
-      name:
-        type: string
-      description:
-        type: string
-      meta:
-        type: object
-      type: { $ref: "#/definitions/TypeKey" }
-      items: { $ref: "#/definitions/TypeKey" }
-      format: { $ref: "#/definitions/FormatKey" }
+      name: { type: string }
+      description: { type: string }
+      meta: { type: object }
+      return:
+          $ref: "#/definitions/Type"
       parameters:
         type: array
         items:
@@ -134,57 +119,3 @@ definitions:
       description: { type: string }
       meta: { type: object }
       value: { type: integer }
-  Info:
-    type: object
-    description: "General information about the API."
-    additionalProperties: false
-    properties:
-      module:
-        type: string
-        description: "A unique URI reversed module identifier"
-      version:
-        type: string
-        description: "A semantic version number of the API."
-      title:
-        type: string
-        description: "A unique and precise title of the API."
-      description:
-        type: string
-        description: "A longer description of the API. Should be different from the title. CommonMark is allowed."
-      termsOfService:
-        type: string
-        description: "A URL to the Terms of Service for the API. MUST be in the format of a URL."
-        format: uri
-      contact:
-        $ref: "#/definitions/Contact"
-      license:
-        $ref: "#/definitions/License"
-  Contact:
-    type: object
-    description: "Contact information for the owners of the API."
-    additionalProperties: false
-    properties:
-      name:
-        type: string
-        description: "The identifying name of the contact person/organization."
-      url:
-        type: string
-        description: "The URL pointing to the contact information."
-        format: uri
-      email:
-        type: string
-        description: "The email address of the contact person/organization."
-        format: email
-  License:
-    type: object
-    required:
-      - name
-    additionalProperties: false
-    properties:
-      name:
-        type: string
-        description: "The name of the license type. It's encouraged to use an OSI compatible license."
-      url:
-        type: string
-        description: "The URL pointing to the license."
-        format: uri
