@@ -26,7 +26,7 @@ func NewUpdater(repo string, version string) (*Updater, error) {
 	}
 	up, err := selfupdate.NewUpdater(selfupdate.Config{
 		Validator: &selfupdate.ChecksumValidator{
-			UniqueFilename: "checksums.txt",
+			UniqueFilename: "checksum.txt",
 		},
 		Source: source,
 	})

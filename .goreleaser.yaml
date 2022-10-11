@@ -28,7 +28,7 @@ builds:
     main: cmd/apigear/main.go
     binary: apigear
 checksum:
-  name_template: "checksums.txt"
+  name_template: "checksum.txt"
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
