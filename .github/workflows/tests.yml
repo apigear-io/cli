@@ -14,7 +14,6 @@ name: tests
 
 env:
   GOPRIVATE: "github.com/apigear-io/*"
-  GH_ACCESS_TOKEN: ${{ secrets.APIGEAR_REPOS }}
 
 jobs:
   test:
@@ -31,5 +30,7 @@ jobs:
             ~/.cache/go-build
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
-      - run: git config --global url."https://${GH_ACCESS_TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+      - run: git config --global url."https://${secrets.APIGEAR_REPOS}:x-oauth-basic@github.com".insteadOf "https://github.com"
       - run: go test ./...
+        env:
+          GITHUB_TOKEN: ${{ secrets.APIGEAR_REPOS }}
