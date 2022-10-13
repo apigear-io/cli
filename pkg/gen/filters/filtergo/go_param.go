@@ -6,7 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
+func ToParamString(prefix string, schema *model.Schema, name string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
@@ -49,5 +49,5 @@ func goParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("goParam called with nil node")
 	}
-	return ToParamString(&node.Schema, node.GetName(), prefix)
+	return ToParamString(prefix, &node.Schema, node.GetName())
 }

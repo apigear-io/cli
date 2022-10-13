@@ -13,7 +13,7 @@ func goParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	}
 	var params []string
 	for _, p := range nodes {
-		r, err := ToParamString(&p.Schema, p.Name, prefix)
+		r, err := ToParamString(prefix, &p.Schema, p.Name)
 		if err != nil {
 			return "xxx", err
 		}
