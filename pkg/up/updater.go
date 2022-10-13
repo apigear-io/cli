@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/creativeprojects/go-selfupdate"
 )
 
@@ -48,6 +49,7 @@ func NewUpdater(repo string, version string) (*Updater, error) {
 // Check checks for a new release
 // returns a release if there is one, or nil if there is no new release
 func (u *Updater) Check() (*selfupdate.Release, error) {
+	log.Info().Msgf("check for updates: %s", u.repo)
 	latest, found, err := u.updater.DetectLatest(u.repo)
 	if err != nil {
 		return nil, err
