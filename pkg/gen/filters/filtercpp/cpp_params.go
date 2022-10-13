@@ -2,24 +2,22 @@ package filtercpp
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func cppParams(node reflect.Value) (reflect.Value, error) {
-	m, ok := node.Interface().(*model.Operation)
-	if !ok {
-		return reflect.Value{}, fmt.Errorf("expected method, got %s", node.Type())
+func cppParams(prefix string, nodes []*model.TypedNode) (string, error) {
+	if nodes == nil {
+		return "xxx", fmt.Errorf("cppParams called with nil nodes")
 	}
 	var params []string
-	for _, p := range m.Params {
-		ps, err := ToParamString(p.GetSchema(), p.GetName())
+	for _, p := range nodes {
+		r, err := ToParamString(prefix, &p.Schema, p.Name)
 		if err != nil {
-			return reflect.Value{}, err
+			return "xxx", err
 		}
-		params = append(params, ps)
+		params = append(params, r)
 	}
-	return reflect.ValueOf(strings.Join(params, ", ")), nil
+	return strings.Join(params, ", "), nil
 }

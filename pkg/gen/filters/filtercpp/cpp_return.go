@@ -2,12 +2,11 @@ package filtercpp
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToReturnString(schema *model.Schema) (string, error) {
+func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
@@ -25,15 +24,15 @@ func ToReturnString(schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = e.Name
+			text = fmt.Sprintf("%s%s", prefix, e.Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {
-			text = s.Name
+			text = fmt.Sprintf("%s%s", prefix, s.Name)
 		}
 		i := schema.Module.LookupInterface(t)
 		if i != nil {
-			text = fmt.Sprintf("%s*", i.Name)
+			text = fmt.Sprintf("%s%s*", prefix, i.Name)
 		}
 	}
 	if schema.IsArray {
@@ -43,11 +42,9 @@ func ToReturnString(schema *model.Schema) (string, error) {
 }
 
 // cast value to TypedNode and deduct the cpp return type
-func cppReturn(node reflect.Value) (reflect.Value, error) {
-	p, ok := node.Interface().(model.ITypeProvider)
-	if !ok {
-		return reflect.ValueOf(""), fmt.Errorf("%s is not a schema provider", node.Type())
+func cppReturn(prefix string, node *model.TypedNode) (string, error) {
+	if node == nil {
+		return "xxx", fmt.Errorf("cppReturn node is nil")
 	}
-	t, err := ToReturnString(p.GetSchema())
-	return reflect.ValueOf(t), err
+	return ToReturnString(prefix, &node.Schema)
 }

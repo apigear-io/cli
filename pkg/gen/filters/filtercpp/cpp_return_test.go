@@ -1,7 +1,6 @@
 package filtercpp
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,9 +31,9 @@ func TestReturn(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := cppReturn(reflect.ValueOf(prop))
+				r, err := cppReturn("", prop)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}
@@ -60,9 +59,9 @@ func TestReturnSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := cppReturn(reflect.ValueOf(prop))
+				r, err := cppReturn("", prop)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}

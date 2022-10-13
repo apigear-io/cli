@@ -2,17 +2,16 @@ package filtercpp
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToParamString(schema *model.Schema, name string) (string, error) {
+func ToParamString(prefix string, schema *model.Schema, name string) (string, error) {
 	t := schema.Type
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
-		ret, err := ToReturnString(&inner)
+		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
@@ -43,8 +42,9 @@ func ToParamString(schema *model.Schema, name string) (string, error) {
 	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
 }
 
-func cppParam(node reflect.Value) (reflect.Value, error) {
-	p := node.Interface().(model.ITypeProvider)
-	t, err := ToParamString(p.GetSchema(), p.GetName())
-	return reflect.ValueOf(t), err
+func cppParam(prefix string, node *model.TypedNode) (string, error) {
+	if node == nil {
+		return "xxx", fmt.Errorf("cppParam node is nil")
+	}
+	return ToParamString(prefix, &node.Schema, node.Name)
 }

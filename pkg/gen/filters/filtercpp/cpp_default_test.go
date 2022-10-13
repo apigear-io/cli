@@ -1,7 +1,6 @@
 package filtercpp
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,9 +30,9 @@ func TestDefaultFromIdl(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := cppDefault(reflect.ValueOf(prop))
+				r, err := cppDefault("", prop)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}
@@ -59,9 +58,9 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := cppDefault(reflect.ValueOf(prop))
+				r, err := cppDefault("", prop)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}

@@ -1,7 +1,6 @@
 package filtercpp
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,9 +28,9 @@ func TestParams(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, meth)
-				r, err := cppParams(reflect.ValueOf(meth))
+				r, err := cppParams("", meth.Params)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}
@@ -55,11 +54,11 @@ func TestParamsSymbols(t *testing.T) {
 	for _, sys := range syss {
 		for _, tt := range table {
 			t.Run(tt.pn, func(t *testing.T) {
-				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-				assert.NotNil(t, prop)
-				r, err := cppParams(reflect.ValueOf(prop))
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := cppParams("", op.Params)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}
@@ -84,11 +83,11 @@ func TestParamsMultiple(t *testing.T) {
 	for _, sys := range syss {
 		for _, tt := range table {
 			t.Run(tt.pn, func(t *testing.T) {
-				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
-				assert.NotNil(t, prop)
-				r, err := cppParams(reflect.ValueOf(prop))
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := cppParams("", op.Params)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.rt, r.String())
+				assert.Equal(t, tt.rt, r)
 			})
 		}
 	}

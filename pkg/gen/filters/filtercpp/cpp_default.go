@@ -2,13 +2,12 @@ package filtercpp
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/apigear-io/cli/pkg/model"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(schema *model.Schema) (string, error) {
+func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
@@ -39,7 +38,7 @@ func ToDefaultString(schema *model.Schema) (string, error) {
 	}
 	if schema.IsArray {
 		inner := model.Schema{Type: t, Module: schema.Module}
-		ret, err := ToReturnString(&inner)
+		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)
 		}
@@ -49,8 +48,9 @@ func ToDefaultString(schema *model.Schema) (string, error) {
 }
 
 // cppDefault returns the default value for a type
-func cppDefault(node reflect.Value) (reflect.Value, error) {
-	p := node.Interface().(model.ITypeProvider)
-	t, err := ToDefaultString(p.GetSchema())
-	return reflect.ValueOf(t), err
+func cppDefault(prefix string, node *model.TypedNode) (string, error) {
+	if node == nil {
+		return "xxx", fmt.Errorf("cppDefault node is nil")
+	}
+	return ToDefaultString(prefix, &node.Schema)
 }
