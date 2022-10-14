@@ -49,7 +49,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		{"test", "Test2", "propEnum", "Enum1::Default"},
 		{"test", "Test2", "propStruct", "Struct1()"},
 		{"test", "Test2", "propInterface", "nullptr"},
-		{"test", "Test2", "propEnumArray", "QList<Enum1>()"},
+		{"test", "Test2", "propEnumArray", "QList<Enum1::Enum1Enum>()"},
 		{"test", "Test2", "propStructArray", "QList<Struct1>()"},
 		{"test", "Test2", "propInterfaceArray", "QList<Interface1*>()"},
 	}

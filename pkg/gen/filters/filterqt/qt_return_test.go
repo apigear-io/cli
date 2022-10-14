@@ -47,10 +47,10 @@ func TestReturnSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1"},
+		{"test", "Test2", "propEnum", "Enum1::Enum1Enum"},
 		{"test", "Test2", "propStruct", "Struct1"},
 		{"test", "Test2", "propInterface", "Interface1*"},
-		{"test", "Test2", "propEnumArray", "QList<Enum1>"},
+		{"test", "Test2", "propEnumArray", "QList<Enum1::Enum1Enum>"},
 		{"test", "Test2", "propStructArray", "QList<Struct1>"},
 		{"test", "Test2", "propInterfaceArray", "QList<Interface1*>"},
 	}

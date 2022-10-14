@@ -15,11 +15,11 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
-		return fmt.Sprintf("const QList<%s> &%s", ret, name), nil
+		return fmt.Sprintf("const QList<%s>& %s", ret, name), nil
 	}
 	switch t {
 	case "string":
-		return fmt.Sprintf("const QString &%s", name), nil
+		return fmt.Sprintf("const QString& %s", name), nil
 	case "int":
 		return fmt.Sprintf("int %s", name), nil
 	case "float":
@@ -29,11 +29,11 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	}
 	e := schema.Module.LookupEnum(t)
 	if e != nil {
-		return fmt.Sprintf("%s %s", e.Name, name), nil
+		return fmt.Sprintf("const %s::%sEnum %s", e.Name, e.Name, name), nil
 	}
 	s := schema.Module.LookupStruct(t)
 	if s != nil {
-		return fmt.Sprintf("const %s &%s", s.Name, name), nil
+		return fmt.Sprintf("const %s& %s", s.Name, name), nil
 	}
 	i := schema.Module.LookupInterface(t)
 	if i != nil {

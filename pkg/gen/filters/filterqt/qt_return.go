@@ -24,7 +24,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s%s", prefix, e.Name)
+			text = fmt.Sprintf("%s%s::%sEnum", prefix, e.Name, e.Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {

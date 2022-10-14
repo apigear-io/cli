@@ -16,11 +16,11 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propBool", "bool propBool"},
 		{"test", "Test1", "propInt", "int propInt"},
 		{"test", "Test1", "propFloat", "double propFloat"},
-		{"test", "Test1", "propString", "const QString &propString"},
-		{"test", "Test1", "propBoolArray", "const QList<bool> &propBoolArray"},
-		{"test", "Test1", "propIntArray", "const QList<int> &propIntArray"},
-		{"test", "Test1", "propFloatArray", "const QList<double> &propFloatArray"},
-		{"test", "Test1", "propStringArray", "const QList<QString> &propStringArray"},
+		{"test", "Test1", "propString", "const QString& propString"},
+		{"test", "Test1", "propBoolArray", "const QList<bool>& propBoolArray"},
+		{"test", "Test1", "propIntArray", "const QList<int>& propIntArray"},
+		{"test", "Test1", "propFloatArray", "const QList<double>& propFloatArray"},
+		{"test", "Test1", "propStringArray", "const QList<QString>& propStringArray"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -43,12 +43,12 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1 propEnum"},
-		{"test", "Test2", "propStruct", "const Struct1 &propStruct"},
+		{"test", "Test2", "propEnum", "const Enum1::Enum1Enum propEnum"},
+		{"test", "Test2", "propStruct", "const Struct1& propStruct"},
 		{"test", "Test2", "propInterface", "Interface1 *propInterface"},
-		{"test", "Test2", "propEnumArray", "const QList<Enum1> &propEnumArray"},
-		{"test", "Test2", "propStructArray", "const QList<Struct1> &propStructArray"},
-		{"test", "Test2", "propInterfaceArray", "const QList<Interface1*> &propInterfaceArray"},
+		{"test", "Test2", "propEnumArray", "const QList<Enum1::Enum1Enum>& propEnumArray"},
+		{"test", "Test2", "propStructArray", "const QList<Struct1>& propStructArray"},
+		{"test", "Test2", "propInterfaceArray", "const QList<Interface1*>& propInterfaceArray"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
