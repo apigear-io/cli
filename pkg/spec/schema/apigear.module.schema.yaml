@@ -43,12 +43,21 @@ definitions:
         enum: [int, float, bool, string]
       - type: string
         pattern: "^[A-Z][0-9A-Za-z_]+$"
-  Type:
+  NamedType:
     type: object
     required: [name, type]
     additionalProperties: false
     properties:
       name: { type: string }
+      description: { type: string }
+      meta: { type: object }
+      type: { $ref: "#/definitions/TypeKey" }
+      array: { type: boolean }
+  Type:
+    type: object
+    required: [type]
+    additionalProperties: false
+    properties:
       description: { type: string }
       meta: { type: object }
       type: { $ref: "#/definitions/TypeKey" }
@@ -64,7 +73,7 @@ definitions:
       properties: # properties inside interface
         type: array
         items:
-          $ref: "#/definitions/Type"
+          $ref: "#/definitions/NamedType"
       operations: # operations inside interface
         type: array
         items:
@@ -84,7 +93,7 @@ definitions:
       fields: # fields inside struct
         type: array
         items:
-          $ref: "#/definitions/Type"
+          $ref: "#/definitions/NamedType"
   Enum:
     type: object
     required: [name]
@@ -106,10 +115,10 @@ definitions:
       meta: { type: object }
       return:
           $ref: "#/definitions/Type"
-      parameters:
+      params:
         type: array
         items:
-          $ref: "#/definitions/Type"
+          $ref: "#/definitions/NamedType"
   EnumMember: # member value inside an enum
     type: object
     additionalProperties: false

@@ -67,7 +67,7 @@
         },
         "properties": {
           "items": {
-            "$ref": "#/definitions/Type"
+            "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
@@ -83,6 +83,31 @@
       ],
       "type": "object"
     },
+    "NamedType": {
+      "additionalProperties": false,
+      "properties": {
+        "array": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/TypeKey"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "type": "object"
+    },
     "Operation": {
       "additionalProperties": false,
       "properties": {
@@ -95,9 +120,9 @@
         "name": {
           "type": "string"
         },
-        "parameters": {
+        "params": {
           "items": {
-            "$ref": "#/definitions/Type"
+            "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
@@ -115,7 +140,7 @@
         },
         "fields": {
           "items": {
-            "$ref": "#/definitions/Type"
+            "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
@@ -143,15 +168,11 @@
         "meta": {
           "type": "object"
         },
-        "name": {
-          "type": "string"
-        },
         "type": {
           "$ref": "#/definitions/TypeKey"
         }
       },
       "required": [
-        "name",
         "type"
       ],
       "type": "object"

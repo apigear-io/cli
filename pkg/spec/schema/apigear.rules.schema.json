@@ -24,8 +24,7 @@
         }
       },
       "required": [
-        "source",
-        "target"
+        "source"
       ],
       "type": "object"
     },
