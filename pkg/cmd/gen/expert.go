@@ -36,6 +36,10 @@ func NewExpertCommand() *cobra.Command {
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			doc := makeSolution(options)
+			err := doc.Validate()
+			if err != nil {
+				log.Fatal().Err(err).Msgf("validation error: %s", err)
+			}
 			runner := sol.NewRunner()
 
 			if options.watch {
@@ -76,7 +80,7 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	return &spec.SolutionDoc{
 		Schema:  "apigear.solution/1.0",
 		RootDir: rootDir,
-		Layers: []spec.SolutionLayer{
+		Layers: []*spec.SolutionLayer{
 			{
 				Inputs:   options.inputs,
 				Output:   options.outputDir,

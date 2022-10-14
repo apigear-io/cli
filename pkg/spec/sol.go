@@ -1,5 +1,9 @@
 package spec
 
+import (
+	"fmt"
+)
+
 type SolutionLayer struct {
 	Name        string   `json:"name" yaml:"name"`
 	Description string   `json:"description" yaml:"description"`
@@ -10,7 +14,13 @@ type SolutionLayer struct {
 	Force       bool     `json:"force" yaml:"force"`
 }
 
-func (l *SolutionLayer) Resolve() error {
+func (l *SolutionLayer) Validate() error {
+	if l.Output == "" {
+		return fmt.Errorf("layer output is required")
+	}
+	if l.Template == "" {
+		return fmt.Errorf("layer template is required")
+	}
 	if l.Inputs == nil {
 		l.Inputs = make([]string, 0)
 	}
@@ -21,20 +31,20 @@ func (l *SolutionLayer) Resolve() error {
 }
 
 type SolutionDoc struct {
-	Schema      string          `json:"schema" yaml:"schema"`
-	Version     string          `json:"version" yaml:"version"`
-	Name        string          `json:"name" yaml:"name"`
-	Description string          `json:"description" yaml:"description"`
-	RootDir     string          `json:"rootDir" yaml:"rootDir"`
-	Layers      []SolutionLayer `json:"layers" yaml:"layers"`
+	Schema      string           `json:"schema" yaml:"schema"`
+	Version     string           `json:"version" yaml:"version"`
+	Name        string           `json:"name" yaml:"name"`
+	Description string           `json:"description" yaml:"description"`
+	RootDir     string           `json:"rootDir" yaml:"rootDir"`
+	Layers      []*SolutionLayer `json:"layers" yaml:"layers"`
 }
 
-func (s *SolutionDoc) Resolve() error {
+func (s *SolutionDoc) Validate() error {
 	if s.Layers == nil {
-		s.Layers = make([]SolutionLayer, 0)
+		s.Layers = make([]*SolutionLayer, 0)
 	}
 	for _, l := range s.Layers {
-		l.Resolve()
+		l.Validate()
 	}
 	return nil
 }
