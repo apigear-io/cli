@@ -4,82 +4,82 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ettle/strcase"
 	"github.com/gertd/go-pluralize"
-	"github.com/iancoleman/strcase"
 )
 
 // SnakeCaseLower returns a string representation of the value in snake_case.
 func SnakeCaseLower(s string) string {
-	return strcase.ToSnake(s)
+	return strcase.ToCase(s, strcase.LowerCase, '_')
 }
 
 // SnakeCase returns a string representation of the value in snake_case.
 func SnakeCase(s string) string {
-	return strcase.ToSnake(s)
+	return strcase.ToCase(s, strcase.TitleCase, '_')
 }
 
 // First returns the first character of the value.
 func SnakeCaseUpper(s string) string {
-	return strcase.ToScreamingSnake(s)
+	return strcase.ToCase(s, strcase.UpperCase, '_')
 }
 
 // CamelCase returns a string representation of the value in CamelCase.
 func CamelCase(s string) string {
-	return strcase.ToCamel(s)
+	return strcase.ToCase(s, strcase.TitleCase, '\x00')
 }
 
 // CamelCase returns a string representation of the value in CamelCase.
 func CamelCaseLower(s string) string {
-	return strcase.ToLowerCamel(s)
+	return strcase.ToCase(s, strcase.LowerCase, '\x00')
 }
 
 func CamelCaseUpper(s string) string {
-	return UpperCase(strcase.ToCamel(s))
+	return strcase.ToCase(s, strcase.UpperCase, '\x00')
 }
 
 // DotCaseLower returns a string representation of the value in dot.case
 func DotCaseLower(s string) string {
-	return strcase.ToDelimited(s, '.')
+	return strcase.ToCase(s, strcase.LowerCase, '.')
 }
 
 // DotCase returns a string representation of the value in dot.case
 func DotCase(s string) string {
-	return strcase.ToDelimited(s, '.')
+	return strcase.ToCase(s, strcase.TitleCase, '.')
 }
 
 // DotCaseUpper returns a string representation of the value in DOT.CASE
 func DotCaseUpper(s string) string {
-	return strcase.ToScreamingDelimited(s, '.', "", true)
+	return strcase.ToCase(s, strcase.UpperCase, '.')
 }
 
 // KebapCaseLower returns a string representation of the value in kebap-case.
 func KebabCaseLower(s string) string {
-	return strcase.ToKebab(s)
+	return strcase.ToCase(s, strcase.LowerCase, '-')
 }
 
 // KebabCase returns a string representation of the value in kebab-case.
 func KebabCase(s string) string {
-	return strcase.ToKebab(s)
+	return strcase.ToCase(s, strcase.TitleCase, '-')
 }
 
 // KebapCaseUpper returns a string representation of the value in KEBAP-CASE.
 func KebabCaseUpper(s string) string {
-	return strcase.ToScreamingKebab(s)
+	return strcase.ToCase(s, strcase.UpperCase, '-')
 }
 
 // PathCaseLower returns a string representation of the value in path/case.
 func PathCaseLower(s string) string {
-	return strcase.ToDelimited(s, '/')
+	return strcase.ToCase(s, strcase.LowerCase, '/')
 }
 
 // PathCase returns a string representation of the value in path/case.
 func PathCase(s string) string {
-	return strcase.ToDelimited(s, '/')
+	return strcase.ToCase(s, strcase.TitleCase, '/')
 }
 
 // PathCaseUpper returns a string representation of the value in PATH/CASE.
 func PathCaseUpper(s string) string {
-	return strcase.ToScreamingDelimited(s, '/', "", true)
+	return strcase.ToCase(s, strcase.UpperCase, '/')
 }
 
 // LowerCase returns a string representation of the value in lowercase.
