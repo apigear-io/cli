@@ -1,9 +1,6 @@
 package sol
 
 import (
-	"fmt"
-
-	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
@@ -35,47 +32,11 @@ func (r *Runner) task(file string) *task {
 
 // RunDoc runs the given file task once.
 func (r *Runner) RunDoc(file string, doc *spec.SolutionDoc) error {
-	err := r.checkFile(file)
-	if err != nil {
-		return err
-	}
-	err = r.checkAllInputs(doc)
-	if err != nil {
-		return err
-	}
 	t, err := newTask(file, doc)
 	if err != nil {
 		return err
 	}
 	return t.run()
-}
-
-func (r *Runner) checkFile(file string) error {
-	result, err := spec.CheckFile(file)
-	if err != nil {
-		log.Warn().Msgf("check document %s: %s", file, err)
-		return fmt.Errorf("check document %s: %s", file, err)
-	}
-	if !result.Valid() {
-		log.Warn().Msgf("document %s is invalid", file)
-		for _, desc := range result.Errors() {
-			log.Warn().Msgf("\t%s", desc)
-		}
-		return fmt.Errorf("document %s is invalid", file)
-	}
-	return nil
-}
-func (r *Runner) checkAllInputs(doc *spec.SolutionDoc) error {
-	for _, l := range doc.Layers {
-		for _, in := range l.Inputs {
-			in := helper.Join(doc.RootDir, in)
-			err := r.checkFile(in)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }
 
 func (r *Runner) ensureTask(file string, doc *spec.SolutionDoc) (*task, error) {

@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/gen"
@@ -56,7 +55,7 @@ func (t *task) run() error {
 
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
-func (t *task) processLayer(layer spec.SolutionLayer) error {
+func (t *task) processLayer(layer *spec.SolutionLayer) error {
 	rootDir := t.doc.RootDir
 	log.Debug().Msgf("process layer %s", layer.Name)
 	// TODO: template can be a dir or a name of a template
@@ -86,13 +85,24 @@ func (t *task) processLayer(layer spec.SolutionLayer) error {
 func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, force bool) error {
 	var templatesDir = helper.Join(templateDir, "templates")
 	var rulesFile = helper.Join(templateDir, "rules.yaml")
-	system := model.NewSystem(name)
-	err := t.parseInputs(system, inputs)
+	inputs, err := expandInputs(t.doc.RootDir, inputs)
 	if err != nil {
-		return fmt.Errorf("inputs : %w", err)
+		return err
 	}
 
-	err = os.MkdirAll(outputDir, os.ModePerm)
+	err = checkInputs(inputs)
+	if err != nil {
+		return err
+	}
+	t.deps = append(t.deps, inputs...)
+
+	system := model.NewSystem(name)
+	err = parseInputs(system, inputs)
+	if err != nil {
+		return err
+	}
+
+	err = helper.MakeDir(outputDir)
 	if err != nil {
 		return fmt.Errorf("error creating output directory: %w", err)
 	}

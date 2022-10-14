@@ -2,28 +2,23 @@ package sol
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/idl"
 	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/spec"
 )
 
 // parseInputs parses the inputs from the layer.
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
-func (t *task) parseInputs(s *model.System, inputs []string) error {
+func parseInputs(s *model.System, inputs []string) error {
 	log.Debug().Msgf("parse inputs %v", inputs)
 	idlParser := idl.NewParser(s)
 	dataParser := model.NewDataParser(s)
-	files, err := t.expandInputs(t.doc.RootDir, inputs)
-	if err != nil {
-		log.Error().Err(err).Msgf("error expanding inputs")
-		return err
-	}
-	for _, file := range files {
+	for _, file := range inputs {
 		log.Debug().Msgf("parse input %s", file)
 		switch filepath.Ext(file) {
 		case ".yaml", ".yml", ".json":
@@ -42,52 +37,59 @@ func (t *task) parseInputs(s *model.System, inputs []string) error {
 			log.Error().Msgf("unknown type %s. skip", file)
 		}
 	}
-	err = s.ResolveAll()
+	err := s.ResolveAll()
 	if err != nil {
 		return fmt.Errorf("error resolving system: %w", err)
 	}
 	return nil
 }
 
-// ExpandInputs expands the input list to a list of files.
-// If input entry is a file it is returned as a list.
-// If input entry is a directory, all files in the directory are returned.
-
-func (t *task) expandInputs(rootDir string, inputs []string) ([]string, error) {
-	var files []string
+func expandInputs(rootDir string, inputs []string) ([]string, error) {
+	result := make([]string, 0)
 	for _, input := range inputs {
-		entry := helper.Join(rootDir, input)
-		info, err := os.Stat(entry)
-		if err != nil {
-			log.Error().Err(err).Msgf("error getting file info for %s", entry)
-			continue
-		}
-
-		if info.IsDir() {
-			// add every dir as dependency
-			t.deps = append(t.deps, entry)
-			err := filepath.WalkDir(entry, func(root string, d fs.DirEntry, err error) error {
-				if err != nil {
-					return fmt.Errorf("error resolving input: %w", err)
-				}
-				if d.IsDir() {
-					return nil
-				}
-				if hasExtension(d.Name(), []string{"module.yaml", "module.yml", "module.json", ".odl"}) {
-					files = append(files, root)
-				}
-				return nil
-			})
+		input = helper.Join(rootDir, input)
+		if helper.IsDir(input) {
+			entries, err := os.ReadDir(input)
 			if err != nil {
-				return nil, fmt.Errorf("error resolving input: %w", err)
+				return nil, err
+			}
+			for _, entry := range entries {
+				if entry.IsDir() {
+					continue
+				}
+				if hasExtension(entry.Name(), []string{"module.yaml", "module.yml", "module.json", ".idl"}) {
+					result = append(result, helper.Join(input, entry.Name()))
+				}
 			}
 		} else {
-			if hasExtension(entry, []string{"module.yaml", "module.yml", "module.json", ".odl"}) {
-				// add every file as dependency
-				t.deps = append(t.deps, entry)
-				files = append(files, entry)
-			}
+			result = append(result, input)
 		}
 	}
-	return files, nil
+	return result, nil
+}
+
+func checkInputs(inputs []string) error {
+	for _, input := range inputs {
+		err := checkFile(input)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkFile(file string) error {
+	result, err := spec.CheckFile(file)
+	if err != nil {
+		log.Warn().Msgf("check document %s: %s", file, err)
+		return fmt.Errorf("check document %s: %s", file, err)
+	}
+	if !result.Valid() {
+		log.Warn().Msgf("document %s is invalid", file)
+		for _, desc := range result.Errors() {
+			log.Warn().Msgf("\t%s", desc)
+		}
+		return fmt.Errorf("document %s is invalid", file)
+	}
+	return nil
 }
