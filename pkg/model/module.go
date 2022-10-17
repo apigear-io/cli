@@ -1,5 +1,48 @@
 package model
 
+import (
+	"strconv"
+	"strings"
+)
+
+type Version string
+
+func (v Version) String() string {
+	return string(v)
+}
+
+func (v Version) parts() []int {
+	parts := strings.Split(v.String(), ".")
+	result := make([]int, len(parts))
+	for idx, p := range parts {
+		result[idx], _ = strconv.Atoi(p)
+	}
+	return result
+}
+func (v Version) Major() int {
+	parts := v.parts()
+	if len(parts) < 1 {
+		return 0
+	}
+	return parts[0]
+}
+
+func (v Version) Minor() int {
+	parts := v.parts()
+	if len(parts) < 2 {
+		return 0
+	}
+	return parts[1]
+}
+
+func (v Version) Patch() int {
+	parts := v.parts()
+	if len(parts) < 3 {
+		return 0
+	}
+	return parts[2]
+}
+
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Version   string `json:"version" yaml:"version"`
@@ -17,7 +60,7 @@ func NewImport(name string, version string) *Import {
 
 type Module struct {
 	NamedNode  `json:",inline" yaml:",inline"`
-	Version    string       `json:"version" yaml:"version"`
+	Version    Version      `json:"version" yaml:"version"`
 	Imports    []*Import    `json:"imports" yaml:"imports"`
 	Interfaces []*Interface `json:"interfaces" yaml:"interfaces"`
 	Structs    []*Struct    `json:"structs" yaml:"structs"`
@@ -30,7 +73,7 @@ func NewModule(n string, v string) *Module {
 			Name: n,
 			Kind: KindModule,
 		},
-		Version: v,
+		Version: Version(v),
 	}
 }
 

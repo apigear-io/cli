@@ -10,4 +10,7 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["qtDefault"] = qtDefault
 	fm["qtParam"] = qtParam
 	fm["qtParams"] = qtParams
+	fm["qtVar"] = qtVar
+	fm["qtVars"] = qtVars
+	fm["qtType"] = qtType
 }
