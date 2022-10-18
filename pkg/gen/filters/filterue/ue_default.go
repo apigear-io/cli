@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
-	moduleId := strcase.ToCamel(schema.Module.Name)
+	moduleId := strcase.ToPascal(schema.Module.Name)
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {

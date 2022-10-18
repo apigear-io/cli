@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 //TODO: add test including prefix for all filters
@@ -13,7 +13,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToReturnString schema is nil")
 	}
-	moduleId := strcase.ToCamel(schema.Module.Name)
+	moduleId := strcase.ToPascal(schema.Module.Name)
 	var text string
 	switch schema.KindType {
 	case model.TypeString:

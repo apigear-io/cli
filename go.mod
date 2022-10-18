@@ -16,6 +16,7 @@ require (
 	github.com/creativeprojects/go-selfupdate v0.6.1
 	github.com/dop251/goja v0.0.0-20221003171542-5ea1285e6c91
 	github.com/dop251/goja_nodejs v0.0.0-20221009164102-3aa5028e57f6
+	github.com/ettle/strcase v0.1.1
 	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/getsentry/sentry-go v0.14.0
@@ -25,7 +26,6 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20220927221512-ad3251f9fa25
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
-	github.com/iancoleman/strcase v0.2.0
 	github.com/rs/zerolog v1.28.0
 	github.com/whilp/git-urls v1.0.0
 	github.com/xeipuuv/gojsonschema v1.2.0
@@ -37,7 +37,6 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/cloudflare/circl v1.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/ettle/strcase v0.1.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github/v30 v30.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

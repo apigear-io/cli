@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 func ToVarString(prefix string, node *model.TypedNode) (string, error) {
@@ -16,7 +16,7 @@ func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 	if !schema.IsArray && schema.KindType == model.TypeBool {
 		text = "b"
 	}
-	return fmt.Sprintf("%s%s%s", text, prefix, strcase.ToCamel(node.Name)), nil
+	return fmt.Sprintf("%s%s%s", text, prefix, strcase.ToPascal(node.Name)), nil
 }
 
 func ueVar(prefix string, node *model.TypedNode) (string, error) {

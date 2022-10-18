@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
-	moduleId := strcase.ToCamel(schema.Module.Name)
+	moduleId := strcase.ToPascal(schema.Module.Name)
 	var text string
 	switch schema.KindType {
 	case model.TypeString:

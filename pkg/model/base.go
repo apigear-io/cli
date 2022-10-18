@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 // Kind is an enumeration of the kinds of nodes.
@@ -67,7 +67,7 @@ func (n *NamedNode) ShortName() string {
 }
 
 func (n *NamedNode) AsPath() string {
-	return strcase.ToDelimited(n.Name, '/')
+	return strcase.ToCase(n.Name, strcase.LowerCase, '/')
 }
 
 func (n NamedNode) IsEmpty() bool {
