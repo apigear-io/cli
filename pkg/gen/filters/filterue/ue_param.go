@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/iancoleman/strcase"
+	"github.com/ettle/strcase"
 )
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
-	name = strcase.ToCamel(name)
-	moduleId := strcase.ToCamel(schema.Module.Name)
+	name = strcase.ToPascal(name)
+	moduleId := strcase.ToPascal(schema.Module.Name)
 	t := schema.Type
 	if schema.IsArray {
 		inner := *schema
