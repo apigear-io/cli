@@ -10,4 +10,7 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["tsDefault"] = tsDefault
 	fm["tsParam"] = tsParam
 	fm["tsParams"] = tsParams
+	fm["tsVar"] = tsVar
+	fm["tsVars"] = tsVars
+	fm["tsType"] = tsType
 }
