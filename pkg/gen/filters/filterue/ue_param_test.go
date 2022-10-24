@@ -13,22 +13,22 @@ func TestParam(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "propBool", "bool bPropBool"},
-		{"test", "Test1", "propInt", "int32 PropInt"},
-		{"test", "Test1", "propFloat", "float PropFloat"},
-		{"test", "Test1", "propString", "const FString& PropString"},
-		{"test", "Test1", "propBoolArray", "const TArray<bool>& PropBoolArray"},
-		{"test", "Test1", "propIntArray", "const TArray<int32>& PropIntArray"},
-		{"test", "Test1", "propFloatArray", "const TArray<float>& PropFloatArray"},
-		{"test", "Test1", "propStringArray", "const TArray<FString>& PropStringArray"},
+		{"test", "Test3", "opBool", "bool bParam1"},
+		{"test", "Test3", "opInt", "int32 Param1"},
+		{"test", "Test3", "opFloat", "float Param1"},
+		{"test", "Test3", "opString", "const FString& Param1"},
+		{"test", "Test3", "opBoolArray", "const TArray<bool>& Param1"},
+		{"test", "Test3", "opIntArray", "const TArray<int32>& Param1"},
+		{"test", "Test3", "opFloatArray", "const TArray<float>& Param1"},
+		{"test", "Test3", "opStringArray", "const TArray<FString>& Param1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
 		for _, tt := range table {
 			t.Run(tt.pn, func(t *testing.T) {
-				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-				assert.NotNil(t, prop)
-				r, err := ueParam("", prop)
+				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, meth)
+				r, err := ueParam("", meth.Params[0])
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -43,20 +43,20 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "const ETestEnum1& PropEnum"},
-		{"test", "Test2", "propStruct", "const FTestStruct1& PropStruct"},
-		{"test", "Test2", "propInterface", "FTestInterface1* PropInterface"},
-		{"test", "Test2", "propEnumArray", "const TArray<ETestEnum1>& PropEnumArray"},
-		{"test", "Test2", "propStructArray", "const TArray<FTestStruct1>& PropStructArray"},
-		{"test", "Test2", "propInterfaceArray", "const TArray<FTestInterface1*>& PropInterfaceArray"},
+		{"test", "Test4", "opEnum", "const ETestEnum1& Param1"},
+		{"test", "Test4", "opStruct", "const FTestStruct1& Param1"},
+		{"test", "Test4", "opInterface", "FTestInterface1* Param1"},
+		{"test", "Test4", "opEnumArray", "const TArray<ETestEnum1>& Param1"},
+		{"test", "Test4", "opStructArray", "const TArray<FTestStruct1>& Param1"},
+		{"test", "Test4", "opInterfaceArray", "const TArray<FTestInterface1*>& Param1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
 		for _, tt := range table {
 			t.Run(tt.pn, func(t *testing.T) {
-				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-				assert.NotNil(t, prop)
-				r, err := ueParam("", prop)
+				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, meth)
+				r, err := ueParam("", meth.Params[0])
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
