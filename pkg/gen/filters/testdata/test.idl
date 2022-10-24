@@ -21,6 +21,7 @@ interface Test2 {
 }
 
 interface Test3 {
+    opVoid()
     opBool(param1: bool): bool
     opInt(param1: int): int
     opFloat(param1: float): float

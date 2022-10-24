@@ -23,6 +23,7 @@ interfaces:
       - { name: propInterfaceArray, type: Interface1, array: true }
   - name: Test3
     operations:
+      - name: opVoid
       - name: opBool
         params:
           - name: param1

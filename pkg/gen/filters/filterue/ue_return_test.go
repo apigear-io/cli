@@ -17,6 +17,7 @@ func TestReturn(t *testing.T) {
 		rt string
 	}{
 
+		{"test", "Test3", "opVoid", "void"},
 		{"test", "Test3", "opBool", "bool"},
 		{"test", "Test3", "opInt", "int32"},
 		{"test", "Test3", "opFloat", "float"},
