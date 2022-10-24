@@ -15,6 +15,7 @@ description: |
           documents:
             - source: api.h
     - name: core
+      requires: [api]
       path: {{module|identifier}}/
       scopes:
         - match: module:
@@ -22,6 +23,7 @@ description: |
             - source: core.h
             - source: core.cpp
     - name: init
+      requires: [core]
       path: {{module|identifier}}/
       scopes:
         - name: module:
@@ -54,11 +56,11 @@ definitions:
       name:
         type: string
         description: name defines the name of the feature.
-      depends:
+      requires:
         type: array
         items:
           type: string
-        description: depends defines a list of features which must be enabled before this feature can be enabled.
+        description: requires defines a list of features which must be run before this feature can be used.
       path:
         description: Path defines the base path (prefix) for all following selectors.
         type: string

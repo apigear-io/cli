@@ -40,7 +40,7 @@ as also the other options. To create a demo module or solution use the 'project 
 			} else {
 				err := runner.RunDoc(file, doc)
 				if err != nil {
-					log.Fatal().Err(err).Msg("solution")
+					log.Fatal().Err(err).Msgf("unable to run solution document %s", file)
 				}
 			}
 		},

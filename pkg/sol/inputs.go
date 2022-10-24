@@ -70,9 +70,19 @@ func expandInputs(rootDir string, inputs []string) ([]string, error) {
 
 func checkInputs(inputs []string) error {
 	for _, input := range inputs {
-		err := checkFile(input)
-		if err != nil {
-			return err
+		switch helper.Ext(input) {
+		case ".yaml", ".yml", ".json":
+			err := checkFile(input)
+			if err != nil {
+				return err
+			}
+		case ".idl":
+			err := spec.CheckIdlFile(input)
+			if err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown type %s", input)
 		}
 	}
 	return nil

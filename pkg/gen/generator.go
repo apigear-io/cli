@@ -44,6 +44,7 @@ func (g *GeneratorStats) Stop() {
 type generator struct {
 	Template     *template.Template
 	System       *model.System
+	Features     []string
 	UserForce    bool
 	TemplatesDir string
 	OutputDir    string
@@ -55,13 +56,14 @@ func (s *GeneratorStats) TotalFiles() int {
 	return s.FilesWritten + s.FilesSkipped + s.FilesCopied
 }
 
-func New(outputDir string, templatesDir string, system *model.System, userForce bool) (*generator, error) {
+func New(outputDir string, templatesDir string, system *model.System, features []string, userForce bool) (*generator, error) {
 	g := &generator{
 		OutputDir:    outputDir,
 		Template:     template.New(""),
 		UserForce:    userForce,
 		System:       system,
 		TemplatesDir: templatesDir,
+		Features:     features,
 	}
 	g.Template.Funcs(filters.PopulateFuncMap())
 	err := g.ParseTemplatesDir(templatesDir)
@@ -88,7 +90,6 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 	log.Debug().Msgf("parsing templates dir: %s", dir)
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
-			fmt.Println("error walking dir:", err)
 			return err
 		}
 		// ignore all dirs
@@ -105,14 +106,13 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 		return g.ParseTemplate(path)
 	})
 	if err != nil {
-		log.Warn().Msgf("parse templates: %s", err)
 		return err
 	}
 	return nil
 }
 
 // ProcessRules processes a set of rules from a rules document
-func (g *generator) ProcessRules(doc spec.RulesDoc) error {
+func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	g.Stats = GeneratorStats{}
 	g.Stats.Start()
 	defer func() {
@@ -121,7 +121,8 @@ func (g *generator) ProcessRules(doc spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	for _, feature := range doc.Features {
+	features := doc.FilterFeatures(g.Features)
+	for _, feature := range features {
 		err := g.processFeature(feature)
 		if err != nil {
 			return err
@@ -131,7 +132,7 @@ func (g *generator) ProcessRules(doc spec.RulesDoc) error {
 }
 
 // processFeature processes a feature rule
-func (g *generator) processFeature(f spec.FeatureRule) error {
+func (g *generator) processFeature(f *spec.FeatureRule) error {
 	log.Debug().Msgf("processing feature %s", f.Name)
 	// process system
 	ctx := model.SystemScope{
@@ -207,7 +208,7 @@ func (g *generator) processFeature(f spec.FeatureRule) error {
 }
 
 // processScope processes a scope rule (e.g. system, modules, ...) with the given context
-func (g *generator) processScope(scope spec.ScopeRule, ctx any) error {
+func (g *generator) processScope(scope *spec.ScopeRule, ctx any) error {
 	prefix := scope.Prefix
 	for _, doc := range scope.Documents {
 		// clean doc target

@@ -20,7 +20,50 @@ const (
 )
 
 type RulesDoc struct {
-	Features []FeatureRule `json:"features" yaml:"features"`
+	Features []*FeatureRule `json:"features" yaml:"features"`
+}
+
+func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
+	for _, f := range r.Features {
+		if f.Name == name {
+			return f
+		}
+	}
+	return nil
+}
+
+// FilterFeatures returns a filtered set of features based on the given features.
+// And the features that are required by the given features.
+func (r *RulesDoc) FilterFeatures(wanted []string) []*FeatureRule {
+	// make a set of wanted features
+	fts := make(map[string]*FeatureRule)
+	// if no features are given, return all features
+	if len(wanted) == 0 {
+		return r.Features
+	}
+	for _, w := range wanted {
+		// return all features if the wanted feature is "all"
+		if w == "all" {
+			return r.Features
+		}
+		// resolve feature by name
+		f := r.FeatureByName(w)
+		if f != nil {
+			fts[w] = f
+			// recursively add required features
+			req := r.FilterFeatures(f.Requires)
+			for _, r := range req {
+				fts[r.Name] = r
+			}
+		}
+	}
+	// make a slice of features
+	result := []*FeatureRule{}
+	// add features to slice, byt only once
+	for _, f := range fts {
+		result = append(result, f)
+	}
+	return result
 }
 
 // A feature rule defines a set of scopes to match a symbol type.
@@ -30,12 +73,12 @@ type FeatureRule struct {
 	// Which other features are required by this feature.
 	Requires []string `json:"requires" yaml:"requires"`
 	// Scopes to match.
-	Scopes []ScopeRule `json:"scopes" yaml:"scopes"`
+	Scopes []*ScopeRule `json:"scopes" yaml:"scopes"`
 }
 
 // FindScopeByMatch returns the first scope that matches the given match.
-func (s *FeatureRule) FindScopesByMatch(match ScopeType) []ScopeRule {
-	var scopes []ScopeRule
+func (s *FeatureRule) FindScopesByMatch(match ScopeType) []*ScopeRule {
+	var scopes []*ScopeRule
 	for _, scope := range s.Scopes {
 		if scope.Match == match {
 			scopes = append(scopes, scope)

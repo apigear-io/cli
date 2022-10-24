@@ -132,3 +132,11 @@ func Dir(path string) string {
 func WriteFile(dst string, data []byte) error {
 	return os.WriteFile(dst, data, 0644)
 }
+
+func HasExt(file string, ext string) bool {
+	return filepath.Ext(file) == ext
+}
+
+func Ext(file string) string {
+	return filepath.Ext(file)
+}

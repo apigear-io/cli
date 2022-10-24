@@ -10,21 +10,21 @@ import (
 )
 
 // ReadRulesDoc reads rules from a file.
-func ReadRulesDoc(filename string) (spec.RulesDoc, error) {
+func ReadRulesDoc(filename string) (*spec.RulesDoc, error) {
 	bytes, err := os.ReadFile(filename)
 	if err != nil {
-		return spec.RulesDoc{}, err
+		return nil, err
 	}
 	err = CheckRulesJson(filename, bytes)
 	if err != nil {
-		return spec.RulesDoc{}, err
+		return nil, err
 	}
-	var file spec.RulesDoc
-	err = yaml.Unmarshal(bytes, &file)
+	var doc spec.RulesDoc
+	err = yaml.Unmarshal(bytes, &doc)
 	if err != nil {
-		return spec.RulesDoc{}, err
+		return nil, err
 	}
-	return file, nil
+	return &doc, nil
 }
 
 func CheckRulesJson(file string, bytes []byte) error {

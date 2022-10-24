@@ -12,13 +12,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func readRules(t *testing.T, filename string) spec.RulesDoc {
+func readRules(t *testing.T, filename string) *spec.RulesDoc {
 	content, err := os.ReadFile(filename)
 	assert.NoError(t, err)
-	var file spec.RulesDoc
-	err = yaml.Unmarshal(content, &file)
+	var doc spec.RulesDoc
+	err = yaml.Unmarshal(content, &doc)
 	assert.NoError(t, err)
-	return file
+	return &doc
 }
 
 func createGenerator(t *testing.T) *generator {
@@ -28,6 +28,7 @@ func createGenerator(t *testing.T) *generator {
 		UserForce:    true,
 		TemplatesDir: "testdata/templates",
 		OutputDir:    "testdata/output",
+		Features:     []string{"all"},
 	}
 	err := g.ParseTemplatesDir("testdata/templates")
 	assert.NoError(t, err)

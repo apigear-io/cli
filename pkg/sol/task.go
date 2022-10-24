@@ -79,25 +79,30 @@ func (t *task) processLayer(layer *spec.SolutionLayer) error {
 	if layer.Inputs == nil {
 		return fmt.Errorf("inputs are empty")
 	}
-	return t.runGenerator(name, layer.Inputs, outputDir, templateDir, force)
+	features := layer.Features
+	if features == nil {
+		features = []string{"all"}
+	}
+
+	return t.runGenerator(name, layer.Inputs, outputDir, templateDir, features, force)
 }
 
-func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, force bool) error {
+func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, features []string, force bool) error {
 	var templatesDir = helper.Join(templateDir, "templates")
 	var rulesFile = helper.Join(templateDir, "rules.yaml")
-	inputs, err := expandInputs(t.doc.RootDir, inputs)
+	expanded, err := expandInputs(t.doc.RootDir, inputs)
 	if err != nil {
 		return err
 	}
 
-	err = checkInputs(inputs)
+	err = checkInputs(expanded)
 	if err != nil {
 		return err
 	}
-	t.deps = append(t.deps, inputs...)
+	t.deps = append(t.deps, expanded...)
 
 	system := model.NewSystem(name)
-	err = parseInputs(system, inputs)
+	err = parseInputs(system, expanded)
 	if err != nil {
 		return err
 	}
@@ -107,13 +112,13 @@ func (t *task) runGenerator(name string, inputs []string, outputDir string, temp
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
-	generator, err := gen.New(outputDir, templatesDir, system, force)
+	generator, err := gen.New(outputDir, templatesDir, system, features, force)
 	if err != nil {
-		return fmt.Errorf("error creating generator: %w", err)
+		return err
 	}
 	doc, err := gen.ReadRulesDoc(rulesFile)
 	if err != nil {
-		return fmt.Errorf("error reading rules file: %w", err)
+		return err
 	}
 	return generator.ProcessRules(doc)
 }
