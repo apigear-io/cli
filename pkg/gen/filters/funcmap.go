@@ -10,7 +10,6 @@ import (
 	"github.com/apigear-io/cli/pkg/gen/filters/filterts"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterue"
 	"github.com/apigear-io/cli/pkg/log"
-	"github.com/ettle/strcase"
 )
 
 func PopulateFuncMap() template.FuncMap {
@@ -42,15 +41,9 @@ func PopulateFuncMap() template.FuncMap {
 	fm["trimPrefix"] = TrimPrefix
 	fm["trimSuffix"] = TrimSuffix
 	fm["replace"] = Replace
-	fm["int2word"] = func(i int, prefix, postfix string) string {
-		return IntToWord(i, prefix, postfix, strcase.LowerCase)
-	}
-	fm["Int2Word"] = func(i int, prefix, postfix string) string {
-		return IntToWord(i, prefix, postfix, strcase.CamelCase)
-	}
-	fm["INT2WORD"] = func(i int, prefix, postfix string) string {
-		return IntToWord(i, prefix, postfix, strcase.UpperCase)
-	}
+	fm["int2word"] = IntToWordLower
+	fm["Int2Word"] = IntToWordTitle
+	fm["INT2WORD"] = IntToWordUpper
 	fm["plural"] = Pluralize
 	fm["nl"] = NewLine
 
@@ -60,5 +53,6 @@ func PopulateFuncMap() template.FuncMap {
 	filterpy.PopulateFuncMap(fm)
 	filterue.PopulateFuncMap(fm)
 	filterqt.PopulateFuncMap(fm)
+
 	return fm
 }

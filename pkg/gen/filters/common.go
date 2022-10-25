@@ -147,9 +147,20 @@ func IntToWord(i int, prefix string, postfix string, wc strcase.WordCase) string
 		return ""
 	}
 	plural := Pluralize(postfix, i)
-	word := WORDS[i]
-	word = strcase.ToCase(word, wc, '\x00')
+	word := strcase.ToCase(WORDS[i], wc, '\x00')
 	return fmt.Sprintf("%s%s%s", prefix, word, plural)
+}
+
+func IntToWordLower(i int, prefix string, postfix string) string {
+	return IntToWord(i, prefix, postfix, strcase.LowerCase)
+}
+
+func IntToWordTitle(i int, prefix string, postfix string) string {
+	return IntToWord(i, prefix, postfix, strcase.TitleCase)
+}
+
+func IntToWordUpper(i int, prefix string, postfix string) string {
+	return IntToWord(i, prefix, postfix, strcase.UpperCase)
 }
 
 var plural = pluralize.NewClient()
