@@ -15,11 +15,11 @@ func TestParams(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "bool param1"},
 		{"test", "Test3", "opInt", "int param1"},
-		{"test", "Test3", "opFloat", "double param1"},
+		{"test", "Test3", "opFloat", "qreal param1"},
 		{"test", "Test3", "opString", "const QString& param1"},
 		{"test", "Test3", "opBoolArray", "const QList<bool>& param1"},
 		{"test", "Test3", "opIntArray", "const QList<int>& param1"},
-		{"test", "Test3", "opFloatArray", "const QList<double>& param1"},
+		{"test", "Test3", "opFloatArray", "const QList<qreal>& param1"},
 		{"test", "Test3", "opStringArray", "const QList<QString>& param1"},
 	}
 	syss := loadTestSystems(t)
@@ -73,7 +73,7 @@ func TestParamsMultiple(t *testing.T) {
 	}{
 		{"test", "Test5", "opBoolBool", "bool param1, bool param2"},
 		{"test", "Test5", "opIntInt", "int param1, int param2"},
-		{"test", "Test5", "opFloatFloat", "double param1, double param2"},
+		{"test", "Test5", "opFloatFloat", "qreal param1, qreal param2"},
 		{"test", "Test5", "opStringString", "const QString& param1, const QString& param2"},
 		{"test", "Test5", "opEnumEnum", "const Enum1::Enum1Enum param1, const Enum1::Enum1Enum param2"},
 		{"test", "Test5", "opStructStruct", "const Struct1& param1, const Struct1& param2"},

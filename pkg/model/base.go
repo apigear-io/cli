@@ -29,7 +29,7 @@ const (
 type KindType string
 
 const (
-	TypeVoid      KindType = "null"
+	TypeVoid      KindType = "void"
 	TypeBool      KindType = "bool"
 	TypeInt       KindType = "int"
 	TypeFloat     KindType = "float"
@@ -88,7 +88,7 @@ func NewTypedNode(n string, k Kind) *TypedNode {
 			Kind: k,
 		},
 		Schema: Schema{
-			Type:     "",
+			Type:     "void",
 			KindType: TypeVoid,
 		},
 	}
@@ -110,16 +110,8 @@ func (t *TypedNode) ResolveAll(m *Module) error {
 	return t.Schema.ResolveAll(m)
 }
 
-func (t *TypedNode) NoType() bool {
-	return t.Type == ""
-}
-
 func (t *TypedNode) IsVoid() bool {
-	return t.Type == ""
-}
-
-func (t TypedNode) HasType() bool {
-	return t.Type != ""
+	return t.Type == "void"
 }
 
 func (t TypedNode) TypeName() string {
@@ -166,9 +158,12 @@ func (s *Schema) ResolveAll(m *Module) error {
 	if s.IsResolved {
 		return nil
 	}
+	if s.Type == "" {
+		s.Type = "void"
+	}
 	s.Module = m
 	switch s.Type {
-	case "":
+	case "void":
 		s.IsPrimitive = false
 		s.IsSymbol = false
 	case "bool", "int", "float", "string":

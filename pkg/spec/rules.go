@@ -1,5 +1,7 @@
 package spec
 
+import "github.com/apigear-io/cli/pkg/log"
+
 // A rules document defines a set of rules how to apply transformations
 // to a set of documents.
 // For this the rules document is separated into a set of features, which can be enabled independently.
@@ -23,6 +25,7 @@ type RulesDoc struct {
 	Features []*FeatureRule `json:"features" yaml:"features"`
 }
 
+// FeatureByName returns the feature with the given name.
 func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 	for _, f := range r.Features {
 		if f.Name == name {
@@ -32,9 +35,10 @@ func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 	return nil
 }
 
-// FilterFeatures returns a filtered set of features based on the given features.
+// ComputeFeatures returns a filtered set of features based on the given features.
 // And the features that are required by the given features.
-func (r *RulesDoc) FilterFeatures(wanted []string) []*FeatureRule {
+func (r *RulesDoc) ComputeFeatures(wanted []string) []*FeatureRule {
+	log.Debug().Msgf("computing features: %v", wanted)
 	// make a set of wanted features
 	fts := make(map[string]*FeatureRule)
 	// if no features are given, return all features
@@ -51,7 +55,7 @@ func (r *RulesDoc) FilterFeatures(wanted []string) []*FeatureRule {
 		if f != nil {
 			fts[w] = f
 			// recursively add required features
-			req := r.FilterFeatures(f.Requires)
+			req := r.ComputeFeatures(f.Requires)
 			for _, r := range req {
 				fts[r.Name] = r
 			}
@@ -63,6 +67,7 @@ func (r *RulesDoc) FilterFeatures(wanted []string) []*FeatureRule {
 	for _, f := range fts {
 		result = append(result, f)
 	}
+	log.Debug().Msgf("computed features: %v", result)
 	return result
 }
 

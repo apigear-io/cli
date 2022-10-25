@@ -16,6 +16,7 @@ func TestDefaultFromIdl(t *testing.T) {
 		pn string
 		rt string
 	}{
+		{"test", "Test1", "propVoid", ""},
 		{"test", "Test1", "propBool", "false"},
 		{"test", "Test1", "propInt", "int64(0)"},
 		{"test", "Test1", "propFloat", "float64(0.0)"},

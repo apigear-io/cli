@@ -14,7 +14,7 @@ func TestInterface(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "Module01", module.Name)
 	assert.Equal(t, "1.0", string(module.Version))
-	assert.Equal(t, 3, len(module.Interfaces))
+	assert.Equal(t, 4, len(module.Interfaces))
 	iface0 := module.Interfaces[0]
 	assert.Equal(t, "Interface01", iface0.Name)
 

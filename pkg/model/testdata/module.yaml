@@ -21,6 +21,15 @@ interfaces:
             type: bool
           - name: param02
             type: bool
+  - name: Interface04
+    operations:
+      - name: operation01
+        return:
+          type: void
+      - name: operation02
+      - name: operation03
+        return:
+          type: int
 enums:
   - name: Enum1
     members:

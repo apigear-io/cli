@@ -3,9 +3,9 @@ name: release
 on:
   push:
     branches:
-      - '!*'
+      - "!*"
     tags:
-      - 'v*'
+      - "v*"
 
 # See https://github.com/mvdan/github-actions-golang/blob/master/README.md#how-do-i-install-private-modules
 

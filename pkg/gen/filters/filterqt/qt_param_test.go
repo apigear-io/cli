@@ -15,11 +15,11 @@ func TestParam(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "bool propBool"},
 		{"test", "Test1", "propInt", "int propInt"},
-		{"test", "Test1", "propFloat", "double propFloat"},
+		{"test", "Test1", "propFloat", "qreal propFloat"},
 		{"test", "Test1", "propString", "const QString& propString"},
 		{"test", "Test1", "propBoolArray", "const QList<bool>& propBoolArray"},
 		{"test", "Test1", "propIntArray", "const QList<int>& propIntArray"},
-		{"test", "Test1", "propFloatArray", "const QList<double>& propFloatArray"},
+		{"test", "Test1", "propFloatArray", "const QList<qreal>& propFloatArray"},
 		{"test", "Test1", "propStringArray", "const QList<QString>& propStringArray"},
 	}
 	syss := loadTestSystems(t)

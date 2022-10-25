@@ -16,7 +16,7 @@ func TestReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-
+		{"test", "Test1", "propVoid", "void"},
 		{"test", "Test1", "propBool", "boolean"},
 		{"test", "Test1", "propInt", "number"},
 		{"test", "Test1", "propFloat", "number"},
