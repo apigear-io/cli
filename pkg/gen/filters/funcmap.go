@@ -42,11 +42,11 @@ func PopulateFuncMap() template.FuncMap {
 	fm["trimSuffix"] = TrimSuffix
 	fm["replace"] = Replace
 	fm["int2word"] = IntToWord
-	fm["Int2Word"] = func(i int, postfix string) string {
-		return CamelCase(IntToWord(i, postfix))
+	fm["Int2Word"] = func(i int, prefix, postfix string) string {
+		return CamelCase(IntToWord(i, prefix, postfix))
 	}
-	fm["INT2WORD"] = func(i int, postfix string) string {
-		return UpperCase(IntToWord(i, postfix))
+	fm["INT2WORD"] = func(i int, prefix, postfix string) string {
+		return UpperCase(IntToWord(i, prefix, postfix))
 	}
 	fm["plural"] = Pluralize
 	fm["nl"] = NewLine
