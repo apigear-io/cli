@@ -16,22 +16,53 @@ func TestReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-
-		{"test", "Test1", "propBool", "bool"},
-		{"test", "Test1", "propInt", "int32"},
-		{"test", "Test1", "propFloat", "float"},
-		{"test", "Test1", "propString", "FString"},
-		{"test", "Test1", "propBoolArray", "TArray<bool>"},
-		{"test", "Test1", "propIntArray", "TArray<int32>"},
-		{"test", "Test1", "propFloatArray", "TArray<float>"},
-		{"test", "Test1", "propStringArray", "TArray<FString>"},
+		{"test", "Test3", "opVoid", "void"},
+		{"test", "Test3", "opBool", "bool"},
+		{"test", "Test3", "opInt", "int32"},
+		{"test", "Test3", "opFloat", "float"},
+		{"test", "Test3", "opString", "FString"},
+		{"test", "Test3", "opBoolArray", "TArray<bool>"},
+		{"test", "Test3", "opIntArray", "TArray<int32>"},
+		{"test", "Test3", "opFloatArray", "TArray<float>"},
+		{"test", "Test3", "opStringArray", "TArray<FString>"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
 			t.Run(tt.pn, func(t *testing.T) {
-				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
-				assert.NotNil(t, prop)
-				r, err := ueReturn("", prop)
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := ueReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestOperationReturn(t *testing.T) {
+	syss := loadTestSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test3", "opVoid", "void"},
+		{"test", "Test3", "opBool", "bool"},
+		{"test", "Test3", "opInt", "int32"},
+		{"test", "Test3", "opFloat", "float"},
+		{"test", "Test3", "opString", "FString"},
+		{"test", "Test3", "opBoolArray", "TArray<bool>"},
+		{"test", "Test3", "opIntArray", "TArray<int32>"},
+		{"test", "Test3", "opFloatArray", "TArray<float>"},
+		{"test", "Test3", "opStringArray", "TArray<FString>"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := ueReturn("", op.Return)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})

@@ -11,6 +11,8 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
+	case "void":
+		text = "void"
 	case "string":
 		text = "QString()"
 	case "int":

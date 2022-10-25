@@ -16,13 +16,14 @@ func TestDefaultFromIdl(t *testing.T) {
 		pn string
 		rt string
 	}{
+		{"test", "Test1", "propVoid", "void"},
 		{"test", "Test1", "propBool", "false"},
 		{"test", "Test1", "propInt", "0"},
 		{"test", "Test1", "propFloat", "0.0"},
 		{"test", "Test1", "propString", "QString()"},
 		{"test", "Test1", "propBoolArray", "QList<bool>()"},
 		{"test", "Test1", "propIntArray", "QList<int>()"},
-		{"test", "Test1", "propFloatArray", "QList<double>()"},
+		{"test", "Test1", "propFloatArray", "QList<qreal>()"},
 		{"test", "Test1", "propStringArray", "QList<QString>()"},
 	}
 	for _, sys := range syss {

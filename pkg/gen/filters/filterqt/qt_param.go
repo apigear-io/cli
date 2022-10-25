@@ -23,7 +23,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	case "int":
 		return fmt.Sprintf("int %s", name), nil
 	case "float":
-		return fmt.Sprintf("double %s", name), nil
+		return fmt.Sprintf("qreal %s", name), nil
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}

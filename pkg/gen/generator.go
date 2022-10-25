@@ -121,7 +121,7 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	features := doc.FilterFeatures(g.Features)
+	features := doc.ComputeFeatures(g.Features)
 	for _, feature := range features {
 		err := g.processFeature(feature)
 		if err != nil {

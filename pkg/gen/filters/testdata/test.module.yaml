@@ -5,6 +5,7 @@ version: 1.0
 interfaces:
   - name: Test1
     properties:
+      - { name: propVoid, type: void }
       - { name: propBool, type: bool }
       - { name: propInt, type: int }
       - { name: propFloat, type: float }
@@ -23,6 +24,7 @@ interfaces:
       - { name: propInterfaceArray, type: Interface1, array: true }
   - name: Test3
     operations:
+      - name: opVoid
       - name: opBool
         params:
           - name: param1
@@ -180,7 +182,7 @@ interfaces:
           - name: param2
             type: Interface1
         return:
-          type: Interface1 
+          type: Interface1
   - name: Test6
     operations:
       - name: opBool
