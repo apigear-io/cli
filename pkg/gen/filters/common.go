@@ -13,72 +13,73 @@ func SnakeCaseLower(s string) string {
 	return strcase.ToCase(s, strcase.LowerCase, '_')
 }
 
-// SnakeCase returns a string representation of the value in snake_case.
-func SnakeCase(s string) string {
+// SnakeTitleCase returns a string representation of the value in snake_case.
+func SnakeTitleCase(s string) string {
 	return strcase.ToCase(s, strcase.TitleCase, '_')
 }
 
 // First returns the first character of the value.
-func SnakeCaseUpper(s string) string {
+func SnakeUpperCase(s string) string {
 	return strcase.ToCase(s, strcase.UpperCase, '_')
 }
 
 // CamelCase returns a string representation of the value in CamelCase.
-func CamelCase(s string) string {
+func CamelLowerCase(s string) string {
+	return strcase.ToCase(s, strcase.CamelCase, '\x00')
+}
+
+// CamelTitleCase returns a string representation of the value in CamelTitleCase.
+func CamelTitleCase(s string) string {
 	return strcase.ToCase(s, strcase.TitleCase, '\x00')
 }
 
-// CamelCase returns a string representation of the value in CamelCase.
-func CamelCaseLower(s string) string {
-	return strcase.ToCase(s, strcase.LowerCase, '\x00')
-}
-
-func CamelCaseUpper(s string) string {
+// CamelUpperCase returns a string representation of the value in CamelCase.
+func CamelUpperCase(s string) string {
 	return strcase.ToCase(s, strcase.UpperCase, '\x00')
 }
 
-// DotCaseLower returns a string representation of the value in dot.case
-func DotCaseLower(s string) string {
+// DotLowerCase returns a string representation of the value in dot.case
+func DotLowerCase(s string) string {
 	return strcase.ToCase(s, strcase.LowerCase, '.')
 }
 
-// DotCase returns a string representation of the value in dot.case
-func DotCase(s string) string {
+// DotTitleCase returns a string representation of the value in dot.case
+func DotTitleCase(s string) string {
 	return strcase.ToCase(s, strcase.TitleCase, '.')
 }
 
-// DotCaseUpper returns a string representation of the value in DOT.CASE
-func DotCaseUpper(s string) string {
+// DotUpperCase returns a string representation of the value in DOT.CASE
+func DotUpperCase(s string) string {
 	return strcase.ToCase(s, strcase.UpperCase, '.')
 }
 
-// KebapCaseLower returns a string representation of the value in kebap-case.
-func KebabCaseLower(s string) string {
+// KebabLowerCase returns a string representation of the value in kebap-case.
+func KebabLowerCase(s string) string {
 	return strcase.ToCase(s, strcase.LowerCase, '-')
 }
 
-// KebabCase returns a string representation of the value in kebab-case.
-func KebabCase(s string) string {
+// KebabTitleCase returns a string representation of the value in kebab-case.
+func KebabTitleCase(s string) string {
 	return strcase.ToCase(s, strcase.TitleCase, '-')
 }
 
 // KebapCaseUpper returns a string representation of the value in KEBAP-CASE.
-func KebabCaseUpper(s string) string {
+func KebabUpperCase(s string) string {
 	return strcase.ToCase(s, strcase.UpperCase, '-')
 }
 
-// PathCaseLower returns a string representation of the value in path/case.
-func PathCaseLower(s string) string {
+// PathLowerCase returns a string representation of the value in path/case.
+func PathLowerCase(s string) string {
 	return strcase.ToCase(s, strcase.LowerCase, '/')
 }
 
-// PathCase returns a string representation of the value in path/case.
-func PathCase(s string) string {
+// PathTitleCase returns a string representation of the value in path/case.
+func PathTitleCase(s string) string {
 	return strcase.ToCase(s, strcase.TitleCase, '/')
 }
 
-// PathCaseUpper returns a string representation of the value in PATH/CASE.
-func PathCaseUpper(s string) string {
+// PathUpperCase returns a string representation of the value in PATH/CASE.
+func PathUpperCase(s string) string {
 	return strcase.ToCase(s, strcase.UpperCase, '/')
 }
 
@@ -94,26 +95,41 @@ func UpperCase(s string) string {
 
 // UpperFirst returns a string representation of the value with the first character in UPPER CASE.
 func UpperFirst(s string) string {
+	if len(s) == 0 {
+		return s
+	}
 	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 // LowerFirst returns a string representation of the value with the first character in lowercase.
 func LowerFirst(s string) string {
+	if len(s) == 0 {
+		return s
+	}
 	return strings.ToLower(s[:1]) + s[1:]
 }
 
 // FirstChar returns the first character of the value.
 func FirstChar(s string) string {
+	if len(s) == 0 {
+		return s
+	}
 	return s[:1]
 }
 
 // FirstCharLower returns the first character of the value in lowercase.
 func FirstCharLower(s string) string {
+	if len(s) == 0 {
+		return s
+	}
 	return strings.ToLower(s[:1])
 }
 
 // FirstCharUpper returns the first character of the value in UPPER CASE.
 func FirstCharUpper(s string) string {
+	if len(s) == 0 {
+		return s
+	}
 	return strings.ToUpper(s[:1])
 }
 
