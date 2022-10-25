@@ -39,6 +39,37 @@ func TestReturn(t *testing.T) {
 	}
 }
 
+func TestOperationReturn(t *testing.T) {
+	syss := loadTestSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test3", "opVoid", "None"},
+		{"test", "Test3", "opBool", "bool"},
+		{"test", "Test3", "opInt", "int"},
+		{"test", "Test3", "opFloat", "float"},
+		{"test", "Test3", "opString", "str"},
+		{"test", "Test3", "opBoolArray", "list[bool]"},
+		{"test", "Test3", "opIntArray", "list[int]"},
+		{"test", "Test3", "opFloatArray", "list[float]"},
+		{"test", "Test3", "opStringArray", "list[str]"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := pyReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
 func TestReturnSymbols(t *testing.T) {
 	syss := loadTestSystems(t)
 	var propTests = []struct {
