@@ -142,15 +142,15 @@ var WORDS = []string{
 	"eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty",
 }
 
-func IntToWord(i int, postfix string) string {
-	if i < 0 || i >= len(WORDS) {
-		return postfix
+func IntToWord(i int, prefix string, postfix string) string {
+	if i <= 0 || i >= len(WORDS) {
+		return ""
 	}
 	if postfix == "" {
 		return WORDS[i]
 	}
 	plural := Pluralize(postfix, i)
-	return fmt.Sprintf("%s%s", WORDS[i], plural)
+	return fmt.Sprintf("%s%s%s", prefix, WORDS[i], plural)
 }
 
 var plural = pluralize.NewClient()
