@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
+// InstallTemplate installs template template registry into the cache
 func InstallTemplate(name string) error {
 	// check if name is a local dst in the cache
 	dst := helper.Join(config.TemplatesDir(), name)

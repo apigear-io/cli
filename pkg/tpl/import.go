@@ -9,18 +9,19 @@ import (
 	"github.com/gitsight/go-vcsurl"
 )
 
-func ImportTemplate(src string) (*vcsurl.VCS, error) {
-	info, err := git.GitUrlInfo(src)
+// ImportTemplate imports template from git repository into the cache
+func ImportTemplate(url string) (*vcsurl.VCS, error) {
+	vcs, err := git.GitUrlInfo(url)
 	if err != nil {
 		return nil, err
 	}
-	dst := helper.Join(config.TemplatesDir(), info.FullName)
+	dst := helper.Join(config.TemplatesDir(), vcs.FullName)
 	if helper.IsDir(dst) {
-		return nil, fmt.Errorf("template %s already exists", info.FullName)
+		return nil, fmt.Errorf("template %s already exists", vcs.FullName)
 	}
-	err = git.Clone(src, dst)
+	err = git.Clone(url, dst)
 	if err != nil {
 		return nil, err
 	}
-	return info, nil
+	return vcs, nil
 }

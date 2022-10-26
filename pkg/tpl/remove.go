@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
+// RemoveTemplate removes template by name from the cache
 func RemoveTemplate(name string) error {
 	dir := config.TemplatesDir()
 	log.Info().Msgf("remove template %s from %s", name, dir)

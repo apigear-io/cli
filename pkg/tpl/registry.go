@@ -31,6 +31,7 @@ func ReadRegistry() (*TemplateRegistry, error) {
 	return &registry, nil
 }
 
+// WriteRegistry writes the registry to path
 func WriteRegistry(r *TemplateRegistry) error {
 	dst := config.CachedRegistryPath()
 	bytes, err := json.MarshalIndent(r, "", "  ")

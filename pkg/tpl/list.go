@@ -9,6 +9,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
+// ListTemplates lists all templates in the cache
 func ListTemplates() ([]TemplateInfo, error) {
 	// list all dirs in packageDir
 	dir := config.TemplatesDir()
