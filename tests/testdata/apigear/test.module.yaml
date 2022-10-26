@@ -1,0 +1,15 @@
+schema: apigear/module:1.0
+name: test
+version: 1.0.0
+description: "This is a test module."
+interfaces:
+  - name: Counter
+    properties:
+      - { name: value, type: int }
+    operations:
+      - name: increment
+        params:
+          - { name: value, type: int }
+      - name: decrement
+        params:
+          - { name: value, type: int }

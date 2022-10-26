@@ -6,16 +6,16 @@ import (
 	"path/filepath"
 )
 
-func CopyFiles(source, target string) error {
-	entries, err := os.ReadDir(source)
+func CopyDir(src, dst string) error {
+	entries, err := os.ReadDir(src)
 	if err != nil {
 		return err
 	}
 	for _, entry := range entries {
-		s := Join(source, entry.Name())
-		t := Join(target, entry.Name())
+		s := Join(src, entry.Name())
+		t := Join(dst, entry.Name())
 		if entry.IsDir() {
-			if err := CopyFiles(s, t); err != nil {
+			if err := CopyDir(s, t); err != nil {
 				return err
 			}
 		} else {
