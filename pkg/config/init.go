@@ -19,7 +19,7 @@ func init() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	ConfigDir = helper.Join(home, ".apigear")
-	v := viper.New()
+	v = viper.New()
 
 	v.SetEnvPrefix("apigear")
 	v.AutomaticEnv() // read in environment variables that match
@@ -34,7 +34,7 @@ func init() {
 
 	v.SetDefault(KeyRegistryUrl, registryUrl)
 	v.SetDefault(KeyRegistryDir, registryDir)
-	v.SetDefault(KeyServerPort, 8080)
+	v.SetDefault(KeyServerPort, 8085)
 	v.SetDefault(KeyEditorCommand, "code")
 	v.SetDefault(KeyUpdateChannel, "stable")
 	v.SetDefault(KeyVersion, "0.0.0")
@@ -61,5 +61,4 @@ func init() {
 	if err := v.ReadInConfig(); err != nil {
 		cobra.CheckErr(err)
 	}
-	c = New(v)
 }

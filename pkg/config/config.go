@@ -20,36 +20,18 @@ const (
 	KeyDate          = "date"
 )
 
-var c *config
+var v *viper.Viper
 
-type config struct {
-	*viper.Viper
-}
-
-func New(v *viper.Viper) *config {
-	if v == nil {
-		v = viper.New()
-	}
-	return &config{
-		Viper: v,
-	}
-}
-
-// RecentEntries returns the list of recent entries
-func (c *config) RecentEntries() []string {
-	items := c.GetStringSlice(KeyRecent)
-	if len(items) > 5 {
-		return items[len(items)-5:]
-	}
-	return items
+func SetViper(aV *viper.Viper) {
+	v = aV
 }
 
 // AppendRecentEntry appends a new entry to the list of recent entries
 // entries are limited to 5
 // the most recent entry is at the beginning of the list
 // stores the list in the config file
-func (c *config) AppendRecentEntry(file string) error {
-	recent := c.RecentEntries()
+func AppendRecentEntry(file string) error {
+	recent := RecentEntries()
 	for i, f := range recent {
 		if f == file {
 			recent = append(recent[:i], recent[i+1:]...)
@@ -61,142 +43,102 @@ func (c *config) AppendRecentEntry(file string) error {
 	}
 	// prepend the new entry
 	recent = append([]string{file}, recent...)
-	c.Set(KeyRecent, recent)
-	return c.WriteConfig()
+	v.Set(KeyRecent, recent)
+	return v.WriteConfig()
 }
 
 // RemoveRecentEntry removes a recent entry from the list
-func (c *config) RemoveRecentEntry(d string) error {
-	recent := c.RecentEntries()
+func RemoveRecentEntry(d string) error {
+	recent := RecentEntries()
 	for i, f := range recent {
 		if f == d {
 			recent = append(recent[:i], recent[i+1:]...)
 			break
 		}
 	}
-	c.Set(KeyRecent, recent)
-	return c.WriteConfig()
+	v.Set(KeyRecent, recent)
+	return v.WriteConfig()
 }
 
-func (c *config) EditorCommand() string {
-	return c.GetString(KeyEditorCommand)
-}
-
-func (c *config) ServerPort() string {
-	return c.GetString(KeyServerPort)
-}
-
-func (c *config) UpdateChannel() string {
-	return c.GetString(KeyUpdateChannel)
-}
-
-func (c *config) RegistryCacheDir() string {
-	return c.GetString(KeyRegistryDir)
-}
-
-func (c *config) RegistryCacheFile() string {
-	return filepath.Join(c.RegistryCacheDir(), "registry.json")
-}
-
-func (c *config) Get(key string) string {
-	return c.GetString(key)
-}
-
-func (c *config) GitAuthToken() string {
-	return c.GetString(KeyGitAuthToken)
-}
-
-func (c *config) TemplateCacheDir() string {
-	return c.GetString(KeyTemplatesDir)
-}
-
-func (c *config) RegistryUrl() string {
-	return c.GetString(KeyRegistryUrl)
-}
-
-// recent entries
-func AppendRecentEntry(file string) error {
-	return c.AppendRecentEntry(file)
-}
-
-func RemoveRecentEntry(d string) error {
-	return c.RemoveRecentEntry(d)
-}
-
+// RecentEntries returns the list of recent entries
 func RecentEntries() []string {
-	return c.RecentEntries()
+	items := v.GetStringSlice(KeyRecent)
+	if len(items) > 5 {
+		return items[len(items)-5:]
+	}
+	return items
 }
 
 func SetBuildInfo(version, commit, date string) {
-	c.Set(KeyVersion, version)
-	c.Set(KeyCommit, commit)
-	c.Set(KeyDate, date)
+	v.Set(KeyVersion, version)
+	v.Set(KeyCommit, commit)
+	v.Set(KeyDate, date)
 }
 
 func IsSet(key string) bool {
-	return c.IsSet(key)
+	return v.IsSet(key)
 }
 
 func Set(key string, value any) {
-	c.Set(key, value)
+	v.Set(key, value)
 }
 
 func Get(key string) any {
-	return c.Get(key)
+	return v.Get(key)
 }
 
 func WriteConfig() error {
-	return c.WriteConfig()
+	return v.WriteConfig()
 }
 
 func EditorCommand() string {
-	return c.EditorCommand()
+	return v.GetString(KeyEditorCommand)
 }
 
 func ServerPort() string {
-	return c.ServerPort()
+	return v.GetString(KeyServerPort)
 }
 
 func UpdateChannel() string {
-	return c.UpdateChannel()
+	return v.GetString(KeyUpdateChannel)
 }
 
 func RegistryDir() string {
-	return c.RegistryCacheDir()
+	return v.GetString(KeyRegistryDir)
 }
 
 func RegistryCachePath() string {
-	return c.RegistryCacheFile()
+	return filepath.Join(RegistryDir(), "registry.json")
 }
 
 func AllSettings() map[string]interface{} {
-	return c.AllSettings()
+	return v.AllSettings()
 }
 
 func ConfigFileUsed() string {
-	return c.ConfigFileUsed()
+	return v.ConfigFileUsed()
 }
 
 func GitAuthToken() string {
-	return c.GitAuthToken()
+	return v.GetString(KeyGitAuthToken)
 }
 
 func TemplateCacheDir() string {
-	return c.TemplateCacheDir()
+	return v.GetString(KeyTemplatesDir)
 }
 
 func RegistryUrl() string {
-	return c.RegistryUrl()
+	return v.GetString(KeyRegistryUrl)
 }
 
 func BuildVersion() string {
-	return c.GetString(KeyVersion)
+	return v.GetString(KeyVersion)
 }
 
 func BuildDate() string {
-	return c.GetString(KeyDate)
+	return v.GetString(KeyDate)
 }
 
 func BuildCommit() string {
-	return c.GetString(KeyCommit)
+	return v.GetString(KeyCommit)
 }
