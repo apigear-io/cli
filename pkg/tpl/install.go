@@ -3,7 +3,7 @@ package tpl
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
@@ -11,7 +11,7 @@ import (
 // InstallTemplate installs template template registry into the cache
 func InstallTemplate(name string) error {
 	// check if name is a local dst in the cache
-	dst := helper.Join(config.TemplateCacheDir(), name)
+	dst := helper.Join(cfg.TemplateCacheDir(), name)
 	if helper.IsDir(dst) {
 		return fmt.Errorf("template %s already exists", name)
 	}

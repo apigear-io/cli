@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
@@ -12,8 +12,8 @@ func GetTemplateDir(rootDir string, template string) (string, error) {
 	var templateDir string
 	if helper.IsDir(helper.Join(rootDir, template)) {
 		templateDir = helper.Join(rootDir, template)
-	} else if helper.IsDir(helper.Join(config.TemplateCacheDir(), template)) {
-		templateDir = helper.Join(config.TemplateCacheDir(), template)
+	} else if helper.IsDir(helper.Join(cfg.TemplateCacheDir(), template)) {
+		templateDir = helper.Join(cfg.TemplateCacheDir(), template)
 	} else {
 		return "", fmt.Errorf("template dir %s not found", template)
 	}

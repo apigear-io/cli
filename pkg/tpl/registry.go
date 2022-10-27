@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 )
 
@@ -16,7 +16,7 @@ type TemplateRegistry struct {
 
 // ReadRegistry reads the registry file from path
 func ReadRegistry() (*TemplateRegistry, error) {
-	src := config.RegistryCachePath()
+	src := cfg.RegistryCachePath()
 	// read registry.json
 	bytes, err := os.ReadFile(src)
 	if err != nil {
@@ -33,7 +33,7 @@ func ReadRegistry() (*TemplateRegistry, error) {
 
 // WriteRegistry writes the registry to path
 func WriteRegistry(r *TemplateRegistry) error {
-	dst := config.RegistryCachePath()
+	dst := cfg.RegistryCachePath()
 	bytes, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		return err

@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
@@ -42,6 +42,6 @@ func readProject(d string) (*ProjectInfo, error) {
 	}
 	// save current project
 	currentProject = project
-	config.AppendRecentEntry(d)
+	cfg.AppendRecentEntry(d)
 	return project, nil
 }

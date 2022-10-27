@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
@@ -12,7 +12,7 @@ import (
 // GetLocalTemplateInfo returns information about a template
 // either from an installed of from a template registry
 func GetLocalTemplateInfo(name string) (*git.RepoInfo, error) {
-	dir := config.TemplateCacheDir()
+	dir := cfg.TemplateCacheDir()
 	// get git info for template
 	target := helper.Join(dir, name)
 	if !helper.IsDir(target) {

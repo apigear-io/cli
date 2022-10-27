@@ -20,7 +20,7 @@ apigear [flags]
 ### SEE ALSO
 
 * [apigear completion](apigear_completion.md)	 - Generate the autocompletion script for the specified shell
-* [apigear config](apigear_config.md)	 - Display the config vars
+* [apigear config](apigear_cfg.md)	 - Display the config vars
 * [apigear generate](apigear_generate.md)	 - Generate code from APIs
 * [apigear monitor](apigear_monitor.md)	 - Display monitor API calls
 * [apigear project](apigear_project.md)	 - Manage apigear projects

@@ -3,7 +3,7 @@ package tpl
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/gitsight/go-vcsurl"
@@ -15,7 +15,7 @@ func ImportTemplate(url string) (*vcsurl.VCS, error) {
 	if err != nil {
 		return nil, err
 	}
-	dst := helper.Join(config.TemplateCacheDir(), vcs.FullName)
+	dst := helper.Join(cfg.TemplateCacheDir(), vcs.FullName)
 	if helper.IsDir(dst) {
 		return nil, fmt.Errorf("template %s already exists", vcs.FullName)
 	}

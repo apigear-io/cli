@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
@@ -11,8 +11,8 @@ import (
 // and their versions.
 func UpdateRegistry() error {
 	log.Info().Msgf("updating template registry")
-	src := config.RegistryUrl()
-	dst := config.RegistryDir()
+	src := cfg.RegistryUrl()
+	dst := cfg.RegistryDir()
 	helper.RemoveDir(dst)
 	err := git.CloneOrPull(src, dst)
 	if err != nil {

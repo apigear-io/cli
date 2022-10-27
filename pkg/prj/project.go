@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/vfs"
@@ -71,11 +71,11 @@ func GetProjectInfo(d string) (*ProjectInfo, error) {
 
 func RecentProjectInfos() []*ProjectInfo {
 	var infos []*ProjectInfo
-	for _, d := range config.RecentEntries() {
+	for _, d := range cfg.RecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
 			log.Warn().Msgf("read project %s: %s", d, err)
-			config.RemoveRecentEntry(d)
+			cfg.RemoveRecentEntry(d)
 			continue
 		}
 		infos = append(infos, info)
@@ -85,7 +85,7 @@ func RecentProjectInfos() []*ProjectInfo {
 
 // OpenEditor opens the project directory in a editor
 func OpenEditor(d string) error {
-	editor := config.EditorCommand()
+	editor := cfg.EditorCommand()
 	path, err := exec.LookPath(editor)
 	if err != nil {
 		return fmt.Errorf("find editor %s: %s", editor, err)

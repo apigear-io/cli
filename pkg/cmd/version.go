@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/spf13/cobra"
 )
 
@@ -13,9 +13,9 @@ func NewVersionCommand() *cobra.Command {
 		Short: "display version information",
 		Long:  `display version, commit and build-date information`,
 		Run: func(cmd *cobra.Command, args []string) {
-			version := config.BuildVersion()
-			commit := config.BuildCommit()
-			date := config.BuildDate()
+			version := cfg.BuildVersion()
+			commit := cfg.BuildCommit()
+			date := cfg.BuildDate()
 			fmt.Printf("%s-%s-%s\n", version, commit, date)
 		},
 	}

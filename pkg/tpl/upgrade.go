@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
@@ -11,7 +11,7 @@ func UpgradeTemplates(names []string) error {
 	log.Info().Msgf("update templates %s", names)
 	for _, name := range names {
 		// update template
-		dst := helper.Join(config.TemplateCacheDir(), name)
+		dst := helper.Join(cfg.TemplateCacheDir(), name)
 		err := git.Pull(dst)
 		if err != nil {
 			return err

@@ -3,7 +3,7 @@ package log
 import (
 	"os"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/rs/zerolog"
 )
@@ -23,7 +23,7 @@ func init() {
 	if verbose {
 		level = zerolog.TraceLevel
 	}
-	logFile := helper.Join(config.ConfigDir(), "apigear.log")
+	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
 	multi := zerolog.MultiLevelWriter(
 		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.000"},
 		NewReportWriter(),

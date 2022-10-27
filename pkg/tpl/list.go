@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
@@ -47,7 +47,7 @@ func ListTemplates() ([]*git.RepoInfo, error) {
 // ListTemplates lists all templates in the cache
 func ListCachedRepos() ([]*git.RepoInfo, error) {
 	// list all dirs in packageDir
-	dir := config.TemplateCacheDir()
+	dir := cfg.TemplateCacheDir()
 	// walk package dir to find a dir that contains a .git dir
 	var infos []*git.RepoInfo
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {

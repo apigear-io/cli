@@ -1,4 +1,4 @@
-package config
+package cfg
 
 import (
 	"path/filepath"
@@ -68,6 +68,10 @@ func Set(key string, value any) {
 
 func Get(key string) any {
 	return v.Get(key)
+}
+
+func GetString(key string) string {
+	return v.GetString(key)
 }
 
 func WriteConfig() error {
