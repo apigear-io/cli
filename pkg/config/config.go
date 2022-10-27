@@ -1,8 +1,10 @@
 package config
 
 import (
-	"path/filepath"
+	"os"
 
+	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -20,125 +22,67 @@ const (
 	KeyDate          = "date"
 )
 
-var v *viper.Viper
+const (
+	registryUrl = "https://github.com/apigear-io/template-registry.git"
+)
 
-func SetViper(aV *viper.Viper) {
-	v = aV
+var (
+	v *viper.Viper
+)
+
+func init() {
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+	cfgDir := helper.Join(home, ".apigear")
+	v = NewConfig(cfgDir)
 }
 
-// AppendRecentEntry appends a new entry to the list of recent entries
-// entries are limited to 5
-// the most recent entry is at the beginning of the list
-// stores the list in the config file
-func AppendRecentEntry(file string) error {
-	recent := RecentEntries()
-	for i, f := range recent {
-		if f == file {
-			recent = append(recent[:i], recent[i+1:]...)
-			break
-		}
+func NewConfig(cfgDir string) *viper.Viper {
+	nv := viper.New()
+
+	nv.SetEnvPrefix("apigear")
+	nv.AutomaticEnv() // read in environment variables that match
+
+	packageDir := helper.Join(cfgDir, "templates")
+	nv.SetDefault(KeyTemplatesDir, packageDir)
+
+	err := helper.MakeDir(packageDir)
+	cobra.CheckErr(err)
+
+	registryDir := helper.Join(cfgDir, "registry")
+
+	nv.SetDefault(KeyRegistryUrl, registryUrl)
+	nv.SetDefault(KeyRegistryDir, registryDir)
+	nv.SetDefault(KeyServerPort, 8085)
+	nv.SetDefault(KeyEditorCommand, "code")
+	nv.SetDefault(KeyUpdateChannel, "stable")
+	nv.SetDefault(KeyVersion, "0.0.0")
+	nv.SetDefault(KeyGitAuthToken, "")
+	nv.SetDefault(KeyCommit, "none")
+	nv.SetDefault(KeyDate, "unknown")
+	nv.SetDefault(KeyRegistryUrl, registryUrl)
+
+	// Search config in home directory with name ".apigear" (without extension).
+
+	cfgFile := helper.Join(cfgDir, "config.json")
+	nv.AddConfigPath(cfgDir)
+	nv.SetConfigType("json")
+	nv.SetConfigName("config")
+
+	if !helper.IsFile(cfgFile) {
+		err := helper.MakeDir(cfgDir)
+		cobra.CheckErr(err)
+		err = helper.WriteFile(cfgFile, []byte("{}"))
+		cobra.CheckErr(err)
 	}
-	if len(recent) >= 5 {
-		recent = recent[1:]
+
+	// If a config file is found, read it in.
+	if err := nv.ReadInConfig(); err != nil {
+		cobra.CheckErr(err)
 	}
-	// prepend the new entry
-	recent = append([]string{file}, recent...)
-	v.Set(KeyRecent, recent)
-	return v.WriteConfig()
+	return nv
 }
 
-// RemoveRecentEntry removes a recent entry from the list
-func RemoveRecentEntry(d string) error {
-	recent := RecentEntries()
-	for i, f := range recent {
-		if f == d {
-			recent = append(recent[:i], recent[i+1:]...)
-			break
-		}
-	}
-	v.Set(KeyRecent, recent)
-	return v.WriteConfig()
-}
-
-// RecentEntries returns the list of recent entries
-func RecentEntries() []string {
-	items := v.GetStringSlice(KeyRecent)
-	if len(items) > 5 {
-		return items[len(items)-5:]
-	}
-	return items
-}
-
-func SetBuildInfo(version, commit, date string) {
-	v.Set(KeyVersion, version)
-	v.Set(KeyCommit, commit)
-	v.Set(KeyDate, date)
-}
-
-func IsSet(key string) bool {
-	return v.IsSet(key)
-}
-
-func Set(key string, value any) {
-	v.Set(key, value)
-}
-
-func Get(key string) any {
-	return v.Get(key)
-}
-
-func WriteConfig() error {
-	return v.WriteConfig()
-}
-
-func EditorCommand() string {
-	return v.GetString(KeyEditorCommand)
-}
-
-func ServerPort() string {
-	return v.GetString(KeyServerPort)
-}
-
-func UpdateChannel() string {
-	return v.GetString(KeyUpdateChannel)
-}
-
-func RegistryDir() string {
-	return v.GetString(KeyRegistryDir)
-}
-
-func RegistryCachePath() string {
-	return filepath.Join(RegistryDir(), "registry.json")
-}
-
-func AllSettings() map[string]interface{} {
-	return v.AllSettings()
-}
-
-func ConfigFileUsed() string {
-	return v.ConfigFileUsed()
-}
-
-func GitAuthToken() string {
-	return v.GetString(KeyGitAuthToken)
-}
-
-func TemplateCacheDir() string {
-	return v.GetString(KeyTemplatesDir)
-}
-
-func RegistryUrl() string {
-	return v.GetString(KeyRegistryUrl)
-}
-
-func BuildVersion() string {
-	return v.GetString(KeyVersion)
-}
-
-func BuildDate() string {
-	return v.GetString(KeyDate)
-}
-
-func BuildCommit() string {
-	return v.GetString(KeyCommit)
+func SetConfig(c *viper.Viper) {
+	v = c
 }

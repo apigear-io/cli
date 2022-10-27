@@ -23,7 +23,7 @@ func init() {
 	if verbose {
 		level = zerolog.TraceLevel
 	}
-	logFile := helper.Join(config.ConfigDir, "apigear.log")
+	logFile := helper.Join(config.ConfigDir(), "apigear.log")
 	multi := zerolog.MultiLevelWriter(
 		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.000"},
 		NewReportWriter(),
