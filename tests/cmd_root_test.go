@@ -1,5 +1,3 @@
-//go:build integration
-
 package tests
 
 import (
@@ -10,12 +8,12 @@ import (
 
 func TestRootCmd(t *testing.T) {
 	setup(t)
-	output := execute("")
+	output := execute(t, "")
 	assert.Contains(t, output, "Usage:")
 }
 
 func TestRootHelpCmd(t *testing.T) {
 	setup(t)
-	out := execute("help")
+	out := execute(t, "help")
 	assert.Contains(t, out, "Usage:")
 }

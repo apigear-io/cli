@@ -1,4 +1,4 @@
-schema: apigear/module:1.0
+schema: apigear.module/1.0
 name: test
 version: 1.0.0
 description: "This is a test module."
