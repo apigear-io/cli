@@ -9,17 +9,19 @@ import (
 )
 
 const (
-	KeyRecent        = "recent"
-	KeyServerPort    = "server_port"
-	KeyEditorCommand = "editor_command"
-	KeyUpdateChannel = "update_channel"
-	KeyTemplatesDir  = "templates_dir"
-	KeyRegistryDir   = "registry_dir"
-	KeyRegistryUrl   = "registry_url"
-	KeyGitAuthToken  = "git_auth_token"
-	KeyVersion       = "version"
-	KeyCommit        = "commit"
-	KeyDate          = "date"
+	KeyRecent         = "recent"
+	KeyServerPort     = "server_port"
+	KeyEditorCommand  = "editor_command"
+	KeyUpdateChannel  = "update_channel"
+	KeyTemplatesDir   = "templates_dir"
+	KeyRegistryDir    = "registry_dir"
+	KeyRegistryUrl    = "registry_url"
+	KeyGitAuthToken   = "git_auth_token"
+	KeyGitPublicToken = "git_public_token"
+	KeyGitAuthUser    = "git_auth_user"
+	KeyVersion        = "version"
+	KeyCommit         = "commit"
+	KeyDate           = "date"
 )
 
 const (
@@ -27,7 +29,9 @@ const (
 )
 
 var (
-	v *viper.Viper
+	v           *viper.Viper
+	repoToken   string // populated during build-process
+	publicToken string // populated during build-process
 )
 
 func init() {
@@ -57,7 +61,10 @@ func NewConfig(cfgDir string) *viper.Viper {
 	nv.SetDefault(KeyEditorCommand, "code")
 	nv.SetDefault(KeyUpdateChannel, "stable")
 	nv.SetDefault(KeyVersion, "0.0.0")
-	nv.SetDefault(KeyGitAuthToken, "")
+	// public repo token for github to avoid rate limit
+	nv.SetDefault(KeyGitAuthToken, repoToken)
+	nv.SetDefault(KeyGitPublicToken, publicToken)
+	nv.SetDefault(KeyGitAuthUser, "jryannel")
 	nv.SetDefault(KeyCommit, "none")
 	nv.SetDefault(KeyDate, "unknown")
 	nv.SetDefault(KeyRegistryUrl, registryUrl)

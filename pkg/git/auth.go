@@ -5,7 +5,12 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 )
 
-var auth = &http.BasicAuth{
-	Username: "x-oauth-basic", // yes, this can be anything except an empty string
-	Password: cfg.GitAuthToken(),
+func auth() *http.BasicAuth {
+	if cfg.GitAuthToken() == "" {
+		return nil
+	}
+	return &http.BasicAuth{
+		Username: cfg.GitAuthUser(),
+		Password: cfg.GitAuthToken(),
+	}
 }

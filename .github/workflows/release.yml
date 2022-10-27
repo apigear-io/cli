@@ -12,9 +12,9 @@ on:
 env:
   GITHUB_AUTH_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
   GOPRIVATE: "github.com/apigear-io/*"
-  GH_ACCESS_TOKEN: ${{ secrets.APIGEAR_REPOS }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PUBLIC_TOKEN: ${{ secrets.PUBLIC_TOKEN }}
+  REPO_TOKEN: ${{ secrets.APIGEAR_REPOS }}
 
 jobs:
   release:

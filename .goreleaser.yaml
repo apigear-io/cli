@@ -28,11 +28,12 @@ builds:
     main: cmd/apigear/main.go
     binary: apigear
     ldflags:
-      - -s -w 
-      - -X main.version={{.Version}} 
-      - -X main.commit={{.Commit}} 
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
       - -X main.date={{.Date}}
-      - -X github.com/apigear-io/cli/pkg/up.token={{.Env.PUBLIC_TOKEN}}
+      - -X github.com/apigear-io/cli/pkg/cfg.repoToken={{.Env.REPO_TOKEN}}
+      - -X github.com/apigear-io/cli/pkg/cfg.publicToken={{.Env.PUBLIC_TOKEN}}
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -43,7 +44,7 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
-brews:  
+brews:
   - name: apigear
     tap:
       owner: apigear-io

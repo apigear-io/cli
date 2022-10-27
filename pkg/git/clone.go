@@ -11,7 +11,7 @@ func Clone(src string, dst string) error {
 	log.Debug().Msgf("clone %s %s", src, dst)
 	_, err := git.PlainClone(dst, false, &git.CloneOptions{
 		URL:      src,
-		Auth:     auth,
+		Auth:     auth(),
 		Progress: os.Stdout,
 	})
 	return err

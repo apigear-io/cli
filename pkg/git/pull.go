@@ -18,7 +18,7 @@ func Pull(dst string) error {
 		return err
 	}
 	err = w.Pull(&git.PullOptions{
-		Auth:     auth,
+		Auth:     auth(),
 		Progress: os.Stdout,
 	})
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {

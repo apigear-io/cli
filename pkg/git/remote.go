@@ -61,7 +61,7 @@ func RemoteRepoInfo(url string) (RepoInfo, error) {
 		Name: "origin",
 		URLs: []string{url},
 	})
-	refs, err := remote.List(&git.ListOptions{Auth: auth})
+	refs, err := remote.List(&git.ListOptions{Auth: auth()})
 	if err != nil {
 		return RepoInfo{}, err
 	}
