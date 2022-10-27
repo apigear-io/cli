@@ -28,6 +28,8 @@ func ReadRegistry() (*TemplateRegistry, error) {
 	if err != nil {
 		return nil, err
 	}
+	// sort entries
+	git.SortRepoInfo(registry.Entries)
 	return &registry, nil
 }
 

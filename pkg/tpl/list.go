@@ -41,7 +41,23 @@ func ListTemplates() ([]*git.RepoInfo, error) {
 	for _, info := range set {
 		result = append(result, info)
 	}
+	// sort by name
+	git.SortRepoInfo(result)
 	return result, nil
+}
+
+func SearchTemplates(pattern string) ([]*git.RepoInfo, error) {
+	result, err := ListTemplates()
+	if err != nil {
+		return []*git.RepoInfo{}, err
+	}
+	var filtered []*git.RepoInfo
+	for _, info := range result {
+		if helper.Contains(info.Name, pattern) {
+			filtered = append(filtered, info)
+		}
+	}
+	return filtered, nil
 }
 
 // ListTemplates lists all templates in the cache
@@ -74,5 +90,6 @@ func ListCachedRepos() ([]*git.RepoInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("list templates: %s", err)
 	}
+	git.SortRepoInfo(infos)
 	return infos, nil
 }

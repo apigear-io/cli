@@ -15,22 +15,20 @@ func NewSearchCommand() *cobra.Command {
 		Aliases: []string{"s"},
 		Args:    cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Println("search registry:")
+			cmd.Println("search results ...")
 			pattern := ""
 			if len(args) > 0 {
 				pattern = args[0]
 			}
-			result, err := tpl.SearchRegistry(pattern)
+			infos, err := tpl.SearchTemplates(pattern)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
 			}
-			if len(result) == 0 {
+			if len(infos) == 0 {
 				cmd.Println("  no results found")
 			} else {
-				for _, info := range result {
-					cmd.Printf("  * %s\t%s\n", info.Name, info.Git)
-				}
+				displayRepoInfos(infos)
 			}
 		},
 	}

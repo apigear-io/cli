@@ -1,6 +1,8 @@
 package git
 
 import (
+	"sort"
+
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	gconf "github.com/go-git/go-git/v5/config"
@@ -32,6 +34,14 @@ func (c VersionCollection) Latest() VersionInfo {
 	return c[0]
 }
 
+func (c VersionCollection) AsList() []string {
+	result := make([]string, 0)
+	for _, v := range c {
+		result = append(result, v.Name)
+	}
+	return result
+}
+
 // VersionInfo contains information about a tag
 type VersionInfo struct {
 	Name    string          `json:"name"`
@@ -50,6 +60,12 @@ type RepoInfo struct {
 	Versions    VersionCollection `json:"tags"`
 	InCache     bool              `json:"inCache"`
 	InRegistry  bool              `json:"inRegistry"`
+}
+
+func SortRepoInfo(infos []*RepoInfo) {
+	sort.Slice(infos, func(i, j int) bool {
+		return infos[i].Name < infos[j].Name
+	})
 }
 
 func RemoteRepoInfo(url string) (RepoInfo, error) {
