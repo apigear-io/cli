@@ -7,7 +7,7 @@ import (
 
 // SearchRegistry searches registry for templates containing a substring
 
-func SearchRegistry(substring string) ([]*git.RemoteInfo, error) {
+func SearchRegistry(substring string) ([]*git.RepoInfo, error) {
 	// search templates
 	reg, err := ReadRegistry()
 	if err != nil {
@@ -17,7 +17,7 @@ func SearchRegistry(substring string) ([]*git.RemoteInfo, error) {
 		// return all
 		return reg.Entries, nil
 	}
-	var result []*git.RemoteInfo
+	var result []*git.RepoInfo
 	for _, info := range reg.Entries {
 		if helper.Contains(info.Name, substring) {
 			result = append(result, info)

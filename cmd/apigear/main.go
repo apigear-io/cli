@@ -17,9 +17,7 @@ var (
 func main() {
 	log.SentryInit(log.CLI_DSN)
 	log.SentryCaptureArgs()
-	config.Set(config.KeyVersion, version)
-	config.Set(config.KeyCommit, commit)
-	config.Set(config.KeyDate, date)
+	config.SetBuildInfo(version, commit, date)
 	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
 	defer func() {
 		log.SentryRecover()

@@ -71,7 +71,7 @@ func GetProjectInfo(d string) (*ProjectInfo, error) {
 
 func RecentProjectInfos() []*ProjectInfo {
 	var infos []*ProjectInfo
-	for _, d := range config.GetRecentEntries() {
+	for _, d := range config.RecentEntries() {
 		info, err := readProject(d)
 		if err != nil {
 			log.Warn().Msgf("read project %s: %s", d, err)
@@ -85,7 +85,7 @@ func RecentProjectInfos() []*ProjectInfo {
 
 // OpenEditor opens the project directory in a editor
 func OpenEditor(d string) error {
-	editor := config.GetEditorCommand()
+	editor := config.EditorCommand()
 	path, err := exec.LookPath(editor)
 	if err != nil {
 		return fmt.Errorf("find editor %s: %s", editor, err)

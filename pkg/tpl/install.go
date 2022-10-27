@@ -11,7 +11,7 @@ import (
 // InstallTemplate installs template template registry into the cache
 func InstallTemplate(name string) error {
 	// check if name is a local dst in the cache
-	dst := helper.Join(config.TemplatesDir(), name)
+	dst := helper.Join(config.TemplateCacheDir(), name)
 	if helper.IsDir(dst) {
 		return fmt.Errorf("template %s already exists", name)
 	}

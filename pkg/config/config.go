@@ -20,116 +20,183 @@ const (
 	KeyDate          = "date"
 )
 
-func GetRecentEntries() []string {
-	entries := viper.GetStringSlice(KeyRecent)
-	// limit to 5 entries
-	if len(entries) > 5 {
-		entries = entries[:5]
-	}
-	return entries
+var c *config
+
+type config struct {
+	*viper.Viper
 }
 
-func AppendRecentEntry(file string) error {
-	// check if file is already in recent
-	recent := GetRecentEntries()
-	for _, f := range recent {
+func New(v *viper.Viper) *config {
+	if v == nil {
+		v = viper.New()
+	}
+	return &config{
+		Viper: v,
+	}
+}
+
+// RecentEntries returns the list of recent entries
+func (c *config) RecentEntries() []string {
+	items := c.GetStringSlice(KeyRecent)
+	if len(items) > 5 {
+		return items[len(items)-5:]
+	}
+	return items
+}
+
+// AppendRecentEntry appends a new entry to the list of recent entries
+// entries are limited to 5
+// the most recent entry is at the beginning of the list
+// stores the list in the config file
+func (c *config) AppendRecentEntry(file string) error {
+	recent := c.RecentEntries()
+	for i, f := range recent {
 		if f == file {
-			return nil
+			recent = append(recent[:i], recent[i+1:]...)
+			break
 		}
 	}
-	// limit to 5 entries
 	if len(recent) >= 5 {
 		recent = recent[1:]
 	}
-	recent = append(recent, file)
-	viper.Set(KeyRecent, recent)
-	return viper.WriteConfig()
+	// prepend the new entry
+	recent = append([]string{file}, recent...)
+	c.Set(KeyRecent, recent)
+	return c.WriteConfig()
 }
 
-func RemoveRecentEntry(d string) error {
-	recent := GetRecentEntries()
+// RemoveRecentEntry removes a recent entry from the list
+func (c *config) RemoveRecentEntry(d string) error {
+	recent := c.RecentEntries()
 	for i, f := range recent {
 		if f == d {
 			recent = append(recent[:i], recent[i+1:]...)
 			break
 		}
 	}
-	viper.Set(KeyRecent, recent)
-	return viper.WriteConfig()
+	c.Set(KeyRecent, recent)
+	return c.WriteConfig()
 }
 
-func Set(key string, value any) {
-	viper.Set(key, value)
+func (c *config) EditorCommand() string {
+	return c.GetString(KeyEditorCommand)
 }
 
-func WriteConfig() error {
-	return viper.WriteConfig()
+func (c *config) ServerPort() string {
+	return c.GetString(KeyServerPort)
 }
 
-func GetEditorCommand() string {
-	cmd := viper.GetString(KeyEditorCommand)
-	if cmd == "" {
-		return "code"
-	}
-	return cmd
+func (c *config) UpdateChannel() string {
+	return c.GetString(KeyUpdateChannel)
 }
 
-func GetServerPort() string {
-	port := viper.GetString(KeyServerPort)
-	if port == "" {
-		return "8082"
-	}
-	return port
+func (c *config) RegistryCacheDir() string {
+	return c.GetString(KeyRegistryDir)
 }
 
-func GetUpdateChannel() string {
-	ch := viper.GetString(KeyUpdateChannel)
-	if ch == "" {
-		return "stable"
-	}
-	return ch
+func (c *config) RegistryCacheFile() string {
+	return filepath.Join(c.RegistryCacheDir(), "registry.json")
 }
 
-func RegistryDir() string {
-	dir := viper.GetString(KeyRegistryDir)
-	if dir == "" {
-		return "registry"
-	}
-	return dir
+func (c *config) Get(key string) string {
+	return c.GetString(key)
 }
 
-func CachedRegistryPath() string {
-	return filepath.Join(RegistryDir(), "registry.json")
+func (c *config) GitAuthToken() string {
+	return c.GetString(KeyGitAuthToken)
 }
 
-func AllSettings() map[string]interface{} {
-	return viper.AllSettings()
+func (c *config) TemplateCacheDir() string {
+	return c.GetString(KeyTemplatesDir)
 }
 
-func ConfigFileUsed() string {
-	return viper.ConfigFileUsed()
+func (c *config) RegistryUrl() string {
+	return c.GetString(KeyRegistryUrl)
 }
 
-func SetVersion(version string) {
-	viper.Set(KeyVersion, version)
+// recent entries
+func AppendRecentEntry(file string) error {
+	return c.AppendRecentEntry(file)
+}
+
+func RemoveRecentEntry(d string) error {
+	return c.RemoveRecentEntry(d)
+}
+
+func RecentEntries() []string {
+	return c.RecentEntries()
+}
+
+func SetBuildInfo(version, commit, date string) {
+	c.Set(KeyVersion, version)
+	c.Set(KeyCommit, commit)
+	c.Set(KeyDate, date)
 }
 
 func IsSet(key string) bool {
-	return viper.IsSet(key)
+	return c.IsSet(key)
 }
 
-func Get(key string) string {
-	return viper.GetString(key)
+func Set(key string, value any) {
+	c.Set(key, value)
+}
+
+func Get(key string) any {
+	return c.Get(key)
+}
+
+func WriteConfig() error {
+	return c.WriteConfig()
+}
+
+func EditorCommand() string {
+	return c.EditorCommand()
+}
+
+func ServerPort() string {
+	return c.ServerPort()
+}
+
+func UpdateChannel() string {
+	return c.UpdateChannel()
+}
+
+func RegistryDir() string {
+	return c.RegistryCacheDir()
+}
+
+func RegistryCachePath() string {
+	return c.RegistryCacheFile()
+}
+
+func AllSettings() map[string]interface{} {
+	return c.AllSettings()
+}
+
+func ConfigFileUsed() string {
+	return c.ConfigFileUsed()
 }
 
 func GitAuthToken() string {
-	return viper.GetString(KeyGitAuthToken)
+	return c.GitAuthToken()
 }
 
-func TemplatesDir() string {
-	return viper.GetString(KeyTemplatesDir)
+func TemplateCacheDir() string {
+	return c.TemplateCacheDir()
 }
 
 func RegistryUrl() string {
-	return viper.GetString(KeyRegistryUrl)
+	return c.RegistryUrl()
+}
+
+func BuildVersion() string {
+	return c.GetString(KeyVersion)
+}
+
+func BuildDate() string {
+	return c.GetString(KeyDate)
+}
+
+func BuildCommit() string {
+	return c.GetString(KeyCommit)
 }

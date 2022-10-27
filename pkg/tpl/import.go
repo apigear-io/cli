@@ -15,7 +15,7 @@ func ImportTemplate(url string) (*vcsurl.VCS, error) {
 	if err != nil {
 		return nil, err
 	}
-	dst := helper.Join(config.TemplatesDir(), vcs.FullName)
+	dst := helper.Join(config.TemplateCacheDir(), vcs.FullName)
 	if helper.IsDir(dst) {
 		return nil, fmt.Errorf("template %s already exists", vcs.FullName)
 	}

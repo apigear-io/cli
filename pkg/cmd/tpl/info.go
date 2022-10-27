@@ -3,12 +3,13 @@ package tpl
 import (
 	"strconv"
 
+	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/tpl"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
-func DisplayTemplateInfos(infos []tpl.TemplateInfo) {
+func DisplayTemplateInfos(infos []*git.RepoInfo) {
 	cells := make([][]string, len(infos)+1)
 	cells[0] = []string{"name", "url", "cached", "registry"}
 	for i, info := range infos {
@@ -29,7 +30,7 @@ func NewInfoCommand() *cobra.Command {
 		Short: "display template information",
 		Long:  `display template information for named templates. I no name is given all templates are listed.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			infos := []tpl.TemplateInfo{}
+			infos := []*git.RepoInfo{}
 			if len(args) == 0 {
 				list, err := tpl.ListTemplates()
 				if err != nil {

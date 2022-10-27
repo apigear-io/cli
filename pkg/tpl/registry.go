@@ -9,14 +9,14 @@ import (
 )
 
 type TemplateRegistry struct {
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	Entries     []*git.RemoteInfo `json:"entries"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Entries     []*git.RepoInfo `json:"entries"`
 }
 
 // ReadRegistry reads the registry file from path
 func ReadRegistry() (*TemplateRegistry, error) {
-	src := config.CachedRegistryPath()
+	src := config.RegistryCachePath()
 	// read registry.json
 	bytes, err := os.ReadFile(src)
 	if err != nil {
@@ -33,7 +33,7 @@ func ReadRegistry() (*TemplateRegistry, error) {
 
 // WriteRegistry writes the registry to path
 func WriteRegistry(r *TemplateRegistry) error {
-	dst := config.CachedRegistryPath()
+	dst := config.RegistryCachePath()
 	bytes, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
 		return err

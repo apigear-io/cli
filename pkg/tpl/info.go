@@ -11,12 +11,12 @@ import (
 
 // GetLocalTemplateInfo returns information about a template
 // either from an installed of from a template registry
-func GetLocalTemplateInfo(name string) (TemplateInfo, error) {
-	dir := config.TemplatesDir()
+func GetLocalTemplateInfo(name string) (*git.RepoInfo, error) {
+	dir := config.TemplateCacheDir()
 	// get git info for template
 	target := helper.Join(dir, name)
 	if !helper.IsDir(target) {
-		return TemplateInfo{}, fmt.Errorf("template %s not found", name)
+		return nil, fmt.Errorf("template %s not found", name)
 	}
 	sha1, err := git.RepoLastCommit(target)
 	if err != nil {
@@ -26,7 +26,7 @@ func GetLocalTemplateInfo(name string) (TemplateInfo, error) {
 	if err != nil {
 		log.Warn().Msgf("get git info for template %s", name)
 	}
-	return TemplateInfo{
+	return &git.RepoInfo{
 		Name:   strings.TrimSpace(name),
 		Git:    strings.TrimSpace(url),
 		Commit: strings.TrimSpace(sha1),

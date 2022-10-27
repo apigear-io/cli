@@ -13,9 +13,9 @@ func NewVersionCommand() *cobra.Command {
 		Short: "display version information",
 		Long:  `display version, commit and build-date information`,
 		Run: func(cmd *cobra.Command, args []string) {
-			version := config.Get(config.KeyVersion)
-			commit := config.Get(config.KeyCommit)
-			date := config.Get(config.KeyDate)
+			version := config.BuildVersion()
+			commit := config.BuildCommit()
+			date := config.BuildDate()
 			fmt.Printf("%s-%s-%s\n", version, commit, date)
 		},
 	}

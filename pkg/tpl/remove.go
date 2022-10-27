@@ -10,7 +10,7 @@ import (
 
 // RemoveTemplate removes template by name from the cache
 func RemoveTemplate(name string) error {
-	dir := config.TemplatesDir()
+	dir := config.TemplateCacheDir()
 	log.Info().Msgf("remove template %s from %s", name, dir)
 	// remove dir from packageDir
 	// check if dir exists

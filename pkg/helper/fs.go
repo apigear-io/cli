@@ -3,6 +3,7 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -139,4 +140,15 @@ func HasExt(file string, ext string) bool {
 
 func Ext(file string) string {
 	return filepath.Ext(file)
+}
+
+func ListDir(path string) {
+	files, err := os.ReadDir(path)
+	if err != nil {
+		log.Printf("error reading dir: %s", err)
+		return
+	}
+	for _, file := range files {
+		log.Printf("file: %s", file.Name())
+	}
 }

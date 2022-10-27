@@ -6,15 +6,50 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/config"
+	"github.com/apigear-io/cli/pkg/git"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
 // ListTemplates lists all templates in the cache
-func ListTemplates() ([]TemplateInfo, error) {
+func ListTemplates() ([]*git.RepoInfo, error) {
+	set := make(map[string]*git.RepoInfo)
+	registry, err := SearchRegistry("")
+	if err != nil {
+		return []*git.RepoInfo{}, err
+	}
+	cached, err := ListCachedRepos()
+	if err != nil {
+		return []*git.RepoInfo{}, err
+	}
+	// merge
+	for _, info := range registry {
+		info.InCache = false
+		info.InRegistry = true
+		set[info.Name] = info
+	}
+	for _, info := range cached {
+		if _, ok := set[info.Name]; ok {
+			set[info.Name].InCache = true
+		} else {
+			info.InCache = true
+			info.InRegistry = false
+			set[info.Name] = info
+		}
+	}
+	// convert to list
+	var result []*git.RepoInfo
+	for _, info := range set {
+		result = append(result, info)
+	}
+	return result, nil
+}
+
+// ListTemplates lists all templates in the cache
+func ListCachedRepos() ([]*git.RepoInfo, error) {
 	// list all dirs in packageDir
-	dir := config.TemplatesDir()
+	dir := config.TemplateCacheDir()
 	// walk package dir to find a dir that contains a .git dir
-	var infos []TemplateInfo
+	var infos []*git.RepoInfo
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("walk template dir: %s", err)
@@ -25,7 +60,7 @@ func ListTemplates() ([]TemplateInfo, error) {
 				if err != nil {
 					return fmt.Errorf("get relative path for %s", path)
 				}
-				infos = append(infos, TemplateInfo{
+				infos = append(infos, &git.RepoInfo{
 					Name:    name,
 					Path:    path,
 					InCache: true,

@@ -19,25 +19,36 @@ func init() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	ConfigDir = helper.Join(home, ".apigear")
+	v := viper.New()
 
-	viper.SetEnvPrefix("apigear")
-	viper.AutomaticEnv() // read in environment variables that match
+	v.SetEnvPrefix("apigear")
+	v.AutomaticEnv() // read in environment variables that match
 
 	packageDir := helper.Join(ConfigDir, "templates")
-	viper.SetDefault(KeyTemplatesDir, packageDir)
+	v.SetDefault(KeyTemplatesDir, packageDir)
+
 	err = helper.MakeDir(packageDir)
 	cobra.CheckErr(err)
 
-	viper.SetDefault(KeyRegistryUrl, registryUrl)
 	registryDir := helper.Join(home, ".apigear", "registry")
 
-	viper.SetDefault(KeyRegistryDir, registryDir)
+	v.SetDefault(KeyRegistryUrl, registryUrl)
+	v.SetDefault(KeyRegistryDir, registryDir)
+	v.SetDefault(KeyServerPort, 8080)
+	v.SetDefault(KeyEditorCommand, "code")
+	v.SetDefault(KeyUpdateChannel, "stable")
+	v.SetDefault(KeyVersion, "0.0.0")
+	v.SetDefault(KeyGitAuthToken, "")
+	v.SetDefault(KeyCommit, "none")
+	v.SetDefault(KeyDate, "unknown")
+	v.SetDefault(KeyRegistryUrl, registryUrl)
+
 	// Search config in home directory with name ".apigear" (without extension).
 
 	ConfigFile = helper.Join(ConfigDir, "config.json")
-	viper.AddConfigPath(ConfigDir)
-	viper.SetConfigType("json")
-	viper.SetConfigName("config")
+	v.AddConfigPath(ConfigDir)
+	v.SetConfigType("json")
+	v.SetConfigName("config")
 
 	if !helper.IsFile(ConfigFile) {
 		err := helper.MakeDir(ConfigDir)
@@ -47,7 +58,8 @@ func init() {
 	}
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
+	if err := v.ReadInConfig(); err != nil {
 		cobra.CheckErr(err)
 	}
+	c = New(v)
 }

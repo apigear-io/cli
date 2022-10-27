@@ -11,7 +11,7 @@ func UpgradeTemplates(names []string) error {
 	log.Info().Msgf("update templates %s", names)
 	for _, name := range names {
 		// update template
-		dst := helper.Join(config.TemplatesDir(), name)
+		dst := helper.Join(config.TemplateCacheDir(), name)
 		err := git.Pull(dst)
 		if err != nil {
 			return err

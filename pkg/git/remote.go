@@ -39,7 +39,7 @@ type VersionInfo struct {
 	Version *semver.Version `json:"version"`
 }
 
-type RemoteInfo struct {
+type RepoInfo struct {
 	Name        string            `json:"name"`
 	Description string            `json:"description"`
 	Author      string            `json:"author"`
@@ -48,11 +48,13 @@ type RemoteInfo struct {
 	Commit      string            `json:"commit"`
 	Latest      string            `json:"latest"`
 	Versions    VersionCollection `json:"tags"`
+	InCache     bool              `json:"inCache"`
+	InRegistry  bool              `json:"inRegistry"`
 }
 
-func RemoteRepoInfo(url string) (RemoteInfo, error) {
+func RemoteRepoInfo(url string) (RepoInfo, error) {
 	log.Debug().Msgf("remote repo info for %s", url)
-	result := RemoteInfo{
+	result := RepoInfo{
 		Git: url,
 	}
 	remote := git.NewRemote(memory.NewStorage(), &gconf.RemoteConfig{
@@ -61,7 +63,7 @@ func RemoteRepoInfo(url string) (RemoteInfo, error) {
 	})
 	refs, err := remote.List(&git.ListOptions{Auth: auth})
 	if err != nil {
-		return RemoteInfo{}, err
+		return RepoInfo{}, err
 	}
 	var latestTag VersionInfo
 	tags := make(VersionCollection, 0)
