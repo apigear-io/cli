@@ -9,15 +9,15 @@ import (
 )
 
 const (
+	KeyRecent        = "recent"
 	KeyServerPort    = "server_port"
 	KeyEditorCommand = "editor_command"
 	KeyUpdateChannel = "update_channel"
-	KeyRecent        = "recent"
-	KeyVersion       = "version"
 	KeyTemplatesDir  = "templates_dir"
 	KeyRegistryDir   = "registry_dir"
 	KeyRegistryUrl   = "registry_url"
 	KeyGitAuthToken  = "git_auth_token"
+	KeyVersion       = "version"
 	KeyCommit        = "commit"
 	KeyDate          = "date"
 )
