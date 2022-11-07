@@ -11,7 +11,10 @@ func NewRootCommand() *cobra.Command {
 		Short:   "manage sdk templates",
 		Long:    `sdk templates are git repositories that contain a sdk template.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Usage()
+			err := cmd.Usage()
+			if err != nil {
+				cmd.PrintErrln(err)
+			}
 		},
 	}
 	cmd.AddCommand(NewSearchCommand())

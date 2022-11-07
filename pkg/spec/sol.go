@@ -44,7 +44,10 @@ func (s *SolutionDoc) Validate() error {
 		s.Layers = make([]*SolutionLayer, 0)
 	}
 	for _, l := range s.Layers {
-		l.Validate()
+		err := l.Validate()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

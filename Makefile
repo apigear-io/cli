@@ -1,11 +1,8 @@
 .PHONY: antlr deb test build check cover
 
-
 test:
 	go test ./...
 
-cover:
-	go test ./... -coverprofile=./tmp/coverage.out
 
 build:
 	go build -o ./bin/apigear ./cmd/apigear
