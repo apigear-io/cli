@@ -21,7 +21,10 @@ func DisplayTemplateInfos(infos []*git.RepoInfo) {
 		}
 	}
 
-	pterm.DefaultTable.WithHasHeader().WithData(cells).Render()
+	err := pterm.DefaultTable.WithHasHeader().WithData(cells).Render()
+	if err != nil {
+		pterm.Error.Println(err)
+	}
 }
 
 func NewInfoCommand() *cobra.Command {

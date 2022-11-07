@@ -232,18 +232,27 @@ func (s *Schema) resolveType() {
 }
 
 func (s *Schema) GetEnum() *Enum {
-	s.resolveSymbol()
+	err := s.resolveSymbol()
+	if err != nil {
+		return nil
+	}
 
 	return s.enum
 }
 
 func (s *Schema) GetStruct() *Struct {
-	s.resolveSymbol()
+	err := s.resolveSymbol()
+	if err != nil {
+		return nil
+	}
 	return s.struct_
 }
 
 func (s *Schema) GetInterface() *Interface {
-	s.resolveSymbol()
+	err := s.resolveSymbol()
+	if err != nil {
+		return nil
+	}
 	return s.interface_
 }
 

@@ -22,7 +22,10 @@ func displayRepoInfos(infos []*git.RepoInfo) {
 			info.Git,
 		}
 	}
-	pterm.DefaultTable.WithHasHeader().WithData(cells).Render()
+	err := pterm.DefaultTable.WithHasHeader().WithData(cells).Render()
+	if err != nil {
+		pterm.Error.Println(err)
+	}
 }
 
 func NewListCommand() *cobra.Command {

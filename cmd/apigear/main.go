@@ -15,7 +15,10 @@ var (
 )
 
 func main() {
-	log.SentryInit(log.CLI_DSN)
+	err := log.SentryInit(log.CLI_DSN)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to initialize sentry")
+	}
 	log.SentryCaptureArgs()
 	cfg.SetBuildInfo(version, commit, date)
 	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
@@ -23,7 +26,7 @@ func main() {
 		log.SentryRecover()
 		log.SentryFlush()
 	}()
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		log.Fatal().Err(err).Msg("cli")
 		log.SentryCaptureError(err)

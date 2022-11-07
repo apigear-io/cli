@@ -42,6 +42,9 @@ func readProject(d string) (*ProjectInfo, error) {
 	}
 	// save current project
 	currentProject = project
-	cfg.AppendRecentEntry(d)
+	err = cfg.AppendRecentEntry(d)
+	if err != nil {
+		return nil, err
+	}
 	return project, nil
 }

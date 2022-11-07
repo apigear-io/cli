@@ -26,7 +26,10 @@ func NewUpgradeCommand() *cobra.Command {
 					cmd.PrintErrln(err)
 				}
 			} else {
-				cmd.Usage()
+				err := cmd.Usage()
+				if err != nil {
+					cmd.PrintErrln(err)
+				}
 			}
 		},
 	}

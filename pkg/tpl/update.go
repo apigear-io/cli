@@ -13,8 +13,11 @@ func UpdateRegistry() error {
 	log.Info().Msgf("updating template registry")
 	src := cfg.RegistryUrl()
 	dst := cfg.RegistryDir()
-	helper.RemoveDir(dst)
-	err := git.CloneOrPull(src, dst)
+	err := helper.RemoveDir(dst)
+	if err != nil {
+		return err
+	}
+	err = git.CloneOrPull(src, dst)
 	if err != nil {
 		return err
 	}

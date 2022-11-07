@@ -75,7 +75,10 @@ func RecentProjectInfos() []*ProjectInfo {
 		info, err := readProject(d)
 		if err != nil {
 			log.Warn().Msgf("read project %s: %s", d, err)
-			cfg.RemoveRecentEntry(d)
+			err = cfg.RemoveRecentEntry(d)
+			if err != nil {
+				log.Warn().Msgf("remove recent entry %s: %s", d, err)
+			}
 			continue
 		}
 		infos = append(infos, info)
