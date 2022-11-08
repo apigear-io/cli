@@ -38,7 +38,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		}
 	}
 	if schema.IsArray {
-		text = fmt.Sprintf("std::list<%s>", text)
+		return fmt.Sprintf("std::list<%s>", text), nil
 	}
 	return text, nil
 }

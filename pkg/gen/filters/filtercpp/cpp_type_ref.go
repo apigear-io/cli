@@ -8,6 +8,15 @@ import (
 
 func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	t := schema.Type
+	if schema.IsArray {
+		inner := *schema
+		inner.IsArray = false
+		ret, err := ToReturnString(prefix, &inner)
+		if err != nil {
+			return "xxx", err
+		}
+		return fmt.Sprintf("const std::list<%s>&", ret), nil
+	}
 	text := ""
 	switch t {
 	case "void":
@@ -36,14 +45,6 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 		if i != nil {
 			text = fmt.Sprintf("%s%s*", prefix, i.Name)
 		}
-	}
-	if schema.IsArray {
-		schema.IsArray = false
-		inner, err := ToReturnString(prefix, schema)
-		if err != nil {
-			return "xxx", err
-		}
-		text = fmt.Sprintf("const std::list<%s>&", inner)
 	}
 	return text, nil
 }
