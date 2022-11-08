@@ -15,12 +15,12 @@ func TestParams(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "bool param1"},
 		{"test", "Test3", "opInt", "int param1"},
-		{"test", "Test3", "opFloat", "double param1"},
-		{"test", "Test3", "opString", "const std::string &param1"},
-		{"test", "Test3", "opBoolArray", "const std::vector<bool> &param1"},
-		{"test", "Test3", "opIntArray", "const std::vector<int> &param1"},
-		{"test", "Test3", "opFloatArray", "const std::vector<double> &param1"},
-		{"test", "Test3", "opStringArray", "const std::vector<std::string> &param1"},
+		{"test", "Test3", "opFloat", "float param1"},
+		{"test", "Test3", "opString", "const std::string& param1"},
+		{"test", "Test3", "opBoolArray", "const std::list<bool>& param1"},
+		{"test", "Test3", "opIntArray", "const std::list<int>& param1"},
+		{"test", "Test3", "opFloatArray", "const std::list<float>& param1"},
+		{"test", "Test3", "opStringArray", "const std::list<std::string>& param1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -43,12 +43,12 @@ func TestParamsSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test4", "opEnum", "Enum1 param1"},
-		{"test", "Test4", "opStruct", "const Struct1 &param1"},
-		{"test", "Test4", "opInterface", "Interface1 *param1"},
-		{"test", "Test4", "opEnumArray", "const std::vector<Enum1> &param1"},
-		{"test", "Test4", "opStructArray", "const std::vector<Struct1> &param1"},
-		{"test", "Test4", "opInterfaceArray", "const std::vector<Interface1*> &param1"},
+		{"test", "Test4", "opEnum", "Enum1Enum param1"},
+		{"test", "Test4", "opStruct", "const Struct1& param1"},
+		{"test", "Test4", "opInterface", "Interface1* param1"},
+		{"test", "Test4", "opEnumArray", "const std::list<Enum1Enum>& param1"},
+		{"test", "Test4", "opStructArray", "const std::list<Struct1>& param1"},
+		{"test", "Test4", "opInterfaceArray", "const std::list<Interface1*>& param1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -73,11 +73,11 @@ func TestParamsMultiple(t *testing.T) {
 	}{
 		{"test", "Test5", "opBoolBool", "bool param1, bool param2"},
 		{"test", "Test5", "opIntInt", "int param1, int param2"},
-		{"test", "Test5", "opFloatFloat", "double param1, double param2"},
-		{"test", "Test5", "opStringString", "const std::string &param1, const std::string &param2"},
-		{"test", "Test5", "opEnumEnum", "Enum1 param1, Enum1 param2"},
-		{"test", "Test5", "opStructStruct", "const Struct1 &param1, const Struct1 &param2"},
-		{"test", "Test5", "opInterfaceInterface", "Interface1 *param1, Interface1 *param2"},
+		{"test", "Test5", "opFloatFloat", "float param1, float param2"},
+		{"test", "Test5", "opStringString", "const std::string& param1, const std::string& param2"},
+		{"test", "Test5", "opEnumEnum", "Enum1Enum param1, Enum1Enum param2"},
+		{"test", "Test5", "opStructStruct", "const Struct1& param1, const Struct1& param2"},
+		{"test", "Test5", "opInterfaceInterface", "Interface1* param1, Interface1* param2"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

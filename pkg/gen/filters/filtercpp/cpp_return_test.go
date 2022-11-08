@@ -19,12 +19,12 @@ func TestReturn(t *testing.T) {
 		{"test", "Test1", "propVoid", "void"},
 		{"test", "Test1", "propBool", "bool"},
 		{"test", "Test1", "propInt", "int"},
-		{"test", "Test1", "propFloat", "double"},
+		{"test", "Test1", "propFloat", "float"},
 		{"test", "Test1", "propString", "std::string"},
-		{"test", "Test1", "propBoolArray", "std::vector<bool>"},
-		{"test", "Test1", "propIntArray", "std::vector<int>"},
-		{"test", "Test1", "propFloatArray", "std::vector<double>"},
-		{"test", "Test1", "propStringArray", "std::vector<std::string>"},
+		{"test", "Test1", "propBoolArray", "std::list<bool>"},
+		{"test", "Test1", "propIntArray", "std::list<int>"},
+		{"test", "Test1", "propFloatArray", "std::list<float>"},
+		{"test", "Test1", "propStringArray", "std::list<std::string>"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -50,12 +50,12 @@ func TestOperationReturn(t *testing.T) {
 		{"test", "Test3", "opVoid", "void"},
 		{"test", "Test3", "opBool", "bool"},
 		{"test", "Test3", "opInt", "int"},
-		{"test", "Test3", "opFloat", "double"},
+		{"test", "Test3", "opFloat", "float"},
 		{"test", "Test3", "opString", "std::string"},
-		{"test", "Test3", "opBoolArray", "std::vector<bool>"},
-		{"test", "Test3", "opIntArray", "std::vector<int>"},
-		{"test", "Test3", "opFloatArray", "std::vector<double>"},
-		{"test", "Test3", "opStringArray", "std::vector<std::string>"},
+		{"test", "Test3", "opBoolArray", "std::list<bool>"},
+		{"test", "Test3", "opIntArray", "std::list<int>"},
+		{"test", "Test3", "opFloatArray", "std::list<float>"},
+		{"test", "Test3", "opStringArray", "std::list<std::string>"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -78,12 +78,12 @@ func TestReturnSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1"},
+		{"test", "Test2", "propEnum", "Enum1Enum"},
 		{"test", "Test2", "propStruct", "Struct1"},
 		{"test", "Test2", "propInterface", "Interface1*"},
-		{"test", "Test2", "propEnumArray", "std::vector<Enum1>"},
-		{"test", "Test2", "propStructArray", "std::vector<Struct1>"},
-		{"test", "Test2", "propInterfaceArray", "std::vector<Interface1*>"},
+		{"test", "Test2", "propEnumArray", "std::list<Enum1Enum>"},
+		{"test", "Test2", "propStructArray", "std::list<Struct1>"},
+		{"test", "Test2", "propInterfaceArray", "std::list<Interface1*>"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {

@@ -17,7 +17,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case "int":
 		text = "int"
 	case "float":
-		text = "double"
+		text = "float"
 	case "bool":
 		text = "bool"
 	default:
@@ -26,7 +26,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s%s", prefix, e.Name)
+			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {
@@ -38,7 +38,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		}
 	}
 	if schema.IsArray {
-		text = fmt.Sprintf("std::vector<%s>", text)
+		text = fmt.Sprintf("std::list<%s>", text)
 	}
 	return text, nil
 }
