@@ -15,12 +15,12 @@ func TestParam(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "bool propBool"},
 		{"test", "Test1", "propInt", "int propInt"},
-		{"test", "Test1", "propFloat", "double propFloat"},
-		{"test", "Test1", "propString", "const std::string &propString"},
-		{"test", "Test1", "propBoolArray", "const std::vector<bool> &propBoolArray"},
-		{"test", "Test1", "propIntArray", "const std::vector<int> &propIntArray"},
-		{"test", "Test1", "propFloatArray", "const std::vector<double> &propFloatArray"},
-		{"test", "Test1", "propStringArray", "const std::vector<std::string> &propStringArray"},
+		{"test", "Test1", "propFloat", "float propFloat"},
+		{"test", "Test1", "propString", "const std::string& propString"},
+		{"test", "Test1", "propBoolArray", "const std::list<bool>& propBoolArray"},
+		{"test", "Test1", "propIntArray", "const std::list<int>& propIntArray"},
+		{"test", "Test1", "propFloatArray", "const std::list<float>& propFloatArray"},
+		{"test", "Test1", "propStringArray", "const std::list<std::string>& propStringArray"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -43,12 +43,12 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1 propEnum"},
-		{"test", "Test2", "propStruct", "const Struct1 &propStruct"},
-		{"test", "Test2", "propInterface", "Interface1 *propInterface"},
-		{"test", "Test2", "propEnumArray", "const std::vector<Enum1> &propEnumArray"},
-		{"test", "Test2", "propStructArray", "const std::vector<Struct1> &propStructArray"},
-		{"test", "Test2", "propInterfaceArray", "const std::vector<Interface1*> &propInterfaceArray"},
+		{"test", "Test2", "propEnum", "Enum1Enum propEnum"},
+		{"test", "Test2", "propStruct", "const Struct1& propStruct"},
+		{"test", "Test2", "propInterface", "Interface1* propInterface"},
+		{"test", "Test2", "propEnumArray", "const std::list<Enum1Enum>& propEnumArray"},
+		{"test", "Test2", "propStructArray", "const std::list<Struct1>& propStructArray"},
+		{"test", "Test2", "propInterfaceArray", "const std::list<Interface1*>& propInterfaceArray"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

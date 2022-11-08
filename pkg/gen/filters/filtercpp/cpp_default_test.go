@@ -21,10 +21,10 @@ func TestDefaultFromIdl(t *testing.T) {
 		{"test", "Test1", "propInt", "0"},
 		{"test", "Test1", "propFloat", "0.0"},
 		{"test", "Test1", "propString", "std::string()"},
-		{"test", "Test1", "propBoolArray", "std::vector<bool>()"},
-		{"test", "Test1", "propIntArray", "std::vector<int>()"},
-		{"test", "Test1", "propFloatArray", "std::vector<double>()"},
-		{"test", "Test1", "propStringArray", "std::vector<std::string>()"},
+		{"test", "Test1", "propBoolArray", "std::list<bool>()"},
+		{"test", "Test1", "propIntArray", "std::list<int>()"},
+		{"test", "Test1", "propFloatArray", "std::list<float>()"},
+		{"test", "Test1", "propStringArray", "std::list<std::string>()"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -47,12 +47,12 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "Enum1::Default"},
+		{"test", "Test2", "propEnum", "Enum1Enum::Default"},
 		{"test", "Test2", "propStruct", "Struct1()"},
 		{"test", "Test2", "propInterface", "nullptr"},
-		{"test", "Test2", "propEnumArray", "std::vector<Enum1>()"},
-		{"test", "Test2", "propStructArray", "std::vector<Struct1>()"},
-		{"test", "Test2", "propInterfaceArray", "std::vector<Interface1*>()"},
+		{"test", "Test2", "propEnumArray", "std::list<Enum1Enum>()"},
+		{"test", "Test2", "propStructArray", "std::list<Struct1>()"},
+		{"test", "Test2", "propInterfaceArray", "std::list<Interface1*>()"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {

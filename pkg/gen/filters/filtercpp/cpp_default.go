@@ -27,7 +27,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s::%s", e.Name, e.Members[0].Name)
+			text = fmt.Sprintf("%sEnum::%s", e.Name, e.Members[0].Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {
@@ -44,7 +44,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		if err != nil {
 			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)
 		}
-		text = fmt.Sprintf("std::vector<%s>()", ret)
+		text = fmt.Sprintf("std::list<%s>()", ret)
 	}
 	return text, nil
 }
