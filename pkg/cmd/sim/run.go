@@ -35,7 +35,7 @@ func NewServerCommand() *cobra.Command {
 		Long: `Simulation server simulates the API backend. 
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			go handleSignal(cancel)
@@ -45,8 +45,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				file := args[0]
 				result, err := spec.CheckFile(file)
 				if err != nil {
-					log.Error().Msgf("check scenario file: %v", err)
-					return
+					return err
 				}
 				if !result.Valid() {
 					log.Error().Msgf("scenario file is not valid: %v", result.Errors())
@@ -69,8 +68,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			if doc != nil {
 				err := simu.LoadScenario(doc.Name, doc)
 				if err != nil {
-					log.Error().Msgf("load scenario: %v", err)
-					return
+					return err
 				}
 				go func() {
 					err = simu.PlayAllSequences()
@@ -102,6 +100,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			}()
 			<-ctx.Done()
 			log.Info().Msgf("shutting down rpc hub")
+			return nil
 		},
 	}
 	cmd.PostRun = func(cmd *cobra.Command, args []string) {

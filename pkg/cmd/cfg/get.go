@@ -12,7 +12,7 @@ func NewGetCmd() *cobra.Command {
 		Short:   "Display configuration values",
 		Long:    `Display the value of a configuration variable`,
 		Args:    cobra.MaximumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				// print all settings
 				cmd.Println("all settings:")
@@ -28,6 +28,7 @@ func NewGetCmd() *cobra.Command {
 					cmd.Printf("key '%s' was never set\n", key)
 				}
 			}
+			return nil
 		},
 	}
 	return cmd

@@ -13,20 +13,19 @@ func NewInfoCommand() *cobra.Command {
 		Short: "Display project information",
 		Long:  `Display detailed project information`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			cmd.Printf("# info %s\n", dir)
 			info, err := prj.GetProjectInfo(dir)
 			if err != nil {
-				cmd.Printf("error: %s\n", err)
-				return
+				return err
 			}
 			cmd.Printf("path: %s\n", info.Path)
 			cmd.Printf("name: %s\n", info.Name)
 			for _, v := range info.Documents {
 				cmd.Printf("  %s\n", v.Name)
 			}
-
+			return nil
 		},
 	}
 	return cmd

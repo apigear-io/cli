@@ -39,7 +39,7 @@ func NewClientCommand() *cobra.Command {
 		Short: "Feed simulation from command line",
 		Long:  `Feed simulation calls using JSON documents from command line`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			options.script = args[0]
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
@@ -50,7 +50,7 @@ func NewClientCommand() *cobra.Command {
 				writer := ConsoleHandler{}
 				conn, err := rpc.Dial(ctx, options.addr)
 				if err != nil {
-					log.Fatal().Msgf("connect to %s: %v", options.addr, err)
+					return err
 				}
 				go func() {
 					net.ScanJsonDelimitedFile(options.script, options.sleep, options.repeat, emitter)
@@ -95,6 +95,7 @@ func NewClientCommand() *cobra.Command {
 				}()
 			}
 			<-ctx.Done()
+			return nil
 		},
 	}
 	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 0, "sleep duration between messages")

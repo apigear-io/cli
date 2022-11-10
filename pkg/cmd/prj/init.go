@@ -14,16 +14,15 @@ func NewInitCommand() *cobra.Command {
 		Short: "Initialize a new project",
 		Long:  `Initialize a project with a default project files`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			log.Debug().Msgf("init project %s", dir)
 			info, err := prj.InitProject(dir)
 			if err != nil {
-				cmd.Printf("error: %s\n", err)
-				return
+				return err
 			}
 			cmd.Printf("project initialized at: %s\n", info.Path)
-
+			return nil
 		},
 	}
 	return cmd

@@ -21,14 +21,15 @@ func NewImportCommand() *cobra.Command {
 		Short: "Import a remote project",
 		Long:  `Import a remote project from a repository to the local file system`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			source := args[0]
 			log.Debug().Msgf("import project %s to %s", source, target)
 			info, err := prj.ImportProject(source, target)
 			if err != nil {
-				log.Fatal().Msgf("error: %s", err)
+				return err
 			}
 			cmd.Printf("project %s imported to %s\n", source, info.Path)
+			return nil
 		},
 	}
 	cmd.Flags().StringVarP(&target, "target", "t", "", "target directory")

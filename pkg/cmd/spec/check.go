@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
@@ -18,14 +17,13 @@ func NewCheckCommand() *cobra.Command {
 		Short:   "Check document",
 		Long:    `Check documents and report errors`,
 		Args:    cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			var file = args[0]
 			switch filepath.Ext(file) {
 			case ".json", ".yaml":
 				result, err := spec.CheckFile(file)
 				if err != nil {
-					log.Warn().Msgf("check json file %s: %s", file, err)
-					break
+					return err
 				}
 				if result.Valid() {
 					fmt.Printf("valid: %s\n", file)
@@ -38,27 +36,28 @@ func NewCheckCommand() *cobra.Command {
 			case ".csv":
 				err := spec.CheckCsvFile(file)
 				if err != nil {
-					log.Warn().Msgf("check csv file %s: %s", file, err)
+					return err
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}
 			case ".ndjson":
 				err := spec.CheckNdjsonFile(file)
 				if err != nil {
-					log.Warn().Msgf("check ndjson file %s: %s", file, err)
+					return err
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}
 			case ".idl":
 				err := spec.CheckIdlFile(file)
 				if err != nil {
-					log.Warn().Msgf("check idl file %s: %s", file, err)
+					return err
 				} else {
 					fmt.Printf("valid: %s\n", file)
 				}
 			default:
 				fmt.Printf("unknown file type %s", file)
 			}
+			return nil
 		},
 	}
 	return cmd

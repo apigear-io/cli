@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"fmt"
 	"os"
 	"sync"
 
@@ -34,11 +35,11 @@ func NewExpertCommand() *cobra.Command {
 		Aliases: []string{"x"},
 		Short:   "Generate code using expert mode",
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			doc := makeSolution(options)
 			err := doc.Validate()
 			if err != nil {
-				log.Fatal().Err(err).Msgf("validation error: %s", err)
+				return fmt.Errorf("invalid solution document: %w", err)
 			}
 			runner := sol.NewRunner()
 
@@ -48,16 +49,17 @@ func NewExpertCommand() *cobra.Command {
 				wg.Add(1)
 				done, err := runner.StartWatch(doc.RootDir, doc)
 				if err != nil {
-					log.Fatal().Err(err).Msg("start watch")
+					return err
 				}
 				wg.Wait()
 				done <- true
 			} else {
 				err := runner.RunDoc(doc.RootDir, doc)
 				if err != nil {
-					log.Fatal().Msgf("expert mode: %s", err)
+					return err
 				}
 			}
+			return nil
 		},
 	}
 	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")

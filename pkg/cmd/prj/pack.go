@@ -18,23 +18,22 @@ func NewPackCommand() *cobra.Command {
 		Short: "Pack a project",
 		Long:  `Pack the project and all files into a archive file`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			source := args[0]
 			cmd.Printf("pack project %s\n", source)
 			cwd, err := os.Getwd()
 			if err != nil {
-				cmd.Printf("error: %s\n", err)
-				os.Exit(1)
+				return err
 			}
 			base := filepath.Base(source)
 			target := helper.Join(cwd, fmt.Sprintf("%s.tgz", base))
 
 			target, err = prj.PackProject(source, target)
 			if err != nil {
-				cmd.Printf("error: %s\n", err)
-				os.Exit(1)
+				return err
 			}
 			cmd.Printf("project %s packed to %s\n", source, target)
+			return nil
 		},
 	}
 	return cmd

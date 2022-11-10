@@ -1,6 +1,7 @@
 package mon
 
 import (
+	"fmt"
 	"path/filepath"
 	"sync"
 	"time"
@@ -24,7 +25,7 @@ func NewClientCommand() *cobra.Command {
 		Short: "Feed a script to a monitor",
 		Long:  `Feeds API calls from various sources to the monitor to be displayed. This is mainly to playback recorded API calls.`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(_ *cobra.Command, args []string) {
+		RunE: func(_ *cobra.Command, args []string) error {
 			options.script = args[0]
 			log.Debug().Msgf("run script %s", options.script)
 			wg := &sync.WaitGroup{}
@@ -74,8 +75,9 @@ func NewClientCommand() *cobra.Command {
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
 			default:
-				log.Error().Msgf("unknown file type: %s", options.script)
+				return fmt.Errorf("unsupported script type: %s", options.script)
 			}
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123/", "monitor server address")

@@ -25,7 +25,7 @@ func init() {
 	}
 	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
 	multi := zerolog.MultiLevelWriter(
-		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.000"},
+		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"},
 		NewReportWriter(),
 		newRollingFile(logFile),
 	)

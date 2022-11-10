@@ -1,8 +1,6 @@
 package prj
 
 import (
-	"os"
-
 	"github.com/apigear-io/cli/pkg/prj"
 
 	"github.com/spf13/cobra"
@@ -15,14 +13,10 @@ func NewOpenCommand() *cobra.Command {
 		Short: "Open a project in studio",
 		Long:  `Open the given project in the desktop studio, if installed`,
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			cmd.Printf("open project %s\n", dir)
-			err := prj.OpenStudio(dir)
-			if err != nil {
-				cmd.Printf("error: %s\n", err)
-				os.Exit(1)
-			}
+			return prj.OpenStudio(dir)
 		},
 	}
 	return cmd

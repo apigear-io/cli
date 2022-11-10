@@ -13,11 +13,12 @@ func NewRecentCommand() *cobra.Command {
 		Short: "Display recent projects",
 		Long:  `Display recently used projects and their locations`,
 		Args:  cobra.NoArgs,
-		Run: func(cmd *cobra.Command, _ []string) {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			cmd.Println("recent projects:")
 			for _, info := range prj.RecentProjectInfos() {
 				cmd.Printf("  %s\n", info.Name)
 			}
+			return nil
 		},
 	}
 	return cmd

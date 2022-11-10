@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"errors"
+
 	"github.com/apigear-io/cli/pkg/cmd/cfg"
 	"github.com/apigear-io/cli/pkg/cmd/gen"
 	"github.com/apigear-io/cli/pkg/cmd/mon"
@@ -13,6 +15,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var ErrSilent = errors.New("SilentErr")
+
 func NewRootCommand() *cobra.Command {
 	// cmd represents the base command when called without any subcommands
 	cmd := &cobra.Command{
@@ -20,6 +24,8 @@ func NewRootCommand() *cobra.Command {
 		Short: "apigear creates instrumented SDKs from an API description",
 		Long:  `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 	}
+	cmd.SilenceErrors = true
+	cmd.SilenceUsage = true
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())

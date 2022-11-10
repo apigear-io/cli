@@ -28,7 +28,7 @@ func main() {
 	}()
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal().Err(err).Msg("cli")
+		log.Error().Msgf("failed to run command: %v", err)
 		log.SentryCaptureError(err)
 		os.Exit(1)
 	}
