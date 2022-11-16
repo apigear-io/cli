@@ -1,8 +1,6 @@
 package cfg
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 )
 
@@ -106,26 +104,6 @@ func AllSettings() map[string]interface{} {
 
 func ConfigFileUsed() string {
 	return v.ConfigFileUsed()
-}
-
-func GitAuthToken() string {
-	t := v.GetString(KeyGitAuthToken)
-	if t == "" {
-		fmt.Fprintf(os.Stderr, "WARN: %s not set. Template registry will not work\n", KeyGitAuthToken)
-	}
-	return t
-}
-
-func GitAuthUser() string {
-	return v.GetString(KeyGitAuthUser)
-}
-
-func GitPublicToken() string {
-	t := v.GetString(KeyGitPublicToken)
-	if t == "" {
-		fmt.Fprintf(os.Stderr, "WARN: %s not set. Program updates will not work\n", KeyGitPublicToken)
-	}
-	return t
 }
 
 func TemplateCacheDir() string {

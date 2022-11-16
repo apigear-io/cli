@@ -94,7 +94,11 @@ func RemoteRepoInfo(url string) (RepoInfo, error) {
 				SHA:     ref.Hash().String(),
 				Version: v,
 			}
-			if tag.Version.GreaterThan(latestTag.Version) {
+			if latestTag.Version == nil {
+				// first tag
+				latestTag = tag
+			} else if tag.Version.GreaterThan(latestTag.Version) {
+				// newer tag
 				latestTag = tag
 			}
 			tags = append(tags, tag)

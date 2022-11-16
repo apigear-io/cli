@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/creativeprojects/go-selfupdate"
@@ -22,9 +21,7 @@ type Updater struct {
 
 // NewUpdater creates a new updater for a github repository
 func NewUpdater(repo string, version string) (*Updater, error) {
-	source, err := selfupdate.NewGitHubSource(selfupdate.GitHubConfig{
-		APIToken: cfg.GitPublicToken(),
-	})
+	source, err := selfupdate.NewGitHubSource(selfupdate.GitHubConfig{})
 	if err != nil {
 		return nil, err
 	}
