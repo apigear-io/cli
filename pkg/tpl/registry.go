@@ -6,6 +6,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 type TemplateRegistry struct {
@@ -17,6 +18,13 @@ type TemplateRegistry struct {
 // ReadRegistry reads the registry file from path
 func ReadRegistry() (*TemplateRegistry, error) {
 	src := cfg.RegistryCachePath()
+	if !helper.IsFile(src) {
+		log.Info().Msgf("registry file not found: %s", src)
+		err := UpdateRegistry()
+		if err != nil {
+			return nil, err
+		}
+	}
 	// read registry.json
 	bytes, err := os.ReadFile(src)
 	if err != nil {
