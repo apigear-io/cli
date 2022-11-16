@@ -14,11 +14,21 @@ func CheckoutCommit(target string, commit string) error {
 	if err != nil {
 		return err
 	}
-	err = w.Checkout(&git.CheckoutOptions{
+	return w.Checkout(&git.CheckoutOptions{
 		Hash: plumbing.NewHash(commit),
 	})
+}
+
+func CheckoutTag(target, name string) error {
+	repo, err := git.PlainOpen(target)
 	if err != nil {
 		return err
 	}
-	return nil
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+	return w.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.ReferenceName("refs/tags/" + name),
+	})
 }

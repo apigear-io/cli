@@ -56,7 +56,7 @@ type RepoInfo struct {
 	Path        string            `json:"path"`
 	Git         string            `json:"git"`
 	Commit      string            `json:"commit"`
-	Latest      string            `json:"latest"`
+	Latest      VersionInfo       `json:"latest"`
 	Versions    VersionCollection `json:"tags"`
 	InCache     bool              `json:"inCache"`
 	InRegistry  bool              `json:"inRegistry"`
@@ -105,6 +105,6 @@ func RemoteRepoInfo(url string) (RepoInfo, error) {
 			result.Versions = tags
 		}
 	}
-	result.Latest = latestTag.SHA
+	result.Latest = latestTag
 	return result, nil
 }

@@ -27,8 +27,9 @@ func InstallTemplate(name string) error {
 			if err != nil {
 				return err
 			}
-			if t.Latest != "" {
-				err = git.CheckoutCommit(dst, t.Latest)
+			if t.Latest.Name != "" {
+				tag := t.Latest.Name
+				err = git.CheckoutTag(dst, tag)
 				if err != nil {
 					return err
 				}
