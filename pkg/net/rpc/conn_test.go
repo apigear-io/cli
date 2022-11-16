@@ -1,3 +1,5 @@
+//go:build net
+
 package rpc
 
 import (
