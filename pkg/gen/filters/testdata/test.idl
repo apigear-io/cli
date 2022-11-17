@@ -4,7 +4,11 @@ interface Test1 {
     propVoid: void
     propBool: bool
     propInt: int
+    propInt32: int32
+    propInt64: int64
     propFloat: float
+    propFloat32: float32
+    propFloat64: float64
     propString: string
     propBoolArray: bool[]
     propIntArray: int[]
@@ -25,7 +29,11 @@ interface Test3 {
     opVoid(): void
     opBool(param1: bool): bool
     opInt(param1: int): int
-    opFloat(param1: float): float
+    opInt32(param1: int32): int32
+    opInt64(param1: int64): int64
+    opFloat(param1: float): float    
+    opFloat32(param1: float32): float32
+    opFloat64(param1: float64): float64
     opString(param1: string): string
     opBoolArray(param1: bool[]): bool[]
     opIntArray(param1: int[]): int[]
@@ -55,7 +63,11 @@ interface Test5 {
 interface Test6 {
     opBool(): bool
     opInt(): int
+    opInt32(): int32
+    opInt64(): int64
     opFloat(): float
+    opFloat32(): float32
+    opFloat64(): float64
     opString(): string
     opVoid()
     opEnum(): Enum1

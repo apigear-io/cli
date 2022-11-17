@@ -48,7 +48,11 @@ arrayRule: '[' ']';
 primitiveSchema:
 	name = 'bool'
 	| name = 'int'
+	| name = 'int32'
+	| name = 'int64'
 	| name = 'float'
+	| name = 'float32'
+	| name = 'float64'
 	| name = 'string';
 
 symbolSchema: name = IDENTIFIER;

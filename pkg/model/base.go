@@ -32,7 +32,11 @@ const (
 	TypeVoid      KindType = "void"
 	TypeBool      KindType = "bool"
 	TypeInt       KindType = "int"
+	TypeInt32     KindType = "int32"
+	TypeInt64     KindType = "int64"
 	TypeFloat     KindType = "float"
+	TypeFloat32   KindType = "float32"
+	TypeFloat64   KindType = "float64"
 	TypeString    KindType = "string"
 	TypeEnum      KindType = "enum"
 	TypeStruct    KindType = "struct"
@@ -121,6 +125,14 @@ func (s Schema) IsNotVoid() bool {
 	return s.Type != "void"
 }
 
+func (t *TypedNode) IsInt() bool {
+	return t.Type == "int" || t.Type == "int32" || t.Type == "int64"
+}
+
+func (t *TypedNode) IsFloat() bool {
+	return t.Type == "float" || t.Type == "float32" || t.Type == "float64"
+}
+
 func (t TypedNode) TypeName() string {
 	// if IsArray prefix with Array
 	// is is isSymbol prefix with Interface, Struct, Enum
@@ -173,7 +185,7 @@ func (s *Schema) ResolveAll(m *Module) error {
 	case "void":
 		s.IsPrimitive = false
 		s.IsSymbol = false
-	case "bool", "int", "float", "string":
+	case "bool", "int", "float", "string", "int32", "int64", "float32", "float64":
 		s.IsPrimitive = true
 		s.IsSymbol = false
 	default:

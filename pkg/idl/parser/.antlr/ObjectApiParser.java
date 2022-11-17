@@ -18,8 +18,8 @@ public class ObjectApiParser extends Parser {
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, T__8=9, 
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
-		T__17=18, T__18=19, WHITESPACE=20, INTEGER=21, HEX=22, TYPE_IDENTIFIER=23, 
-		IDENTIFIER=24, VERSION=25, DOCLINE=26, TAGLINE=27, COMMENT=28;
+		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, WHITESPACE=24, 
+		INTEGER=25, HEX=26, TYPE_IDENTIFIER=27, IDENTIFIER=28, VERSION=29;
 	public static final int
 		RULE_documentRule = 0, RULE_headerRule = 1, RULE_moduleRule = 2, RULE_importRule = 3, 
 		RULE_declarationsRule = 4, RULE_interfaceRule = 5, RULE_interfaceMembersRule = 6, 
@@ -27,14 +27,14 @@ public class ObjectApiParser extends Parser {
 		RULE_operationParamRule = 10, RULE_signalRule = 11, RULE_structRule = 12, 
 		RULE_structFieldRule = 13, RULE_enumRule = 14, RULE_enumMemberRule = 15, 
 		RULE_schemaRule = 16, RULE_arrayRule = 17, RULE_primitiveSchema = 18, 
-		RULE_symbolSchema = 19, RULE_metaRule = 20;
+		RULE_symbolSchema = 19;
 	private static String[] makeRuleNames() {
 		return new String[] {
 			"documentRule", "headerRule", "moduleRule", "importRule", "declarationsRule", 
 			"interfaceRule", "interfaceMembersRule", "propertyRule", "operationRule", 
 			"operationReturnRule", "operationParamRule", "signalRule", "structRule", 
 			"structFieldRule", "enumRule", "enumMemberRule", "schemaRule", "arrayRule", 
-			"primitiveSchema", "symbolSchema", "metaRule"
+			"primitiveSchema", "symbolSchema"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -43,16 +43,16 @@ public class ObjectApiParser extends Parser {
 		return new String[] {
 			null, "'module'", "'import'", "'interface'", "'{'", "'}'", "':'", "'('", 
 			"')'", "','", "'signal'", "'struct'", "'enum'", "'='", "'['", "']'", 
-			"'bool'", "'int'", "'float'", "'string'"
+			"'bool'", "'int'", "'int32'", "'int64'", "'float'", "'float32'", "'float64'", 
+			"'string'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, "WHITESPACE", "INTEGER", 
-			"HEX", "TYPE_IDENTIFIER", "IDENTIFIER", "VERSION", "DOCLINE", "TAGLINE", 
-			"COMMENT"
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			"WHITESPACE", "INTEGER", "HEX", "TYPE_IDENTIFIER", "IDENTIFIER", "VERSION"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -129,19 +129,19 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(42);
+			setState(40);
 			headerRule();
-			setState(46);
+			setState(44);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__2) | (1L << T__10) | (1L << T__11) | (1L << DOCLINE) | (1L << TAGLINE))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__2) | (1L << T__10) | (1L << T__11))) != 0)) {
 				{
 				{
-				setState(43);
+				setState(41);
 				declarationsRule();
 				}
 				}
-				setState(48);
+				setState(46);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -181,19 +181,19 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(49);
+			setState(47);
 			moduleRule();
-			setState(53);
+			setState(51);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==T__1) {
 				{
 				{
-				setState(50);
+				setState(48);
 				importRule();
 				}
 				}
-				setState(55);
+				setState(53);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -215,12 +215,6 @@ public class ObjectApiParser extends Parser {
 		public Token version;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
 		public TerminalNode VERSION() { return getToken(ObjectApiParser.VERSION, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public ModuleRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -230,29 +224,14 @@ public class ObjectApiParser extends Parser {
 	public final ModuleRuleContext moduleRule() throws RecognitionException {
 		ModuleRuleContext _localctx = new ModuleRuleContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_moduleRule);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(59);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(56);
-				metaRule();
-				}
-				}
-				setState(61);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(62);
+			setState(54);
 			match(T__0);
-			setState(63);
+			setState(55);
 			((ModuleRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(64);
+			setState(56);
 			((ModuleRuleContext)_localctx).version = match(VERSION);
 			}
 		}
@@ -284,11 +263,11 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66);
+			setState(58);
 			match(T__1);
-			setState(67);
+			setState(59);
 			((ImportRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(68);
+			setState(60);
 			((ImportRuleContext)_localctx).version = match(VERSION);
 			}
 		}
@@ -323,30 +302,32 @@ public class ObjectApiParser extends Parser {
 		DeclarationsRuleContext _localctx = new DeclarationsRuleContext(_ctx, getState());
 		enterRule(_localctx, 8, RULE_declarationsRule);
 		try {
-			setState(73);
+			setState(65);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
-			case 1:
+			switch (_input.LA(1)) {
+			case T__2:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(70);
+				setState(62);
 				interfaceRule();
 				}
 				break;
-			case 2:
+			case T__10:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(71);
+				setState(63);
 				structRule();
 				}
 				break;
-			case 3:
+			case T__11:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(72);
+				setState(64);
 				enumRule();
 				}
 				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -363,12 +344,6 @@ public class ObjectApiParser extends Parser {
 	public static class InterfaceRuleContext extends ParserRuleContext {
 		public Token name;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public List<InterfaceMembersRuleContext> interfaceMembersRule() {
 			return getRuleContexts(InterfaceMembersRuleContext.class);
 		}
@@ -388,41 +363,27 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(78);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(75);
-				metaRule();
-				}
-				}
-				setState(80);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(81);
+			setState(67);
 			match(T__2);
-			setState(82);
+			setState(68);
 			((InterfaceRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(83);
+			setState(69);
 			match(T__3);
-			setState(87);
+			setState(73);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__9) | (1L << IDENTIFIER) | (1L << DOCLINE) | (1L << TAGLINE))) != 0)) {
+			while (_la==T__9 || _la==IDENTIFIER) {
 				{
 				{
-				setState(84);
+				setState(70);
 				interfaceMembersRule();
 				}
 				}
-				setState(89);
+				setState(75);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(90);
+			setState(76);
 			match(T__4);
 			}
 		}
@@ -457,27 +418,27 @@ public class ObjectApiParser extends Parser {
 		InterfaceMembersRuleContext _localctx = new InterfaceMembersRuleContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_interfaceMembersRule);
 		try {
-			setState(95);
+			setState(81);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(92);
+				setState(78);
 				propertyRule();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(93);
+				setState(79);
 				operationRule();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(94);
+				setState(80);
 				signalRule();
 				}
 				break;
@@ -501,12 +462,6 @@ public class ObjectApiParser extends Parser {
 		public SchemaRuleContext schemaRule() {
 			return getRuleContext(SchemaRuleContext.class,0);
 		}
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public PropertyRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -516,29 +471,14 @@ public class ObjectApiParser extends Parser {
 	public final PropertyRuleContext propertyRule() throws RecognitionException {
 		PropertyRuleContext _localctx = new PropertyRuleContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_propertyRule);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(97);
-				metaRule();
-				}
-				}
-				setState(102);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(103);
+			setState(83);
 			((PropertyRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(104);
+			setState(84);
 			match(T__5);
-			setState(105);
+			setState(85);
 			((PropertyRuleContext)_localctx).schema = schemaRule();
 			}
 		}
@@ -557,12 +497,6 @@ public class ObjectApiParser extends Parser {
 		public Token name;
 		public OperationParamRuleContext params;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public OperationReturnRuleContext operationReturnRule() {
 			return getRuleContext(OperationReturnRuleContext.class,0);
 		}
@@ -585,46 +519,32 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(110);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(107);
-				metaRule();
-				}
-				}
-				setState(112);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(113);
+			setState(87);
 			((OperationRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(114);
+			setState(88);
 			match(T__6);
-			setState(118);
+			setState(92);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==IDENTIFIER) {
 				{
 				{
-				setState(115);
+				setState(89);
 				((OperationRuleContext)_localctx).params = operationParamRule();
 				}
 				}
-				setState(120);
+				setState(94);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(121);
+			setState(95);
 			match(T__7);
-			setState(123);
+			setState(97);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__5) {
 				{
-				setState(122);
+				setState(96);
 				operationReturnRule();
 				}
 			}
@@ -659,9 +579,9 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(125);
+			setState(99);
 			match(T__5);
-			setState(126);
+			setState(100);
 			((OperationReturnRuleContext)_localctx).schema = schemaRule();
 			}
 		}
@@ -696,18 +616,18 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(128);
+			setState(102);
 			((OperationParamRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(129);
+			setState(103);
 			match(T__5);
-			setState(130);
+			setState(104);
 			((OperationParamRuleContext)_localctx).schema = schemaRule();
-			setState(132);
+			setState(106);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__8) {
 				{
-				setState(131);
+				setState(105);
 				match(T__8);
 				}
 			}
@@ -729,12 +649,6 @@ public class ObjectApiParser extends Parser {
 		public Token name;
 		public OperationParamRuleContext params;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public List<OperationParamRuleContext> operationParamRule() {
 			return getRuleContexts(OperationParamRuleContext.class);
 		}
@@ -754,41 +668,27 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(137);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(134);
-				metaRule();
-				}
-				}
-				setState(139);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(140);
+			setState(108);
 			match(T__9);
-			setState(141);
+			setState(109);
 			((SignalRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(142);
+			setState(110);
 			match(T__6);
-			setState(146);
+			setState(114);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==IDENTIFIER) {
 				{
 				{
-				setState(143);
+				setState(111);
 				((SignalRuleContext)_localctx).params = operationParamRule();
 				}
 				}
-				setState(148);
+				setState(116);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(149);
+			setState(117);
 			match(T__7);
 			}
 		}
@@ -806,12 +706,6 @@ public class ObjectApiParser extends Parser {
 	public static class StructRuleContext extends ParserRuleContext {
 		public Token name;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public List<StructFieldRuleContext> structFieldRule() {
 			return getRuleContexts(StructFieldRuleContext.class);
 		}
@@ -831,41 +725,27 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(154);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(151);
-				metaRule();
-				}
-				}
-				setState(156);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(157);
+			setState(119);
 			match(T__10);
-			setState(158);
+			setState(120);
 			((StructRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(159);
+			setState(121);
 			match(T__3);
-			setState(163);
+			setState(125);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << DOCLINE) | (1L << TAGLINE))) != 0)) {
+			while (_la==IDENTIFIER) {
 				{
 				{
-				setState(160);
+				setState(122);
 				structFieldRule();
 				}
 				}
-				setState(165);
+				setState(127);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(166);
+			setState(128);
 			match(T__4);
 			}
 		}
@@ -887,12 +767,6 @@ public class ObjectApiParser extends Parser {
 		public SchemaRuleContext schemaRule() {
 			return getRuleContext(SchemaRuleContext.class,0);
 		}
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public StructFieldRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -902,29 +776,14 @@ public class ObjectApiParser extends Parser {
 	public final StructFieldRuleContext structFieldRule() throws RecognitionException {
 		StructFieldRuleContext _localctx = new StructFieldRuleContext(_ctx, getState());
 		enterRule(_localctx, 26, RULE_structFieldRule);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(171);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(168);
-				metaRule();
-				}
-				}
-				setState(173);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(174);
+			setState(130);
 			((StructFieldRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(175);
+			setState(131);
 			match(T__5);
-			setState(176);
+			setState(132);
 			((StructFieldRuleContext)_localctx).schema = schemaRule();
 			}
 		}
@@ -942,12 +801,6 @@ public class ObjectApiParser extends Parser {
 	public static class EnumRuleContext extends ParserRuleContext {
 		public Token name;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public List<EnumMemberRuleContext> enumMemberRule() {
 			return getRuleContexts(EnumMemberRuleContext.class);
 		}
@@ -967,41 +820,27 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(181);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(178);
-				metaRule();
-				}
-				}
-				setState(183);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(184);
+			setState(134);
 			match(T__11);
-			setState(185);
+			setState(135);
 			((EnumRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(186);
+			setState(136);
 			match(T__3);
-			setState(190);
+			setState(140);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << DOCLINE) | (1L << TAGLINE))) != 0)) {
+			while (_la==IDENTIFIER) {
 				{
 				{
-				setState(187);
+				setState(137);
 				enumMemberRule();
 				}
 				}
-				setState(192);
+				setState(142);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(193);
+			setState(143);
 			match(T__4);
 			}
 		}
@@ -1020,12 +859,6 @@ public class ObjectApiParser extends Parser {
 		public Token name;
 		public Token value;
 		public TerminalNode IDENTIFIER() { return getToken(ObjectApiParser.IDENTIFIER, 0); }
-		public List<MetaRuleContext> metaRule() {
-			return getRuleContexts(MetaRuleContext.class);
-		}
-		public MetaRuleContext metaRule(int i) {
-			return getRuleContext(MetaRuleContext.class,i);
-		}
 		public TerminalNode INTEGER() { return getToken(ObjectApiParser.INTEGER, 0); }
 		public EnumMemberRuleContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1040,40 +873,26 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(198);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==DOCLINE || _la==TAGLINE) {
-				{
-				{
-				setState(195);
-				metaRule();
-				}
-				}
-				setState(200);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			setState(201);
+			setState(145);
 			((EnumMemberRuleContext)_localctx).name = match(IDENTIFIER);
-			setState(204);
+			setState(148);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__12) {
 				{
-				setState(202);
+				setState(146);
 				match(T__12);
-				setState(203);
+				setState(147);
 				((EnumMemberRuleContext)_localctx).value = match(INTEGER);
 				}
 			}
 
-			setState(207);
+			setState(151);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__8) {
 				{
-				setState(206);
+				setState(150);
 				match(T__8);
 				}
 			}
@@ -1114,33 +933,37 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(211);
+			setState(155);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__15:
 			case T__16:
 			case T__17:
 			case T__18:
+			case T__19:
+			case T__20:
+			case T__21:
+			case T__22:
 				{
-				setState(209);
+				setState(153);
 				primitiveSchema();
 				}
 				break;
 			case IDENTIFIER:
 				{
-				setState(210);
+				setState(154);
 				symbolSchema();
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(214);
+			setState(158);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==T__13) {
 				{
-				setState(213);
+				setState(157);
 				arrayRule();
 				}
 			}
@@ -1171,9 +994,9 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(216);
+			setState(160);
 			match(T__13);
-			setState(217);
+			setState(161);
 			match(T__14);
 			}
 		}
@@ -1200,35 +1023,63 @@ public class ObjectApiParser extends Parser {
 		PrimitiveSchemaContext _localctx = new PrimitiveSchemaContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_primitiveSchema);
 		try {
-			setState(223);
+			setState(171);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__15:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(219);
+				setState(163);
 				((PrimitiveSchemaContext)_localctx).name = match(T__15);
 				}
 				break;
 			case T__16:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(220);
+				setState(164);
 				((PrimitiveSchemaContext)_localctx).name = match(T__16);
 				}
 				break;
 			case T__17:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(221);
+				setState(165);
 				((PrimitiveSchemaContext)_localctx).name = match(T__17);
 				}
 				break;
 			case T__18:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(222);
+				setState(166);
 				((PrimitiveSchemaContext)_localctx).name = match(T__18);
+				}
+				break;
+			case T__19:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(167);
+				((PrimitiveSchemaContext)_localctx).name = match(T__19);
+				}
+				break;
+			case T__20:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(168);
+				((PrimitiveSchemaContext)_localctx).name = match(T__20);
+				}
+				break;
+			case T__21:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(169);
+				((PrimitiveSchemaContext)_localctx).name = match(T__21);
+				}
+				break;
+			case T__22:
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(170);
+				((PrimitiveSchemaContext)_localctx).name = match(T__22);
 				}
 				break;
 			default:
@@ -1261,7 +1112,7 @@ public class ObjectApiParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(225);
+			setState(173);
 			((SymbolSchemaContext)_localctx).name = match(IDENTIFIER);
 			}
 		}
@@ -1276,129 +1127,59 @@ public class ObjectApiParser extends Parser {
 		return _localctx;
 	}
 
-	public static class MetaRuleContext extends ParserRuleContext {
-		public Token tagLine;
-		public Token docLine;
-		public TerminalNode TAGLINE() { return getToken(ObjectApiParser.TAGLINE, 0); }
-		public TerminalNode DOCLINE() { return getToken(ObjectApiParser.DOCLINE, 0); }
-		public MetaRuleContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_metaRule; }
-	}
-
-	public final MetaRuleContext metaRule() throws RecognitionException {
-		MetaRuleContext _localctx = new MetaRuleContext(_ctx, getState());
-		enterRule(_localctx, 40, RULE_metaRule);
-		try {
-			setState(229);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case TAGLINE:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(227);
-				((MetaRuleContext)_localctx).tagLine = match(TAGLINE);
-				}
-				break;
-			case DOCLINE:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(228);
-				((MetaRuleContext)_localctx).docLine = match(DOCLINE);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36\u00ea\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\37\u00b2\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\3\2\3\2\7\2/\n\2\f\2\16\2\62"+
-		"\13\2\3\3\3\3\7\3\66\n\3\f\3\16\39\13\3\3\4\7\4<\n\4\f\4\16\4?\13\4\3"+
-		"\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\6\5\6L\n\6\3\7\7\7O\n\7\f\7\16"+
-		"\7R\13\7\3\7\3\7\3\7\3\7\7\7X\n\7\f\7\16\7[\13\7\3\7\3\7\3\b\3\b\3\b\5"+
-		"\bb\n\b\3\t\7\te\n\t\f\t\16\th\13\t\3\t\3\t\3\t\3\t\3\n\7\no\n\n\f\n\16"+
-		"\nr\13\n\3\n\3\n\3\n\7\nw\n\n\f\n\16\nz\13\n\3\n\3\n\5\n~\n\n\3\13\3\13"+
-		"\3\13\3\f\3\f\3\f\3\f\5\f\u0087\n\f\3\r\7\r\u008a\n\r\f\r\16\r\u008d\13"+
-		"\r\3\r\3\r\3\r\3\r\7\r\u0093\n\r\f\r\16\r\u0096\13\r\3\r\3\r\3\16\7\16"+
-		"\u009b\n\16\f\16\16\16\u009e\13\16\3\16\3\16\3\16\3\16\7\16\u00a4\n\16"+
-		"\f\16\16\16\u00a7\13\16\3\16\3\16\3\17\7\17\u00ac\n\17\f\17\16\17\u00af"+
-		"\13\17\3\17\3\17\3\17\3\17\3\20\7\20\u00b6\n\20\f\20\16\20\u00b9\13\20"+
-		"\3\20\3\20\3\20\3\20\7\20\u00bf\n\20\f\20\16\20\u00c2\13\20\3\20\3\20"+
-		"\3\21\7\21\u00c7\n\21\f\21\16\21\u00ca\13\21\3\21\3\21\3\21\5\21\u00cf"+
-		"\n\21\3\21\5\21\u00d2\n\21\3\22\3\22\5\22\u00d6\n\22\3\22\5\22\u00d9\n"+
-		"\22\3\23\3\23\3\23\3\24\3\24\3\24\3\24\5\24\u00e2\n\24\3\25\3\25\3\26"+
-		"\3\26\5\26\u00e8\n\26\3\26\2\2\27\2\4\6\b\n\f\16\20\22\24\26\30\32\34"+
-		"\36 \"$&(*\2\2\2\u00f2\2,\3\2\2\2\4\63\3\2\2\2\6=\3\2\2\2\bD\3\2\2\2\n"+
-		"K\3\2\2\2\fP\3\2\2\2\16a\3\2\2\2\20f\3\2\2\2\22p\3\2\2\2\24\177\3\2\2"+
-		"\2\26\u0082\3\2\2\2\30\u008b\3\2\2\2\32\u009c\3\2\2\2\34\u00ad\3\2\2\2"+
-		"\36\u00b7\3\2\2\2 \u00c8\3\2\2\2\"\u00d5\3\2\2\2$\u00da\3\2\2\2&\u00e1"+
-		"\3\2\2\2(\u00e3\3\2\2\2*\u00e7\3\2\2\2,\60\5\4\3\2-/\5\n\6\2.-\3\2\2\2"+
-		"/\62\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61\3\3\2\2\2\62\60\3\2\2\2\63\67"+
-		"\5\6\4\2\64\66\5\b\5\2\65\64\3\2\2\2\669\3\2\2\2\67\65\3\2\2\2\678\3\2"+
-		"\2\28\5\3\2\2\29\67\3\2\2\2:<\5*\26\2;:\3\2\2\2<?\3\2\2\2=;\3\2\2\2=>"+
-		"\3\2\2\2>@\3\2\2\2?=\3\2\2\2@A\7\3\2\2AB\7\32\2\2BC\7\33\2\2C\7\3\2\2"+
-		"\2DE\7\4\2\2EF\7\32\2\2FG\7\33\2\2G\t\3\2\2\2HL\5\f\7\2IL\5\32\16\2JL"+
-		"\5\36\20\2KH\3\2\2\2KI\3\2\2\2KJ\3\2\2\2L\13\3\2\2\2MO\5*\26\2NM\3\2\2"+
-		"\2OR\3\2\2\2PN\3\2\2\2PQ\3\2\2\2QS\3\2\2\2RP\3\2\2\2ST\7\5\2\2TU\7\32"+
-		"\2\2UY\7\6\2\2VX\5\16\b\2WV\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Z\\\3"+
-		"\2\2\2[Y\3\2\2\2\\]\7\7\2\2]\r\3\2\2\2^b\5\20\t\2_b\5\22\n\2`b\5\30\r"+
-		"\2a^\3\2\2\2a_\3\2\2\2a`\3\2\2\2b\17\3\2\2\2ce\5*\26\2dc\3\2\2\2eh\3\2"+
-		"\2\2fd\3\2\2\2fg\3\2\2\2gi\3\2\2\2hf\3\2\2\2ij\7\32\2\2jk\7\b\2\2kl\5"+
-		"\"\22\2l\21\3\2\2\2mo\5*\26\2nm\3\2\2\2or\3\2\2\2pn\3\2\2\2pq\3\2\2\2"+
-		"qs\3\2\2\2rp\3\2\2\2st\7\32\2\2tx\7\t\2\2uw\5\26\f\2vu\3\2\2\2wz\3\2\2"+
-		"\2xv\3\2\2\2xy\3\2\2\2y{\3\2\2\2zx\3\2\2\2{}\7\n\2\2|~\5\24\13\2}|\3\2"+
-		"\2\2}~\3\2\2\2~\23\3\2\2\2\177\u0080\7\b\2\2\u0080\u0081\5\"\22\2\u0081"+
-		"\25\3\2\2\2\u0082\u0083\7\32\2\2\u0083\u0084\7\b\2\2\u0084\u0086\5\"\22"+
-		"\2\u0085\u0087\7\13\2\2\u0086\u0085\3\2\2\2\u0086\u0087\3\2\2\2\u0087"+
-		"\27\3\2\2\2\u0088\u008a\5*\26\2\u0089\u0088\3\2\2\2\u008a\u008d\3\2\2"+
-		"\2\u008b\u0089\3\2\2\2\u008b\u008c\3\2\2\2\u008c\u008e\3\2\2\2\u008d\u008b"+
-		"\3\2\2\2\u008e\u008f\7\f\2\2\u008f\u0090\7\32\2\2\u0090\u0094\7\t\2\2"+
-		"\u0091\u0093\5\26\f\2\u0092\u0091\3\2\2\2\u0093\u0096\3\2\2\2\u0094\u0092"+
-		"\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0097\3\2\2\2\u0096\u0094\3\2\2\2\u0097"+
-		"\u0098\7\n\2\2\u0098\31\3\2\2\2\u0099\u009b\5*\26\2\u009a\u0099\3\2\2"+
-		"\2\u009b\u009e\3\2\2\2\u009c\u009a\3\2\2\2\u009c\u009d\3\2\2\2\u009d\u009f"+
-		"\3\2\2\2\u009e\u009c\3\2\2\2\u009f\u00a0\7\r\2\2\u00a0\u00a1\7\32\2\2"+
-		"\u00a1\u00a5\7\6\2\2\u00a2\u00a4\5\34\17\2\u00a3\u00a2\3\2\2\2\u00a4\u00a7"+
-		"\3\2\2\2\u00a5\u00a3\3\2\2\2\u00a5\u00a6\3\2\2\2\u00a6\u00a8\3\2\2\2\u00a7"+
-		"\u00a5\3\2\2\2\u00a8\u00a9\7\7\2\2\u00a9\33\3\2\2\2\u00aa\u00ac\5*\26"+
-		"\2\u00ab\u00aa\3\2\2\2\u00ac\u00af\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ae"+
-		"\3\2\2\2\u00ae\u00b0\3\2\2\2\u00af\u00ad\3\2\2\2\u00b0\u00b1\7\32\2\2"+
-		"\u00b1\u00b2\7\b\2\2\u00b2\u00b3\5\"\22\2\u00b3\35\3\2\2\2\u00b4\u00b6"+
-		"\5*\26\2\u00b5\u00b4\3\2\2\2\u00b6\u00b9\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b7"+
-		"\u00b8\3\2\2\2\u00b8\u00ba\3\2\2\2\u00b9\u00b7\3\2\2\2\u00ba\u00bb\7\16"+
-		"\2\2\u00bb\u00bc\7\32\2\2\u00bc\u00c0\7\6\2\2\u00bd\u00bf\5 \21\2\u00be"+
-		"\u00bd\3\2\2\2\u00bf\u00c2\3\2\2\2\u00c0\u00be\3\2\2\2\u00c0\u00c1\3\2"+
-		"\2\2\u00c1\u00c3\3\2\2\2\u00c2\u00c0\3\2\2\2\u00c3\u00c4\7\7\2\2\u00c4"+
-		"\37\3\2\2\2\u00c5\u00c7\5*\26\2\u00c6\u00c5\3\2\2\2\u00c7\u00ca\3\2\2"+
-		"\2\u00c8\u00c6\3\2\2\2\u00c8\u00c9\3\2\2\2\u00c9\u00cb\3\2\2\2\u00ca\u00c8"+
-		"\3\2\2\2\u00cb\u00ce\7\32\2\2\u00cc\u00cd\7\17\2\2\u00cd\u00cf\7\27\2"+
-		"\2\u00ce\u00cc\3\2\2\2\u00ce\u00cf\3\2\2\2\u00cf\u00d1\3\2\2\2\u00d0\u00d2"+
-		"\7\13\2\2\u00d1\u00d0\3\2\2\2\u00d1\u00d2\3\2\2\2\u00d2!\3\2\2\2\u00d3"+
-		"\u00d6\5&\24\2\u00d4\u00d6\5(\25\2\u00d5\u00d3\3\2\2\2\u00d5\u00d4\3\2"+
-		"\2\2\u00d6\u00d8\3\2\2\2\u00d7\u00d9\5$\23\2\u00d8\u00d7\3\2\2\2\u00d8"+
-		"\u00d9\3\2\2\2\u00d9#\3\2\2\2\u00da\u00db\7\20\2\2\u00db\u00dc\7\21\2"+
-		"\2\u00dc%\3\2\2\2\u00dd\u00e2\7\22\2\2\u00de\u00e2\7\23\2\2\u00df\u00e2"+
-		"\7\24\2\2\u00e0\u00e2\7\25\2\2\u00e1\u00dd\3\2\2\2\u00e1\u00de\3\2\2\2"+
-		"\u00e1\u00df\3\2\2\2\u00e1\u00e0\3\2\2\2\u00e2\'\3\2\2\2\u00e3\u00e4\7"+
-		"\32\2\2\u00e4)\3\2\2\2\u00e5\u00e8\7\35\2\2\u00e6\u00e8\7\34\2\2\u00e7"+
-		"\u00e5\3\2\2\2\u00e7\u00e6\3\2\2\2\u00e8+\3\2\2\2\34\60\67=KPYafpx}\u0086"+
-		"\u008b\u0094\u009c\u00a5\u00ad\u00b7\u00c0\u00c8\u00ce\u00d1\u00d5\u00d8"+
-		"\u00e1\u00e7";
+		"\4\23\t\23\4\24\t\24\4\25\t\25\3\2\3\2\7\2-\n\2\f\2\16\2\60\13\2\3\3\3"+
+		"\3\7\3\64\n\3\f\3\16\3\67\13\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6"+
+		"\3\6\5\6D\n\6\3\7\3\7\3\7\3\7\7\7J\n\7\f\7\16\7M\13\7\3\7\3\7\3\b\3\b"+
+		"\3\b\5\bT\n\b\3\t\3\t\3\t\3\t\3\n\3\n\3\n\7\n]\n\n\f\n\16\n`\13\n\3\n"+
+		"\3\n\5\nd\n\n\3\13\3\13\3\13\3\f\3\f\3\f\3\f\5\fm\n\f\3\r\3\r\3\r\3\r"+
+		"\7\rs\n\r\f\r\16\rv\13\r\3\r\3\r\3\16\3\16\3\16\3\16\7\16~\n\16\f\16\16"+
+		"\16\u0081\13\16\3\16\3\16\3\17\3\17\3\17\3\17\3\20\3\20\3\20\3\20\7\20"+
+		"\u008d\n\20\f\20\16\20\u0090\13\20\3\20\3\20\3\21\3\21\3\21\5\21\u0097"+
+		"\n\21\3\21\5\21\u009a\n\21\3\22\3\22\5\22\u009e\n\22\3\22\5\22\u00a1\n"+
+		"\22\3\23\3\23\3\23\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24\u00ae"+
+		"\n\24\3\25\3\25\3\25\2\2\26\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \""+
+		"$&(\2\2\2\u00b5\2*\3\2\2\2\4\61\3\2\2\2\68\3\2\2\2\b<\3\2\2\2\nC\3\2\2"+
+		"\2\fE\3\2\2\2\16S\3\2\2\2\20U\3\2\2\2\22Y\3\2\2\2\24e\3\2\2\2\26h\3\2"+
+		"\2\2\30n\3\2\2\2\32y\3\2\2\2\34\u0084\3\2\2\2\36\u0088\3\2\2\2 \u0093"+
+		"\3\2\2\2\"\u009d\3\2\2\2$\u00a2\3\2\2\2&\u00ad\3\2\2\2(\u00af\3\2\2\2"+
+		"*.\5\4\3\2+-\5\n\6\2,+\3\2\2\2-\60\3\2\2\2.,\3\2\2\2./\3\2\2\2/\3\3\2"+
+		"\2\2\60.\3\2\2\2\61\65\5\6\4\2\62\64\5\b\5\2\63\62\3\2\2\2\64\67\3\2\2"+
+		"\2\65\63\3\2\2\2\65\66\3\2\2\2\66\5\3\2\2\2\67\65\3\2\2\289\7\3\2\29:"+
+		"\7\36\2\2:;\7\37\2\2;\7\3\2\2\2<=\7\4\2\2=>\7\36\2\2>?\7\37\2\2?\t\3\2"+
+		"\2\2@D\5\f\7\2AD\5\32\16\2BD\5\36\20\2C@\3\2\2\2CA\3\2\2\2CB\3\2\2\2D"+
+		"\13\3\2\2\2EF\7\5\2\2FG\7\36\2\2GK\7\6\2\2HJ\5\16\b\2IH\3\2\2\2JM\3\2"+
+		"\2\2KI\3\2\2\2KL\3\2\2\2LN\3\2\2\2MK\3\2\2\2NO\7\7\2\2O\r\3\2\2\2PT\5"+
+		"\20\t\2QT\5\22\n\2RT\5\30\r\2SP\3\2\2\2SQ\3\2\2\2SR\3\2\2\2T\17\3\2\2"+
+		"\2UV\7\36\2\2VW\7\b\2\2WX\5\"\22\2X\21\3\2\2\2YZ\7\36\2\2Z^\7\t\2\2[]"+
+		"\5\26\f\2\\[\3\2\2\2]`\3\2\2\2^\\\3\2\2\2^_\3\2\2\2_a\3\2\2\2`^\3\2\2"+
+		"\2ac\7\n\2\2bd\5\24\13\2cb\3\2\2\2cd\3\2\2\2d\23\3\2\2\2ef\7\b\2\2fg\5"+
+		"\"\22\2g\25\3\2\2\2hi\7\36\2\2ij\7\b\2\2jl\5\"\22\2km\7\13\2\2lk\3\2\2"+
+		"\2lm\3\2\2\2m\27\3\2\2\2no\7\f\2\2op\7\36\2\2pt\7\t\2\2qs\5\26\f\2rq\3"+
+		"\2\2\2sv\3\2\2\2tr\3\2\2\2tu\3\2\2\2uw\3\2\2\2vt\3\2\2\2wx\7\n\2\2x\31"+
+		"\3\2\2\2yz\7\r\2\2z{\7\36\2\2{\177\7\6\2\2|~\5\34\17\2}|\3\2\2\2~\u0081"+
+		"\3\2\2\2\177}\3\2\2\2\177\u0080\3\2\2\2\u0080\u0082\3\2\2\2\u0081\177"+
+		"\3\2\2\2\u0082\u0083\7\7\2\2\u0083\33\3\2\2\2\u0084\u0085\7\36\2\2\u0085"+
+		"\u0086\7\b\2\2\u0086\u0087\5\"\22\2\u0087\35\3\2\2\2\u0088\u0089\7\16"+
+		"\2\2\u0089\u008a\7\36\2\2\u008a\u008e\7\6\2\2\u008b\u008d\5 \21\2\u008c"+
+		"\u008b\3\2\2\2\u008d\u0090\3\2\2\2\u008e\u008c\3\2\2\2\u008e\u008f\3\2"+
+		"\2\2\u008f\u0091\3\2\2\2\u0090\u008e\3\2\2\2\u0091\u0092\7\7\2\2\u0092"+
+		"\37\3\2\2\2\u0093\u0096\7\36\2\2\u0094\u0095\7\17\2\2\u0095\u0097\7\33"+
+		"\2\2\u0096\u0094\3\2\2\2\u0096\u0097\3\2\2\2\u0097\u0099\3\2\2\2\u0098"+
+		"\u009a\7\13\2\2\u0099\u0098\3\2\2\2\u0099\u009a\3\2\2\2\u009a!\3\2\2\2"+
+		"\u009b\u009e\5&\24\2\u009c\u009e\5(\25\2\u009d\u009b\3\2\2\2\u009d\u009c"+
+		"\3\2\2\2\u009e\u00a0\3\2\2\2\u009f\u00a1\5$\23\2\u00a0\u009f\3\2\2\2\u00a0"+
+		"\u00a1\3\2\2\2\u00a1#\3\2\2\2\u00a2\u00a3\7\20\2\2\u00a3\u00a4\7\21\2"+
+		"\2\u00a4%\3\2\2\2\u00a5\u00ae\7\22\2\2\u00a6\u00ae\7\23\2\2\u00a7\u00ae"+
+		"\7\24\2\2\u00a8\u00ae\7\25\2\2\u00a9\u00ae\7\26\2\2\u00aa\u00ae\7\27\2"+
+		"\2\u00ab\u00ae\7\30\2\2\u00ac\u00ae\7\31\2\2\u00ad\u00a5\3\2\2\2\u00ad"+
+		"\u00a6\3\2\2\2\u00ad\u00a7\3\2\2\2\u00ad\u00a8\3\2\2\2\u00ad\u00a9\3\2"+
+		"\2\2\u00ad\u00aa\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ac\3\2\2\2\u00ae"+
+		"\'\3\2\2\2\u00af\u00b0\7\36\2\2\u00b0)\3\2\2\2\22.\65CKS^clt\177\u008e"+
+		"\u0096\u0099\u009d\u00a0\u00ad";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

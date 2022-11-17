@@ -3,29 +3,53 @@ module tb.simple 1.0
 interface SimpleInterface {
     propBool: bool
     propInt: int
+    propInt32: int32
+    propInt64: int64
     propFloat: float
+    propFloat32: float32
+    propFloat64: float64
     propString: string
     funcBool(paramBool: bool): bool
     funcInt(paramInt: int): int
+    funcInt32(paramInt32: int32): int32
+    funcInt64(paramInt64: int64): int64
     funcFloat(paramFloat: float): float
+    funcFloat32(paramFloat32: float32): float32
+    funcFloat64(paramFloat64: float64): float64
     funcString(paramString: string): string
     signal sigBool(paramBool: bool)
     signal sigInt(paramInt: int)
+    signal sigInt32(paramInt32: int32)
+    signal sigInt64(paramInt64: int64)
     signal sigFloat(paramFloat: float)
+    signal sigFloat32(paramFloat32: float32)
+    signal sigFloat64(paramFloat64: float64)
     signal sigString(paramString: string)
 }
 
 interface SimpleArrayInterface {
     propBool: bool[]
     propInt: int[]
+    propInt32: int32[]
+    propInt64: int64[]
     propFloat: float[]
+    propFloat32: float32[]
+    propFloat64: float64[]
     propString: string[]
     funcBool(paramBool: bool[]): bool[]
     funcInt(paramInt: int[]): int[]
+    funcInt32(paramInt32: int32[]): int32[]
+    funcInt64(paramInt64: int64[]): int64[]
     funcFloat(paramFloat: float[]): float[]
+    funcFloat32(paramFloat32: float32[]): float32[]
+    funcFloat64(paramFloat64: float64[]): float64[]
     funcString(paramString: string[]): string[]
     signal sigBool(paramBool: bool[])
     signal sigInt(paramInt: int[])
+    signal sigInt32(paramInt32: int32[])
+    signal sigInt64(paramInt64: int64[])
     signal sigFloat(paramFloat: float[])
+    signal sigFloat32(paramFloat32: float32[])
+    signal sigFloat64(paramFloat64: float64[])
     signal sigString(paramString: string[])
 }

@@ -14,12 +14,12 @@ func TestParam(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test1", "propBool", "propBool bool"},
-		{"test", "Test1", "propInt", "propInt int64"},
-		{"test", "Test1", "propFloat", "propFloat float64"},
+		{"test", "Test1", "propInt", "propInt int32"},
+		{"test", "Test1", "propFloat", "propFloat float32"},
 		{"test", "Test1", "propString", "propString string"},
 		{"test", "Test1", "propBoolArray", "propBoolArray []bool"},
-		{"test", "Test1", "propIntArray", "propIntArray []int64"},
-		{"test", "Test1", "propFloatArray", "propFloatArray []float64"},
+		{"test", "Test1", "propIntArray", "propIntArray []int32"},
+		{"test", "Test1", "propFloatArray", "propFloatArray []float32"},
 		{"test", "Test1", "propStringArray", "propStringArray []string"},
 	}
 	syss := loadTestSystems(t)
