@@ -38,8 +38,7 @@ checksum:
 archives:
   - id: zip
     format: zip
-  - id: binary
-    format: binary
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
