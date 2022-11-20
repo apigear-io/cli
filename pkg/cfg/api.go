@@ -56,6 +56,7 @@ func SetBuildInfo(version, commit, date string) {
 	v.Set(KeyVersion, version)
 	v.Set(KeyCommit, commit)
 	v.Set(KeyDate, date)
+	v.WriteConfig()
 }
 
 func IsSet(key string) bool {

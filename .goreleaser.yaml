@@ -10,7 +10,8 @@ release:
     name: cli-releases
   discussion_category_name: General
 builds:
-  - env:
+  - id: apigear
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -34,6 +35,11 @@ builds:
       - -X main.date={{.Date}}
 checksum:
   name_template: "checksums.txt"
+archives:
+  - id: zip
+    format: zip
+  - id: binary
+    format: binary
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
 changelog:
@@ -44,6 +50,8 @@ changelog:
       - "^test:"
 brews:
   - name: apigear
+    ids:
+      - zip
     tap:
       owner: apigear-io
       name: homebrew-tap
