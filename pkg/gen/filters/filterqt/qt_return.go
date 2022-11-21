@@ -16,8 +16,16 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = "QString"
 	case "int":
 		text = "int"
+	case "int32":
+		text = "qint32"
+	case "int64":
+		text = "qint64"
 	case "float":
 		text = "qreal"
+	case "float32":
+		text = "float"
+	case "float64":
+		text = "double"
 	case "bool":
 		text = "bool"
 	default:

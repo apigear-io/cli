@@ -22,8 +22,16 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		return fmt.Sprintf("const QString& %s", name), nil
 	case "int":
 		return fmt.Sprintf("int %s", name), nil
+	case "int32":
+		return fmt.Sprintf("qint32 %s", name), nil
+	case "int64":
+		return fmt.Sprintf("qint64 %s", name), nil
 	case "float":
 		return fmt.Sprintf("qreal %s", name), nil
+	case "float32":
+		return fmt.Sprintf("float %s", name), nil
+	case "float64":
+		return fmt.Sprintf("double %s", name), nil
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}
