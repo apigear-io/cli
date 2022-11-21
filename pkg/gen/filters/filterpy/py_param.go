@@ -24,8 +24,16 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		return fmt.Sprintf("%s: str", name), nil
 	case model.TypeInt:
 		return fmt.Sprintf("%s: int", name), nil
+	case model.TypeInt32:
+		return fmt.Sprintf("%s: int32", name), nil
+	case model.TypeInt64:
+		return fmt.Sprintf("%s: int64", name), nil
 	case model.TypeFloat:
 		return fmt.Sprintf("%s: float", name), nil
+	case model.TypeFloat32:
+		return fmt.Sprintf("%s: float32", name), nil
+	case model.TypeFloat64:
+		return fmt.Sprintf("%s: float64", name), nil
 	case model.TypeBool:
 		return fmt.Sprintf("%s: bool", name), nil
 	case model.TypeEnum:

@@ -15,7 +15,11 @@ func TestVars(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "param1"},
 		{"test", "Test3", "opInt", "param1"},
+		{"test", "Test3", "opInt32", "param1"},
+		{"test", "Test3", "opInt64", "param1"},
 		{"test", "Test3", "opFloat", "param1"},
+		{"test", "Test3", "opFloat32", "param1"},
+		{"test", "Test3", "opFloat64", "param1"},
 		{"test", "Test3", "opString", "param1"},
 		{"test", "Test3", "opBoolArray", "param1"},
 		{"test", "Test3", "opIntArray", "param1"},

@@ -15,11 +15,19 @@ func TestParams(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "self, param1: bool"},
 		{"test", "Test3", "opInt", "self, param1: int"},
+		{"test", "Test3", "opInt32", "self, param1: int32"},
+		{"test", "Test3", "opInt64", "self, param1: int64"},
 		{"test", "Test3", "opFloat", "self, param1: float"},
+		{"test", "Test3", "opFloat32", "self, param1: float32"},
+		{"test", "Test3", "opFloat64", "self, param1: float64"},
 		{"test", "Test3", "opString", "self, param1: str"},
 		{"test", "Test3", "opBoolArray", "self, param1: list[bool]"},
 		{"test", "Test3", "opIntArray", "self, param1: list[int]"},
+		{"test", "Test3", "opInt32Array", "self, param1: list[int32]"},
+		{"test", "Test3", "opInt64Array", "self, param1: list[int64]"},
 		{"test", "Test3", "opFloatArray", "self, param1: list[float]"},
+		{"test", "Test3", "opFloat32Array", "self, param1: list[float32]"},
+		{"test", "Test3", "opFloat64Array", "self, param1: list[float64]"},
 		{"test", "Test3", "opStringArray", "self, param1: list[str]"},
 	}
 	syss := loadTestSystems(t)
