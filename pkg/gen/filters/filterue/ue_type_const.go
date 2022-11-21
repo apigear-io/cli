@@ -18,8 +18,16 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = "const FString&"
 	case model.TypeInt:
 		text = "int32"
+	case model.TypeInt32:
+		text = "int32"
+	case model.TypeInt64:
+		text = "int64"
 	case model.TypeFloat:
 		text = "float"
+	case model.TypeFloat32:
+		text = "float"
+	case model.TypeFloat64:
+		text = "double"
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeVoid:
@@ -35,10 +43,24 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 	}
 	if schema.IsArray {
 		switch schema.KindType {
-		case model.TypeInt, model.TypeFloat, model.TypeBool:
-			text = fmt.Sprintf("const TArray<%s>&", text)
 		case model.TypeString:
 			text = "const TArray<FString>&"
+		case model.TypeInt:
+			text = "const TArray<int32>&"
+		case model.TypeInt32:
+			text = "const TArray<int32>&"
+		case model.TypeInt64:
+			text = "const TArray<int64>&"
+		case model.TypeFloat:
+			text = "const TArray<float>&"
+		case model.TypeFloat32:
+			text = "const TArray<float>&"
+		case model.TypeFloat64:
+			text = "const TArray<double>&"
+		case model.TypeBool:
+			text = "const TArray<bool>&"
+		case model.TypeVoid:
+			text = "const TArray<void>&"
 		case model.TypeEnum:
 			text = fmt.Sprintf("const TArray<%sE%s%s>&", prefix, moduleId, schema.Type)
 		case model.TypeStruct:

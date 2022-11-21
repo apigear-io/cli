@@ -18,11 +18,19 @@ func TestDefaultFromIdl(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "false"},
 		{"test", "Test1", "propInt", "0"},
+		{"test", "Test1", "propInt32", "0"},
+		{"test", "Test1", "propInt64", "0"},
 		{"test", "Test1", "propFloat", "0.0f"},
+		{"test", "Test1", "propFloat32", "0.0f"},
+		{"test", "Test1", "propFloat64", "0.0f"},
 		{"test", "Test1", "propString", "FString()"},
 		{"test", "Test1", "propBoolArray", "TArray<bool>()"},
 		{"test", "Test1", "propIntArray", "TArray<int32>()"},
+		{"test", "Test1", "propInt32Array", "TArray<int32>()"},
+		{"test", "Test1", "propInt64Array", "TArray<int64>()"},
 		{"test", "Test1", "propFloatArray", "TArray<float>()"},
+		{"test", "Test1", "propFloat32Array", "TArray<float>()"},
+		{"test", "Test1", "propFloat64Array", "TArray<double>()"},
 		{"test", "Test1", "propStringArray", "TArray<FString>()"},
 	}
 	for _, sys := range syss {

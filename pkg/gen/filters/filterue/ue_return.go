@@ -20,8 +20,16 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = "FString"
 	case model.TypeInt:
 		text = "int32"
+	case model.TypeInt32:
+		text = "int32"
+	case model.TypeInt64:
+		text = "int64"
 	case model.TypeFloat:
 		text = "float"
+	case model.TypeFloat32:
+		text = "float"
+	case model.TypeFloat64:
+		text = "double"
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeVoid:

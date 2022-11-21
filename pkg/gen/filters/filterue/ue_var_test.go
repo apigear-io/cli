@@ -19,11 +19,19 @@ func TestVar(t *testing.T) {
 
 		{"test", "Test1", "propBool", "bPropBool"},
 		{"test", "Test1", "propInt", "PropInt"},
+		{"test", "Test1", "propInt32", "PropInt32"},
+		{"test", "Test1", "propInt64", "PropInt64"},
 		{"test", "Test1", "propFloat", "PropFloat"},
+		{"test", "Test1", "propFloat32", "PropFloat32"},
+		{"test", "Test1", "propFloat64", "PropFloat64"},
 		{"test", "Test1", "propString", "PropString"},
 		{"test", "Test1", "propBoolArray", "PropBoolArray"},
 		{"test", "Test1", "propIntArray", "PropIntArray"},
+		{"test", "Test1", "propInt32Array", "PropInt32Array"},
+		{"test", "Test1", "propInt64Array", "PropInt64Array"},
 		{"test", "Test1", "propFloatArray", "PropFloatArray"},
+		{"test", "Test1", "propFloat32Array", "PropFloat32Array"},
+		{"test", "Test1", "propFloat64Array", "PropFloat64Array"},
 		{"test", "Test1", "propStringArray", "PropStringArray"},
 	}
 	for _, sys := range syss {

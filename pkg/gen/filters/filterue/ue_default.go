@@ -20,8 +20,16 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 			text = "TArray<FString>()"
 		case model.TypeInt:
 			text = "TArray<int32>()"
+		case model.TypeInt32:
+			text = "TArray<int32>()"
+		case model.TypeInt64:
+			text = "TArray<int64>()"
 		case model.TypeFloat:
 			text = "TArray<float>()"
+		case model.TypeFloat32:
+			text = "TArray<float>()"
+		case model.TypeFloat64:
+			text = "TArray<double>()"
 		case model.TypeBool:
 			text = "TArray<bool>()"
 		case model.TypeEnum:
@@ -37,9 +45,9 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		switch schema.KindType {
 		case model.TypeString:
 			text = "FString()"
-		case model.TypeInt:
+		case model.TypeInt, model.TypeInt32, model.TypeInt64:
 			text = "0"
-		case model.TypeFloat:
+		case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
 			text = "0.0f"
 		case model.TypeBool:
 			text = "false"

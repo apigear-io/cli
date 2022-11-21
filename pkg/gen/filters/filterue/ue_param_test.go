@@ -15,11 +15,19 @@ func TestParam(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "bool bPropBool"},
 		{"test", "Test1", "propInt", "int32 PropInt"},
+		{"test", "Test1", "propInt32", "int32 PropInt32"},
+		{"test", "Test1", "propInt64", "int64 PropInt64"},
 		{"test", "Test1", "propFloat", "float PropFloat"},
+		{"test", "Test1", "propFloat32", "float PropFloat32"},
+		{"test", "Test1", "propFloat64", "double PropFloat64"},
 		{"test", "Test1", "propString", "const FString& PropString"},
 		{"test", "Test1", "propBoolArray", "const TArray<bool>& PropBoolArray"},
 		{"test", "Test1", "propIntArray", "const TArray<int32>& PropIntArray"},
+		{"test", "Test1", "propInt32Array", "const TArray<int32>& PropInt32Array"},
+		{"test", "Test1", "propInt64Array", "const TArray<int64>& PropInt64Array"},
 		{"test", "Test1", "propFloatArray", "const TArray<float>& PropFloatArray"},
+		{"test", "Test1", "propFloat32Array", "const TArray<float>& PropFloat32Array"},
+		{"test", "Test1", "propFloat64Array", "const TArray<double>& PropFloat64Array"},
 		{"test", "Test1", "propStringArray", "const TArray<FString>& PropStringArray"},
 	}
 	syss := loadTestSystems(t)
