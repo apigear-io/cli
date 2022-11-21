@@ -19,7 +19,11 @@ func TestVar(t *testing.T) {
 
 		{"test", "Test1", "propBool", "propBool"},
 		{"test", "Test1", "propInt", "propInt"},
+		{"test", "Test1", "propInt32", "propInt32"},
+		{"test", "Test1", "propInt64", "propInt64"},
 		{"test", "Test1", "propFloat", "propFloat"},
+		{"test", "Test1", "propFloat32", "propFloat32"},
+		{"test", "Test1", "propFloat64", "propFloat64"},
 		{"test", "Test1", "propString", "propString"},
 		{"test", "Test1", "propBoolArray", "propBoolArray"},
 		{"test", "Test1", "propIntArray", "propIntArray"},

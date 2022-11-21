@@ -22,8 +22,16 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		return fmt.Sprintf("const std::string& %s", name), nil
 	case "int":
 		return fmt.Sprintf("int %s", name), nil
+	case "int32":
+		return fmt.Sprintf("int32_t %s", name), nil
+	case "int64":
+		return fmt.Sprintf("int64_t %s", name), nil
 	case "float":
 		return fmt.Sprintf("float %s", name), nil
+	case "float32":
+		return fmt.Sprintf("float %s", name), nil
+	case "float64":
+		return fmt.Sprintf("double %s", name), nil
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}

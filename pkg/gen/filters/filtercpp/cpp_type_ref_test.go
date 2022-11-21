@@ -15,11 +15,19 @@ func TestTypeRef(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "bool"},
 		{"test", "Test1", "propInt", "int"},
+		{"test", "Test1", "propInt32", "int32_t"},
+		{"test", "Test1", "propInt64", "int64_t"},
 		{"test", "Test1", "propFloat", "float"},
+		{"test", "Test1", "propFloat32", "float"},
+		{"test", "Test1", "propFloat64", "double"},
 		{"test", "Test1", "propString", "const std::string&"},
 		{"test", "Test1", "propBoolArray", "const std::list<bool>&"},
 		{"test", "Test1", "propIntArray", "const std::list<int>&"},
+		{"test", "Test1", "propInt32Array", "const std::list<int32_t>&"},
+		{"test", "Test1", "propInt64Array", "const std::list<int64_t>&"},
 		{"test", "Test1", "propFloatArray", "const std::list<float>&"},
+		{"test", "Test1", "propFloat32Array", "const std::list<float>&"},
+		{"test", "Test1", "propFloat64Array", "const std::list<double>&"},
 		{"test", "Test1", "propStringArray", "const std::list<std::string>&"},
 	}
 	syss := loadTestSystems(t)

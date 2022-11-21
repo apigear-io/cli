@@ -12,7 +12,11 @@ interface Test1 {
     propString: string
     propBoolArray: bool[]
     propIntArray: int[]
+    propInt32Array: int32[]
+    propInt64Array: int64[]
     propFloatArray: float[]
+    propFloat32Array: float32[]
+    propFloat64Array: float64[]
     propStringArray: string[]
 }
 
@@ -37,7 +41,11 @@ interface Test3 {
     opString(param1: string): string
     opBoolArray(param1: bool[]): bool[]
     opIntArray(param1: int[]): int[]
+    opInt32Array(param1: int32[]): int32[]
+    opInt64Array(param1: int64[]): int64[]
     opFloatArray(param1: float[]): float[]
+    opFloat32Array(param1: float32[]): float32[]
+    opFloat64Array(param1: float64[]): float64[]
     opStringArray(param1: string[]): string[]
 }
 
