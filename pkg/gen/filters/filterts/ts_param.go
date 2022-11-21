@@ -22,9 +22,9 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	switch schema.KindType {
 	case model.TypeString:
 		return fmt.Sprintf("%s: string", name), nil
-	case model.TypeInt:
+	case model.TypeInt, model.TypeInt32, model.TypeInt64:
 		return fmt.Sprintf("%s: number", name), nil
-	case model.TypeFloat:
+	case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
 		return fmt.Sprintf("%s: number", name), nil
 	case model.TypeBool:
 		return fmt.Sprintf("%s: boolean", name), nil

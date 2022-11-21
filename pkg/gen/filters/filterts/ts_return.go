@@ -11,9 +11,9 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	switch schema.KindType {
 	case model.TypeString:
 		text = "string"
-	case model.TypeInt:
+	case model.TypeInt, model.TypeInt32, model.TypeInt64:
 		text = "number"
-	case model.TypeFloat:
+	case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
 		text = "number"
 	case model.TypeBool:
 		text = "boolean"
