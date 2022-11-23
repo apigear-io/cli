@@ -3,6 +3,7 @@ package sol
 import (
 	"fmt"
 	"path/filepath"
+	"sync"
 
 	"github.com/apigear-io/cli/pkg/gen"
 	"github.com/apigear-io/cli/pkg/helper"
@@ -17,6 +18,7 @@ type task struct {
 	deps    []string
 	watcher *fsnotify.Watcher
 	done    chan bool
+	mu      sync.Mutex
 }
 
 func newTask(file string, doc *spec.SolutionDoc) (*task, error) {
@@ -25,6 +27,7 @@ func newTask(file string, doc *spec.SolutionDoc) (*task, error) {
 		doc:  doc,
 		deps: make([]string, 0),
 		done: make(chan bool),
+		mu:   sync.Mutex{},
 	}
 	if doc == nil {
 		return nil, fmt.Errorf("doc is nil")
@@ -41,6 +44,8 @@ func (t *task) addDep(dep string) {
 }
 
 func (t *task) run() error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
