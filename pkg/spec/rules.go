@@ -40,11 +40,11 @@ func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 func (r *RulesDoc) ComputeFeatures(wanted []string) []*FeatureRule {
 	log.Debug().Msgf("computing features: %v", wanted)
 	// make a set of wanted features
-	fts := make(map[string]*FeatureRule)
-	// if no features are given, return all features
 	if len(wanted) == 0 {
-		return r.Features
+		return []*FeatureRule{}
 	}
+	fts := make(map[string]*FeatureRule, 1)
+	// if no features are given, then no features are wanted
 	for _, w := range wanted {
 		// return all features if the wanted feature is "all"
 		if w == "all" {
