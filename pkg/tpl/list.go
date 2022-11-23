@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
@@ -77,7 +78,7 @@ func ListCachedRepos() ([]*git.RepoInfo, error) {
 					return fmt.Errorf("get relative path for %s", path)
 				}
 				infos = append(infos, &git.RepoInfo{
-					Name:    name,
+					Name:    strings.ReplaceAll(name, "\\", "/"),
 					Path:    path,
 					InCache: true,
 				})

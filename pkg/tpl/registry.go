@@ -3,6 +3,7 @@ package tpl
 import (
 	"encoding/json"
 	"os"
+	"strings"
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
@@ -35,6 +36,9 @@ func ReadRegistry() (*TemplateRegistry, error) {
 	err = json.Unmarshal(bytes, &registry)
 	if err != nil {
 		return nil, err
+	}
+	for _, entry := range registry.Entries {
+		entry.Name = strings.ReplaceAll(entry.Name, "\\", "/")
 	}
 	// sort entries
 	git.SortRepoInfo(registry.Entries)
