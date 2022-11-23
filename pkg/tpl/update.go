@@ -6,10 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-// UpdateRegistry updates the local template registry
-// The registry is a git repository that contains a list of templates
-// and their versions.
-func UpdateRegistry() error {
+func MakeRegistry() error {
 	log.Info().Msgf("updating template registry")
 	src := cfg.RegistryUrl()
 	dst := cfg.RegistryDir()
@@ -17,7 +14,14 @@ func UpdateRegistry() error {
 	if err != nil {
 		return err
 	}
-	err = git.CloneOrPull(src, dst)
+	return git.CloneOrPull(src, dst)
+}
+
+// UpdateRegistry updates the local template registry
+// The registry is a git repository that contains a list of templates
+// and their versions.
+func UpdateRegistry() error {
+	err := MakeRegistry()
 	if err != nil {
 		return err
 	}

@@ -20,7 +20,7 @@ func ReadRegistry() (*TemplateRegistry, error) {
 	src := cfg.RegistryCachePath()
 	if !helper.IsFile(src) {
 		log.Info().Msgf("registry file not found: %s", src)
-		err := UpdateRegistry()
+		err := MakeRegistry()
 		if err != nil {
 			return nil, err
 		}

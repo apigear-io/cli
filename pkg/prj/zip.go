@@ -3,7 +3,6 @@ package prj
 import (
 	"archive/tar"
 	"compress/gzip"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -30,7 +29,6 @@ func createArchive(source string, target string) error {
 			return err
 		}
 		relPath, err := filepath.Rel(source, path)
-		fmt.Printf("rel path: %s\n", relPath)
 		if err != nil {
 			return err
 		}

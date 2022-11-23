@@ -2,7 +2,6 @@ package git
 
 import (
 	"errors"
-	"os"
 
 	"github.com/go-git/go-git/v5"
 )
@@ -17,10 +16,7 @@ func Pull(dst string) error {
 	if err != nil {
 		return err
 	}
-	err = w.Pull(&git.PullOptions{
-		Auth:     auth(),
-		Progress: os.Stdout,
-	})
+	err = w.Pull(&git.PullOptions{Auth: auth()})
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
 		return err
 	}

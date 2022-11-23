@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/up"
 	"github.com/pterm/pterm"
@@ -44,7 +42,7 @@ func NewUpdateCommand() *cobra.Command {
 					return
 				}
 			}
-			fmt.Printf("updating to %s\n", release.Version())
+			cmd.Printf("updating to %s\n", release.Version())
 			err = u.Update(release)
 			if err != nil {
 				cmd.PrintErrln(err)

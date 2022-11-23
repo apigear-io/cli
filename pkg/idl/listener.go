@@ -71,7 +71,6 @@ func (o *ObjectApiListener) EnterDocumentRule(c *parser.DocumentRuleContext) {
 
 // EnterHeaderRule is called when entering the headerRule production.
 func (o *ObjectApiListener) EnterHeaderRule(c *parser.HeaderRuleContext) {
-	// fmt.Println("enter header")
 	// nothing todo
 }
 

@@ -59,7 +59,6 @@ func NewConfig(cfgDir string) *viper.Viper {
 	// public repo token for github to avoid rate limit
 	nv.SetDefault(KeyCommit, "none")
 	nv.SetDefault(KeyDate, "unknown")
-	nv.SetDefault(KeyRegistryUrl, registryUrl)
 
 	// Search config in home directory with name ".apigear" (without extension).
 
