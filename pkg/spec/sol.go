@@ -25,7 +25,8 @@ func (l *SolutionLayer) Validate() error {
 		l.Inputs = make([]string, 0)
 	}
 	if l.Features == nil {
-		l.Features = make([]string, 0)
+		// if no features, use all
+		l.Features = []string{"all"}
 	}
 	return nil
 }
