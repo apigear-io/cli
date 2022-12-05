@@ -110,8 +110,14 @@ func (t *TypedNode) ResolveAll(m *Module) error {
 	return t.Schema.ResolveAll(m)
 }
 
+// IsVoid returns true if the schema is void
 func (t *TypedNode) IsVoid() bool {
 	return t.Type == "void"
+}
+
+// IsNotVoid returns true if the schema is not void
+func (s Schema) IsNotVoid() bool {
+	return s.Type != "void"
 }
 
 func (t TypedNode) TypeName() string {

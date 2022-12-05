@@ -35,10 +35,7 @@ func NewClientCommand() *cobra.Command {
 				sender := mon.NewEventSender(options.url)
 				wg.Add(1)
 				go func(fn string, emitter chan *mon.Event) {
-					defer func() {
-						close(emitter)
-						wg.Done()
-					}()
+					defer wg.Done()
 					for i := 0; i < options.repeat; i++ {
 						err := mon.ReadJsonEvents(fn, emitter)
 						if err != nil {
@@ -56,7 +53,9 @@ func NewClientCommand() *cobra.Command {
 			case ".js":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
+				wg.Add(1)
 				go func(script string, emitter chan *mon.Event) {
+					defer wg.Done()
 					vm := mon.NewEventScript(emitter)
 					err := vm.RunScriptFromFile(script)
 					if err != nil {
@@ -64,16 +63,20 @@ func NewClientCommand() *cobra.Command {
 					}
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
+				wg.Wait()
 			case ".csv":
 				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
+				wg.Add(1)
 				go func(fn string, emitter chan *mon.Event) {
+					defer wg.Done()
 					err := mon.ReadCsvEvents(fn, emitter)
 					if err != nil {
 						log.Error().Err(err).Msg("error reading events")
 					}
 				}(options.script, emitter)
 				sender.SendEvents(emitter, options.sleep)
+				wg.Wait()
 			default:
 				return fmt.Errorf("unsupported script type: %s", options.script)
 			}
