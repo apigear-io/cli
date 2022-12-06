@@ -73,7 +73,11 @@ func NewModule(n string, v string) *Module {
 			Name: n,
 			Kind: KindModule,
 		},
-		Version: Version(v),
+		Version:    Version(v),
+		Imports:    make([]*Import, 0),
+		Interfaces: make([]*Interface, 0),
+		Structs:    make([]*Struct, 0),
+		Enums:      make([]*Enum, 0),
 	}
 }
 

@@ -1,7 +1,11 @@
 package idl
 
 import (
+	"fmt"
+
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/idl/parser"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
@@ -21,6 +25,10 @@ func NewParser(s *model.System) *Parser {
 
 // ParseFile parses a file containing idl document
 func (p *Parser) ParseFile(file string) error {
+	if !helper.IsFile(file) {
+		return fmt.Errorf("file %s does not exist", file)
+	}
+
 	input, err := antlr.NewFileStream(file)
 	if err != nil {
 		return err
@@ -37,6 +45,7 @@ func (p *Parser) ParseString(str string) error {
 // parse idl from antlr file stream
 func (p *Parser) parseStream(input antlr.CharStream) error {
 	// create the lexer
+	log.Debug().Msgf("parse idl from %s", input)
 	lexer := parser.NewObjectApiLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 

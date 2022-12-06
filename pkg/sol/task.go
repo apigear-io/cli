@@ -18,7 +18,7 @@ type task struct {
 	deps    []string
 	watcher *fsnotify.Watcher
 	done    chan bool
-	mu      sync.Mutex
+	sync.Mutex
 }
 
 func newTask(file string, doc *spec.SolutionDoc) (*task, error) {
@@ -27,7 +27,6 @@ func newTask(file string, doc *spec.SolutionDoc) (*task, error) {
 		doc:  doc,
 		deps: make([]string, 0),
 		done: make(chan bool),
-		mu:   sync.Mutex{},
 	}
 	if doc == nil {
 		return nil, fmt.Errorf("doc is nil")
@@ -44,8 +43,8 @@ func (t *task) addDep(dep string) {
 }
 
 func (t *task) run() error {
-	t.mu.Lock()
-	defer t.mu.Unlock()
+	t.Lock()
+	defer t.Unlock()
 	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
@@ -61,8 +60,8 @@ func (t *task) run() error {
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
 func (t *task) processLayer(layer *spec.SolutionLayer) error {
-	rootDir := t.doc.RootDir
 	log.Debug().Msgf("process layer %s", layer.Name)
+	rootDir := t.doc.RootDir
 	// TODO: template can be a dir or a name of a template
 	var templateDir string
 	td, err := GetTemplateDir(rootDir, layer.Template)
@@ -93,6 +92,7 @@ func (t *task) processLayer(layer *spec.SolutionLayer) error {
 }
 
 func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, features []string, force bool) error {
+	log.Debug().Msgf("run generator %s %v", name, inputs)
 	var templatesDir = helper.Join(templateDir, "templates")
 	var rulesFile = helper.Join(templateDir, "rules.yaml")
 	expanded, err := expandInputs(t.doc.RootDir, inputs)
