@@ -79,6 +79,7 @@ func (h *Hub) BroadcastJSON(v interface{}) error {
 }
 
 func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Debug().Msgf("serve http: %s", r.URL.Path)
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Info().Msgf("upgrade: %s", err)
