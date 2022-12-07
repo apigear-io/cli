@@ -9,7 +9,7 @@ var _ IEngine = (*MultiEngine)(nil)
 
 type MultiEngine struct {
 	entries []IEngine
-	Notifier
+	EventNotifier
 }
 
 func NewMultiEngine(entries ...IEngine) *MultiEngine {
@@ -23,11 +23,8 @@ func NewMultiEngine(entries ...IEngine) *MultiEngine {
 }
 
 func (e *MultiEngine) registerNotifier(engine IEngine) {
-	engine.OnChange(func(ifaceId string, name string, value any) {
-		e.EmitOnChange(ifaceId, name, value)
-	})
-	engine.OnSignal(func(ifaceId string, name string, args map[string]any) {
-		e.EmitOnSignal(ifaceId, name, args)
+	engine.OnEvent(func(evt *APIEvent) {
+		e.EmitEvent(evt)
 	})
 }
 

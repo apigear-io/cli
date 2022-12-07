@@ -13,7 +13,7 @@ var _ core.IEngine = (*Engine)(nil)
 type Engine struct {
 	eval *eval
 	docs []*spec.ScenarioDoc
-	core.Notifier
+	core.EventNotifier
 	players []*Player
 }
 
@@ -28,11 +28,8 @@ func NewEngine() *Engine {
 }
 
 func (e *Engine) init() {
-	e.eval.OnChange(func(symbol string, name string, value any) {
-		e.EmitOnChange(symbol, name, value)
-	})
-	e.eval.OnSignal(func(symbol string, name string, args map[string]any) {
-		e.EmitOnSignal(symbol, name, args)
+	e.eval.OnEvent(func(evt *core.APIEvent) {
+		e.EmitEvent(evt)
 	})
 }
 
@@ -103,6 +100,8 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 // InvokeOperation invokes a operation of the interface.
 func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
 	log.Info().Msgf("%s/%s invoke", symbol, name)
+	e.EmitCall(symbol, name, args)
+
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -121,6 +120,7 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 
 // SetProperties sets the properties of the interface.
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
+	e.EmitPropertySet(symbol, props)
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return fmt.Errorf("interface %s not found", symbol)

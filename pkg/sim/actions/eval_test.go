@@ -3,6 +3,7 @@ package actions
 import (
 	"testing"
 
+	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/stretchr/testify/assert"
 )
@@ -62,11 +63,11 @@ func TestActionReturn(t *testing.T) {
 
 func TestActionSignal(t *testing.T) {
 	e := NewEval()
-	var sigName string
+	var sigSymbol string
 	var sigArgs map[string]any
-	e.OnSignal(func(symbol string, name string, args map[string]any) {
-		sigName = name
-		sigArgs = args
+	e.OnEvent(func(e *core.APIEvent) {
+		sigSymbol = e.Symbol
+		sigArgs = e.KWArgs
 	})
 
 	assert.NotNil(t, e)
@@ -78,7 +79,7 @@ func TestActionSignal(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 0, ctx["count"])
 	assert.Nil(t, result)
-	assert.Equal(t, "shutdown", sigName)
+	assert.Equal(t, "shutdown", sigSymbol)
 	assert.Equal(t, map[string]any{"timeout": 1}, sigArgs)
 
 	// $signal: { shutdown: { timeout: 2 } }
@@ -87,6 +88,6 @@ func TestActionSignal(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 0, ctx["count"])
 	assert.Nil(t, result)
-	assert.Equal(t, "shutdown2", sigName)
+	assert.Equal(t, "shutdown2", sigSymbol)
 	assert.Equal(t, map[string]any{"timeout": 2}, sigArgs)
 }

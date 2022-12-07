@@ -1,29 +1,81 @@
 package core
 
-type OnChangeFunc func(symbol string, name string, value any)
-type OnSignalFunc func(symbol string, name string, args map[string]any)
+import "time"
 
-type Notifier struct {
-	onChange OnChangeFunc
-	onSignal OnSignalFunc
+type OnEventFunc func(event *APIEvent)
+
+type INotifier interface {
+	OnEvent(f OnEventFunc)
+	EmitEvent(e *APIEvent)
 }
 
-func (n *Notifier) OnChange(f OnChangeFunc) {
-	n.onChange = f
+type EventNotifier struct {
+	onEvent OnEventFunc
 }
 
-func (n *Notifier) OnSignal(f OnSignalFunc) {
-	n.onSignal = f
+func (n *EventNotifier) OnEvent(f OnEventFunc) {
+	n.onEvent = f
 }
 
-func (n *Notifier) EmitOnChange(symbol string, name string, value any) {
-	if n.onChange != nil {
-		n.onChange(symbol, name, value)
+func (n *EventNotifier) EmitEvent(e *APIEvent) {
+	if n.onEvent != nil {
+		e.Timestamp = time.Now()
+		n.onEvent(e)
 	}
 }
 
-func (n *Notifier) EmitOnSignal(symbol string, name string, args map[string]any) {
-	if n.onSignal != nil {
-		n.onSignal(symbol, name, args)
-	}
+func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]any) {
+	n.EmitEvent(&APIEvent{
+		Type:   EventCall,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: params,
+	})
+}
+
+func (n *EventNotifier) EmitReply(symbol string, name string, value any, err error) {
+	n.EmitEvent(&APIEvent{
+		Type:   EventReply,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: map[string]any{"value": value},
+		Error:  err,
+	})
+}
+
+func (n *EventNotifier) EmitSignal(symbol string, name string, args map[string]any) {
+	n.EmitEvent(&APIEvent{
+		Type:   EventSignal,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: args,
+	})
+}
+
+func (n *EventNotifier) EmitPropertySet(symbol string, kwargs map[string]any) {
+	n.EmitEvent(&APIEvent{
+		Type:   EventPropertySet,
+		Symbol: symbol,
+		KWArgs: kwargs,
+	})
+}
+
+func (n *EventNotifier) EmitPropertyChanged(symbol string, name string, value any) {
+	n.EmitEvent(&APIEvent{
+		Type:   EventPropertyChanged,
+		Symbol: symbol,
+		KWArgs: map[string]any{name: value},
+	})
+}
+
+func (n *EventNotifier) EmitSimuStart() {
+	n.EmitEvent(&APIEvent{
+		Type: EventSimuStart,
+	})
+}
+
+func (n *EventNotifier) EmitSimuStop() {
+	n.EmitEvent(&APIEvent{
+		Type: EventSimuStop,
+	})
 }

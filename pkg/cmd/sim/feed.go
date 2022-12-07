@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/net/rpc"
@@ -24,6 +25,8 @@ func (c ConsoleHandler) HandleMessage(msg rpc.Message) error {
 	}
 	return nil
 }
+
+var autoId = helper.MakeIntIdGenerator()
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
@@ -59,6 +62,10 @@ func NewClientCommand() *cobra.Command {
 					for data := range emitter {
 						log.Info().Msgf("-> %s", data)
 						var m rpc.Message
+						m.Version = "2.0"
+						if m.Method == "simu.call" {
+							m.Id = autoId()
+						}
 						err := rpc.MessageFromJson(data, &m)
 						if err != nil {
 							log.Error().Msgf("parse message: %v", err)
@@ -81,6 +88,10 @@ func NewClientCommand() *cobra.Command {
 							return
 						default:
 							var msg rpc.Message
+							msg.Version = "2.0"
+							if msg.Method == "simu.call" {
+								msg.Id = uint64(autoId())
+							}
 							err := conn.ReadJSON(&msg)
 							if err != nil {
 								log.Warn().Msgf("read message: %v", err)

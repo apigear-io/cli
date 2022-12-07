@@ -18,7 +18,7 @@ type Engine struct {
 	vm         *js.Runtime
 	interfaces map[string]*js.Object
 	sequencers map[string]*js.Object
-	core.Notifier
+	core.EventNotifier
 }
 
 func NewEngine() *Engine {
@@ -46,6 +46,7 @@ func (s *Engine) HasInterface(symbol string) bool {
 
 func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
 	log.Info().Msgf("%s/%s invoke", symbol, name)
+	s.EmitCall(symbol, name, args)
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -66,6 +67,7 @@ func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 }
 
 func (s *Engine) SetProperties(symbol string, props map[string]any) error {
+	s.EmitPropertySet(symbol, props)
 	obj := s.interfaces[symbol]
 	if obj == nil {
 		return fmt.Errorf("interface %s not found", symbol)

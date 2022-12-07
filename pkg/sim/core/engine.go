@@ -2,6 +2,7 @@ package core
 
 // IEngine is the interface for the simulation engine.
 type IEngine interface {
+	INotifier
 	HasInterface(symbol string) bool
 	InvokeOperation(symbol string, name string, params map[string]any) (any, error)
 	SetProperties(symbol string, params map[string]any) error
@@ -11,6 +12,4 @@ type IEngine interface {
 	StopSequence(name string)
 	PlayAllSequences() error
 	StopAllSequences()
-	OnChange(f OnChangeFunc)
-	OnSignal(f OnSignalFunc)
 }

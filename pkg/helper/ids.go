@@ -9,3 +9,11 @@ func MakeIdGenerator(prefix string) func() string {
 		return fmt.Sprintf("%s-%d", prefix, id)
 	}
 }
+
+func MakeIntIdGenerator() func() uint64 {
+	var id uint64
+	return func() uint64 {
+		id++
+		return id
+	}
+}
