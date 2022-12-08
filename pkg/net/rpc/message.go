@@ -24,10 +24,10 @@ type RpcError struct {
 
 type Message struct {
 	Method string         `json:"method"`
-	Id     uint64         `json:"id"`
+	Id     uint64         `json:"id,omitempty"`
 	Params map[string]any `json:"params"`
-	Result any            `json:"result"`
-	Error  RpcError       `json:"error,omitempty"`
+	Result any            `json:"result,omitempty"`
+	Error  *RpcError      `json:"error,omitempty"`
 }
 
 func MessageFromJson(data []byte, m *Message) error {
@@ -43,7 +43,7 @@ func MessageFromJson(data []byte, m *Message) error {
 
 func MakeError(code int, msg string) Message {
 	return Message{
-		Error: RpcError{Code: code, Message: msg},
+		Error: &RpcError{Code: code, Message: msg},
 	}
 }
 
