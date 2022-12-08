@@ -28,8 +28,8 @@ func (s SimuRpcHandler) HandleMessage(r *rpc.Request) error {
 	}
 	log.Info().Msgf("handle rpc message: %+v", m)
 
-	symbol := m.Params["symbol"].(string)
-	if symbol == "" {
+	symbol, ok := m.Params["symbol"].(string)
+	if !ok {
 		return fmt.Errorf("no symbol in simu call")
 	}
 

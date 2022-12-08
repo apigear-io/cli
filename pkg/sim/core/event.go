@@ -18,7 +18,7 @@ const (
 type SimuEvent struct {
 	Timestamp time.Time      `json:"timestamp"`
 	Type      SimuEventType  `json:"type"`
-	Symbol    string         `json:"service"`
+	Symbol    string         `json:"symbol"`
 	Name      string         `json:"name"`
 	Args      []any          `json:"args"`
 	KWArgs    map[string]any `json:"kwargs"`
