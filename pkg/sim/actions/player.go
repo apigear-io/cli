@@ -39,7 +39,7 @@ func (p *Player) SequenceName() string {
 }
 
 func (p *Player) Play() error {
-	log.Info().Msgf("play sequence %s", p.seq.Name)
+	log.Debug().Msgf("play sequence %s", p.seq.Name)
 	go p.loopPump(p.seq)
 	go func() {
 		err := p.framePump(p.seq.Interval)
@@ -79,7 +79,7 @@ func (p *Player) framePump(interval int) error {
 			}
 			time.Sleep(time.Duration(interval) * time.Millisecond)
 		case <-p.DoneC:
-			log.Info().Msgf("frame pump %s is done", p.seq.Name)
+			log.Debug().Msgf("frame pump %s is done", p.seq.Name)
 			close(p.FramesC)
 			close(p.DoneC)
 			return nil

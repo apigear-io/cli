@@ -13,27 +13,21 @@ var _ core.IEngine = (*Engine)(nil)
 type Engine struct {
 	eval *eval
 	docs []*spec.ScenarioDoc
-	core.Notifier
+	core.EventNotifier
 	players []*Player
 }
 
 func NewEngine() *Engine {
+	eval := NewEval()
 	e := &Engine{
-		eval:    NewEval(),
+		eval:    eval,
 		docs:    make([]*spec.ScenarioDoc, 0),
 		players: make([]*Player, 0),
 	}
-	e.init()
+	eval.OnEvent(func(evt *core.SimuEvent) {
+		e.EmitEvent(evt)
+	})
 	return e
-}
-
-func (e *Engine) init() {
-	e.eval.OnChange(func(symbol string, name string, value any) {
-		e.EmitOnChange(symbol, name, value)
-	})
-	e.eval.OnSignal(func(symbol string, name string, args map[string]any) {
-		e.EmitOnSignal(symbol, name, args)
-	})
 }
 
 func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
@@ -43,10 +37,10 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
 		}
-		log.Info().Msgf("registering interface %s", iface.Name)
+		log.Debug().Msgf("registering interface %s", iface.Name)
 	}
 	for _, seq := range doc.Sequences {
-		log.Info().Msgf("registering sequence %s", seq.Name)
+		log.Debug().Msgf("registering sequence %s", seq.Name)
 		if seq.Interface == "" {
 			return fmt.Errorf("sequence %v has no interface", seq)
 		}
@@ -65,7 +59,7 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 					}
 				}
 			}
-			log.Info().Msgf("sequence %s stopped", seq.Name)
+			log.Debug().Msgf("sequence %s stopped", seq.Name)
 		}()
 		e.players = append(e.players, p)
 	}
@@ -102,7 +96,9 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 
 // InvokeOperation invokes a operation of the interface.
 func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
-	log.Info().Msgf("%s/%s invoke", symbol, name)
+	log.Debug().Msgf("%s/%s invoke", symbol, name)
+	e.EmitCall(symbol, name, args)
+
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -115,12 +111,13 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 	if err != nil {
 		return nil, err
 	}
-	log.Info().Msgf("%s/%s result %v", symbol, name, result)
+	log.Debug().Msgf("%s/%s result %v", symbol, name, result)
 	return result, nil
 }
 
 // SetProperties sets the properties of the interface.
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
+	e.EmitPropertySet(symbol, props)
 	iface := e.GetInterface(symbol)
 	if iface == nil {
 		return fmt.Errorf("interface %s not found", symbol)
@@ -150,7 +147,7 @@ func (e *Engine) HasSequence(name string) bool {
 }
 
 func (e *Engine) PlayAllSequences() error {
-	log.Info().Msgf("actions engine play all sequences")
+	log.Debug().Msgf("actions engine play all sequences")
 	for _, p := range e.players {
 		err := p.Play()
 		if err != nil {
@@ -161,7 +158,7 @@ func (e *Engine) PlayAllSequences() error {
 }
 
 func (e *Engine) StopAllSequences() {
-	log.Info().Msgf("actions engine stop all sequences")
+	log.Debug().Msgf("actions engine stop all sequences")
 	for _, p := range e.players {
 		err := p.Stop()
 		if err != nil {

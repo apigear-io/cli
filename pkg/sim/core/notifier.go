@@ -1,29 +1,85 @@
 package core
 
-type OnChangeFunc func(symbol string, name string, value any)
-type OnSignalFunc func(symbol string, name string, args map[string]any)
+type OnEventFunc func(event *SimuEvent)
 
-type Notifier struct {
-	onChange OnChangeFunc
-	onSignal OnSignalFunc
+type INotifier interface {
+	OnEvent(f OnEventFunc)
+	EmitEvent(e *SimuEvent)
 }
 
-func (n *Notifier) OnChange(f OnChangeFunc) {
-	n.onChange = f
+type EventNotifier struct {
+	handlers []OnEventFunc
 }
 
-func (n *Notifier) OnSignal(f OnSignalFunc) {
-	n.onSignal = f
+func (n *EventNotifier) OnEvent(f OnEventFunc) {
+	n.handlers = append(n.handlers, f)
 }
 
-func (n *Notifier) EmitOnChange(symbol string, name string, value any) {
-	if n.onChange != nil {
-		n.onChange(symbol, name, value)
+func (n *EventNotifier) EmitEvent(e *SimuEvent) {
+	for _, f := range n.handlers {
+		f(e)
 	}
 }
 
-func (n *Notifier) EmitOnSignal(symbol string, name string, args map[string]any) {
-	if n.onSignal != nil {
-		n.onSignal(symbol, name, args)
-	}
+func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]any) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventCall,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: params,
+	})
+}
+
+func (n *EventNotifier) EmitReply(symbol string, name string, value any, err error) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventReply,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: map[string]any{"value": value},
+		Error:  err.Error(),
+	})
+}
+
+func (n *EventNotifier) EmitSignal(symbol string, name string, args map[string]any) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventSignal,
+		Symbol: symbol,
+		Name:   name,
+		KWArgs: args,
+	})
+}
+
+func (n *EventNotifier) EmitPropertySet(symbol string, kwargs map[string]any) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventPropertySet,
+		Symbol: symbol,
+		KWArgs: kwargs,
+	})
+}
+
+func (n *EventNotifier) EmitPropertyChanged(symbol string, name string, value any) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventPropertyChanged,
+		Symbol: symbol,
+		KWArgs: map[string]any{name: value},
+	})
+}
+
+func (n *EventNotifier) EmitSimuStart() {
+	n.EmitEvent(&SimuEvent{
+		Type: EventSimuStart,
+	})
+}
+
+func (n *EventNotifier) EmitSimuStop() {
+	n.EmitEvent(&SimuEvent{
+		Type: EventSimuStop,
+	})
+}
+
+func (n *EventNotifier) EmitError(err error) {
+	n.EmitEvent(&SimuEvent{
+		Type:  EventError,
+		Error: err.Error(),
+	})
 }

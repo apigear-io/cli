@@ -13,7 +13,7 @@ type ActionHandler func(symbol string, args map[string]any, ctx map[string]any) 
 
 type eval struct {
 	actions map[string]ActionHandler
-	core.Notifier
+	core.EventNotifier
 	mu sync.Mutex
 }
 
@@ -79,7 +79,7 @@ func (e *eval) actionSet(symbol string, args map[string]any, ctx map[string]any)
 	for k := range args {
 		ctx[k] = args[k]
 	}
-
+	e.EmitPropertySet(symbol, args)
 	return nil, nil
 }
 
@@ -97,7 +97,7 @@ func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]a
 		if !ok {
 			return nil, fmt.Errorf("signal %s has no args", k)
 		}
-		e.EmitOnSignal(symbol, k, sigArgs)
+		e.EmitSignal(symbol, k, sigArgs)
 	}
 	return nil, nil
 }
@@ -106,7 +106,7 @@ func (e *eval) actionSignal(symbol string, args map[string]any, ctx map[string]a
 func (e *eval) actionChange(symbol string, args map[string]any, ctx map[string]any) (map[string]any, error) {
 	log.Debug().Msgf("actionChange: %v", args)
 	for k := range args {
-		e.EmitOnChange(symbol, k, args[k])
+		e.EmitPropertyChanged(symbol, k, args[k])
 	}
 	return nil, nil
 }

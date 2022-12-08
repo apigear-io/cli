@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/net/rpc"
@@ -25,6 +26,8 @@ func (c ConsoleHandler) HandleMessage(msg rpc.Message) error {
 	return nil
 }
 
+var autoId = helper.MakeIntIdGenerator()
+
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
 		addr   string
@@ -35,10 +38,11 @@ func NewClientCommand() *cobra.Command {
 	var options = &ClientOptions{}
 	// cmd represents the simCli command
 	var cmd = &cobra.Command{
-		Use:   "feed",
-		Short: "Feed simulation from command line",
-		Long:  `Feed simulation calls using JSON documents from command line`,
-		Args:  cobra.ExactArgs(1),
+		Use:     "feed",
+		Aliases: []string{"f"},
+		Short:   "Feed simulation from command line",
+		Long:    `Feed simulation calls using JSON documents from command line`,
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options.script = args[0]
 			ctx, cancel := context.WithCancel(context.Background())
@@ -59,6 +63,9 @@ func NewClientCommand() *cobra.Command {
 					for data := range emitter {
 						log.Info().Msgf("-> %s", data)
 						var m rpc.Message
+						if m.Method == "simu.call" {
+							m.Id = autoId()
+						}
 						err := rpc.MessageFromJson(data, &m)
 						if err != nil {
 							log.Error().Msgf("parse message: %v", err)
@@ -81,6 +88,9 @@ func NewClientCommand() *cobra.Command {
 							return
 						default:
 							var msg rpc.Message
+							if msg.Method == "simu.call" {
+								msg.Id = uint64(autoId())
+							}
 							err := conn.ReadJSON(&msg)
 							if err != nil {
 								log.Warn().Msgf("read message: %v", err)
@@ -99,7 +109,7 @@ func NewClientCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 0, "sleep duration between messages")
-	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:8081/ws", "address of the simulation server")
+	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:4333/ws", "address of the simulation server")
 	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
 	return cmd
 }

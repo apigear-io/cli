@@ -24,12 +24,11 @@ func (s *Engine) jsRegisterInterface(obj *js.Object) error {
 }
 
 func (s *Engine) jsSignal(interfaceId string, name string, args map[string]any) {
-
-	s.EmitOnSignal(interfaceId, name, args)
+	s.EmitSignal(interfaceId, name, args)
 }
 
 func (s *Engine) jsChange(interfaceId string, name string, value any) {
-	s.EmitOnChange(interfaceId, name, value)
+	s.EmitPropertyChanged(interfaceId, name, value)
 }
 
 func (s *Engine) jsRegisterSequence(obj *js.Object) error {

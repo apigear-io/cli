@@ -15,7 +15,7 @@ apigear simulate run [scenario to run] [flags]
 ### Options
 
 ```
-  -a, --addr string   address to listen on (default "127.0.0.1:8081")
+  -a, --addr string   address to listen on (default "127.0.0.1:4333")
   -h, --help          help for run
 ```
 

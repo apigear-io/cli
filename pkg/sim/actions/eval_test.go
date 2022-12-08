@@ -3,6 +3,7 @@ package actions
 import (
 	"testing"
 
+	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/stretchr/testify/assert"
 )
@@ -64,9 +65,9 @@ func TestActionSignal(t *testing.T) {
 	e := NewEval()
 	var sigName string
 	var sigArgs map[string]any
-	e.OnSignal(func(symbol string, name string, args map[string]any) {
-		sigName = name
-		sigArgs = args
+	e.OnEvent(func(e *core.SimuEvent) {
+		sigName = e.Name
+		sigArgs = e.KWArgs
 	})
 
 	assert.NotNil(t, e)
