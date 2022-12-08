@@ -23,7 +23,7 @@ func NewMultiEngine(entries ...IEngine) *MultiEngine {
 }
 
 func (e *MultiEngine) registerNotifier(engine IEngine) {
-	engine.OnEvent(func(evt *APIEvent) {
+	engine.OnEvent(func(evt *SimuEvent) {
 		e.EmitEvent(evt)
 	})
 }
@@ -40,6 +40,14 @@ func (e *MultiEngine) HasInterface(ifaceId string) bool {
 
 // InvokeOperation invokes the operation of the interface.
 func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
+	result, err := e.invokeOperation(ifaceId, name, args)
+	if err != nil {
+		e.EmitError(err)
+	}
+	return result, err
+}
+
+func (e *MultiEngine) invokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.InvokeOperation(ifaceId, name, args)
@@ -50,6 +58,14 @@ func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[stri
 
 // SetProperties sets the properties of the interface.
 func (e *MultiEngine) SetProperties(ifaceId string, props map[string]any) error {
+	err := e.setProperties(ifaceId, props)
+	if err != nil {
+		e.EmitError(err)
+	}
+	return err
+}
+
+func (e *MultiEngine) setProperties(ifaceId string, props map[string]any) error {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.SetProperties(ifaceId, props)
@@ -78,7 +94,6 @@ func (e *MultiEngine) HasSequence(sequencerId string) bool {
 }
 
 func (e *MultiEngine) PlaySequence(sequenceId string) error {
-
 	for _, entry := range e.entries {
 		if entry.HasSequence(sequenceId) {
 			return entry.PlaySequence(sequenceId)

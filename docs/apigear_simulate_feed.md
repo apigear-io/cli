@@ -13,7 +13,7 @@ apigear simulate feed [flags]
 ### Options
 
 ```
-      --addr string      address of the simulation server (default "ws://127.0.0.1:8081/ws")
+      --addr string      address of the simulation server (default "ws://127.0.0.1:4333/ws")
   -h, --help             help for feed
       --repeat int       number of times to repeat the script (default 1)
       --sleep duration   sleep duration between messages

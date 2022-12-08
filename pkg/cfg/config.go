@@ -52,7 +52,7 @@ func NewConfig(cfgDir string) *viper.Viper {
 
 	nv.SetDefault(KeyRegistryUrl, registryUrl)
 	nv.SetDefault(KeyRegistryDir, registryDir)
-	nv.SetDefault(KeyServerPort, 8085)
+	nv.SetDefault(KeyServerPort, 4333)
 	nv.SetDefault(KeyEditorCommand, "code")
 	nv.SetDefault(KeyUpdateChannel, "stable")
 	nv.SetDefault(KeyVersion, "0.0.0")

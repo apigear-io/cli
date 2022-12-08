@@ -1,31 +1,28 @@
 package core
 
-import "time"
-
-type OnEventFunc func(event *APIEvent)
+type OnEventFunc func(event *SimuEvent)
 
 type INotifier interface {
 	OnEvent(f OnEventFunc)
-	EmitEvent(e *APIEvent)
+	EmitEvent(e *SimuEvent)
 }
 
 type EventNotifier struct {
-	onEvent OnEventFunc
+	handlers []OnEventFunc
 }
 
 func (n *EventNotifier) OnEvent(f OnEventFunc) {
-	n.onEvent = f
+	n.handlers = append(n.handlers, f)
 }
 
-func (n *EventNotifier) EmitEvent(e *APIEvent) {
-	if n.onEvent != nil {
-		e.Timestamp = time.Now()
-		n.onEvent(e)
+func (n *EventNotifier) EmitEvent(e *SimuEvent) {
+	for _, f := range n.handlers {
+		f(e)
 	}
 }
 
 func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]any) {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type:   EventCall,
 		Symbol: symbol,
 		Name:   name,
@@ -34,17 +31,17 @@ func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]a
 }
 
 func (n *EventNotifier) EmitReply(symbol string, name string, value any, err error) {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type:   EventReply,
 		Symbol: symbol,
 		Name:   name,
 		KWArgs: map[string]any{"value": value},
-		Error:  err,
+		Error:  err.Error(),
 	})
 }
 
 func (n *EventNotifier) EmitSignal(symbol string, name string, args map[string]any) {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type:   EventSignal,
 		Symbol: symbol,
 		Name:   name,
@@ -53,7 +50,7 @@ func (n *EventNotifier) EmitSignal(symbol string, name string, args map[string]a
 }
 
 func (n *EventNotifier) EmitPropertySet(symbol string, kwargs map[string]any) {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertySet,
 		Symbol: symbol,
 		KWArgs: kwargs,
@@ -61,7 +58,7 @@ func (n *EventNotifier) EmitPropertySet(symbol string, kwargs map[string]any) {
 }
 
 func (n *EventNotifier) EmitPropertyChanged(symbol string, name string, value any) {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertyChanged,
 		Symbol: symbol,
 		KWArgs: map[string]any{name: value},
@@ -69,13 +66,20 @@ func (n *EventNotifier) EmitPropertyChanged(symbol string, name string, value an
 }
 
 func (n *EventNotifier) EmitSimuStart() {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStart,
 	})
 }
 
 func (n *EventNotifier) EmitSimuStop() {
-	n.EmitEvent(&APIEvent{
+	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStop,
+	})
+}
+
+func (n *EventNotifier) EmitError(err error) {
+	n.EmitEvent(&SimuEvent{
+		Type:  EventError,
+		Error: err.Error(),
 	})
 }

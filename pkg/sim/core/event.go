@@ -2,24 +2,25 @@ package core
 
 import "time"
 
-type APIEventType string
+type SimuEventType string
 
 const (
-	EventSimuStart       APIEventType = "start"
-	EventSimuStop        APIEventType = "stop"
-	EventCall            APIEventType = "call"
-	EventReply           APIEventType = "response"
-	EventSignal          APIEventType = "signal"
-	EventPropertySet     APIEventType = "set"
-	EventPropertyChanged APIEventType = "changed"
+	EventSimuStart       SimuEventType = "start"
+	EventSimuStop        SimuEventType = "stop"
+	EventCall            SimuEventType = "call"
+	EventReply           SimuEventType = "response"
+	EventSignal          SimuEventType = "signal"
+	EventPropertySet     SimuEventType = "set"
+	EventPropertyChanged SimuEventType = "changed"
+	EventError           SimuEventType = "error"
 )
 
-type APIEvent struct {
+type SimuEvent struct {
 	Timestamp time.Time      `json:"timestamp"`
-	Type      APIEventType   `json:"type"`
-	Symbol    string         `json:"symbol"`
-	Name      string         `json:"member"`
+	Type      SimuEventType  `json:"type"`
+	Symbol    string         `json:"service"`
+	Name      string         `json:"name"`
 	Args      []any          `json:"args"`
 	KWArgs    map[string]any `json:"kwargs"`
-	Error     error          `json:"error"`
+	Error     string         `json:"error"`
 }

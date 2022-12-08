@@ -38,10 +38,11 @@ func NewClientCommand() *cobra.Command {
 	var options = &ClientOptions{}
 	// cmd represents the simCli command
 	var cmd = &cobra.Command{
-		Use:   "feed",
-		Short: "Feed simulation from command line",
-		Long:  `Feed simulation calls using JSON documents from command line`,
-		Args:  cobra.ExactArgs(1),
+		Use:     "feed",
+		Aliases: []string{"f"},
+		Short:   "Feed simulation from command line",
+		Long:    `Feed simulation calls using JSON documents from command line`,
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options.script = args[0]
 			ctx, cancel := context.WithCancel(context.Background())
@@ -62,7 +63,6 @@ func NewClientCommand() *cobra.Command {
 					for data := range emitter {
 						log.Info().Msgf("-> %s", data)
 						var m rpc.Message
-						m.Version = "2.0"
 						if m.Method == "simu.call" {
 							m.Id = autoId()
 						}
@@ -88,7 +88,6 @@ func NewClientCommand() *cobra.Command {
 							return
 						default:
 							var msg rpc.Message
-							msg.Version = "2.0"
 							if msg.Method == "simu.call" {
 								msg.Id = uint64(autoId())
 							}
@@ -110,7 +109,7 @@ func NewClientCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 0, "sleep duration between messages")
-	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:8081/ws", "address of the simulation server")
+	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:4333/ws", "address of the simulation server")
 	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
 	return cmd
 }

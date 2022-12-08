@@ -130,7 +130,6 @@ func (c *Connection) readPump() {
 	for {
 		_, data, err := c.socket.ReadMessage()
 		if err != nil {
-			log.Error().Msgf("conn: read error %v", err)
 			return
 		}
 		c.recv <- data

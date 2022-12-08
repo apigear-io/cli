@@ -22,32 +22,32 @@ type Engine struct {
 }
 
 func NewEngine() *Engine {
-	s := &Engine{
+	e := &Engine{
 		vm:         js.New(),
 		interfaces: map[string]*js.Object{},
 		sequencers: map[string]*js.Object{},
 	}
-	s.init()
-	return s
+	e.init()
+	return e
 }
 
-func (s *Engine) LoadScript(name string, script string) (any, error) {
-	v, err := s.vm.RunScript(name, script)
+func (e *Engine) LoadScript(name string, script string) (any, error) {
+	v, err := e.vm.RunScript(name, script)
 	if err != nil {
 		return nil, err
 	}
 	return v.Export(), nil
 }
 
-func (s *Engine) HasInterface(symbol string) bool {
-	_, ok := s.interfaces[symbol]
+func (e *Engine) HasInterface(symbol string) bool {
+	_, ok := e.interfaces[symbol]
 	return ok
 }
 
-func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
+func (e *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
 	log.Info().Msgf("%s/%s invoke", symbol, name)
-	s.EmitCall(symbol, name, args)
-	obj := s.interfaces[symbol]
+	e.EmitCall(symbol, name, args)
+	obj := e.interfaces[symbol]
 	if obj == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
 	}
@@ -55,7 +55,7 @@ func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 	if !ok {
 		return nil, fmt.Errorf("operation %s not found", name)
 	}
-	jsArgs := s.vm.ToValue(args)
+	jsArgs := e.vm.ToValue(args)
 	v, err := m(obj, jsArgs)
 	if err != nil {
 		log.Warn().Msgf("InvokeOperation: %s", err)
@@ -66,14 +66,14 @@ func (s *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 	return result, nil
 }
 
-func (s *Engine) SetProperties(symbol string, props map[string]any) error {
-	s.EmitPropertySet(symbol, props)
-	obj := s.interfaces[symbol]
+func (e *Engine) SetProperties(symbol string, props map[string]any) error {
+	e.EmitPropertySet(symbol, props)
+	obj := e.interfaces[symbol]
 	if obj == nil {
 		return fmt.Errorf("interface %s not found", symbol)
 	}
 	for name, value := range props {
-		err := obj.Set(name, s.vm.ToValue(value))
+		err := obj.Set(name, e.vm.ToValue(value))
 		if err != nil {
 			return err
 		}
@@ -81,9 +81,9 @@ func (s *Engine) SetProperties(symbol string, props map[string]any) error {
 	return nil
 }
 
-func (s *Engine) GetProperties(symbol string) (map[string]any, error) {
+func (e *Engine) GetProperties(symbol string) (map[string]any, error) {
 	props := map[string]any{}
-	obj := s.interfaces[symbol]
+	obj := e.interfaces[symbol]
 	if obj == nil {
 		return props, fmt.Errorf("interface %s not found", symbol)
 	}
@@ -122,33 +122,33 @@ func (e *Engine) StopSequence(sequenceId string) {
 	log.Info().Msgf("StopSequencer: %s", sequenceId)
 }
 
-func (s *Engine) init() {
+func (e *Engine) init() {
 	registry := new(require.Registry)
-	registry.Enable(s.vm)
-	console.Enable(s.vm)
-	err := s.vm.Set("$registerInterface", s.jsRegisterInterface)
+	registry.Enable(e.vm)
+	console.Enable(e.vm)
+	err := e.vm.Set("$registerInterface", e.jsRegisterInterface)
 	if err != nil {
 		log.Error().Msgf("Set $registerInterface: %s", err)
 	}
-	err = s.vm.Set("$signal", s.jsSignal)
+	err = e.vm.Set("$signal", e.jsSignal)
 	if err != nil {
 		log.Error().Msgf("Set $signal: %s", err)
 	}
-	err = s.vm.Set("$change", s.jsChange)
+	err = e.vm.Set("$change", e.jsChange)
 	if err != nil {
 		log.Error().Msgf("Set $change: %s", err)
 	}
-	err = s.vm.Set("$registerSequence", s.jsRegisterSequence)
+	err = e.vm.Set("$registerSequence", e.jsRegisterSequence)
 	if err != nil {
 		log.Error().Msgf("Set $registerSequence: %s", err)
 	}
 }
 
-func (s *Engine) PlayAllSequences() error {
-	log.Info().Msgf("script engine play all sequences")
+func (e *Engine) PlayAllSequences() error {
+	log.Debug().Msgf("script engine play all sequences")
 	return nil
 }
 
 func (e *Engine) StopAllSequences() {
-	log.Info().Msgf("script engine stop all sequences")
+	log.Debug().Msgf("script engine stop all sequences")
 }

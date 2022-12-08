@@ -79,7 +79,7 @@ func (e *eval) actionSet(symbol string, args map[string]any, ctx map[string]any)
 	for k := range args {
 		ctx[k] = args[k]
 	}
-
+	e.EmitPropertySet(symbol, args)
 	return nil, nil
 }
 
