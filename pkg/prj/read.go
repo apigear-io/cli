@@ -8,7 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-func readProject(d string) (*ProjectInfo, error) {
+func ReadProject(d string) (*ProjectInfo, error) {
 	log.Debug().Msgf("Read Project %s", d)
 	// check if source is directory
 	if _, err := os.Stat(d); err != nil {
@@ -32,7 +32,7 @@ func readProject(d string) (*ProjectInfo, error) {
 		docs = append(docs, DocumentInfo{
 			Name: entry.Name(),
 			Path: helper.Join(d, "apigear", entry.Name()),
-			Type: "module",
+			Type: helper.GetDocumentType(entry.Name()),
 		})
 	}
 	project := &ProjectInfo{

@@ -24,7 +24,7 @@ func OpenProject(source string) (*ProjectInfo, error) {
 		return nil, err
 	}
 
-	return readProject(source)
+	return ReadProject(source)
 }
 
 func CurrentProject() *ProjectInfo {
@@ -62,17 +62,17 @@ func InitProject(d string) (*ProjectInfo, error) {
 	if err := writeDemo(target, vfs.DemoScenario); err != nil {
 		log.Debug().Msgf("write demo scenario: %s", err)
 	}
-	return readProject(d)
+	return ReadProject(d)
 }
 
 func GetProjectInfo(d string) (*ProjectInfo, error) {
-	return readProject(d)
+	return ReadProject(d)
 }
 
 func RecentProjectInfos() []*ProjectInfo {
 	var infos []*ProjectInfo
 	for _, d := range cfg.RecentEntries() {
-		info, err := readProject(d)
+		info, err := ReadProject(d)
 		if err != nil {
 			log.Warn().Msgf("read project %s: %s", d, err)
 			err = cfg.RemoveRecentEntry(d)
@@ -121,7 +121,7 @@ func ImportProject(repo string, dir string) (*ProjectInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("clone project repository: %s", err)
 	}
-	return readProject(dir)
+	return ReadProject(dir)
 }
 
 // PackProject packs the project into a zip file
