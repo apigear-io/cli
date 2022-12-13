@@ -4,5 +4,4 @@ layers:
     output: ../tmp
     inputs:
       - demo.module.yaml
-    template: ../tpl
-    force: true
+    template: apigear-io/template-cpp14
