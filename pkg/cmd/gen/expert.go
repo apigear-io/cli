@@ -63,9 +63,9 @@ func NewExpertCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")
-	cmd.Flags().StringSliceVarP(&options.inputs, "input", "i", []string{"api"}, "input files")
+	cmd.Flags().StringSliceVarP(&options.inputs, "input", "i", []string{"apigear"}, "input files")
 	cmd.Flags().StringVarP(&options.outputDir, "output", "o", "out", "output directory")
-	cmd.Flags().StringSliceVarP(&options.features, "feature", "f", []string{"core"}, "features to enable")
+	cmd.Flags().StringSliceVarP(&options.features, "features", "f", []string{"all"}, "features to enable")
 	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
 	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
 	Must(cmd.MarkFlagRequired("input"))
