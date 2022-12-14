@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/cmd"
 	"github.com/apigear-io/cli/pkg/log"
@@ -28,8 +26,7 @@ func main() {
 	}()
 	err = cmd.Run()
 	if err != nil {
-		log.Error().Msgf("failed to run command: %v", err)
+		log.Debug().Err(err).Msg("run command")
 		log.SentryCaptureError(err)
-		os.Exit(1)
 	}
 }

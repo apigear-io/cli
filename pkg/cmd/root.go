@@ -24,8 +24,8 @@ func NewRootCommand() *cobra.Command {
 		Short: "apigear creates instrumented SDKs from an API description",
 		Long:  `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 	}
-	cmd.SilenceErrors = true
-	cmd.SilenceUsage = true
+	cmd.SilenceErrors = false
+	cmd.SilenceUsage = false
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
