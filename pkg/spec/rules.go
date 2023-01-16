@@ -1,6 +1,10 @@
 package spec
 
-import "github.com/apigear-io/cli/pkg/log"
+import (
+	"sort"
+
+	"github.com/apigear-io/cli/pkg/log"
+)
 
 // A rules document defines a set of rules how to apply transformations
 // to a set of documents.
@@ -112,4 +116,21 @@ type DocumentRule struct {
 	Raw bool `json:"raw" yaml:"raw"`
 	// Force is true if the target file should be overwritten.
 	Force bool `json:"force" yaml:"force"`
+}
+
+func FeatureRulesToStrings(features []*FeatureRule) []string {
+	result := []string{}
+	for _, f := range features {
+		result = append(result, f.Name)
+	}
+	sort.Strings(result)
+	return result
+}
+
+func FeatureRulesToStringMap(features []*FeatureRule) map[string]bool {
+	result := map[string]bool{}
+	for _, f := range features {
+		result[f.Name] = true
+	}
+	return result
 }

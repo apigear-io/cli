@@ -1,0 +1,23 @@
+features:
+  - name: f1
+    scopes:
+      - match: system
+        documents:
+          - source: features.yml.tpl
+            target: f1.yml
+  - name: f2
+    requires:
+      - f1
+    scopes:
+      - match: system
+        documents:
+          - source: features.yml.tpl
+            target: f2.yml
+  - name: f3
+    requires:
+      - f2
+    scopes:
+      - match: system
+        documents:
+          - source: features.yml.tpl
+            target: f3.yml

@@ -40,33 +40,56 @@ func (g *GeneratorStats) Stop() {
 	log.Info().Msgf("generated %d files in %s. (%d write, %d skip, %d copy)", g.TotalFiles(), g.Duration, g.FilesWritten, g.FilesSkipped, g.FilesCopied)
 }
 
-// generator applies template transformation on a set of files define in rules
-type generator struct {
-	Template     *template.Template
-	System       *model.System
-	Features     []string
-	UserForce    bool
-	TemplatesDir string
-	OutputDir    string
-	DryRun       bool
-	Stats        GeneratorStats
-}
-
 func (s *GeneratorStats) TotalFiles() int {
 	return s.FilesWritten + s.FilesSkipped + s.FilesCopied
 }
 
-func New(outputDir string, templatesDir string, system *model.System, features []string, userForce bool) (*generator, error) {
+type GeneratorOptions struct {
+	OutputDir    string
+	TemplatesDir string
+	System       *model.System
+	UserFeatures []string
+	UserForce    bool
+	Output       Output
+	DryRun       bool
+}
+
+// generator applies template transformation on a set of files define in rules
+type generator struct {
+	Template         *template.Template
+	System           *model.System
+	UserFeatures     []string // features defined by user
+	ComputedFeatures map[string]bool
+	UserForce        bool // force overwrite
+	TemplatesDir     string
+	OutputDir        string
+	DryRun           bool
+	Stats            GeneratorStats
+	Output           Output
+}
+
+func New(o GeneratorOptions) (*generator, error) {
+	if o.Output == nil {
+		o.Output = &FileOutput{}
+	}
+	if o.System == nil {
+		return nil, fmt.Errorf("system is required")
+	}
+	if len(o.UserFeatures) == 0 {
+		o.UserFeatures = []string{"all"}
+	}
 	g := &generator{
-		OutputDir:    outputDir,
+		OutputDir:    o.OutputDir,
 		Template:     template.New(""),
-		UserForce:    userForce,
-		System:       system,
-		TemplatesDir: templatesDir,
-		Features:     features,
+		UserForce:    o.UserForce,
+		System:       o.System,
+		TemplatesDir: o.TemplatesDir,
+		UserFeatures: o.UserFeatures,
+		DryRun:       o.DryRun,
+		Output:       o.Output,
 	}
 	g.Template.Funcs(filters.PopulateFuncMap())
-	err := g.ParseTemplatesDir(templatesDir)
+	err := g.ParseTemplatesDir(o.TemplatesDir)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +144,8 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	features := doc.ComputeFeatures(g.Features)
+	features := doc.ComputeFeatures(g.UserFeatures)
+	g.ComputedFeatures = spec.FeatureRulesToStringMap(features)
 	for _, feature := range features {
 		err := g.processFeature(feature)
 		if err != nil {
@@ -136,7 +160,8 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 	log.Debug().Msgf("processing feature %s", f.Name)
 	// process system
 	ctx := model.SystemScope{
-		System: g.System,
+		System:   g.System,
+		Features: g.ComputedFeatures,
 	}
 	scopes := f.FindScopesByMatch(spec.ScopeSystem)
 	for _, scope := range scopes {
@@ -149,8 +174,9 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		// process module
 		scopes := f.FindScopesByMatch(spec.ScopeModule)
 		ctx := model.ModuleScope{
-			System: g.System,
-			Module: module,
+			System:   g.System,
+			Module:   module,
+			Features: g.ComputedFeatures,
 		}
 		for _, scope := range scopes {
 			err := g.processScope(scope, ctx)
@@ -164,6 +190,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 				System:    g.System,
 				Module:    module,
 				Interface: iface,
+				Features:  g.ComputedFeatures,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeInterface)
 			for _, scope := range scopes {
@@ -176,9 +203,10 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		for _, struct_ := range module.Structs {
 			// process struct
 			ctx := model.StructScope{
-				System: g.System,
-				Module: module,
-				Struct: struct_,
+				System:   g.System,
+				Module:   module,
+				Struct:   struct_,
+				Features: g.ComputedFeatures,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeStruct)
 			for _, scope := range scopes {
@@ -191,9 +219,10 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		for _, enum := range module.Enums {
 			// process enum
 			ctx := model.EnumScope{
-				System: g.System,
-				Module: module,
-				Enum:   enum,
+				System:   g.System,
+				Module:   module,
+				Enum:     enum,
+				Features: g.ComputedFeatures,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeEnum)
 			for _, scope := range scopes {
@@ -286,12 +315,7 @@ func (g *generator) CopyFile(source, target string, force bool) error {
 	}
 	source = helper.Join(g.TemplatesDir, source)
 	target = helper.Join(g.OutputDir, target)
-	err := helper.CopyFile(source, target)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return g.Output.Copy(source, target, force)
 }
 
 func (g *generator) RenderFile(source, target string, ctx any, force bool) error {
@@ -318,7 +342,7 @@ func (g *generator) RenderFile(source, target string, ctx any, force bool) error
 func (g *generator) WriteFile(input []byte, target string, force bool) error {
 	target = helper.Join(g.OutputDir, target)
 	if !force {
-		same, err := CompareContentWithFile(input, target)
+		same, err := g.Output.Compare(input, target)
 		if err != nil {
 			return err
 		}
@@ -336,10 +360,5 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 		log.Info().Msgf("dry run: writing file %s", target)
 		return nil
 	}
-	dir := filepath.Dir(target)
-	err := os.MkdirAll(dir, 0755)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(target, input, 0644)
+	return g.Output.Write(input, target, force)
 }

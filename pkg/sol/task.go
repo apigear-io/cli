@@ -117,7 +117,14 @@ func (t *task) runGenerator(name string, inputs []string, outputDir string, temp
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
-	generator, err := gen.New(outputDir, templatesDir, system, features, force)
+	opts := gen.GeneratorOptions{
+		OutputDir:    outputDir,
+		TemplatesDir: templatesDir,
+		System:       system,
+		UserFeatures: features,
+		UserForce:    force,
+	}
+	generator, err := gen.New(opts)
 	if err != nil {
 		return err
 	}
