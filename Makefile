@@ -1,7 +1,7 @@
 .PHONY: antlr deb test build check cover
 
 test:
-	go test ./...
+	gotestsum
 
 
 build:
@@ -27,6 +27,7 @@ deps:
 	@echo "https://goreleaser.com/install/"
 	@echo "https://github.com/cosmtrek/air"
 	@echo "https://golangci-lint.run/usage/install/"
+	@echo "https://github.com/gotestyourself/gotestsum"
 
 check:
 	golangci-lint run

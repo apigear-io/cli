@@ -28,7 +28,7 @@ func TestGeneratorRulesRequireF1(t *testing.T) {
 	var fts map[string]interface{}
 	err := yaml.Unmarshal([]byte(o.Writes["testdata/output/f1.yml"]), &fts)
 	assert.NoError(t, err)
-	assert.Equal(t, fts, map[string]interface{}{"f1": true})
+	assert.Equal(t, fts, map[string]interface{}{"f1": true, "f2": false, "f3": false})
 
 }
 

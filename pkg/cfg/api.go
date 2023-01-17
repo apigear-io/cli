@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"log"
 	"path/filepath"
 )
 
@@ -56,7 +57,10 @@ func SetBuildInfo(version, commit, date string) {
 	v.Set(KeyVersion, version)
 	v.Set(KeyCommit, commit)
 	v.Set(KeyDate, date)
-	v.WriteConfig()
+	err := v.WriteConfig()
+	if err != nil {
+		log.Printf("error writing config: %v", err)
+	}
 }
 
 func IsSet(key string) bool {
