@@ -144,10 +144,13 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	features := doc.ComputeFeatures(g.UserFeatures)
-	g.ComputedFeatures = spec.FeatureRulesToStringMap(features)
-	for _, feature := range features {
-		err := g.processFeature(feature)
+	doc.ComputeFeatures(g.UserFeatures)
+	g.ComputedFeatures = doc.FeatureNamesMap()
+	for _, f := range doc.Features {
+		if f.Skip {
+			continue
+		}
+		err := g.processFeature(f)
 		if err != nil {
 			return err
 		}

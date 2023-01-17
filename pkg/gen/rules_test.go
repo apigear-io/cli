@@ -3,24 +3,23 @@ package gen
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 )
 
 func TestRulesFeatures(t *testing.T) {
 	rules := readRules(t, "testdata/fts/rules.yaml")
-	fts := rules.ComputeFeatures([]string{"f1"})
-	fs := spec.FeatureRulesToStrings(fts)
-	assert.Equal(t, fs, []string{"f1"})
+	rules.ComputeFeatures([]string{"f1"})
+	f := rules.FeatureNamesMap()
+	assert.Equal(t, f, map[string]bool{"f1": true, "f2": false, "f3": false})
 
-	fts = rules.ComputeFeatures([]string{"f2"})
-	fs = spec.FeatureRulesToStrings(fts)
-	assert.Equal(t, fs, []string{"f1", "f2"})
+	rules.ComputeFeatures([]string{"f2"})
+	f = rules.FeatureNamesMap()
+	assert.Equal(t, f, map[string]bool{"f1": true, "f2": true, "f3": false})
 
-	fts = rules.ComputeFeatures([]string{"f3"})
-	fs = spec.FeatureRulesToStrings(fts)
-	assert.Equal(t, fs, []string{"f1", "f2", "f3"})
+	rules.ComputeFeatures([]string{"f3"})
+	f = rules.FeatureNamesMap()
+	assert.Equal(t, f, map[string]bool{"f1": true, "f2": true, "f3": true})
 }
 
 func TestGeneratorRulesRequireF1(t *testing.T) {
@@ -39,10 +38,10 @@ func TestGeneratorRulesRequireF2(t *testing.T) {
 	var fts map[string]interface{}
 	err := yaml.Unmarshal([]byte(o.Writes["testdata/output/f1.yml"]), &fts)
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]interface{}{"f1": true, "f2": true}, fts)
+	assert.Equal(t, map[string]interface{}{"f1": true, "f2": true, "f3": false}, fts)
 	err = yaml.Unmarshal([]byte(o.Writes["testdata/output/f2.yml"]), &fts)
 	assert.NoError(t, err)
-	assert.Equal(t, map[string]interface{}{"f1": true, "f2": true}, fts)
+	assert.Equal(t, map[string]interface{}{"f1": true, "f2": true, "f3": false}, fts)
 }
 
 func TestGeneratorRulesRequireF3(t *testing.T) {
