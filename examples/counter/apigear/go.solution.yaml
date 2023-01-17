@@ -1,0 +1,9 @@
+schema: apigear.solution/1.0
+
+layers:
+  - inputs:
+      - counter.idl
+    output: ../out
+    template: ../../tpl
+    features:
+      - go

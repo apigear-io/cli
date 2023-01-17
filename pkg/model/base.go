@@ -52,9 +52,10 @@ type IModuleProvider interface {
 // NamedNode is a base node with a name and a kind.
 // { "name": "foo", "kind": "interface" }
 type NamedNode struct {
-	Name        string `json:"name" yaml:"name"`
-	Kind        Kind   `json:"kind" yaml:"kind"`
-	Description string `json:"description" yaml:"description"`
+	Name        string                 `json:"name" yaml:"name"`
+	Kind        Kind                   `json:"kind" yaml:"kind"`
+	Description string                 `json:"description" yaml:"description"`
+	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
 }
 
 func (n *NamedNode) String() string {

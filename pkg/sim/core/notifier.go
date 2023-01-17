@@ -1,5 +1,7 @@
 package core
 
+import "time"
+
 type OnEventFunc func(event *SimuEvent)
 
 type INotifier interface {
@@ -16,6 +18,7 @@ func (n *EventNotifier) OnEvent(f OnEventFunc) {
 }
 
 func (n *EventNotifier) EmitEvent(e *SimuEvent) {
+	e.Timestamp = time.Now()
 	for _, f := range n.handlers {
 		f(e)
 	}
@@ -30,13 +33,12 @@ func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]a
 	})
 }
 
-func (n *EventNotifier) EmitReply(symbol string, name string, value any, err error) {
+func (n *EventNotifier) EmitReply(symbol string, name string, value any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventReply,
 		Symbol: symbol,
 		Name:   name,
 		KWArgs: map[string]any{"value": value},
-		Error:  err.Error(),
 	})
 }
 
@@ -74,6 +76,15 @@ func (n *EventNotifier) EmitSimuStart() {
 func (n *EventNotifier) EmitSimuStop() {
 	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStop,
+	})
+}
+
+func (n *EventNotifier) EmitCallError(symbol string, name string, err error) {
+	n.EmitEvent(&SimuEvent{
+		Type:   EventError,
+		Symbol: symbol,
+		Name:   name,
+		Error:  err.Error(),
 	})
 }
 

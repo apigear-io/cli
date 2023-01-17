@@ -15,4 +15,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["goVars"] = goVars
 	fm["goPublicVar"] = goPublicVar
 	fm["goPublicVars"] = goPublicVars
+	fm["goDoc"] = goDoc
 }

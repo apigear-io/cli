@@ -3,11 +3,13 @@ package actions
 import (
 	"testing"
 
+	"github.com/apigear-io/cli/pkg/sim/ostore"
 	"github.com/stretchr/testify/assert"
 )
 
 func LoadTest(t *testing.T) *Engine {
-	e := NewEngine()
+	store := ostore.NewMemoryStore()
+	e := NewEngine(store)
 	assert.NotNil(t, e)
 	doc, err := ReadScenario("testdata/test1.scenario.yaml")
 	assert.NoError(t, err)
@@ -48,7 +50,7 @@ func TestResultOfInvokeOperation(t *testing.T) {
 		symbol    string
 		operation string
 		args      map[string]any
-		result    map[string]any
+		result    any
 	}{
 		{"demo.Counter", "increment", nil, nil},
 		{"demo.Counter", "decrement", nil, nil},
@@ -65,6 +67,7 @@ func TestResultOfInvokeOperation(t *testing.T) {
 }
 
 func TestEngine_HasInterface(t *testing.T) {
-	e := NewEngine()
+	store := ostore.NewMemoryStore()
+	e := NewEngine(store)
 	assert.False(t, e.HasInterface("Interface1"))
 }

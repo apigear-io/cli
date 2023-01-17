@@ -14,10 +14,10 @@ func ConfigDir() string {
 // entries are limited to 5
 // the most recent entry is at the beginning of the list
 // stores the list in the config file
-func AppendRecentEntry(file string) error {
+func AppendRecentEntry(value string) error {
 	recent := RecentEntries()
-	for i, f := range recent {
-		if f == file {
+	for i, item := range recent {
+		if item == value {
 			recent = append(recent[:i], recent[i+1:]...)
 			break
 		}
@@ -25,17 +25,17 @@ func AppendRecentEntry(file string) error {
 	if len(recent) >= 5 {
 		recent = recent[1:]
 	}
-	// prepend the new entry
-	recent = append([]string{file}, recent...)
+	// prepend the new value
+	recent = append([]string{value}, recent...)
 	v.Set(KeyRecent, recent)
 	return v.WriteConfig()
 }
 
 // RemoveRecentEntry removes a recent entry from the list
-func RemoveRecentEntry(d string) error {
+func RemoveRecentEntry(value string) error {
 	recent := RecentEntries()
-	for i, f := range recent {
-		if f == d {
+	for i, item := range recent {
+		if item == value {
 			recent = append(recent[:i], recent[i+1:]...)
 			break
 		}

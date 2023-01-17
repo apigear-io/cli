@@ -1,8 +1,8 @@
-// Code generated from pkg/idl/parser/ObjectApi.g4 by ANTLR 4.10.1. DO NOT EDIT.
+// Code generated from java-escape by ANTLR 4.11.1. DO NOT EDIT.
 
 package parser // ObjectApi
 
-import "github.com/antlr/antlr4/runtime/Go/antlr"
+import "github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
 // BaseObjectApiListener is a complete listener for a parse tree produced by ObjectApiParser.
 type BaseObjectApiListener struct{}
@@ -140,3 +140,9 @@ func (s *BaseObjectApiListener) EnterSymbolSchema(ctx *SymbolSchemaContext) {}
 
 // ExitSymbolSchema is called when production symbolSchema is exited.
 func (s *BaseObjectApiListener) ExitSymbolSchema(ctx *SymbolSchemaContext) {}
+
+// EnterMetaRule is called when production metaRule is entered.
+func (s *BaseObjectApiListener) EnterMetaRule(ctx *MetaRuleContext) {}
+
+// ExitMetaRule is called when production metaRule is exited.
+func (s *BaseObjectApiListener) ExitMetaRule(ctx *MetaRuleContext) {}

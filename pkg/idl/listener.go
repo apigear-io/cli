@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
+	"unicode"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 	"github.com/apigear-io/cli/pkg/idl/parser"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
+	"gopkg.in/yaml.v2"
 )
 
 type ObjectApiListener struct {
@@ -19,6 +22,7 @@ type ObjectApiListener struct {
 	iface        *model.Interface
 	struct_      *model.Struct
 	enum         *model.Enum
+	enumMember   *model.EnumMember
 	operation    *model.Operation
 	param        *model.TypedNode
 	_return      *model.TypedNode
@@ -67,6 +71,7 @@ func (o *ObjectApiListener) ExitEveryRule(ctx antlr.ParserRuleContext) {
 
 // EnterDocumentRule is called when entering the documentRule production.
 func (o *ObjectApiListener) EnterDocumentRule(c *parser.DocumentRuleContext) {
+	// nothing todo
 }
 
 // EnterHeaderRule is called when entering the headerRule production.
@@ -107,6 +112,7 @@ func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
 
 // ExitInterfaceRule is called when exiting the interfaceRule production.
 func (o *ObjectApiListener) ExitInterfaceRule(c *parser.InterfaceRuleContext) {
+	o.parseMeta(&o.iface.NamedNode, c.AllMetaRule())
 	o.module.Interfaces = append(o.module.Interfaces, o.iface)
 	o.iface = nil
 	IsNil(o.iface)
@@ -130,6 +136,7 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 
 // ExitPropertyRule is called when exiting the propertyRule production.
 func (o *ObjectApiListener) ExitPropertyRule(c *parser.PropertyRuleContext) {
+	o.parseMeta(&o.property.NamedNode, c.AllMetaRule())
 	o.property.Schema = *o.schema
 	o.schema = nil
 	o.iface.Properties = append(o.iface.Properties, o.property)
@@ -148,6 +155,7 @@ func (o *ObjectApiListener) EnterOperationRule(c *parser.OperationRuleContext) {
 
 // ExitOperationRule is called when exiting the operationRule production.
 func (o *ObjectApiListener) ExitOperationRule(c *parser.OperationRuleContext) {
+	o.parseMeta(&o.operation.NamedNode, c.AllMetaRule())
 	o.operation.Return = o._return
 	o.iface.Operations = append(o.iface.Operations, o.operation)
 	o.operation = nil
@@ -207,6 +215,7 @@ func (o *ObjectApiListener) EnterSignalRule(c *parser.SignalRuleContext) {
 
 // ExitSignalRule is called when exiting the signalRule production.
 func (o *ObjectApiListener) ExitSignalRule(c *parser.SignalRuleContext) {
+	o.parseMeta(&o.signal.NamedNode, c.AllMetaRule())
 	o.iface.Signals = append(o.iface.Signals, o.signal)
 	o.schema = nil
 	o.signal = nil
@@ -220,10 +229,12 @@ func (o *ObjectApiListener) EnterStructRule(c *parser.StructRuleContext) {
 	name := c.GetName().GetText()
 	o.kind = model.KindStruct
 	o.struct_ = model.NewStruct(name)
+	o.parseMeta(&o.struct_.NamedNode, c.AllMetaRule())
 }
 
 // ExitStructRule is called when exiting the structRule production.
 func (o *ObjectApiListener) ExitStructRule(c *parser.StructRuleContext) {
+	IsNotNil(o.struct_)
 	o.module.Structs = append(o.module.Structs, o.struct_)
 	o.schema = nil
 	o.struct_ = nil
@@ -240,6 +251,8 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 
 // ExitStructFieldRule is called when exiting the structFieldRule production.
 func (o *ObjectApiListener) ExitStructFieldRule(c *parser.StructFieldRuleContext) {
+	IsNotNil(o.field)
+	o.parseMeta(&o.field.NamedNode, c.AllMetaRule())
 	o.field.Schema = *o.schema
 	o.struct_.Fields = append(o.struct_.Fields, o.field)
 	o.field = nil
@@ -259,6 +272,7 @@ func (o *ObjectApiListener) EnterEnumRule(c *parser.EnumRuleContext) {
 
 // ExitEnumRule is called when exiting the enumRule production.
 func (o *ObjectApiListener) ExitEnumRule(c *parser.EnumRuleContext) {
+	o.parseMeta(&o.enum.NamedNode, c.AllMetaRule())
 	IsNotNil(o.enum)
 	o.module.Enums = append(o.module.Enums, o.enum)
 	o.runningValue = 0
@@ -281,12 +295,15 @@ func (o *ObjectApiListener) EnterEnumMemberRule(c *parser.EnumMemberRuleContext)
 		value = o.runningValue
 		o.runningValue++
 	}
-	member := model.NewEnumMember(name, value)
-	o.enum.Members = append(o.enum.Members, member)
+	o.enumMember = model.NewEnumMember(name, value)
 }
 
 // ExitEnumMemberRule is called when exiting the enumMemberRule production.
 func (o *ObjectApiListener) ExitEnumMemberRule(c *parser.EnumMemberRuleContext) {
+	IsNotNil(o.enumMember)
+	o.parseMeta(&o.enumMember.NamedNode, c.AllMetaRule())
+	o.enum.Members = append(o.enum.Members, o.enumMember)
+	o.enumMember = nil
 }
 
 // EnterSchemaRule is called when entering the schemaRule production.
@@ -343,6 +360,7 @@ func (o *ObjectApiListener) ExitHeaderRule(c *parser.HeaderRuleContext) {
 
 // ExitModuleRule is called when exiting the moduleRule production.
 func (o *ObjectApiListener) ExitModuleRule(c *parser.ModuleRuleContext) {
+	o.parseMeta(&o.module.NamedNode, c.AllMetaRule())
 	// nothing todo
 }
 
@@ -369,4 +387,65 @@ func (o *ObjectApiListener) ExitPrimitiveSchema(c *parser.PrimitiveSchemaContext
 // ExitReferenceSchema is called when exiting the referenceSchema production.
 func (o *ObjectApiListener) ExitSymbolSchema(c *parser.SymbolSchemaContext) {
 	// nothing todo
+}
+
+func (o *ObjectApiListener) EnterMetaRule(c *parser.MetaRuleContext) {
+	// nothing todo
+}
+
+func (o *ObjectApiListener) ExitMetaRule(c *parser.MetaRuleContext) {
+	// nothing todo
+
+}
+
+func (o *ObjectApiListener) parseMeta(node *model.NamedNode, ctxs []parser.IMetaRuleContext) {
+	docLines := make([]string, 0)
+	tagLines := make([]string, 0)
+	ymlStart := 0
+	ymlEnd := 0
+	file := ""
+	if len(ctxs) > 0 { // capture the input source
+		file = ctxs[0].GetStart().GetInputStream().GetSourceName()
+	}
+	for _, ctx := range ctxs {
+		if ctx.GetTagLine() != nil {
+			if ymlStart == 0 { // update the start line, once
+				ymlStart = ctx.GetTagLine().GetLine()
+			}
+			// update the end line, always
+			ymlEnd = ctx.GetTagLine().GetLine()
+			text := ctx.GetTagLine().GetText()
+			line := strings.TrimSpace(strings.TrimLeft(text, "@"))
+			if IsWordOnly(line) {
+				line = fmt.Sprintf("%s: true", line)
+			}
+			tagLines = append(tagLines, line)
+		}
+		if ctx.GetDocLine() != nil {
+			text := ctx.GetDocLine().GetText()
+			line := strings.TrimSpace(strings.TrimLeft(text, "/"))
+			docLines = append(docLines, line)
+		}
+	}
+	if len(docLines) > 0 {
+		node.Description = strings.Join(docLines, "\n")
+	}
+	if len(tagLines) > 0 {
+		yml := strings.Join(tagLines, "\n")
+		err := yaml.Unmarshal([]byte(yml), &node.Meta)
+
+		if err != nil {
+			log.Warn().Err(err).Msgf("failed to parse meta data in %s:%d-%d", file, ymlStart, ymlEnd)
+		}
+	}
+}
+
+func IsWordOnly(s string) bool {
+	for _, c := range s {
+		if unicode.IsLetter(c) || unicode.IsNumber(c) {
+			continue
+		}
+		return false
+	}
+	return true
 }
