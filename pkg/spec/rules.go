@@ -1,6 +1,10 @@
 package spec
 
-import "github.com/apigear-io/cli/pkg/log"
+import (
+	"sort"
+
+	"github.com/apigear-io/cli/pkg/log"
+)
 
 // A rules document defines a set of rules how to apply transformations
 // to a set of documents.
@@ -37,38 +41,49 @@ func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 
 // ComputeFeatures returns a filtered set of features based on the given features.
 // And the features that are required by the given features.
-func (r *RulesDoc) ComputeFeatures(wanted []string) []*FeatureRule {
+func (r *RulesDoc) ComputeFeatures(wanted []string) {
 	log.Debug().Msgf("computing features: %v", wanted)
-	// make a set of wanted features
-	if len(wanted) == 0 {
-		return []*FeatureRule{}
+	// we skip all features first
+	for _, f := range r.Features {
+		f.Skip = true
 	}
-	fts := make(map[string]*FeatureRule, 1)
-	// if no features are given, then no features are wanted
-	for _, w := range wanted {
+	for _, f := range wanted {
 		// return all features if the wanted feature is "all"
-		if w == "all" {
-			return r.Features
-		}
-		// resolve feature by name
-		f := r.FeatureByName(w)
-		if f != nil {
-			fts[w] = f
-			// recursively add required features
-			req := r.ComputeFeatures(f.Requires)
-			for _, r := range req {
-				fts[r.Name] = r
+		if f == "all" {
+			for _, f := range r.Features {
+				f.Skip = false
 			}
+			return
 		}
 	}
-	// make a slice of features
-	result := []*FeatureRule{}
-	// add features to slice, byt only once
-	for _, f := range fts {
-		result = append(result, f)
+	r.walkWantedFeatures(wanted)
+}
+
+// walkWantedFeatures walks the dependency graph of the given features.
+func (r *RulesDoc) walkWantedFeatures(features []string) {
+	// make a set of wanted features
+	if len(features) == 0 {
+		return
 	}
-	log.Debug().Msgf("computed features: %v", result)
-	return result
+	// if no features are given, then no features are wanted
+	for _, f := range features {
+		// resolve feature by name
+		f := r.FeatureByName(f)
+		if f != nil {
+			// mark feature as wanted
+			f.Skip = false
+			// recursively walk the dependency graph
+			r.walkWantedFeatures(f.Requires)
+		}
+	}
+}
+
+func (r *RulesDoc) FeatureNamesMap() map[string]bool {
+	m := make(map[string]bool, len(r.Features))
+	for _, f := range r.Features {
+		m[f.Name] = !f.Skip
+	}
+	return m
 }
 
 // A feature rule defines a set of scopes to match a symbol type.
@@ -79,6 +94,7 @@ type FeatureRule struct {
 	Requires []string `json:"requires" yaml:"requires"`
 	// Scopes to match.
 	Scopes []*ScopeRule `json:"scopes" yaml:"scopes"`
+	Skip   bool         `json:"-" yaml:"-"`
 }
 
 // FindScopeByMatch returns the first scope that matches the given match.
@@ -112,4 +128,21 @@ type DocumentRule struct {
 	Raw bool `json:"raw" yaml:"raw"`
 	// Force is true if the target file should be overwritten.
 	Force bool `json:"force" yaml:"force"`
+}
+
+func FeatureRulesToStrings(features []*FeatureRule) []string {
+	result := []string{}
+	for _, f := range features {
+		result = append(result, f.Name)
+	}
+	sort.Strings(result)
+	return result
+}
+
+func FeatureRulesToStringMap(features []*FeatureRule) map[string]bool {
+	result := map[string]bool{}
+	for _, f := range features {
+		result[f.Name] = true
+	}
+	return result
 }

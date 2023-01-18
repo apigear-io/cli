@@ -4,6 +4,6 @@ features:
       - match: system
         documents:
           - { source: "system.name.tpl", target: "system.txt" }
-      - match: modules
+      - match: module
         documents:
           - { source: "module.name.tpl", target: "module.txt" }
