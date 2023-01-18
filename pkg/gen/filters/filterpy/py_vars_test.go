@@ -23,7 +23,11 @@ func TestVars(t *testing.T) {
 		{"test", "Test3", "opString", "param1"},
 		{"test", "Test3", "opBoolArray", "param1"},
 		{"test", "Test3", "opIntArray", "param1"},
+		{"test", "Test3", "opInt32Array", "param1"},
+		{"test", "Test3", "opInt64Array", "param1"},
 		{"test", "Test3", "opFloatArray", "param1"},
+		{"test", "Test3", "opFloat32Array", "param1"},
+		{"test", "Test3", "opFloat64Array", "param1"},
 		{"test", "Test3", "opStringArray", "param1"},
 	}
 	syss := loadTestSystems(t)

@@ -15,6 +15,8 @@ func TestParam(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "propBool bool"},
 		{"test", "Test1", "propInt", "propInt int32"},
+		{"test", "Test1", "propInt32", "propInt32 int32"},
+		{"test", "Test1", "propInt64", "propInt64 int64"},
 		{"test", "Test1", "propFloat", "propFloat float32"},
 		{"test", "Test1", "propString", "propString string"},
 		{"test", "Test1", "propBoolArray", "propBoolArray []bool"},
