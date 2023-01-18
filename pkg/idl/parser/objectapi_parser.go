@@ -35,96 +35,121 @@ func objectapiParserInit() {
 	staticData.literalNames = []string{
 		"", "'module'", "'import'", "'interface'", "'{'", "'}'", "':'", "'('",
 		"')'", "','", "'signal'", "'struct'", "'enum'", "'='", "'['", "']'",
-		"'bool'", "'int'", "'int32'", "'int64'", "'float'", "'float32'", "'float64'",
-		"'string'",
+		"'bool'", "'int'", "'float'", "'string'",
 	}
 	staticData.symbolicNames = []string{
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-		"", "", "", "", "", "", "", "WHITESPACE", "INTEGER", "HEX", "TYPE_IDENTIFIER",
-		"IDENTIFIER", "VERSION",
+		"", "", "", "WHITESPACE", "INTEGER", "HEX", "TYPE_IDENTIFIER", "IDENTIFIER",
+		"VERSION", "DOCLINE", "TAGLINE", "COMMENT",
 	}
 	staticData.ruleNames = []string{
 		"documentRule", "headerRule", "moduleRule", "importRule", "declarationsRule",
 		"interfaceRule", "interfaceMembersRule", "propertyRule", "operationRule",
 		"operationReturnRule", "operationParamRule", "signalRule", "structRule",
 		"structFieldRule", "enumRule", "enumMemberRule", "schemaRule", "arrayRule",
-		"primitiveSchema", "symbolSchema",
+		"primitiveSchema", "symbolSchema", "metaRule",
 	}
 	staticData.predictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 29, 176, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 1, 28, 232, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
 		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15,
-		2, 16, 7, 16, 2, 17, 7, 17, 2, 18, 7, 18, 2, 19, 7, 19, 1, 0, 1, 0, 5,
-		0, 43, 8, 0, 10, 0, 12, 0, 46, 9, 0, 1, 1, 1, 1, 5, 1, 50, 8, 1, 10, 1,
-		12, 1, 53, 9, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1, 3, 1, 4,
-		1, 4, 1, 4, 3, 4, 66, 8, 4, 1, 5, 1, 5, 1, 5, 1, 5, 5, 5, 72, 8, 5, 10,
-		5, 12, 5, 75, 9, 5, 1, 5, 1, 5, 1, 6, 1, 6, 1, 6, 3, 6, 82, 8, 6, 1, 7,
-		1, 7, 1, 7, 1, 7, 1, 8, 1, 8, 1, 8, 5, 8, 91, 8, 8, 10, 8, 12, 8, 94, 9,
-		8, 1, 8, 1, 8, 3, 8, 98, 8, 8, 1, 9, 1, 9, 1, 9, 1, 10, 1, 10, 1, 10, 1,
-		10, 3, 10, 107, 8, 10, 1, 11, 1, 11, 1, 11, 1, 11, 5, 11, 113, 8, 11, 10,
-		11, 12, 11, 116, 9, 11, 1, 11, 1, 11, 1, 12, 1, 12, 1, 12, 1, 12, 5, 12,
-		124, 8, 12, 10, 12, 12, 12, 127, 9, 12, 1, 12, 1, 12, 1, 13, 1, 13, 1,
-		13, 1, 13, 1, 14, 1, 14, 1, 14, 1, 14, 5, 14, 139, 8, 14, 10, 14, 12, 14,
-		142, 9, 14, 1, 14, 1, 14, 1, 15, 1, 15, 1, 15, 3, 15, 149, 8, 15, 1, 15,
-		3, 15, 152, 8, 15, 1, 16, 1, 16, 3, 16, 156, 8, 16, 1, 16, 3, 16, 159,
-		8, 16, 1, 17, 1, 17, 1, 17, 1, 18, 1, 18, 1, 18, 1, 18, 1, 18, 1, 18, 1,
-		18, 1, 18, 3, 18, 172, 8, 18, 1, 19, 1, 19, 1, 19, 0, 0, 20, 0, 2, 4, 6,
-		8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 0, 0, 179,
-		0, 40, 1, 0, 0, 0, 2, 47, 1, 0, 0, 0, 4, 54, 1, 0, 0, 0, 6, 58, 1, 0, 0,
-		0, 8, 65, 1, 0, 0, 0, 10, 67, 1, 0, 0, 0, 12, 81, 1, 0, 0, 0, 14, 83, 1,
-		0, 0, 0, 16, 87, 1, 0, 0, 0, 18, 99, 1, 0, 0, 0, 20, 102, 1, 0, 0, 0, 22,
-		108, 1, 0, 0, 0, 24, 119, 1, 0, 0, 0, 26, 130, 1, 0, 0, 0, 28, 134, 1,
-		0, 0, 0, 30, 145, 1, 0, 0, 0, 32, 155, 1, 0, 0, 0, 34, 160, 1, 0, 0, 0,
-		36, 171, 1, 0, 0, 0, 38, 173, 1, 0, 0, 0, 40, 44, 3, 2, 1, 0, 41, 43, 3,
-		8, 4, 0, 42, 41, 1, 0, 0, 0, 43, 46, 1, 0, 0, 0, 44, 42, 1, 0, 0, 0, 44,
-		45, 1, 0, 0, 0, 45, 1, 1, 0, 0, 0, 46, 44, 1, 0, 0, 0, 47, 51, 3, 4, 2,
-		0, 48, 50, 3, 6, 3, 0, 49, 48, 1, 0, 0, 0, 50, 53, 1, 0, 0, 0, 51, 49,
-		1, 0, 0, 0, 51, 52, 1, 0, 0, 0, 52, 3, 1, 0, 0, 0, 53, 51, 1, 0, 0, 0,
-		54, 55, 5, 1, 0, 0, 55, 56, 5, 28, 0, 0, 56, 57, 5, 29, 0, 0, 57, 5, 1,
-		0, 0, 0, 58, 59, 5, 2, 0, 0, 59, 60, 5, 28, 0, 0, 60, 61, 5, 29, 0, 0,
-		61, 7, 1, 0, 0, 0, 62, 66, 3, 10, 5, 0, 63, 66, 3, 24, 12, 0, 64, 66, 3,
-		28, 14, 0, 65, 62, 1, 0, 0, 0, 65, 63, 1, 0, 0, 0, 65, 64, 1, 0, 0, 0,
-		66, 9, 1, 0, 0, 0, 67, 68, 5, 3, 0, 0, 68, 69, 5, 28, 0, 0, 69, 73, 5,
-		4, 0, 0, 70, 72, 3, 12, 6, 0, 71, 70, 1, 0, 0, 0, 72, 75, 1, 0, 0, 0, 73,
-		71, 1, 0, 0, 0, 73, 74, 1, 0, 0, 0, 74, 76, 1, 0, 0, 0, 75, 73, 1, 0, 0,
-		0, 76, 77, 5, 5, 0, 0, 77, 11, 1, 0, 0, 0, 78, 82, 3, 14, 7, 0, 79, 82,
-		3, 16, 8, 0, 80, 82, 3, 22, 11, 0, 81, 78, 1, 0, 0, 0, 81, 79, 1, 0, 0,
-		0, 81, 80, 1, 0, 0, 0, 82, 13, 1, 0, 0, 0, 83, 84, 5, 28, 0, 0, 84, 85,
-		5, 6, 0, 0, 85, 86, 3, 32, 16, 0, 86, 15, 1, 0, 0, 0, 87, 88, 5, 28, 0,
-		0, 88, 92, 5, 7, 0, 0, 89, 91, 3, 20, 10, 0, 90, 89, 1, 0, 0, 0, 91, 94,
-		1, 0, 0, 0, 92, 90, 1, 0, 0, 0, 92, 93, 1, 0, 0, 0, 93, 95, 1, 0, 0, 0,
-		94, 92, 1, 0, 0, 0, 95, 97, 5, 8, 0, 0, 96, 98, 3, 18, 9, 0, 97, 96, 1,
-		0, 0, 0, 97, 98, 1, 0, 0, 0, 98, 17, 1, 0, 0, 0, 99, 100, 5, 6, 0, 0, 100,
-		101, 3, 32, 16, 0, 101, 19, 1, 0, 0, 0, 102, 103, 5, 28, 0, 0, 103, 104,
-		5, 6, 0, 0, 104, 106, 3, 32, 16, 0, 105, 107, 5, 9, 0, 0, 106, 105, 1,
-		0, 0, 0, 106, 107, 1, 0, 0, 0, 107, 21, 1, 0, 0, 0, 108, 109, 5, 10, 0,
-		0, 109, 110, 5, 28, 0, 0, 110, 114, 5, 7, 0, 0, 111, 113, 3, 20, 10, 0,
-		112, 111, 1, 0, 0, 0, 113, 116, 1, 0, 0, 0, 114, 112, 1, 0, 0, 0, 114,
-		115, 1, 0, 0, 0, 115, 117, 1, 0, 0, 0, 116, 114, 1, 0, 0, 0, 117, 118,
-		5, 8, 0, 0, 118, 23, 1, 0, 0, 0, 119, 120, 5, 11, 0, 0, 120, 121, 5, 28,
-		0, 0, 121, 125, 5, 4, 0, 0, 122, 124, 3, 26, 13, 0, 123, 122, 1, 0, 0,
-		0, 124, 127, 1, 0, 0, 0, 125, 123, 1, 0, 0, 0, 125, 126, 1, 0, 0, 0, 126,
-		128, 1, 0, 0, 0, 127, 125, 1, 0, 0, 0, 128, 129, 5, 5, 0, 0, 129, 25, 1,
-		0, 0, 0, 130, 131, 5, 28, 0, 0, 131, 132, 5, 6, 0, 0, 132, 133, 3, 32,
-		16, 0, 133, 27, 1, 0, 0, 0, 134, 135, 5, 12, 0, 0, 135, 136, 5, 28, 0,
-		0, 136, 140, 5, 4, 0, 0, 137, 139, 3, 30, 15, 0, 138, 137, 1, 0, 0, 0,
-		139, 142, 1, 0, 0, 0, 140, 138, 1, 0, 0, 0, 140, 141, 1, 0, 0, 0, 141,
-		143, 1, 0, 0, 0, 142, 140, 1, 0, 0, 0, 143, 144, 5, 5, 0, 0, 144, 29, 1,
-		0, 0, 0, 145, 148, 5, 28, 0, 0, 146, 147, 5, 13, 0, 0, 147, 149, 5, 25,
-		0, 0, 148, 146, 1, 0, 0, 0, 148, 149, 1, 0, 0, 0, 149, 151, 1, 0, 0, 0,
-		150, 152, 5, 9, 0, 0, 151, 150, 1, 0, 0, 0, 151, 152, 1, 0, 0, 0, 152,
-		31, 1, 0, 0, 0, 153, 156, 3, 36, 18, 0, 154, 156, 3, 38, 19, 0, 155, 153,
-		1, 0, 0, 0, 155, 154, 1, 0, 0, 0, 156, 158, 1, 0, 0, 0, 157, 159, 3, 34,
-		17, 0, 158, 157, 1, 0, 0, 0, 158, 159, 1, 0, 0, 0, 159, 33, 1, 0, 0, 0,
-		160, 161, 5, 14, 0, 0, 161, 162, 5, 15, 0, 0, 162, 35, 1, 0, 0, 0, 163,
-		172, 5, 16, 0, 0, 164, 172, 5, 17, 0, 0, 165, 172, 5, 18, 0, 0, 166, 172,
-		5, 19, 0, 0, 167, 172, 5, 20, 0, 0, 168, 172, 5, 21, 0, 0, 169, 172, 5,
-		22, 0, 0, 170, 172, 5, 23, 0, 0, 171, 163, 1, 0, 0, 0, 171, 164, 1, 0,
-		0, 0, 171, 165, 1, 0, 0, 0, 171, 166, 1, 0, 0, 0, 171, 167, 1, 0, 0, 0,
-		171, 168, 1, 0, 0, 0, 171, 169, 1, 0, 0, 0, 171, 170, 1, 0, 0, 0, 172,
-		37, 1, 0, 0, 0, 173, 174, 5, 28, 0, 0, 174, 39, 1, 0, 0, 0, 16, 44, 51,
-		65, 73, 81, 92, 97, 106, 114, 125, 140, 148, 151, 155, 158, 171,
+		2, 16, 7, 16, 2, 17, 7, 17, 2, 18, 7, 18, 2, 19, 7, 19, 2, 20, 7, 20, 1,
+		0, 1, 0, 5, 0, 45, 8, 0, 10, 0, 12, 0, 48, 9, 0, 1, 1, 1, 1, 5, 1, 52,
+		8, 1, 10, 1, 12, 1, 55, 9, 1, 1, 2, 5, 2, 58, 8, 2, 10, 2, 12, 2, 61, 9,
+		2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 3, 1, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 3,
+		4, 74, 8, 4, 1, 5, 5, 5, 77, 8, 5, 10, 5, 12, 5, 80, 9, 5, 1, 5, 1, 5,
+		1, 5, 1, 5, 5, 5, 86, 8, 5, 10, 5, 12, 5, 89, 9, 5, 1, 5, 1, 5, 1, 6, 1,
+		6, 1, 6, 3, 6, 96, 8, 6, 1, 7, 5, 7, 99, 8, 7, 10, 7, 12, 7, 102, 9, 7,
+		1, 7, 1, 7, 1, 7, 1, 7, 1, 8, 5, 8, 109, 8, 8, 10, 8, 12, 8, 112, 9, 8,
+		1, 8, 1, 8, 1, 8, 5, 8, 117, 8, 8, 10, 8, 12, 8, 120, 9, 8, 1, 8, 1, 8,
+		3, 8, 124, 8, 8, 1, 9, 1, 9, 1, 9, 1, 10, 1, 10, 1, 10, 1, 10, 3, 10, 133,
+		8, 10, 1, 11, 5, 11, 136, 8, 11, 10, 11, 12, 11, 139, 9, 11, 1, 11, 1,
+		11, 1, 11, 1, 11, 5, 11, 145, 8, 11, 10, 11, 12, 11, 148, 9, 11, 1, 11,
+		1, 11, 1, 12, 5, 12, 153, 8, 12, 10, 12, 12, 12, 156, 9, 12, 1, 12, 1,
+		12, 1, 12, 1, 12, 5, 12, 162, 8, 12, 10, 12, 12, 12, 165, 9, 12, 1, 12,
+		1, 12, 1, 13, 5, 13, 170, 8, 13, 10, 13, 12, 13, 173, 9, 13, 1, 13, 1,
+		13, 1, 13, 1, 13, 1, 14, 5, 14, 180, 8, 14, 10, 14, 12, 14, 183, 9, 14,
+		1, 14, 1, 14, 1, 14, 1, 14, 5, 14, 189, 8, 14, 10, 14, 12, 14, 192, 9,
+		14, 1, 14, 1, 14, 1, 15, 5, 15, 197, 8, 15, 10, 15, 12, 15, 200, 9, 15,
+		1, 15, 1, 15, 1, 15, 3, 15, 205, 8, 15, 1, 15, 3, 15, 208, 8, 15, 1, 16,
+		1, 16, 3, 16, 212, 8, 16, 1, 16, 3, 16, 215, 8, 16, 1, 17, 1, 17, 1, 17,
+		1, 18, 1, 18, 1, 18, 1, 18, 3, 18, 224, 8, 18, 1, 19, 1, 19, 1, 20, 1,
+		20, 3, 20, 230, 8, 20, 1, 20, 0, 0, 21, 0, 2, 4, 6, 8, 10, 12, 14, 16,
+		18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 0, 0, 240, 0, 42, 1, 0,
+		0, 0, 2, 49, 1, 0, 0, 0, 4, 59, 1, 0, 0, 0, 6, 66, 1, 0, 0, 0, 8, 73, 1,
+		0, 0, 0, 10, 78, 1, 0, 0, 0, 12, 95, 1, 0, 0, 0, 14, 100, 1, 0, 0, 0, 16,
+		110, 1, 0, 0, 0, 18, 125, 1, 0, 0, 0, 20, 128, 1, 0, 0, 0, 22, 137, 1,
+		0, 0, 0, 24, 154, 1, 0, 0, 0, 26, 171, 1, 0, 0, 0, 28, 181, 1, 0, 0, 0,
+		30, 198, 1, 0, 0, 0, 32, 211, 1, 0, 0, 0, 34, 216, 1, 0, 0, 0, 36, 223,
+		1, 0, 0, 0, 38, 225, 1, 0, 0, 0, 40, 229, 1, 0, 0, 0, 42, 46, 3, 2, 1,
+		0, 43, 45, 3, 8, 4, 0, 44, 43, 1, 0, 0, 0, 45, 48, 1, 0, 0, 0, 46, 44,
+		1, 0, 0, 0, 46, 47, 1, 0, 0, 0, 47, 1, 1, 0, 0, 0, 48, 46, 1, 0, 0, 0,
+		49, 53, 3, 4, 2, 0, 50, 52, 3, 6, 3, 0, 51, 50, 1, 0, 0, 0, 52, 55, 1,
+		0, 0, 0, 53, 51, 1, 0, 0, 0, 53, 54, 1, 0, 0, 0, 54, 3, 1, 0, 0, 0, 55,
+		53, 1, 0, 0, 0, 56, 58, 3, 40, 20, 0, 57, 56, 1, 0, 0, 0, 58, 61, 1, 0,
+		0, 0, 59, 57, 1, 0, 0, 0, 59, 60, 1, 0, 0, 0, 60, 62, 1, 0, 0, 0, 61, 59,
+		1, 0, 0, 0, 62, 63, 5, 1, 0, 0, 63, 64, 5, 24, 0, 0, 64, 65, 5, 25, 0,
+		0, 65, 5, 1, 0, 0, 0, 66, 67, 5, 2, 0, 0, 67, 68, 5, 24, 0, 0, 68, 69,
+		5, 25, 0, 0, 69, 7, 1, 0, 0, 0, 70, 74, 3, 10, 5, 0, 71, 74, 3, 24, 12,
+		0, 72, 74, 3, 28, 14, 0, 73, 70, 1, 0, 0, 0, 73, 71, 1, 0, 0, 0, 73, 72,
+		1, 0, 0, 0, 74, 9, 1, 0, 0, 0, 75, 77, 3, 40, 20, 0, 76, 75, 1, 0, 0, 0,
+		77, 80, 1, 0, 0, 0, 78, 76, 1, 0, 0, 0, 78, 79, 1, 0, 0, 0, 79, 81, 1,
+		0, 0, 0, 80, 78, 1, 0, 0, 0, 81, 82, 5, 3, 0, 0, 82, 83, 5, 24, 0, 0, 83,
+		87, 5, 4, 0, 0, 84, 86, 3, 12, 6, 0, 85, 84, 1, 0, 0, 0, 86, 89, 1, 0,
+		0, 0, 87, 85, 1, 0, 0, 0, 87, 88, 1, 0, 0, 0, 88, 90, 1, 0, 0, 0, 89, 87,
+		1, 0, 0, 0, 90, 91, 5, 5, 0, 0, 91, 11, 1, 0, 0, 0, 92, 96, 3, 14, 7, 0,
+		93, 96, 3, 16, 8, 0, 94, 96, 3, 22, 11, 0, 95, 92, 1, 0, 0, 0, 95, 93,
+		1, 0, 0, 0, 95, 94, 1, 0, 0, 0, 96, 13, 1, 0, 0, 0, 97, 99, 3, 40, 20,
+		0, 98, 97, 1, 0, 0, 0, 99, 102, 1, 0, 0, 0, 100, 98, 1, 0, 0, 0, 100, 101,
+		1, 0, 0, 0, 101, 103, 1, 0, 0, 0, 102, 100, 1, 0, 0, 0, 103, 104, 5, 24,
+		0, 0, 104, 105, 5, 6, 0, 0, 105, 106, 3, 32, 16, 0, 106, 15, 1, 0, 0, 0,
+		107, 109, 3, 40, 20, 0, 108, 107, 1, 0, 0, 0, 109, 112, 1, 0, 0, 0, 110,
+		108, 1, 0, 0, 0, 110, 111, 1, 0, 0, 0, 111, 113, 1, 0, 0, 0, 112, 110,
+		1, 0, 0, 0, 113, 114, 5, 24, 0, 0, 114, 118, 5, 7, 0, 0, 115, 117, 3, 20,
+		10, 0, 116, 115, 1, 0, 0, 0, 117, 120, 1, 0, 0, 0, 118, 116, 1, 0, 0, 0,
+		118, 119, 1, 0, 0, 0, 119, 121, 1, 0, 0, 0, 120, 118, 1, 0, 0, 0, 121,
+		123, 5, 8, 0, 0, 122, 124, 3, 18, 9, 0, 123, 122, 1, 0, 0, 0, 123, 124,
+		1, 0, 0, 0, 124, 17, 1, 0, 0, 0, 125, 126, 5, 6, 0, 0, 126, 127, 3, 32,
+		16, 0, 127, 19, 1, 0, 0, 0, 128, 129, 5, 24, 0, 0, 129, 130, 5, 6, 0, 0,
+		130, 132, 3, 32, 16, 0, 131, 133, 5, 9, 0, 0, 132, 131, 1, 0, 0, 0, 132,
+		133, 1, 0, 0, 0, 133, 21, 1, 0, 0, 0, 134, 136, 3, 40, 20, 0, 135, 134,
+		1, 0, 0, 0, 136, 139, 1, 0, 0, 0, 137, 135, 1, 0, 0, 0, 137, 138, 1, 0,
+		0, 0, 138, 140, 1, 0, 0, 0, 139, 137, 1, 0, 0, 0, 140, 141, 5, 10, 0, 0,
+		141, 142, 5, 24, 0, 0, 142, 146, 5, 7, 0, 0, 143, 145, 3, 20, 10, 0, 144,
+		143, 1, 0, 0, 0, 145, 148, 1, 0, 0, 0, 146, 144, 1, 0, 0, 0, 146, 147,
+		1, 0, 0, 0, 147, 149, 1, 0, 0, 0, 148, 146, 1, 0, 0, 0, 149, 150, 5, 8,
+		0, 0, 150, 23, 1, 0, 0, 0, 151, 153, 3, 40, 20, 0, 152, 151, 1, 0, 0, 0,
+		153, 156, 1, 0, 0, 0, 154, 152, 1, 0, 0, 0, 154, 155, 1, 0, 0, 0, 155,
+		157, 1, 0, 0, 0, 156, 154, 1, 0, 0, 0, 157, 158, 5, 11, 0, 0, 158, 159,
+		5, 24, 0, 0, 159, 163, 5, 4, 0, 0, 160, 162, 3, 26, 13, 0, 161, 160, 1,
+		0, 0, 0, 162, 165, 1, 0, 0, 0, 163, 161, 1, 0, 0, 0, 163, 164, 1, 0, 0,
+		0, 164, 166, 1, 0, 0, 0, 165, 163, 1, 0, 0, 0, 166, 167, 5, 5, 0, 0, 167,
+		25, 1, 0, 0, 0, 168, 170, 3, 40, 20, 0, 169, 168, 1, 0, 0, 0, 170, 173,
+		1, 0, 0, 0, 171, 169, 1, 0, 0, 0, 171, 172, 1, 0, 0, 0, 172, 174, 1, 0,
+		0, 0, 173, 171, 1, 0, 0, 0, 174, 175, 5, 24, 0, 0, 175, 176, 5, 6, 0, 0,
+		176, 177, 3, 32, 16, 0, 177, 27, 1, 0, 0, 0, 178, 180, 3, 40, 20, 0, 179,
+		178, 1, 0, 0, 0, 180, 183, 1, 0, 0, 0, 181, 179, 1, 0, 0, 0, 181, 182,
+		1, 0, 0, 0, 182, 184, 1, 0, 0, 0, 183, 181, 1, 0, 0, 0, 184, 185, 5, 12,
+		0, 0, 185, 186, 5, 24, 0, 0, 186, 190, 5, 4, 0, 0, 187, 189, 3, 30, 15,
+		0, 188, 187, 1, 0, 0, 0, 189, 192, 1, 0, 0, 0, 190, 188, 1, 0, 0, 0, 190,
+		191, 1, 0, 0, 0, 191, 193, 1, 0, 0, 0, 192, 190, 1, 0, 0, 0, 193, 194,
+		5, 5, 0, 0, 194, 29, 1, 0, 0, 0, 195, 197, 3, 40, 20, 0, 196, 195, 1, 0,
+		0, 0, 197, 200, 1, 0, 0, 0, 198, 196, 1, 0, 0, 0, 198, 199, 1, 0, 0, 0,
+		199, 201, 1, 0, 0, 0, 200, 198, 1, 0, 0, 0, 201, 204, 5, 24, 0, 0, 202,
+		203, 5, 13, 0, 0, 203, 205, 5, 21, 0, 0, 204, 202, 1, 0, 0, 0, 204, 205,
+		1, 0, 0, 0, 205, 207, 1, 0, 0, 0, 206, 208, 5, 9, 0, 0, 207, 206, 1, 0,
+		0, 0, 207, 208, 1, 0, 0, 0, 208, 31, 1, 0, 0, 0, 209, 212, 3, 36, 18, 0,
+		210, 212, 3, 38, 19, 0, 211, 209, 1, 0, 0, 0, 211, 210, 1, 0, 0, 0, 212,
+		214, 1, 0, 0, 0, 213, 215, 3, 34, 17, 0, 214, 213, 1, 0, 0, 0, 214, 215,
+		1, 0, 0, 0, 215, 33, 1, 0, 0, 0, 216, 217, 5, 14, 0, 0, 217, 218, 5, 15,
+		0, 0, 218, 35, 1, 0, 0, 0, 219, 224, 5, 16, 0, 0, 220, 224, 5, 17, 0, 0,
+		221, 224, 5, 18, 0, 0, 222, 224, 5, 19, 0, 0, 223, 219, 1, 0, 0, 0, 223,
+		220, 1, 0, 0, 0, 223, 221, 1, 0, 0, 0, 223, 222, 1, 0, 0, 0, 224, 37, 1,
+		0, 0, 0, 225, 226, 5, 24, 0, 0, 226, 39, 1, 0, 0, 0, 227, 230, 5, 27, 0,
+		0, 228, 230, 5, 26, 0, 0, 229, 227, 1, 0, 0, 0, 229, 228, 1, 0, 0, 0, 230,
+		41, 1, 0, 0, 0, 26, 46, 53, 59, 73, 78, 87, 95, 100, 110, 118, 123, 132,
+		137, 146, 154, 163, 171, 181, 190, 198, 204, 207, 211, 214, 223, 229,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -182,16 +207,15 @@ const (
 	ObjectApiParserT__16           = 17
 	ObjectApiParserT__17           = 18
 	ObjectApiParserT__18           = 19
-	ObjectApiParserT__19           = 20
-	ObjectApiParserT__20           = 21
-	ObjectApiParserT__21           = 22
-	ObjectApiParserT__22           = 23
-	ObjectApiParserWHITESPACE      = 24
-	ObjectApiParserINTEGER         = 25
-	ObjectApiParserHEX             = 26
-	ObjectApiParserTYPE_IDENTIFIER = 27
-	ObjectApiParserIDENTIFIER      = 28
-	ObjectApiParserVERSION         = 29
+	ObjectApiParserWHITESPACE      = 20
+	ObjectApiParserINTEGER         = 21
+	ObjectApiParserHEX             = 22
+	ObjectApiParserTYPE_IDENTIFIER = 23
+	ObjectApiParserIDENTIFIER      = 24
+	ObjectApiParserVERSION         = 25
+	ObjectApiParserDOCLINE         = 26
+	ObjectApiParserTAGLINE         = 27
+	ObjectApiParserCOMMENT         = 28
 )
 
 // ObjectApiParser rules.
@@ -216,6 +240,7 @@ const (
 	ObjectApiParserRULE_arrayRule            = 17
 	ObjectApiParserRULE_primitiveSchema      = 18
 	ObjectApiParserRULE_symbolSchema         = 19
+	ObjectApiParserRULE_metaRule             = 20
 )
 
 // IDocumentRuleContext is an interface to support dynamic dispatch.
@@ -359,20 +384,20 @@ func (p *ObjectApiParser) DocumentRule() (localctx IDocumentRuleContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(40)
+		p.SetState(42)
 		p.HeaderRule()
 	}
-	p.SetState(44)
+	p.SetState(46)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&6152) != 0 {
+	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&201332744) != 0 {
 		{
-			p.SetState(41)
+			p.SetState(43)
 			p.DeclarationsRule()
 		}
 
-		p.SetState(46)
+		p.SetState(48)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -521,20 +546,20 @@ func (p *ObjectApiParser) HeaderRule() (localctx IHeaderRuleContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(47)
+		p.SetState(49)
 		p.ModuleRule()
 	}
-	p.SetState(51)
+	p.SetState(53)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == ObjectApiParserT__1 {
 		{
-			p.SetState(48)
+			p.SetState(50)
 			p.ImportRule()
 		}
 
-		p.SetState(53)
+		p.SetState(55)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
@@ -610,6 +635,47 @@ func (s *ModuleRuleContext) VERSION() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserVERSION, 0)
 }
 
+func (s *ModuleRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *ModuleRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
+}
+
 func (s *ModuleRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -636,6 +702,7 @@ func (p *ObjectApiParser) ModuleRule() (localctx IModuleRuleContext) {
 
 	localctx = NewModuleRuleContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 4, ObjectApiParserRULE_moduleRule)
+	var _la int
 
 	defer func() {
 		p.ExitRule()
@@ -654,19 +721,33 @@ func (p *ObjectApiParser) ModuleRule() (localctx IModuleRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(59)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(56)
+			p.MetaRule()
+		}
+
+		p.SetState(61)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(54)
+		p.SetState(62)
 		p.Match(ObjectApiParserT__0)
 	}
 	{
-		p.SetState(55)
+		p.SetState(63)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*ModuleRuleContext).name = _m
 	}
 	{
-		p.SetState(56)
+		p.SetState(64)
 
 		var _m = p.Match(ObjectApiParserVERSION)
 
@@ -789,18 +870,18 @@ func (p *ObjectApiParser) ImportRule() (localctx IImportRuleContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(58)
+		p.SetState(66)
 		p.Match(ObjectApiParserT__1)
 	}
 	{
-		p.SetState(59)
+		p.SetState(67)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*ImportRuleContext).name = _m
 	}
 	{
-		p.SetState(60)
+		p.SetState(68)
 
 		var _m = p.Match(ObjectApiParserVERSION)
 
@@ -939,33 +1020,30 @@ func (p *ObjectApiParser) DeclarationsRule() (localctx IDeclarationsRuleContext)
 		}
 	}()
 
-	p.SetState(65)
+	p.SetState(73)
 	p.GetErrorHandler().Sync(p)
-
-	switch p.GetTokenStream().LA(1) {
-	case ObjectApiParserT__2:
+	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 3, p.GetParserRuleContext()) {
+	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(62)
+			p.SetState(70)
 			p.InterfaceRule()
 		}
 
-	case ObjectApiParserT__10:
+	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(63)
+			p.SetState(71)
 			p.StructRule()
 		}
 
-	case ObjectApiParserT__11:
+	case 3:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(64)
+			p.SetState(72)
 			p.EnumRule()
 		}
 
-	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
 
 	return localctx
@@ -1022,6 +1100,47 @@ func (s *InterfaceRuleContext) SetName(v antlr.Token) { s.name = v }
 
 func (s *InterfaceRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
+}
+
+func (s *InterfaceRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *InterfaceRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
 }
 
 func (s *InterfaceRuleContext) AllInterfaceMembersRule() []IInterfaceMembersRuleContext {
@@ -1110,37 +1229,51 @@ func (p *ObjectApiParser) InterfaceRule() (localctx IInterfaceRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(78)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(75)
+			p.MetaRule()
+		}
+
+		p.SetState(80)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(67)
+		p.SetState(81)
 		p.Match(ObjectApiParserT__2)
 	}
 	{
-		p.SetState(68)
+		p.SetState(82)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*InterfaceRuleContext).name = _m
 	}
 	{
-		p.SetState(69)
+		p.SetState(83)
 		p.Match(ObjectApiParserT__3)
 	}
-	p.SetState(73)
+	p.SetState(87)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for _la == ObjectApiParserT__9 || _la == ObjectApiParserIDENTIFIER {
+	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&218104832) != 0 {
 		{
-			p.SetState(70)
+			p.SetState(84)
 			p.InterfaceMembersRule()
 		}
 
-		p.SetState(75)
+		p.SetState(89)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(76)
+		p.SetState(90)
 		p.Match(ObjectApiParserT__4)
 	}
 
@@ -1276,27 +1409,27 @@ func (p *ObjectApiParser) InterfaceMembersRule() (localctx IInterfaceMembersRule
 		}
 	}()
 
-	p.SetState(81)
+	p.SetState(95)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 4, p.GetParserRuleContext()) {
+	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 6, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(78)
+			p.SetState(92)
 			p.PropertyRule()
 		}
 
 	case 2:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(79)
+			p.SetState(93)
 			p.OperationRule()
 		}
 
 	case 3:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(80)
+			p.SetState(94)
 			p.SignalRule()
 		}
 
@@ -1385,6 +1518,47 @@ func (s *PropertyRuleContext) SchemaRule() ISchemaRuleContext {
 	return t.(ISchemaRuleContext)
 }
 
+func (s *PropertyRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *PropertyRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
+}
+
 func (s *PropertyRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -1411,6 +1585,7 @@ func (p *ObjectApiParser) PropertyRule() (localctx IPropertyRuleContext) {
 
 	localctx = NewPropertyRuleContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 14, ObjectApiParserRULE_propertyRule)
+	var _la int
 
 	defer func() {
 		p.ExitRule()
@@ -1429,19 +1604,33 @@ func (p *ObjectApiParser) PropertyRule() (localctx IPropertyRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(100)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(97)
+			p.MetaRule()
+		}
+
+		p.SetState(102)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(83)
+		p.SetState(103)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*PropertyRuleContext).name = _m
 	}
 	{
-		p.SetState(84)
+		p.SetState(104)
 		p.Match(ObjectApiParserT__5)
 	}
 	{
-		p.SetState(85)
+		p.SetState(105)
 
 		var _x = p.SchemaRule()
 
@@ -1513,6 +1702,47 @@ func (s *OperationRuleContext) SetParams(v IOperationParamRuleContext) { s.param
 
 func (s *OperationRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
+}
+
+func (s *OperationRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *OperationRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
 }
 
 func (s *OperationRuleContext) OperationReturnRule() IOperationReturnRuleContext {
@@ -1617,45 +1847,59 @@ func (p *ObjectApiParser) OperationRule() (localctx IOperationRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(110)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(107)
+			p.MetaRule()
+		}
+
+		p.SetState(112)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(87)
+		p.SetState(113)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*OperationRuleContext).name = _m
 	}
 	{
-		p.SetState(88)
+		p.SetState(114)
 		p.Match(ObjectApiParserT__6)
 	}
-	p.SetState(92)
+	p.SetState(118)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == ObjectApiParserIDENTIFIER {
 		{
-			p.SetState(89)
+			p.SetState(115)
 
 			var _x = p.OperationParamRule()
 
 			localctx.(*OperationRuleContext).params = _x
 		}
 
-		p.SetState(94)
+		p.SetState(120)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(95)
+		p.SetState(121)
 		p.Match(ObjectApiParserT__7)
 	}
-	p.SetState(97)
+	p.SetState(123)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == ObjectApiParserT__5 {
 		{
-			p.SetState(96)
+			p.SetState(122)
 			p.OperationReturnRule()
 		}
 
@@ -1774,11 +2018,11 @@ func (p *ObjectApiParser) OperationReturnRule() (localctx IOperationReturnRuleCo
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(99)
+		p.SetState(125)
 		p.Match(ObjectApiParserT__5)
 	}
 	{
-		p.SetState(100)
+		p.SetState(126)
 
 		var _x = p.SchemaRule()
 
@@ -1914,30 +2158,30 @@ func (p *ObjectApiParser) OperationParamRule() (localctx IOperationParamRuleCont
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(102)
+		p.SetState(128)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*OperationParamRuleContext).name = _m
 	}
 	{
-		p.SetState(103)
+		p.SetState(129)
 		p.Match(ObjectApiParserT__5)
 	}
 	{
-		p.SetState(104)
+		p.SetState(130)
 
 		var _x = p.SchemaRule()
 
 		localctx.(*OperationParamRuleContext).schema = _x
 	}
-	p.SetState(106)
+	p.SetState(132)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == ObjectApiParserT__8 {
 		{
-			p.SetState(105)
+			p.SetState(131)
 			p.Match(ObjectApiParserT__8)
 		}
 
@@ -2008,6 +2252,47 @@ func (s *SignalRuleContext) SetParams(v IOperationParamRuleContext) { s.params =
 
 func (s *SignalRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
+}
+
+func (s *SignalRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *SignalRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
 }
 
 func (s *SignalRuleContext) AllOperationParamRule() []IOperationParamRuleContext {
@@ -2096,40 +2381,54 @@ func (p *ObjectApiParser) SignalRule() (localctx ISignalRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(137)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(134)
+			p.MetaRule()
+		}
+
+		p.SetState(139)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(108)
+		p.SetState(140)
 		p.Match(ObjectApiParserT__9)
 	}
 	{
-		p.SetState(109)
+		p.SetState(141)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*SignalRuleContext).name = _m
 	}
 	{
-		p.SetState(110)
+		p.SetState(142)
 		p.Match(ObjectApiParserT__6)
 	}
-	p.SetState(114)
+	p.SetState(146)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == ObjectApiParserIDENTIFIER {
 		{
-			p.SetState(111)
+			p.SetState(143)
 
 			var _x = p.OperationParamRule()
 
 			localctx.(*SignalRuleContext).params = _x
 		}
 
-		p.SetState(116)
+		p.SetState(148)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(117)
+		p.SetState(149)
 		p.Match(ObjectApiParserT__7)
 	}
 
@@ -2187,6 +2486,47 @@ func (s *StructRuleContext) SetName(v antlr.Token) { s.name = v }
 
 func (s *StructRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
+}
+
+func (s *StructRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *StructRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
 }
 
 func (s *StructRuleContext) AllStructFieldRule() []IStructFieldRuleContext {
@@ -2275,37 +2615,51 @@ func (p *ObjectApiParser) StructRule() (localctx IStructRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(154)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(151)
+			p.MetaRule()
+		}
+
+		p.SetState(156)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(119)
+		p.SetState(157)
 		p.Match(ObjectApiParserT__10)
 	}
 	{
-		p.SetState(120)
+		p.SetState(158)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*StructRuleContext).name = _m
 	}
 	{
-		p.SetState(121)
+		p.SetState(159)
 		p.Match(ObjectApiParserT__3)
 	}
-	p.SetState(125)
+	p.SetState(163)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for _la == ObjectApiParserIDENTIFIER {
+	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&218103808) != 0 {
 		{
-			p.SetState(122)
+			p.SetState(160)
 			p.StructFieldRule()
 		}
 
-		p.SetState(127)
+		p.SetState(165)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(128)
+		p.SetState(166)
 		p.Match(ObjectApiParserT__4)
 	}
 
@@ -2392,6 +2746,47 @@ func (s *StructFieldRuleContext) SchemaRule() ISchemaRuleContext {
 	return t.(ISchemaRuleContext)
 }
 
+func (s *StructFieldRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *StructFieldRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
+}
+
 func (s *StructFieldRuleContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -2418,6 +2813,7 @@ func (p *ObjectApiParser) StructFieldRule() (localctx IStructFieldRuleContext) {
 
 	localctx = NewStructFieldRuleContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 26, ObjectApiParserRULE_structFieldRule)
+	var _la int
 
 	defer func() {
 		p.ExitRule()
@@ -2436,19 +2832,33 @@ func (p *ObjectApiParser) StructFieldRule() (localctx IStructFieldRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(171)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(168)
+			p.MetaRule()
+		}
+
+		p.SetState(173)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(130)
+		p.SetState(174)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*StructFieldRuleContext).name = _m
 	}
 	{
-		p.SetState(131)
+		p.SetState(175)
 		p.Match(ObjectApiParserT__5)
 	}
 	{
-		p.SetState(132)
+		p.SetState(176)
 
 		var _x = p.SchemaRule()
 
@@ -2509,6 +2919,47 @@ func (s *EnumRuleContext) SetName(v antlr.Token) { s.name = v }
 
 func (s *EnumRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
+}
+
+func (s *EnumRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *EnumRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
 }
 
 func (s *EnumRuleContext) AllEnumMemberRule() []IEnumMemberRuleContext {
@@ -2597,37 +3048,51 @@ func (p *ObjectApiParser) EnumRule() (localctx IEnumRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(181)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(178)
+			p.MetaRule()
+		}
+
+		p.SetState(183)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(134)
+		p.SetState(184)
 		p.Match(ObjectApiParserT__11)
 	}
 	{
-		p.SetState(135)
+		p.SetState(185)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*EnumRuleContext).name = _m
 	}
 	{
-		p.SetState(136)
+		p.SetState(186)
 		p.Match(ObjectApiParserT__3)
 	}
-	p.SetState(140)
+	p.SetState(190)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for _la == ObjectApiParserIDENTIFIER {
+	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&218103808) != 0 {
 		{
-			p.SetState(137)
+			p.SetState(187)
 			p.EnumMemberRule()
 		}
 
-		p.SetState(142)
+		p.SetState(192)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(143)
+		p.SetState(193)
 		p.Match(ObjectApiParserT__4)
 	}
 
@@ -2698,6 +3163,47 @@ func (s *EnumMemberRuleContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserIDENTIFIER, 0)
 }
 
+func (s *EnumMemberRuleContext) AllMetaRule() []IMetaRuleContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IMetaRuleContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IMetaRuleContext); ok {
+			tst[i] = t.(IMetaRuleContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *EnumMemberRuleContext) MetaRule(i int) IMetaRuleContext {
+	var t antlr.RuleContext
+	j := 0
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMetaRuleContext); ok {
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMetaRuleContext)
+}
+
 func (s *EnumMemberRuleContext) INTEGER() antlr.TerminalNode {
 	return s.GetToken(ObjectApiParserINTEGER, 0)
 }
@@ -2747,24 +3253,38 @@ func (p *ObjectApiParser) EnumMemberRule() (localctx IEnumMemberRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(198)
+	p.GetErrorHandler().Sync(p)
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == ObjectApiParserDOCLINE || _la == ObjectApiParserTAGLINE {
+		{
+			p.SetState(195)
+			p.MetaRule()
+		}
+
+		p.SetState(200)
+		p.GetErrorHandler().Sync(p)
+		_la = p.GetTokenStream().LA(1)
+	}
 	{
-		p.SetState(145)
+		p.SetState(201)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*EnumMemberRuleContext).name = _m
 	}
-	p.SetState(148)
+	p.SetState(204)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == ObjectApiParserT__12 {
 		{
-			p.SetState(146)
+			p.SetState(202)
 			p.Match(ObjectApiParserT__12)
 		}
 		{
-			p.SetState(147)
+			p.SetState(203)
 
 			var _m = p.Match(ObjectApiParserINTEGER)
 
@@ -2772,13 +3292,13 @@ func (p *ObjectApiParser) EnumMemberRule() (localctx IEnumMemberRuleContext) {
 		}
 
 	}
-	p.SetState(151)
+	p.SetState(207)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == ObjectApiParserT__8 {
 		{
-			p.SetState(150)
+			p.SetState(206)
 			p.Match(ObjectApiParserT__8)
 		}
 
@@ -2918,32 +3438,32 @@ func (p *ObjectApiParser) SchemaRule() (localctx ISchemaRuleContext) {
 	}()
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(155)
+	p.SetState(211)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case ObjectApiParserT__15, ObjectApiParserT__16, ObjectApiParserT__17, ObjectApiParserT__18, ObjectApiParserT__19, ObjectApiParserT__20, ObjectApiParserT__21, ObjectApiParserT__22:
+	case ObjectApiParserT__15, ObjectApiParserT__16, ObjectApiParserT__17, ObjectApiParserT__18:
 		{
-			p.SetState(153)
+			p.SetState(209)
 			p.PrimitiveSchema()
 		}
 
 	case ObjectApiParserIDENTIFIER:
 		{
-			p.SetState(154)
+			p.SetState(210)
 			p.SymbolSchema()
 		}
 
 	default:
 		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
-	p.SetState(158)
+	p.SetState(214)
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
 	if _la == ObjectApiParserT__13 {
 		{
-			p.SetState(157)
+			p.SetState(213)
 			p.ArrayRule()
 		}
 
@@ -3034,11 +3554,11 @@ func (p *ObjectApiParser) ArrayRule() (localctx IArrayRuleContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(160)
+		p.SetState(216)
 		p.Match(ObjectApiParserT__13)
 	}
 	{
-		p.SetState(161)
+		p.SetState(217)
 		p.Match(ObjectApiParserT__14)
 	}
 
@@ -3137,14 +3657,14 @@ func (p *ObjectApiParser) PrimitiveSchema() (localctx IPrimitiveSchemaContext) {
 		}
 	}()
 
-	p.SetState(171)
+	p.SetState(223)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
 	case ObjectApiParserT__15:
 		p.EnterOuterAlt(localctx, 1)
 		{
-			p.SetState(163)
+			p.SetState(219)
 
 			var _m = p.Match(ObjectApiParserT__15)
 
@@ -3154,7 +3674,7 @@ func (p *ObjectApiParser) PrimitiveSchema() (localctx IPrimitiveSchemaContext) {
 	case ObjectApiParserT__16:
 		p.EnterOuterAlt(localctx, 2)
 		{
-			p.SetState(164)
+			p.SetState(220)
 
 			var _m = p.Match(ObjectApiParserT__16)
 
@@ -3164,7 +3684,7 @@ func (p *ObjectApiParser) PrimitiveSchema() (localctx IPrimitiveSchemaContext) {
 	case ObjectApiParserT__17:
 		p.EnterOuterAlt(localctx, 3)
 		{
-			p.SetState(165)
+			p.SetState(221)
 
 			var _m = p.Match(ObjectApiParserT__17)
 
@@ -3174,49 +3694,9 @@ func (p *ObjectApiParser) PrimitiveSchema() (localctx IPrimitiveSchemaContext) {
 	case ObjectApiParserT__18:
 		p.EnterOuterAlt(localctx, 4)
 		{
-			p.SetState(166)
+			p.SetState(222)
 
 			var _m = p.Match(ObjectApiParserT__18)
-
-			localctx.(*PrimitiveSchemaContext).name = _m
-		}
-
-	case ObjectApiParserT__19:
-		p.EnterOuterAlt(localctx, 5)
-		{
-			p.SetState(167)
-
-			var _m = p.Match(ObjectApiParserT__19)
-
-			localctx.(*PrimitiveSchemaContext).name = _m
-		}
-
-	case ObjectApiParserT__20:
-		p.EnterOuterAlt(localctx, 6)
-		{
-			p.SetState(168)
-
-			var _m = p.Match(ObjectApiParserT__20)
-
-			localctx.(*PrimitiveSchemaContext).name = _m
-		}
-
-	case ObjectApiParserT__21:
-		p.EnterOuterAlt(localctx, 7)
-		{
-			p.SetState(169)
-
-			var _m = p.Match(ObjectApiParserT__21)
-
-			localctx.(*PrimitiveSchemaContext).name = _m
-		}
-
-	case ObjectApiParserT__22:
-		p.EnterOuterAlt(localctx, 8)
-		{
-			p.SetState(170)
-
-			var _m = p.Match(ObjectApiParserT__22)
 
 			localctx.(*PrimitiveSchemaContext).name = _m
 		}
@@ -3326,11 +3806,153 @@ func (p *ObjectApiParser) SymbolSchema() (localctx ISymbolSchemaContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(173)
+		p.SetState(225)
 
 		var _m = p.Match(ObjectApiParserIDENTIFIER)
 
 		localctx.(*SymbolSchemaContext).name = _m
+	}
+
+	return localctx
+}
+
+// IMetaRuleContext is an interface to support dynamic dispatch.
+type IMetaRuleContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// GetTagLine returns the tagLine token.
+	GetTagLine() antlr.Token
+
+	// GetDocLine returns the docLine token.
+	GetDocLine() antlr.Token
+
+	// SetTagLine sets the tagLine token.
+	SetTagLine(antlr.Token)
+
+	// SetDocLine sets the docLine token.
+	SetDocLine(antlr.Token)
+
+	// IsMetaRuleContext differentiates from other interfaces.
+	IsMetaRuleContext()
+}
+
+type MetaRuleContext struct {
+	*antlr.BaseParserRuleContext
+	parser  antlr.Parser
+	tagLine antlr.Token
+	docLine antlr.Token
+}
+
+func NewEmptyMetaRuleContext() *MetaRuleContext {
+	var p = new(MetaRuleContext)
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	p.RuleIndex = ObjectApiParserRULE_metaRule
+	return p
+}
+
+func (*MetaRuleContext) IsMetaRuleContext() {}
+
+func NewMetaRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *MetaRuleContext {
+	var p = new(MetaRuleContext)
+
+	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = ObjectApiParserRULE_metaRule
+
+	return p
+}
+
+func (s *MetaRuleContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *MetaRuleContext) GetTagLine() antlr.Token { return s.tagLine }
+
+func (s *MetaRuleContext) GetDocLine() antlr.Token { return s.docLine }
+
+func (s *MetaRuleContext) SetTagLine(v antlr.Token) { s.tagLine = v }
+
+func (s *MetaRuleContext) SetDocLine(v antlr.Token) { s.docLine = v }
+
+func (s *MetaRuleContext) TAGLINE() antlr.TerminalNode {
+	return s.GetToken(ObjectApiParserTAGLINE, 0)
+}
+
+func (s *MetaRuleContext) DOCLINE() antlr.TerminalNode {
+	return s.GetToken(ObjectApiParserDOCLINE, 0)
+}
+
+func (s *MetaRuleContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *MetaRuleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *MetaRuleContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(ObjectApiListener); ok {
+		listenerT.EnterMetaRule(s)
+	}
+}
+
+func (s *MetaRuleContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(ObjectApiListener); ok {
+		listenerT.ExitMetaRule(s)
+	}
+}
+
+func (p *ObjectApiParser) MetaRule() (localctx IMetaRuleContext) {
+	this := p
+	_ = this
+
+	localctx = NewMetaRuleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 40, ObjectApiParserRULE_metaRule)
+
+	defer func() {
+		p.ExitRule()
+	}()
+
+	defer func() {
+		if err := recover(); err != nil {
+			if v, ok := err.(antlr.RecognitionException); ok {
+				localctx.SetException(v)
+				p.GetErrorHandler().ReportError(p, v)
+				p.GetErrorHandler().Recover(p, v)
+			} else {
+				panic(err)
+			}
+		}
+	}()
+
+	p.SetState(229)
+	p.GetErrorHandler().Sync(p)
+
+	switch p.GetTokenStream().LA(1) {
+	case ObjectApiParserTAGLINE:
+		p.EnterOuterAlt(localctx, 1)
+		{
+			p.SetState(227)
+
+			var _m = p.Match(ObjectApiParserTAGLINE)
+
+			localctx.(*MetaRuleContext).tagLine = _m
+		}
+
+	case ObjectApiParserDOCLINE:
+		p.EnterOuterAlt(localctx, 2)
+		{
+			p.SetState(228)
+
+			var _m = p.Match(ObjectApiParserDOCLINE)
+
+			localctx.(*MetaRuleContext).docLine = _m
+		}
+
+	default:
+		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 	}
 
 	return localctx
