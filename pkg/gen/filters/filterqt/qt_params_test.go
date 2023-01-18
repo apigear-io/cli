@@ -15,11 +15,19 @@ func TestParams(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "bool param1"},
 		{"test", "Test3", "opInt", "int param1"},
+		{"test", "Test3", "opInt32", "qint32 param1"},
+		{"test", "Test3", "opInt64", "qint64 param1"},
 		{"test", "Test3", "opFloat", "qreal param1"},
+		{"test", "Test3", "opFloat32", "float param1"},
+		{"test", "Test3", "opFloat64", "double param1"},
 		{"test", "Test3", "opString", "const QString& param1"},
 		{"test", "Test3", "opBoolArray", "const QList<bool>& param1"},
 		{"test", "Test3", "opIntArray", "const QList<int>& param1"},
+		{"test", "Test3", "opInt32Array", "const QList<qint32>& param1"},
+		{"test", "Test3", "opInt64Array", "const QList<qint64>& param1"},
 		{"test", "Test3", "opFloatArray", "const QList<qreal>& param1"},
+		{"test", "Test3", "opFloat32Array", "const QList<float>& param1"},
+		{"test", "Test3", "opFloat64Array", "const QList<double>& param1"},
 		{"test", "Test3", "opStringArray", "const QList<QString>& param1"},
 	}
 	syss := loadTestSystems(t)

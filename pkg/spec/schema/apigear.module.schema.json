@@ -182,7 +182,11 @@
         {
           "enum": [
             "int",
+            "int32",
+            "int64",
             "float",
+            "float32",
+            "float64",
             "bool",
             "string"
           ],

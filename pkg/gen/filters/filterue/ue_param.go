@@ -28,8 +28,16 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		return fmt.Sprintf("const FString& %s%s", prefix, name), nil
 	case "int":
 		return fmt.Sprintf("int32 %s%s", prefix, name), nil
+	case "int32":
+		return fmt.Sprintf("int32 %s%s", prefix, name), nil
+	case "int64":
+		return fmt.Sprintf("int64 %s%s", prefix, name), nil
 	case "float":
 		return fmt.Sprintf("float %s%s", prefix, name), nil
+	case "float32":
+		return fmt.Sprintf("float %s%s", prefix, name), nil
+	case "float64":
+		return fmt.Sprintf("double %s%s", prefix, name), nil
 	case "bool":
 		return fmt.Sprintf("bool b%s%s", prefix, name), nil
 	}

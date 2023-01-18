@@ -18,8 +18,16 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = "FString"
 	case model.TypeInt:
 		text = "int32"
+	case model.TypeInt32:
+		text = "int32"
+	case model.TypeInt64:
+		text = "int64"
 	case model.TypeFloat:
 		text = "float"
+	case model.TypeFloat32:
+		text = "float"
+	case model.TypeFloat64:
+		text = "double"
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeVoid:
@@ -35,10 +43,22 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	}
 	if schema.IsArray {
 		switch schema.KindType {
-		case model.TypeInt, model.TypeFloat, model.TypeBool:
-			text = fmt.Sprintf("TArray<%s>", text)
 		case model.TypeString:
 			text = "TArray<FString>"
+		case model.TypeInt:
+			text = "TArray<int32>"
+		case model.TypeInt32:
+			text = "TArray<int32>"
+		case model.TypeInt64:
+			text = "TArray<int64>"
+		case model.TypeFloat:
+			text = "TArray<float>"
+		case model.TypeFloat32:
+			text = "TArray<float>"
+		case model.TypeFloat64:
+			text = "TArray<double>"
+		case model.TypeBool:
+			text = "TArray<bool>"
 		case model.TypeEnum:
 			text = fmt.Sprintf("TArray<%sE%s%s>", prefix, moduleId, schema.Type)
 		case model.TypeStruct:

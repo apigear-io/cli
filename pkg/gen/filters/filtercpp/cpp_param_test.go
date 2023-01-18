@@ -15,7 +15,11 @@ func TestParam(t *testing.T) {
 	}{
 		{"test", "Test1", "propBool", "bool propBool"},
 		{"test", "Test1", "propInt", "int propInt"},
+		{"test", "Test1", "propInt32", "int32_t propInt32"},
+		{"test", "Test1", "propInt64", "int64_t propInt64"},
 		{"test", "Test1", "propFloat", "float propFloat"},
+		{"test", "Test1", "propFloat32", "float propFloat32"},
+		{"test", "Test1", "propFloat64", "double propFloat64"},
 		{"test", "Test1", "propString", "const std::string& propString"},
 		{"test", "Test1", "propBoolArray", "const std::list<bool>& propBoolArray"},
 		{"test", "Test1", "propIntArray", "const std::list<int>& propIntArray"},

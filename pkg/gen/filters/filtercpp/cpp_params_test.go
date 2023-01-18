@@ -15,11 +15,19 @@ func TestParams(t *testing.T) {
 	}{
 		{"test", "Test3", "opBool", "bool param1"},
 		{"test", "Test3", "opInt", "int param1"},
+		{"test", "Test3", "opInt32", "int32_t param1"},
+		{"test", "Test3", "opInt64", "int64_t param1"},
 		{"test", "Test3", "opFloat", "float param1"},
+		{"test", "Test3", "opFloat32", "float param1"},
+		{"test", "Test3", "opFloat64", "double param1"},
 		{"test", "Test3", "opString", "const std::string& param1"},
 		{"test", "Test3", "opBoolArray", "const std::list<bool>& param1"},
 		{"test", "Test3", "opIntArray", "const std::list<int>& param1"},
+		{"test", "Test3", "opInt32Array", "const std::list<int32_t>& param1"},
+		{"test", "Test3", "opInt64Array", "const std::list<int64_t>& param1"},
 		{"test", "Test3", "opFloatArray", "const std::list<float>& param1"},
+		{"test", "Test3", "opFloat32Array", "const std::list<float>& param1"},
+		{"test", "Test3", "opFloat64Array", "const std::list<double>& param1"},
 		{"test", "Test3", "opStringArray", "const std::list<std::string>& param1"},
 	}
 	syss := loadTestSystems(t)

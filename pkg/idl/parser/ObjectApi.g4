@@ -6,6 +6,7 @@ headerRule: moduleRule importRule*;
 
 moduleRule:
 	metaRule* 'module' name = IDENTIFIER version = VERSION;
+
 importRule: 'import' name = IDENTIFIER version = VERSION;
 
 declarationsRule: interfaceRule | structRule | enumRule;
@@ -48,7 +49,11 @@ arrayRule: '[' ']';
 primitiveSchema:
 	name = 'bool'
 	| name = 'int'
+	| name = 'int32'
+	| name = 'int64'
 	| name = 'float'
+	| name = 'float32'
+	| name = 'float64'
 	| name = 'string';
 
 symbolSchema: name = IDENTIFIER;

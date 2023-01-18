@@ -22,9 +22,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		switch schema.KindType {
 		case model.TypeString:
 			text = "\"\""
-		case model.TypeInt:
+		case model.TypeInt, model.TypeInt32, model.TypeInt64:
 			text = "0"
-		case model.TypeFloat:
+		case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
 			text = "0.0"
 		case model.TypeBool:
 			text = "False"

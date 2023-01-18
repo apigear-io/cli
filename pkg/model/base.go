@@ -32,7 +32,11 @@ const (
 	TypeVoid      KindType = "void"
 	TypeBool      KindType = "bool"
 	TypeInt       KindType = "int"
+	TypeInt32     KindType = "int32"
+	TypeInt64     KindType = "int64"
 	TypeFloat     KindType = "float"
+	TypeFloat32   KindType = "float32"
+	TypeFloat64   KindType = "float64"
 	TypeString    KindType = "string"
 	TypeEnum      KindType = "enum"
 	TypeStruct    KindType = "struct"
@@ -82,6 +86,7 @@ type TypedNode struct {
 	Schema    `json:",inline" yaml:",inline"`
 }
 
+// NewTypedNode creates a new typed node
 func NewTypedNode(n string, k Kind) *TypedNode {
 	return &TypedNode{
 		NamedNode: NamedNode{
@@ -95,18 +100,22 @@ func NewTypedNode(n string, k Kind) *TypedNode {
 	}
 }
 
+// GetKind returns the kind of the node
 func (t TypedNode) GetKind() Kind {
 	return t.Kind
 }
 
+// GetName returns the name of the node
 func (t TypedNode) GetName() string {
 	return t.Name
 }
 
+// GetSchema returns the schema of the node
 func (t TypedNode) GetSchema() *Schema {
 	return &t.Schema
 }
 
+// ResolveAll resolves all the types in the schema
 func (t *TypedNode) ResolveAll(m *Module) error {
 	return t.Schema.ResolveAll(m)
 }
@@ -121,6 +130,17 @@ func (s Schema) IsNotVoid() bool {
 	return s.Type != "void"
 }
 
+func (t *TypedNode) IsInt() bool {
+	return t.Type == "int" || t.Type == "int32" || t.Type == "int64"
+}
+
+// IsFloat returns true if the schema is a float (e.g. float, float32, float64)
+func (t *TypedNode) IsFloat() bool {
+	return t.Type == "float" || t.Type == "float32" || t.Type == "float64"
+}
+
+// TypeName returns the name of the type, e.g. String, Int32, Int32Array, InterfaceFoo, StructBar, EnumBaz
+// Can be used to call conversion functions based on type name
 func (t TypedNode) TypeName() string {
 	// if IsArray prefix with Array
 	// is is isSymbol prefix with Interface, Struct, Enum
@@ -152,6 +172,7 @@ type Schema struct {
 	IsResolved  bool
 }
 
+// IsEmpty returns true if the schema is empty
 func (s Schema) IsEmpty() bool {
 	return s.Type == ""
 }
@@ -161,6 +182,7 @@ func (s Schema) LookupNode(name string) *NamedNode {
 	return s.Module.LookupNode(name)
 }
 
+// ResolveAll resolves all the types in the schema
 func (s *Schema) ResolveAll(m *Module) error {
 	if s.IsResolved {
 		return nil
@@ -173,7 +195,7 @@ func (s *Schema) ResolveAll(m *Module) error {
 	case "void":
 		s.IsPrimitive = false
 		s.IsSymbol = false
-	case "bool", "int", "float", "string":
+	case "bool", "int", "float", "string", "int32", "int64", "float32", "float64":
 		s.IsPrimitive = true
 		s.IsSymbol = false
 	default:

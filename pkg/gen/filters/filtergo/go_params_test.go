@@ -14,12 +14,20 @@ func TestParams(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test3", "opBool", "param1 bool"},
-		{"test", "Test3", "opInt", "param1 int64"},
-		{"test", "Test3", "opFloat", "param1 float64"},
+		{"test", "Test3", "opInt", "param1 int32"},
+		{"test", "Test3", "opInt32", "param1 int32"},
+		{"test", "Test3", "opInt64", "param1 int64"},
+		{"test", "Test3", "opFloat", "param1 float32"},
+		{"test", "Test3", "opFloat32", "param1 float32"},
+		{"test", "Test3", "opFloat64", "param1 float64"},
 		{"test", "Test3", "opString", "param1 string"},
 		{"test", "Test3", "opBoolArray", "param1 []bool"},
-		{"test", "Test3", "opIntArray", "param1 []int64"},
-		{"test", "Test3", "opFloatArray", "param1 []float64"},
+		{"test", "Test3", "opIntArray", "param1 []int32"},
+		{"test", "Test3", "opInt32Array", "param1 []int32"},
+		{"test", "Test3", "opInt64Array", "param1 []int64"},
+		{"test", "Test3", "opFloatArray", "param1 []float32"},
+		{"test", "Test3", "opFloat32Array", "param1 []float32"},
+		{"test", "Test3", "opFloat64Array", "param1 []float64"},
 		{"test", "Test3", "opStringArray", "param1 []string"},
 	}
 	syss := loadTestSystems(t)
@@ -72,8 +80,8 @@ func TestParamsMultiple(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test5", "opBoolBool", "param1 bool, param2 bool"},
-		{"test", "Test5", "opIntInt", "param1 int64, param2 int64"},
-		{"test", "Test5", "opFloatFloat", "param1 float64, param2 float64"},
+		{"test", "Test5", "opIntInt", "param1 int32, param2 int32"},
+		{"test", "Test5", "opFloatFloat", "param1 float32, param2 float32"},
 		{"test", "Test5", "opStringString", "param1 string, param2 string"},
 		{"test", "Test5", "opEnumEnum", "param1 Enum1, param2 Enum1"},
 		{"test", "Test5", "opStructStruct", "param1 Struct1, param2 Struct1"},

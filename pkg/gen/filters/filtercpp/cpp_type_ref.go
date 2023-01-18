@@ -25,8 +25,16 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 		text = "const std::string&"
 	case "int":
 		text = "int"
+	case "int32":
+		text = "int32_t"
+	case "int64":
+		text = "int64_t"
 	case "float":
 		text = "float"
+	case "float32":
+		text = "float"
+	case "float64":
+		text = "double"
 	case "bool":
 		text = "bool"
 	default:

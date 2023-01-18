@@ -16,8 +16,16 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeString:
 		text = "string"
 	case model.TypeInt:
+		text = "int32"
+	case model.TypeInt32:
+		text = "int32"
+	case model.TypeInt64:
 		text = "int64"
 	case model.TypeFloat:
+		text = "float32"
+	case model.TypeFloat32:
+		text = "float32"
+	case model.TypeFloat64:
 		text = "float64"
 	case model.TypeBool:
 		text = "bool"

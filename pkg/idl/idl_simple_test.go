@@ -17,7 +17,11 @@ func TestSimpleProps(t *testing.T) {
 	}{
 		{"SimpleInterface", "propBool", "bool"},
 		{"SimpleInterface", "propInt", "int"},
+		{"SimpleInterface", "propInt32", "int32"},
+		{"SimpleInterface", "propInt64", "int64"},
 		{"SimpleInterface", "propFloat", "float"},
+		{"SimpleInterface", "propFloat32", "float32"},
+		{"SimpleInterface", "propFloat64", "float64"},
 		{"SimpleInterface", "propString", "string"},
 	}
 	for _, tr := range table {
@@ -45,7 +49,11 @@ func TestSimpleFuncs(t *testing.T) {
 	}{
 		{"SimpleInterface", "funcBool", "paramBool", "bool"},
 		{"SimpleInterface", "funcInt", "paramInt", "int"},
+		{"SimpleInterface", "funcInt32", "paramInt32", "int32"},
+		{"SimpleInterface", "funcInt64", "paramInt64", "int64"},
 		{"SimpleInterface", "funcFloat", "paramFloat", "float"},
+		{"SimpleInterface", "funcFloat32", "paramFloat32", "float32"},
+		{"SimpleInterface", "funcFloat64", "paramFloat64", "float64"},
 		{"SimpleInterface", "funcString", "paramString", "string"},
 	}
 	for _, tr := range table {
@@ -77,7 +85,11 @@ func TestSimpleSignals(t *testing.T) {
 	}{
 		{"SimpleInterface", "sigBool", "paramBool", "bool"},
 		{"SimpleInterface", "sigInt", "paramInt", "int"},
+		{"SimpleInterface", "sigInt32", "paramInt32", "int32"},
+		{"SimpleInterface", "sigInt64", "paramInt64", "int64"},
 		{"SimpleInterface", "sigFloat", "paramFloat", "float"},
+		{"SimpleInterface", "sigFloat32", "paramFloat32", "float32"},
+		{"SimpleInterface", "sigFloat64", "paramFloat64", "float64"},
 		{"SimpleInterface", "sigString", "paramString", "string"},
 	}
 	for _, tr := range table {
@@ -107,7 +119,11 @@ func TestSimpleArrayProps(t *testing.T) {
 	}{
 		{"SimpleArrayInterface", "propBool", "bool"},
 		{"SimpleArrayInterface", "propInt", "int"},
+		{"SimpleArrayInterface", "propInt32", "int32"},
+		{"SimpleArrayInterface", "propInt64", "int64"},
 		{"SimpleArrayInterface", "propFloat", "float"},
+		{"SimpleArrayInterface", "propFloat32", "float32"},
+		{"SimpleArrayInterface", "propFloat64", "float64"},
 		{"SimpleArrayInterface", "propString", "string"},
 	}
 	for _, tr := range table {
@@ -136,7 +152,11 @@ func TestSimpleArrayFuncs(t *testing.T) {
 	}{
 		{"SimpleArrayInterface", "funcBool", "paramBool", "bool"},
 		{"SimpleArrayInterface", "funcInt", "paramInt", "int"},
+		{"SimpleArrayInterface", "funcInt32", "paramInt32", "int32"},
+		{"SimpleArrayInterface", "funcInt64", "paramInt64", "int64"},
 		{"SimpleArrayInterface", "funcFloat", "paramFloat", "float"},
+		{"SimpleArrayInterface", "funcFloat32", "paramFloat32", "float32"},
+		{"SimpleArrayInterface", "funcFloat64", "paramFloat64", "float64"},
 		{"SimpleArrayInterface", "funcString", "paramString", "string"},
 	}
 	for _, tr := range table {
@@ -169,7 +189,11 @@ func TestSimpleArraySignals(t *testing.T) {
 	}{
 		{"SimpleArrayInterface", "sigBool", "paramBool", "bool"},
 		{"SimpleArrayInterface", "sigInt", "paramInt", "int"},
+		{"SimpleArrayInterface", "sigInt32", "paramInt32", "int32"},
+		{"SimpleArrayInterface", "sigInt64", "paramInt64", "int64"},
 		{"SimpleArrayInterface", "sigFloat", "paramFloat", "float"},
+		{"SimpleArrayInterface", "sigFloat32", "paramFloat32", "float32"},
+		{"SimpleArrayInterface", "sigFloat64", "paramFloat64", "float64"},
 		{"SimpleArrayInterface", "sigString", "paramString", "string"},
 	}
 	for _, tr := range table {

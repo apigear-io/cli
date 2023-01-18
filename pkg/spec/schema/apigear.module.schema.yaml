@@ -40,7 +40,7 @@ definitions:
   TypeKey:
     oneOf:
       - type: string
-        enum: [int, float, bool, string]
+        enum: [int, int32, int64, float, float32, float64, bool, string]
       - type: string
         pattern: "^[A-Z][0-9A-Za-z_]+$"
   NamedType:
@@ -114,7 +114,7 @@ definitions:
       description: { type: string }
       meta: { type: object }
       return:
-          $ref: "#/definitions/Type"
+        $ref: "#/definitions/Type"
       params:
         type: array
         items:
