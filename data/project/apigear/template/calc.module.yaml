@@ -1,0 +1,29 @@
+schema: apigear.module/1.0
+name: calc
+version: "1.0"
+interfaces:
+  - name: Calculator
+    properties:
+      - { name: result, type: int }
+    operations:
+      - name: add
+        params:
+          - { name: a, type: int }
+          - { name: b, type: int }
+      - name: subtract
+        params:
+          - { name: a, type: int }
+          - { name: b, type: int }
+      - name: multiply
+        params:
+          - { name: a, type: int }
+          - { name: b, type: int }
+      - name: divide
+        params:
+          - { name: a, type: int }
+          - { name: b, type: int }
+        return: { type: int }
+    signals:
+      - name: resultChanged
+        params:
+          - { name: result, type: int }

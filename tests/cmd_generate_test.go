@@ -24,3 +24,17 @@ func TestGenerateSolutionCmd(t *testing.T) {
 	output := execute(t, "generate solution ./apigear/test.solution.yaml")
 	assert.Contains(t, output, "generated 1 files")
 }
+
+// test usage of generate expert command
+func TestGenerateExpertUsageCmd(t *testing.T) {
+	setup(t)
+	output := execute(t, "generate expert")
+	assert.Contains(t, output, "Usage:")
+}
+
+// test generate expert command with input, output and template flags
+func TestGenerateExpertCmd(t *testing.T) {
+	setup(t)
+	output := execute(t, "generate expert -i apigear -o out -t tpl")
+	assert.Contains(t, output, "generated 1 files")
+}

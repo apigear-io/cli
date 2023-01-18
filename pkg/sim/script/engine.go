@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/cli/pkg/sim/ostore"
 
 	js "github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/console"
@@ -15,14 +16,16 @@ import (
 var _ core.IEngine = (*Engine)(nil)
 
 type Engine struct {
+	store      ostore.IObjectStore
 	vm         *js.Runtime
 	interfaces map[string]*js.Object
 	sequencers map[string]*js.Object
 	core.EventNotifier
 }
 
-func NewEngine() *Engine {
+func NewEngine(store ostore.IObjectStore) *Engine {
 	e := &Engine{
+		store:      store,
 		vm:         js.New(),
 		interfaces: map[string]*js.Object{},
 		sequencers: map[string]*js.Object{},
@@ -46,7 +49,6 @@ func (e *Engine) HasInterface(symbol string) bool {
 
 func (e *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
 	log.Info().Msgf("%s/%s invoke", symbol, name)
-	e.EmitCall(symbol, name, args)
 	obj := e.interfaces[symbol]
 	if obj == nil {
 		return nil, fmt.Errorf("interface %s not found", symbol)
@@ -67,7 +69,6 @@ func (e *Engine) InvokeOperation(symbol, name string, args map[string]any) (any,
 }
 
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
-	e.EmitPropertySet(symbol, props)
 	obj := e.interfaces[symbol]
 	if obj == nil {
 		return fmt.Errorf("interface %s not found", symbol)

@@ -1,0 +1,57 @@
+module tb.meta 1.0
+
+@tag1: true
+// first line
+interface SingleLine {
+}
+
+
+@tag1: false
+@tag2: true
+// first line
+// second line
+@tag3: true
+// third line
+interface MultiLine {
+}
+
+@tag1: true
+// line 1
+interface FullMeta {
+    @prop1: true
+    // prop1
+    prop1: string
+
+    @op1: true
+    // op1
+    op1()
+
+    // sig1
+    @sig1: true
+    signal sig1()
+}
+
+@tag1: true
+// line 1
+struct MetaStruct {
+    @tag1: true
+    // line 1
+    value1: string
+
+    @tag1: true
+    // line 1
+    value2: string
+}
+
+
+@tag1: true
+// line 1
+enum MetaEnum {
+    @tag1: true
+    // line 1
+    value1,
+
+    @tag1: true
+    // line 1
+    value2
+}

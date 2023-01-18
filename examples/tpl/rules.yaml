@@ -1,0 +1,7 @@
+features:
+  - name: go
+    scopes:
+      - match: module
+        documents:
+          - source: api.go.tpl
+            target: api/api.go

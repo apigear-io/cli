@@ -40,9 +40,13 @@ func (e *MultiEngine) HasInterface(ifaceId string) bool {
 
 // InvokeOperation invokes the operation of the interface.
 func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
+	e.EmitCall(ifaceId, name, args)
 	result, err := e.invokeOperation(ifaceId, name, args)
 	if err != nil {
-		e.EmitError(err)
+		e.EmitCallError(ifaceId, name, err)
+	}
+	if result != nil {
+		e.EmitReply(ifaceId, name, result)
 	}
 	return result, err
 }
@@ -59,6 +63,7 @@ func (e *MultiEngine) invokeOperation(ifaceId string, name string, args map[stri
 // SetProperties sets the properties of the interface.
 func (e *MultiEngine) SetProperties(ifaceId string, props map[string]any) error {
 	err := e.setProperties(ifaceId, props)
+	e.EmitPropertySet(ifaceId, props)
 	if err != nil {
 		e.EmitError(err)
 	}

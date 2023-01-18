@@ -16,8 +16,8 @@ const (
 )
 
 type SimuEvent struct {
-	Timestamp time.Time      `json:"timestamp"`
 	Type      SimuEventType  `json:"type"`
+	Timestamp time.Time      `json:"timestamp"`
 	Symbol    string         `json:"symbol"`
 	Name      string         `json:"name"`
 	Args      []any          `json:"args"`

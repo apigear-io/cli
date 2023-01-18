@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/cli/pkg/sim/ostore"
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
@@ -11,15 +12,17 @@ import (
 var _ core.IEngine = (*Engine)(nil)
 
 type Engine struct {
-	eval *eval
-	docs []*spec.ScenarioDoc
+	store ostore.IObjectStore
+	eval  *eval
+	docs  []*spec.ScenarioDoc
 	core.EventNotifier
 	players []*Player
 }
 
-func NewEngine() *Engine {
-	eval := NewEval()
+func NewEngine(store ostore.IObjectStore) *Engine {
+	eval := NewEval(store)
 	e := &Engine{
+		store:   store,
 		eval:    eval,
 		docs:    make([]*spec.ScenarioDoc, 0),
 		players: make([]*Player, 0),
@@ -53,7 +56,7 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 			for frame := range p.FramesC {
 				iface := frame.Interface
 				if iface != nil {
-					_, err := e.eval.EvalAction(iface.Name, frame.Action, iface.Properties)
+					_, err := e.eval.EvalAction(iface.Name, frame.Action)
 					if err != nil {
 						log.Error().Msgf("eval action %s: %v", frame.Action, err)
 					}
@@ -107,9 +110,13 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 	if op == nil {
 		return nil, fmt.Errorf("operation %s not found", name)
 	}
-	result, err := e.eval.EvalActions(symbol, op.Actions, iface.Properties)
+	result, err := e.eval.EvalActions(symbol, op.Actions)
 	if err != nil {
+		e.EmitCallError(symbol, name, err)
 		return nil, err
+	}
+	if result != nil {
+		e.EmitReply(symbol, name, result)
 	}
 	log.Debug().Msgf("%s/%s result %v", symbol, name, result)
 	return result, nil
@@ -117,24 +124,13 @@ func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any
 
 // SetProperties sets the properties of the interface.
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
-	e.EmitPropertySet(symbol, props)
-	iface := e.GetInterface(symbol)
-	if iface == nil {
-		return fmt.Errorf("interface %s not found", symbol)
-	}
-	for name, value := range props {
-		iface.Properties[name] = value
-	}
+	e.store.Set(symbol, props)
 	return nil
 }
 
 // FetchProperties returns a copy of the properties of the interface.
 func (e *Engine) GetProperties(symbol string) (map[string]any, error) {
-	iface := e.GetInterface(symbol)
-	if iface == nil {
-		return nil, fmt.Errorf("interface %s not found", symbol)
-	}
-	return iface.Properties, nil
+	return e.store.Get(symbol), nil
 }
 
 func (e *Engine) HasSequence(name string) bool {

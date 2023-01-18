@@ -27,6 +27,7 @@ go.work
 
 # Out test folder
 tmp/
+out/
 bin/
 dist/
 

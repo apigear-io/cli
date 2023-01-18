@@ -1,0 +1,17 @@
+module demo 1.0
+
+// description1
+// description2
+@singleton: true
+interface Counter {
+    // description1
+    // description2
+    @readonly: true
+    count: int
+    // description1
+    // description2
+    increment(): int
+    // description1
+    // description2
+    decrement()
+}

@@ -1,0 +1,22 @@
+module calc 1.0
+
+// hello World
+// hello East
+@Hello: yaml
+interface Calculator {
+    total: int
+    add(a: int, b: int): int
+    subtract(a: int, b: int): int
+    multiply(a: int, b: int): int
+    divide(a: int, b: int): int
+    signal clear(): void
+}
+
+enum Hello {
+    World
+    East
+}
+
+struct Hello {
+    value: int
+}

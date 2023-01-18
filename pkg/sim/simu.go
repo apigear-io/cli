@@ -3,6 +3,7 @@ package sim
 import (
 	"github.com/apigear-io/cli/pkg/sim/actions"
 	"github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/cli/pkg/sim/ostore"
 	"github.com/apigear-io/cli/pkg/sim/script"
 	"github.com/apigear-io/cli/pkg/spec"
 )
@@ -14,20 +15,35 @@ import (
 // The scripted behavior can be either triggered by a call or by a script entry
 // All results are send out via the event channel.
 type Simulation struct {
-	aEng *actions.Engine
-	sEng *script.Engine
 	*core.MultiEngine
+	store ostore.IObjectStore
+	aEng  *actions.Engine
+	sEng  *script.Engine
 }
 
 func NewSimulation() *Simulation {
-	aEng := actions.NewEngine()
-	sEng := script.NewEngine()
+	aStore := ostore.NewMemoryStore()
+	aEng := actions.NewEngine(aStore)
+	sEng := script.NewEngine(aStore)
 	s := &Simulation{
 		MultiEngine: core.NewMultiEngine(aEng, sEng),
+		store:       aStore,
 		aEng:        aEng,
 		sEng:        sEng,
 	}
+	s.init()
 	return s
+}
+
+func (s *Simulation) init() {
+	s.store.OnEvent(func(evt ostore.StoreEvent) {
+		switch evt.Type {
+		case ostore.EventTypeCreate, ostore.EventTypeUpdate:
+			for prop, val := range evt.Value {
+				s.EmitPropertyChanged(evt.Id, prop, val)
+			}
+		}
+	})
 }
 
 func (s *Simulation) Stop() {

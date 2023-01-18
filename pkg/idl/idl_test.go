@@ -19,6 +19,16 @@ func loadIdl(name string, files []string) (*model.System, error) {
 	return system, nil
 }
 
+func loadIdlFromString(name string, content string) (*model.System, error) {
+	system := model.NewSystem(name)
+	parser := NewParser(system)
+	err := parser.ParseString(content)
+	if err != nil {
+		return nil, err
+	}
+	return system, nil
+}
+
 func TestSimpleIdl(t *testing.T) {
 	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
