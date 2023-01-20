@@ -1,6 +1,7 @@
 package up
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -43,9 +44,10 @@ func NewUpdater(repo string, version string) (*Updater, error) {
 
 // Check checks for a new release
 // returns a release if there is one, or nil if there is no new release
-func (u *Updater) Check() (*selfupdate.Release, error) {
+func (u *Updater) Check(ctx context.Context) (*selfupdate.Release, error) {
 	log.Info().Msgf("check for updates: %s", u.repo)
-	latest, found, err := u.updater.DetectLatest(u.repo)
+	repo := selfupdate.ParseSlug(u.repo)
+	latest, found, err := u.updater.DetectLatest(ctx, repo)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +58,7 @@ func (u *Updater) Check() (*selfupdate.Release, error) {
 }
 
 // Update updates the current executable to the latest release
-func (u *Updater) Update(release *selfupdate.Release) error {
+func (u *Updater) Update(ctx context.Context, release *selfupdate.Release) error {
 	// get the current executable path
 	exe, err := os.Executable()
 	if err != nil {
@@ -70,5 +72,5 @@ func (u *Updater) Update(release *selfupdate.Release) error {
 	if !helper.IsFile(exe) {
 		return fmt.Errorf("executable not found: %s", exe)
 	}
-	return u.updater.UpdateTo(release, exe)
+	return u.updater.UpdateTo(ctx, release, exe)
 }

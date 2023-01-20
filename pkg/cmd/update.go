@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"context"
+
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/up"
 	"github.com/pterm/pterm"
@@ -16,12 +18,14 @@ func NewUpdateCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			repo := "apigear-io/cli-releases"
 			version := cfg.BuildVersion()
+			ctx := context.Background()
 			u, err := up.NewUpdater(repo, version)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
 			}
-			release, err := u.Check()
+
+			release, err := u.Check(ctx)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
@@ -43,7 +47,7 @@ func NewUpdateCommand() *cobra.Command {
 				}
 			}
 			cmd.Printf("updating to %s\n", release.Version())
-			err = u.Update(release)
+			err = u.Update(ctx, release)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
