@@ -9,7 +9,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/apigear-io/cli/pkg/net/rpc"
+	"github.com/apigear-io/cli/pkg/net/olnk"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
 	"github.com/apigear-io/cli/pkg/sim/core"
@@ -48,16 +48,7 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 }
 
 func StartSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
-	handler := net.NewSimuRpcHandler(simu)
-	hub := rpc.NewHub(ctx)
-	go func() {
-		for req := range hub.Requests() {
-			err := handler.HandleMessage(req)
-			if err != nil {
-				log.Error().Err(err).Msg("handle rpc request")
-			}
-		}
-	}()
+	hub := olnk.NewHub(simu)
 	s := net.NewHTTPServer()
 	s.Router().HandleFunc("/ws", hub.ServeHTTP)
 	return s.Start(addr)
@@ -105,7 +96,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				}()
 			}
 			// start rpc server
-			log.Info().Msgf("rpc server ws://%s/ws", addr)
+			log.Info().Msgf("olnk server ws://%s/ws", addr)
 			go func() {
 				err := StartSimuServer(ctx, addr, simu)
 				if err != nil {

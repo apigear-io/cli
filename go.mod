@@ -35,6 +35,7 @@ require (
 require (
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
+	github.com/apigear-io/objectlink-core-go v0.0.0-20221116105525-f3fa3efaf8fd // indirect
 	github.com/cloudflare/circl v1.3.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
