@@ -1,11 +1,9 @@
 package olnk
 
 import (
-	"log"
-
 	"github.com/apigear-io/cli/pkg/sim"
-	score "github.com/apigear-io/cli/pkg/sim/core"
 
+	"github.com/apigear-io/objectlink-core-go/log"
 	"github.com/apigear-io/objectlink-core-go/olink/core"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 )
@@ -34,32 +32,7 @@ func NewSimuSource(o SimuSourceOptions) *SimuSource {
 		Registry: o.Registry,
 		Simu:     o.Simu,
 	}
-	s.Simu.OnEvent(func(event *score.SimuEvent) {
-		s.HandleEvent(event)
-	})
 	return s
-}
-
-func (s *SimuSource) HandleEvent(event *score.SimuEvent) {
-	log.Printf("event %v\n", event)
-	switch event.Type {
-	case score.EventSimuStart:
-		log.Println("simulation started")
-	case score.EventSimuStop:
-		log.Println("simulation stopped")
-	case score.EventCall:
-		log.Printf("call")
-	case score.EventReply:
-		log.Printf("reply")
-	case score.EventSignal:
-		log.Printf("signal")
-	case score.EventPropertySet:
-		log.Printf("property set")
-	case score.EventPropertyChanged:
-		log.Printf("property changed")
-	case score.EventError:
-		log.Printf("error")
-	}
 }
 
 // ObjectId returns the id of the source.
@@ -107,6 +80,6 @@ func (s *SimuSource) NotifySignal(name string, args core.Args) {
 
 // Linked is called when the source is linked to a remote node.
 func (s *SimuSource) Linked(objectId string, node *remote.Node) error {
-	log.Printf("source %s is linked to node %s", objectId, node.Id())
+	log.Info().Msgf("linked: %v", objectId)
 	return nil
 }

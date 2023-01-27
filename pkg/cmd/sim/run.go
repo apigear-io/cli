@@ -81,7 +81,11 @@ Using a scenario you can define additional static and scripted data and behavior
 			}
 			simu := sim.NewSimulation()
 			simu.OnEvent(func(event *core.SimuEvent) {
-				log.Info().Msgf("%s %s %+v %+v", event.Symbol, event.Name, event.Args, event.KWArgs)
+				objectId := event.Symbol
+				if event.Name != "" {
+					objectId = fmt.Sprintf("%s/%s", objectId, event.Name)
+				}
+				log.Info().Msgf("%s on %s: args=%+v kwargs=%+v", event.Type, objectId, event.Args, event.KWArgs)
 			})
 			if doc != nil {
 				err := simu.LoadScenario(doc.Name, doc)
