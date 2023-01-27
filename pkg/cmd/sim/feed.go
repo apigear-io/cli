@@ -7,29 +7,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/apigear-io/cli/pkg/net/rpc"
 	"github.com/apigear-io/objectlink-core-go/olink/client"
 	"github.com/apigear-io/objectlink-core-go/olink/core"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 	"github.com/spf13/cobra"
 )
-
-type ConsoleHandler struct{}
-
-// Very similar to message handler
-func (c ConsoleHandler) HandleMessage(msg rpc.Message) error {
-	log.Debug().Msgf("handle message: %+v", msg)
-	switch msg.Method {
-	case "simu.state":
-		log.Info().Msgf("<- state: %v", msg.Params)
-	case "simu.call":
-		log.Info().Msgf("<- reply[%d]: %v", msg.Id, msg.Params)
-	}
-	return nil
-}
 
 // client messages supported for feed
 // - ["link", "demo.Calc"]
@@ -67,8 +51,6 @@ func (s *ObjectSink) OnRelease() {
 }
 
 var _ client.IObjectSink = &ObjectSink{}
-
-var autoId = helper.MakeIntIdGenerator()
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {

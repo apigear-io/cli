@@ -1,12 +1,14 @@
 package olnk
 
 import (
+	"context"
+
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )
 
-func NewHub(s *sim.Simulation) *ws.Hub {
+func NewHub(ctx context.Context, s *sim.Simulation) *ws.Hub {
 	registry := remote.NewRegistry()
 	registry.SetSourceFactory(func(objectId string) remote.IObjectSource {
 		return NewSimuSource(SimuSourceOptions{
@@ -15,5 +17,5 @@ func NewHub(s *sim.Simulation) *ws.Hub {
 			Simu:     s,
 		})
 	})
-	return ws.NewHub(registry)
+	return ws.NewHub(ctx, registry)
 }

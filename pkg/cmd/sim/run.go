@@ -48,7 +48,7 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 }
 
 func StartSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
-	hub := olnk.NewHub(simu)
+	hub := olnk.NewHub(ctx, simu)
 	s := net.NewHTTPServer()
 	s.Router().HandleFunc("/ws", hub.ServeHTTP)
 	return s.Start(addr)
