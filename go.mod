@@ -13,6 +13,7 @@ require (
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20221202181307-76fa05c21b12
+	github.com/apigear-io/objectlink-core-go v0.1.0
 	github.com/creativeprojects/go-selfupdate v1.0.0
 	github.com/dop251/goja v0.0.0-20230119130012-17fd568758fe
 	github.com/dop251/goja_nodejs v0.0.0-20221211191749-434192f0843e
@@ -35,7 +36,6 @@ require (
 require (
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
-	github.com/apigear-io/objectlink-core-go v0.0.0-20221116105525-f3fa3efaf8fd // indirect
 	github.com/cloudflare/circl v1.3.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

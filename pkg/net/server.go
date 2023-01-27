@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/go-chi/chi/v5"
@@ -11,19 +12,28 @@ import (
 	"github.com/go-chi/httplog"
 )
 
+var logger = httplog.NewLogger("http", httplog.Options{
+	JSON:     true,
+	LogLevel: "error",
+	Concise:  true,
+})
+
 type Server struct {
 	router chi.Router
 	server *http.Server
 }
 
 func NewHTTPServer() *Server {
+	debug := os.Getenv("DEBUG") != ""
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.CleanPath)
 	r.Use(middleware.StripSlashes)
-	r.Use(httplog.RequestLogger(httplog.NewLogger("http", httplog.Options{})))
 	r.Use(middleware.Recoverer)
+	if debug {
+		r.Use(httplog.RequestLogger(logger))
+	}
 	return &Server{
 		router: r,
 	}

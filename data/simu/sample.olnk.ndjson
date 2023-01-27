@@ -1,0 +1,8 @@
+["link", "demo.Counter"]
+["set", "demo.Counter/count", 10]
+["set", "demo.Counter/count", 11]
+["set", "demo.Counter/count", 12]
+["invoke", 1, "demo.Counter/increment", []]
+["invoke", 2, "demo.Counter/increment", []]
+["invoke", 3, "demo.Counter/decrement", []]
+["unlink", "demo.Counter"]

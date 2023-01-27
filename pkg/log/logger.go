@@ -13,7 +13,6 @@ var (
 )
 
 func init() {
-	logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
 	verbose := os.Getenv("DEBUG") == "2"
@@ -23,6 +22,7 @@ func init() {
 	if verbose {
 		level = zerolog.TraceLevel
 	}
+	logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
 	multi := zerolog.MultiLevelWriter(
 		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"},

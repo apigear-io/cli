@@ -93,14 +93,14 @@ func (s *SimuSource) BroadcastMessage(msg core.Message) {
 
 // NotifyPropertyChanged notifies all listeners that a property is changed.
 func (s *SimuSource) NotifyPropertyChanged(name string, value core.Any) {
-	propertyId := core.MakeIdentifier(s.Id, name)
+	propertyId := core.MakeSymbolId(s.Id, name)
 	msg := core.MakePropertyChangeMessage(propertyId, value)
 	s.BroadcastMessage(msg)
 }
 
 // NotifySignal notifies all listeners that a signal is emitted.
 func (s *SimuSource) NotifySignal(name string, args core.Args) {
-	signalId := core.MakeIdentifier(s.Id, name)
+	signalId := core.MakeSymbolId(s.Id, name)
 	msg := core.MakeSignalMessage(signalId, args)
 	s.BroadcastMessage(msg)
 }
