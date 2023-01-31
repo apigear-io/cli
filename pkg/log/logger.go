@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/apigear-io/cli/pkg/cfg"
@@ -14,7 +13,6 @@ var (
 )
 
 func init() {
-	fmt.Println("log/logger.go: init() called")
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
 	verbose := os.Getenv("DEBUG") == "2"

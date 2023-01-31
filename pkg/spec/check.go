@@ -16,6 +16,17 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
+func CheckFileAndType(file string, t DocumentType) (*gojsonschema.Result, error) {
+	dt, error := GetDocumentType(file)
+	if error != nil {
+		return nil, error
+	}
+	if dt != t {
+		return nil, fmt.Errorf("file %s is not a %s file", file, t)
+	}
+	return CheckFile(file)
+}
+
 func CheckFile(file string) (*gojsonschema.Result, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {

@@ -1,9 +1,11 @@
 package gen
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/apigear-io/cli/pkg/sol"
+	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
 )
@@ -22,6 +24,17 @@ Each layer defines the input module files, output directory and the features to 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			file = args[0]
+			result, err := spec.CheckFileAndType(file, spec.DocumentTypeSolution)
+			if err != nil {
+				return err
+			}
+			if !result.Valid() {
+				for _, err := range result.Errors() {
+					entry := err.Field() + ": " + err.Description()
+					cmd.Println(entry)
+				}
+				return fmt.Errorf("solution file is not valid")
+			}
 			doc, err := sol.ReadSolutionDoc(file)
 			if err != nil {
 				return err
