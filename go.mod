@@ -13,7 +13,7 @@ require (
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20221202181307-76fa05c21b12
-	github.com/apigear-io/objectlink-core-go v0.1.0
+	github.com/apigear-io/objectlink-core-go v0.2.0
 	github.com/creativeprojects/go-selfupdate v1.0.0
 	github.com/dop251/goja v0.0.0-20230122160437-8f6e415ca41e
 	github.com/dop251/goja_nodejs v0.0.0-20230121151440-041f29a15066
