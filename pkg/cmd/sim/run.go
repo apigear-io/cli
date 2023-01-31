@@ -9,7 +9,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/apigear-io/cli/pkg/net/olnk"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
 	"github.com/apigear-io/cli/pkg/sim/core"
@@ -48,7 +47,7 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 }
 
 func StartSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
-	hub := olnk.NewHub(ctx, simu)
+	hub := net.NewSimuHub(ctx, simu)
 	s := net.NewHTTPServer()
 	s.Router().HandleFunc("/ws", hub.ServeHTTP)
 	return s.Start(addr)
@@ -70,7 +69,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			go handleSignal(cancel)
-			log.Debug().Msgf("run simulation server")
+			log.Info().Msgf("run simulation server")
 			var doc *spec.ScenarioDoc
 			if len(args) == 1 {
 				aDoc, err := ReadScenario(args[0])
