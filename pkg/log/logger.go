@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/apigear-io/cli/pkg/cfg"
@@ -13,23 +14,25 @@ var (
 )
 
 func init() {
+	fmt.Println("log/logger.go: init() called")
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
 	verbose := os.Getenv("DEBUG") == "2"
-	if debug || verbose {
+	if debug {
 		level = zerolog.DebugLevel
 	}
 	if verbose {
 		level = zerolog.TraceLevel
 	}
-	logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
+	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05"}
 	multi := zerolog.MultiLevelWriter(
-		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05"},
+		console,
 		NewReportWriter(),
 		newRollingFile(logFile),
 	)
-	logger = logger.Output(multi).Level(level)
+	logger = zerolog.New(multi).With().Timestamp().Logger().Level(level)
+
 	if verbose {
 		logger = logger.With().Caller().Logger()
 	}
