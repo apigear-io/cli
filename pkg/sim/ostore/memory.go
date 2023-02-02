@@ -17,8 +17,8 @@ func NewMemoryStore() IObjectStore {
 }
 
 // Create an object in the store by id and properties
-func (m *MemoryStore) Set(key string, value map[string]any) {
-	m.objects[key] = value
+func (m *MemoryStore) Set(key string, kwargs map[string]any) {
+	m.objects[key] = kwargs
 	// notify watchers
 	m.notify(StoreEvent{
 		Type:  EventTypeCreate,
@@ -28,12 +28,12 @@ func (m *MemoryStore) Set(key string, value map[string]any) {
 }
 
 // Update an object in the store by id and partial properties
-func (m *MemoryStore) Update(id string, value map[string]any) {
+func (m *MemoryStore) Update(id string, kwargs map[string]any) {
 	if !m.Has(id) {
-		m.Set(id, value)
+		m.Set(id, kwargs)
 		return
 	}
-	for k, v := range value {
+	for k, v := range kwargs {
 		m.objects[id][k] = v
 	}
 	// notify watchers

@@ -2,31 +2,55 @@ package sim
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/apigear-io/cli/pkg/net/rpc"
+	"github.com/apigear-io/objectlink-core-go/olink/client"
+	"github.com/apigear-io/objectlink-core-go/olink/core"
+	"github.com/apigear-io/objectlink-core-go/olink/ws"
 	"github.com/spf13/cobra"
 )
 
-type ConsoleHandler struct{}
+// client messages supported for feed
+// - ["link", "demo.Calc"]
+// - ["set", "demo.Calc/total", 20]
+// - ["invoke", 1, "demo.Calc/add", [1]]
+// - ["unlink", "demo.Calc"]
+// server messages not supported for feed
+// - ["init", "demo.Calc", { "total": 10 }]
+// - ["change", "demo.Calc/total", 20]
+// - ["reply", 1, "demo.Calc/add", 21]
+// - ["signal", "demo.Calc/clearDone", []]
+// - ["error", "init", 0, "init error"]
 
-// Very similar to message handler
-func (c ConsoleHandler) HandleMessage(msg rpc.Message) error {
-	log.Debug().Msgf("handle message: %+v", msg)
-	switch msg.Method {
-	case "simu.state":
-		log.Info().Msgf("<- state: %v", msg.Params)
-	case "simu.call":
-		log.Info().Msgf("<- reply[%d]: %v", msg.Id, msg.Params)
-	}
-	return nil
+type ObjectSink struct {
+	objectId string
 }
 
-var autoId = helper.MakeIntIdGenerator()
+func (s *ObjectSink) ObjectId() string {
+	return s.objectId
+}
+
+func (s *ObjectSink) OnSignal(signalId string, args core.Args) {
+	log.Info().Msgf("signal %s(%v)", signalId, args)
+}
+func (s *ObjectSink) OnPropertyChange(propertyId string, value core.Any) {
+	log.Info().Msgf("property %s = %v", propertyId, value)
+}
+func (s *ObjectSink) OnInit(objectId string, props core.KWArgs, node *client.Node) {
+	s.objectId = objectId
+	log.Info().Msgf("init object %s", objectId)
+}
+func (s *ObjectSink) OnRelease() {
+	log.Info().Msgf("release object %s", s.objectId)
+	s.objectId = ""
+}
+
+var _ client.IObjectSink = &ObjectSink{}
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
@@ -47,69 +71,79 @@ func NewClientCommand() *cobra.Command {
 			options.script = args[0]
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
+			registry := client.NewRegistry()
+			registry.SetSinkFactory(func(objectId string) client.IObjectSink {
+				return &ObjectSink{objectId: objectId}
+			})
 			log.Debug().Msgf("run script %s", options.script)
+			conn, err := ws.Dial(options.addr)
+			if err != nil {
+				return err
+			}
+			defer conn.Close()
+			node := client.NewNode(registry)
+			conn.SetOutput(node)
+			node.SetOutput(conn)
+			registry.AttachClientNode(node)
 			switch filepath.Ext(options.script) {
 			case ".ndjson":
 				emitter := make(chan []byte)
-				writer := ConsoleHandler{}
-				conn, err := rpc.Dial(ctx, options.addr)
-				if err != nil {
-					return err
-				}
 				go func() {
 					net.ScanJsonDelimitedFile(options.script, options.sleep, options.repeat, emitter)
 				}()
 				go func() {
 					for data := range emitter {
-						log.Info().Msgf("-> %s", data)
-						var m rpc.Message
-						if m.Method == "simu.call" {
-							m.Id = autoId()
-						}
-						err := rpc.MessageFromJson(data, &m)
-						if err != nil {
-							log.Error().Msgf("parse message: %v", err)
-							continue
-						}
-						err = conn.WriteJSON(m)
-						if err != nil {
-							log.Warn().Msgf("write message: %v", err)
-						}
+						log.Debug().Msgf("-> %s", data)
+						handleNodeData(node, data)
 					}
 					// wait for all messages to be sent
 					log.Info().Msg("wait for all messages sent and exit...")
 					time.Sleep(1 * time.Second)
 					cancel()
 				}()
-				go func() {
-					for {
-						select {
-						case <-ctx.Done():
-							return
-						default:
-							var msg rpc.Message
-							if msg.Method == "simu.call" {
-								msg.Id = uint64(autoId())
-							}
-							err := conn.ReadJSON(&msg)
-							if err != nil {
-								log.Warn().Msgf("read message: %v", err)
-								return
-							}
-							err = writer.HandleMessage(msg)
-							if err != nil {
-								log.Warn().Msgf("handle message: %v", err)
-							}
-						}
-					}
-				}()
 			}
 			<-ctx.Done()
 			return nil
 		},
 	}
-	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 0, "sleep duration between messages")
+	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 100, "sleep duration between messages")
 	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:4333/ws", "address of the simulation server")
 	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
 	return cmd
+}
+
+func handleNodeData(node *client.Node, data []byte) error {
+	var m core.Message
+	err := json.Unmarshal(data, &m)
+	if err != nil {
+		return err
+	}
+	s, ok := m[0].(string)
+	if !ok {
+		return fmt.Errorf("invalid message type, expected string: %v", m)
+	}
+	m[0] = core.MsgTypeFromString(s)
+	switch m[0] {
+	case core.MsgLink:
+		objectId := m.AsLink()
+		log.Info().Msgf("link %s", objectId)
+		node.LinkRemoteNode(objectId)
+	case core.MsgUnlink:
+		objectId := m.AsLink()
+		log.Info().Msgf("unlink %s", objectId)
+		node.UnlinkRemoteNode(objectId)
+	case core.MsgSetProperty:
+		propertyId, value := m.AsSetProperty()
+		log.Info().Msgf("set %s = %v", propertyId, value)
+		node.SetRemoteProperty(propertyId, value)
+	case core.MsgInvoke:
+		_, methodId, args := m.AsInvoke()
+		log.Info().Msgf("invoke %s(%v)", methodId, args)
+		node.InvokeRemote(methodId, args, func(arg client.InvokeReplyArg) {
+			log.Info().Msgf("reply %s : %v", arg.Identifier, arg.Value)
+		})
+	default:
+		log.Info().Msgf("not supported message type: %v", m)
+	}
+	return nil
 }

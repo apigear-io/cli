@@ -8,7 +8,6 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/httplog"
 )
 
 type Server struct {
@@ -22,7 +21,6 @@ func NewHTTPServer() *Server {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.CleanPath)
 	r.Use(middleware.StripSlashes)
-	r.Use(httplog.RequestLogger(httplog.NewLogger("http", httplog.Options{})))
 	r.Use(middleware.Recoverer)
 	return &Server{
 		router: r,
