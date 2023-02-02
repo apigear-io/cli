@@ -71,3 +71,9 @@ func TestEngine_HasInterface(t *testing.T) {
 	e := NewEngine(store)
 	assert.False(t, e.HasInterface("Interface1"))
 }
+
+func TestBadOpWithUnknownAction(t *testing.T) {
+	e := LoadTest(t)
+	_, err := e.InvokeOperation("demo.Counter", "bad", nil)
+	assert.Error(t, err)
+}

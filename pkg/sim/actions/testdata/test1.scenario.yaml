@@ -18,3 +18,9 @@ interfaces:
       - name: getCount
         actions:
           - $return: { value: 2 }
+      - name: bad
+        actions:
+          - $xxx: { value: 3 }
+      - name: bad2
+        actions:
+          - $set: {}
