@@ -99,7 +99,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				}()
 			}
 			// start rpc server
-			log.Info().Msgf("olnk server ws://%s/ws", addr)
+			log.Info().Msgf("olink server ws://%s/ws", addr)
 			go func() {
 				err := StartSimuServer(ctx, addr, simu)
 				if err != nil {
