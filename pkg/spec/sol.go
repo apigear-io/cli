@@ -5,13 +5,14 @@ import (
 )
 
 type SolutionLayer struct {
-	Name        string   `json:"name" yaml:"name"`
-	Description string   `json:"description" yaml:"description"`
-	Inputs      []string `json:"inputs" yaml:"inputs"`
-	Output      string   `json:"output" yaml:"output"`
-	Template    string   `json:"template" yaml:"template"`
-	Features    []string `json:"features" yaml:"features"`
-	Force       bool     `json:"force" yaml:"force"`
+	Name        string                 `json:"name" yaml:"name"`
+	Description string                 `json:"description" yaml:"description"`
+	Inputs      []string               `json:"inputs" yaml:"inputs"`
+	Output      string                 `json:"output" yaml:"output"`
+	Template    string                 `json:"template" yaml:"template"`
+	Features    []string               `json:"features" yaml:"features"`
+	Force       bool                   `json:"force" yaml:"force"`
+	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
 }
 
 func (l *SolutionLayer) Validate() error {
@@ -32,12 +33,13 @@ func (l *SolutionLayer) Validate() error {
 }
 
 type SolutionDoc struct {
-	Schema      string           `json:"schema" yaml:"schema"`
-	Version     string           `json:"version" yaml:"version"`
-	Name        string           `json:"name" yaml:"name"`
-	Description string           `json:"description" yaml:"description"`
-	RootDir     string           `json:"rootDir" yaml:"rootDir"`
-	Layers      []*SolutionLayer `json:"layers" yaml:"layers"`
+	Schema      string                 `json:"schema" yaml:"schema"`
+	Version     string                 `json:"version" yaml:"version"`
+	Name        string                 `json:"name" yaml:"name"`
+	Description string                 `json:"description" yaml:"description"`
+	RootDir     string                 `json:"rootDir" yaml:"rootDir"`
+	Layers      []*SolutionLayer       `json:"layers" yaml:"layers"`
+	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
 }
 
 func (s *SolutionDoc) Validate() error {
