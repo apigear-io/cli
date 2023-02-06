@@ -24,46 +24,46 @@ func (n *EventNotifier) EmitEvent(e *SimuEvent) {
 	}
 }
 
-func (n *EventNotifier) EmitCall(symbol string, name string, params map[string]any) {
+func (n *EventNotifier) EmitCall(ifaceId string, opName string, args []any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventCall,
-		Symbol: symbol,
-		Name:   name,
-		KWArgs: params,
+		Symbol: ifaceId,
+		Name:   opName,
+		Args:   args,
 	})
 }
 
-func (n *EventNotifier) EmitReply(symbol string, name string, value any) {
+func (n *EventNotifier) EmitReply(ifaceId string, opName string, value any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventReply,
-		Symbol: symbol,
-		Name:   name,
+		Symbol: ifaceId,
+		Name:   opName,
 		KWArgs: map[string]any{"value": value},
 	})
 }
 
-func (n *EventNotifier) EmitSignal(symbol string, name string, args map[string]any) {
+func (n *EventNotifier) EmitSignal(ifaceId string, signName string, args []any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventSignal,
-		Symbol: symbol,
-		Name:   name,
-		KWArgs: args,
+		Symbol: ifaceId,
+		Name:   signName,
+		Args:   args,
 	})
 }
 
-func (n *EventNotifier) EmitPropertySet(symbol string, kwargs map[string]any) {
+func (n *EventNotifier) EmitPropertySet(ifaceId string, kwargs map[string]any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertySet,
-		Symbol: symbol,
+		Symbol: ifaceId,
 		KWArgs: kwargs,
 	})
 }
 
-func (n *EventNotifier) EmitPropertyChanged(symbol string, name string, value any) {
+func (n *EventNotifier) EmitPropertyChanged(ifaceId string, propName string, value any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertyChanged,
-		Symbol: symbol,
-		KWArgs: map[string]any{name: value},
+		Symbol: ifaceId,
+		KWArgs: map[string]any{propName: value},
 	})
 }
 

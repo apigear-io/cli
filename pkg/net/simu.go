@@ -5,6 +5,8 @@ import (
 
 	"github.com/apigear-io/cli/pkg/net/olnk"
 	"github.com/apigear-io/cli/pkg/sim"
+	score "github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/objectlink-core-go/log"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )
@@ -18,5 +20,15 @@ func NewSimuHub(ctx context.Context, s *sim.Simulation) *ws.Hub {
 			Simu:     s,
 		})
 	})
+	s.OnEvent(func(evt *score.SimuEvent) {
+		log.Info().Interface("event", evt).Msg("simu event")
+		switch evt.Type {
+		case score.EventSignal:
+			registry.NotifySignal(evt.Symbol, evt.Name, evt.Args)
+		case score.EventPropertyChanged:
+			registry.NotifyPropertyChange(evt.Symbol, evt.KWArgs)
+		}
+	})
+
 	return ws.NewHub(ctx, registry)
 }

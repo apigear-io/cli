@@ -42,8 +42,7 @@ func (s *SimuSource) ObjectId() string {
 
 // Invoke invokes a method of the source.
 func (s *SimuSource) Invoke(name string, args core.Args) (core.Any, error) {
-	kwargs := core.AsKwArgs(args)
-	return s.Simu.InvokeOperation(s.Id, name, kwargs)
+	return s.Simu.InvokeOperation(s.Id, name, args)
 }
 
 // SetProperty sets a property of the source.

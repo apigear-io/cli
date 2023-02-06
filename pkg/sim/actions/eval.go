@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/sim/ostore"
 	"github.com/apigear-io/cli/pkg/spec"
@@ -32,10 +33,10 @@ func NewEval(store ostore.IObjectStore) *eval {
 	return e
 }
 
-func (e *eval) EvalActions(symbol string, actions []spec.ActionEntry) (any, error) {
+func (e *eval) EvalActions(ifaceId string, actions []spec.ActionEntry) (any, error) {
 	var result any
 	for _, action := range actions {
-		r, err := e.EvalAction(symbol, action)
+		r, err := e.EvalAction(ifaceId, action)
 		if err != nil {
 			return nil, err
 		}
@@ -46,11 +47,11 @@ func (e *eval) EvalActions(symbol string, actions []spec.ActionEntry) (any, erro
 	return result, nil
 }
 
-func (e *eval) EvalAction(symbol string, action spec.ActionEntry) (any, error) {
+func (e *eval) EvalAction(ifaceId string, action spec.ActionEntry) (any, error) {
 	var result any
 	for k := range action {
 		if h, ok := e.actions[k]; ok {
-			v, err := h(symbol, action[k])
+			v, err := h(ifaceId, action[k])
 			if err != nil {
 				return nil, fmt.Errorf("error in action %s: %v", k, err)
 			}
@@ -64,12 +65,12 @@ func (e *eval) EvalAction(symbol string, action spec.ActionEntry) (any, error) {
 	return result, nil
 }
 
-func (e *eval) EvalActionString(symbol string, data []byte) (any, error) {
+func (e *eval) EvalActionString(ifaceId string, data []byte) (any, error) {
 	var action spec.ActionEntry
 	if err := yaml.Unmarshal(data, &action); err != nil {
 		return nil, err
 	}
-	return e.EvalAction(symbol, action)
+	return e.EvalAction(ifaceId, action)
 }
 
 func (e *eval) register(name string, handler ActionHandler) {
@@ -77,49 +78,46 @@ func (e *eval) register(name string, handler ActionHandler) {
 }
 
 // actionSet sets properties of the interface and notifies the change.
-func (e *eval) actionSet(symbol string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("actionSet: %v", kwargs)
+func (e *eval) actionSet(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Fields(kwargs).Msg("$set")
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.store.Set(symbol, kwargs)
+	e.store.Set(ifaceId, kwargs)
 	return nil, nil
 }
 
 // actionSet sets properties of the interface and notifies the change.
-func (e *eval) actionUpdate(symbol string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("actionUpdate: %v", kwargs)
+func (e *eval) actionUpdate(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Msgf("$update: %v", kwargs)
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.store.Update(symbol, kwargs)
+	e.store.Update(ifaceId, kwargs)
 	return nil, nil
 }
 
 // actionReturn returns the result of the action.
-func (e *eval) actionReturn(symbol string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("actionReturn: %v", kwargs)
+func (e *eval) actionReturn(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Msgf("$return: %v", kwargs)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	return kwargs, nil
 }
 
 // actionSignal sends a signal to the interface.
-func (e *eval) actionSignal(symbol string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("actionSignal: %s", kwargs)
-	for k := range kwargs {
-		sigArgs, ok := kwargs[k].(map[string]any)
-		if !ok {
-			return nil, fmt.Errorf("signal %s has no args", k)
-		}
-		e.EmitSignal(symbol, k, sigArgs)
+func (e *eval) actionSignal(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Msgf("$signal: %s", kwargs)
+	for name := range kwargs {
+		sigArgs := helper.ToSlice(kwargs[name])
+		e.EmitSignal(ifaceId, name, sigArgs)
 	}
 	return nil, nil
 }
 
 // actionChange sends a change to the interface.
-func (e *eval) actionChange(symbol string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("actionChange: %v", kwargs)
+func (e *eval) actionChange(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Fields(kwargs).Msg("$change")
 	for k := range kwargs {
-		e.EmitPropertyChanged(symbol, k, kwargs[k])
+		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
 	}
 	return nil, nil
 }

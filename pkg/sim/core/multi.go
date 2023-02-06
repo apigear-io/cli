@@ -39,7 +39,7 @@ func (e *MultiEngine) HasInterface(ifaceId string) bool {
 }
 
 // InvokeOperation invokes the operation of the interface.
-func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
+func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args []any) (any, error) {
 	e.EmitCall(ifaceId, name, args)
 	result, err := e.invokeOperation(ifaceId, name, args)
 	if err != nil {
@@ -51,7 +51,7 @@ func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args map[stri
 	return result, err
 }
 
-func (e *MultiEngine) invokeOperation(ifaceId string, name string, args map[string]any) (any, error) {
+func (e *MultiEngine) invokeOperation(ifaceId string, name string, args []any) (any, error) {
 	for _, entry := range e.entries {
 		if entry.HasInterface(ifaceId) {
 			return entry.InvokeOperation(ifaceId, name, args)

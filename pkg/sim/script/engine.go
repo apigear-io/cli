@@ -47,7 +47,7 @@ func (e *Engine) HasInterface(symbol string) bool {
 	return ok
 }
 
-func (e *Engine) InvokeOperation(symbol, name string, args map[string]any) (any, error) {
+func (e *Engine) InvokeOperation(symbol, name string, args []any) (any, error) {
 	log.Info().Msgf("%s/%s invoke", symbol, name)
 	obj := e.interfaces[symbol]
 	if obj == nil {

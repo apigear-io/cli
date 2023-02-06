@@ -11,7 +11,6 @@ import (
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
-	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
 
 	"github.com/spf13/cobra"
@@ -79,13 +78,6 @@ Using a scenario you can define additional static and scripted data and behavior
 				doc = aDoc
 			}
 			simu := sim.NewSimulation()
-			simu.OnEvent(func(event *core.SimuEvent) {
-				objectId := event.Symbol
-				if event.Name != "" {
-					objectId = fmt.Sprintf("%s/%s", objectId, event.Name)
-				}
-				log.Info().Msgf("%s on %s: args=%+v kwargs=%+v", event.Type, objectId, event.Args, event.KWArgs)
-			})
 			if doc != nil {
 				err := simu.LoadScenario(doc.Name, doc)
 				if err != nil {
@@ -106,7 +98,12 @@ Using a scenario you can define additional static and scripted data and behavior
 					log.Error().Err(err).Msg("start rpc server")
 				}
 			}()
-			<-ctx.Done()
+			// wait for interrupt
+			sigC := make(chan os.Signal, 1)
+			signal.Notify(sigC, os.Interrupt)
+			<-sigC
+			cancel()
+
 			log.Debug().Msgf("shutting down rpc hub")
 			return nil
 		},
