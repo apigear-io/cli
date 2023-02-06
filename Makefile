@@ -1,4 +1,7 @@
-.PHONY: antlr deb test build check cover
+.PHONY: antlr deb test build check cover install
+
+
+export CGO_ENABLED=0
 
 test:
 	gotestsum
@@ -35,3 +38,6 @@ check:
 cover:
 	go test -covermode=count -coverprofile=coverage.out -coverpkg=apigear/... ./...
 	go tool cover -func coverage.out
+
+install:
+	go install github.com/apigear-io/cli/cmd/apigear

@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
 	"github.com/apigear-io/cli/pkg/spec"
+	"gopkg.in/yaml.v3"
 
 	"github.com/spf13/cobra"
 )
@@ -25,6 +26,7 @@ type ExpertOptions struct {
 	force       bool
 	watch       bool
 	templateDir string
+	meta        string
 }
 
 func NewExpertCommand() *cobra.Command {
@@ -68,6 +70,7 @@ func NewExpertCommand() *cobra.Command {
 	cmd.Flags().StringSliceVarP(&options.features, "features", "f", []string{"all"}, "features to enable")
 	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
 	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
+	cmd.Flags().StringVarP(&options.meta, "meta", "m", "", "system meta data")
 	Must(cmd.MarkFlagRequired("input"))
 	Must(cmd.MarkFlagRequired("output"))
 	Must(cmd.MarkFlagRequired("template"))
@@ -79,9 +82,18 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	if err != nil {
 		log.Fatal().Err(err).Msg("get current working directory")
 	}
+	var meta map[string]interface{}
+	if options.meta != "" {
+		// convert from yaml to map
+		err := yaml.Unmarshal([]byte(options.meta), &meta)
+		if err != nil {
+			log.Fatal().Err(err).Msg("parse meta data")
+		}
+	}
 	return &spec.SolutionDoc{
 		Schema:  "apigear.solution/1.0",
 		RootDir: rootDir,
+		Meta:    meta,
 		Layers: []*spec.SolutionLayer{
 			{
 				Inputs:   options.inputs,

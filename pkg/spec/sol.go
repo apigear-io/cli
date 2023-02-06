@@ -40,6 +40,7 @@ type SolutionDoc struct {
 	RootDir     string                 `json:"rootDir" yaml:"rootDir"`
 	Layers      []*SolutionLayer       `json:"layers" yaml:"layers"`
 	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
+	MetaFile    string                 `json:"metaFile" yaml:"metaFile"`
 }
 
 func (s *SolutionDoc) Validate() error {

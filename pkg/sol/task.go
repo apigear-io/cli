@@ -59,8 +59,21 @@ func (t *task) run() error {
 	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
+	meta := make(map[string]interface{})
+
+	// read meta file if exists
+	if t.doc.MetaFile != "" {
+		metaFile := helper.Join(t.doc.RootDir, t.doc.MetaFile)
+		err := helper.ReadDocument(metaFile, &meta)
+		if err != nil {
+			return err
+		}
+	}
+	cfg := genConfig{}
+	cfg.meta = meta
+
 	for _, layer := range t.doc.Layers {
-		err := t.processLayer(layer)
+		err := t.processLayer(layer, cfg)
 		if err != nil {
 			return err
 		}
@@ -70,8 +83,7 @@ func (t *task) run() error {
 
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
-func (t *task) processLayer(layer *spec.SolutionLayer) error {
-	var cfg genConfig
+func (t *task) processLayer(layer *spec.SolutionLayer, cfg genConfig) error {
 	log.Debug().Msgf("process layer %s", layer.Name)
 	rootDir := t.doc.RootDir
 
@@ -104,7 +116,8 @@ func (t *task) processLayer(layer *spec.SolutionLayer) error {
 	}
 	cfg.force = layer.Force
 
-	cfg.meta = helper.MergeMaps(t.doc.Meta, layer.Meta)
+	// merge all meta data sources
+	cfg.meta = helper.MergeMaps(cfg.meta, t.doc.Meta, layer.Meta)
 
 	return t.runGenerator(cfg)
 }
@@ -124,7 +137,7 @@ func (t *task) runGenerator(cfg genConfig) error {
 
 	system := model.NewSystem(cfg.name)
 
-	system.Meta = cfg.meta
+	system.ApplyMeta(cfg.meta)
 
 	err = parseInputs(system, expanded)
 	if err != nil {
