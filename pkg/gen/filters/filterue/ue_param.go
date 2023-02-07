@@ -43,7 +43,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	}
 
 	if e := schema.Module.LookupEnum(t); e != nil {
-		return fmt.Sprintf("const E%s%s& %s%s", moduleId, e.Name, prefix, name), nil
+		return fmt.Sprintf("E%s%s %s%s", moduleId, e.Name, prefix, name), nil
 	} else if s := schema.Module.LookupStruct(t); s != nil {
 		return fmt.Sprintf("const F%s%s& %s%s", moduleId, s.Name, prefix, name), nil
 	} else if i := schema.Module.LookupInterface(t); i != nil {
