@@ -144,7 +144,10 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	doc.ComputeFeatures(g.UserFeatures)
+	err := doc.ComputeFeatures(g.UserFeatures)
+	if err != nil {
+		return err
+	}
 	g.ComputedFeatures = doc.FeatureNamesMap()
 	for _, f := range doc.Features {
 		if f.Skip {
