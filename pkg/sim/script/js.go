@@ -23,7 +23,7 @@ func (s *Engine) jsRegisterInterface(obj *js.Object) error {
 	return nil
 }
 
-func (s *Engine) jsSignal(interfaceId string, name string, args map[string]any) {
+func (s *Engine) jsSignal(interfaceId string, name string, args []any) {
 	s.EmitSignal(interfaceId, name, args)
 }
 

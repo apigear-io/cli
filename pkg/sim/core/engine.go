@@ -4,7 +4,7 @@ package core
 type IEngine interface {
 	INotifier
 	HasInterface(symbol string) bool
-	InvokeOperation(symbol string, name string, params map[string]any) (any, error)
+	InvokeOperation(symbol string, name string, args []any) (any, error)
 	SetProperties(symbol string, params map[string]any) error
 	GetProperties(symbol string) (map[string]any, error)
 	HasSequence(name string) bool

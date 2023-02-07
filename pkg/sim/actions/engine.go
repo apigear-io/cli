@@ -98,27 +98,27 @@ func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
 }
 
 // InvokeOperation invokes a operation of the interface.
-func (e *Engine) InvokeOperation(symbol string, name string, args map[string]any) (any, error) {
-	log.Debug().Msgf("%s/%s invoke", symbol, name)
-	e.EmitCall(symbol, name, args)
+func (e *Engine) InvokeOperation(ifaceId string, opName string, args []any) (any, error) {
+	log.Debug().Msgf("%s/%s invoke", ifaceId, opName)
+	e.EmitCall(ifaceId, opName, args)
 
-	iface := e.GetInterface(symbol)
+	iface := e.GetInterface(ifaceId)
 	if iface == nil {
-		return nil, fmt.Errorf("interface %s not found", symbol)
+		return nil, fmt.Errorf("interface %s not found", ifaceId)
 	}
-	op := iface.GetOperation(name)
+	op := iface.GetOperation(opName)
 	if op == nil {
-		return nil, fmt.Errorf("operation %s not found", name)
+		return nil, fmt.Errorf("operation %s not found", opName)
 	}
-	result, err := e.eval.EvalActions(symbol, op.Actions)
+	result, err := e.eval.EvalActions(ifaceId, op.Actions)
 	if err != nil {
-		e.EmitCallError(symbol, name, err)
+		e.EmitCallError(ifaceId, opName, err)
 		return nil, err
 	}
 	if result != nil {
-		e.EmitReply(symbol, name, result)
+		e.EmitReply(ifaceId, opName, result)
 	}
-	log.Debug().Msgf("%s/%s result %v", symbol, name, result)
+	log.Debug().Msgf("%s/%s result %v", ifaceId, opName, result)
 	return result, nil
 }
 

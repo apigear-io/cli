@@ -76,7 +76,7 @@ func NewClientCommand() *cobra.Command {
 				return &ObjectSink{objectId: objectId}
 			})
 			log.Debug().Msgf("run script %s", options.script)
-			conn, err := ws.Dial(options.addr)
+			conn, err := ws.Dial(ctx, options.addr)
 			if err != nil {
 				return err
 			}

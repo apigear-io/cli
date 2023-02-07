@@ -69,30 +69,30 @@ func TestActionSignal(t *testing.T) {
 	store := ostore.NewMemoryStore()
 	e := NewEval(store)
 	var sigName string
-	var sigArgs map[string]any
+	var sigArgs []any
 	e.OnEvent(func(e *core.SimuEvent) {
 		sigName = e.Name
-		sigArgs = e.KWArgs
+		sigArgs = e.Args
 	})
 
 	assert.NotNil(t, e)
 	ctx := map[string]any{"count": 0}
-	args := map[string]any{"shutdown": map[string]any{"timeout": 1}}
+	args := []any{1}
 	symbol := "demo.Counter"
-	// $signal: { shutdown: { timeout: 1 } }
-	result, err := e.EvalAction(symbol, spec.ActionEntry{"$signal": args})
+	// $signal: { shutdown: [ 1 ] }
+	result, err := e.EvalAction(symbol, spec.ActionEntry{"$signal": {"shutdown": args}})
 	assert.NoError(t, err)
 	assert.Equal(t, 0, ctx["count"])
 	assert.Nil(t, result)
 	assert.Equal(t, "shutdown", sigName)
-	assert.Equal(t, map[string]any{"timeout": 1}, sigArgs)
+	assert.Equal(t, []any{1}, sigArgs)
 
 	// $signal: { shutdown: { timeout: 2 } }
-	action := []byte("$signal: { shutdown2: { timeout: 2 } }")
+	action := []byte("$signal: { shutdown2: [ 2 ] }")
 	result, err = e.EvalActionString(symbol, action)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, ctx["count"])
 	assert.Nil(t, result)
 	assert.Equal(t, "shutdown2", sigName)
-	assert.Equal(t, map[string]any{"timeout": 2}, sigArgs)
+	assert.Equal(t, []any{2}, sigArgs)
 }

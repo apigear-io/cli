@@ -24,7 +24,7 @@ func TestInvokeOperation(t *testing.T) {
 		symbol    string
 		operation string
 
-		args   map[string]any
+		args   []any
 		props  map[string]any
 		result any
 	}{
@@ -49,7 +49,7 @@ func TestResultOfInvokeOperation(t *testing.T) {
 	var table = []struct {
 		symbol    string
 		operation string
-		args      map[string]any
+		args      []any
 		result    any
 	}{
 		{"demo.Counter", "increment", nil, nil},
