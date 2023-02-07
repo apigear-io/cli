@@ -46,7 +46,6 @@ require (
 	github.com/pjbgf/sha1cd v0.2.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/xanzy/go-gitlab v0.79.1 // indirect
