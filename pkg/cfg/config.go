@@ -1,10 +1,10 @@
 package cfg
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -31,22 +31,32 @@ var (
 
 func init() {
 	home, err := os.UserHomeDir()
-	cobra.CheckErr(err)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	cfgDir := helper.Join(home, ".apigear")
-	v = NewConfig(cfgDir)
+	vip, err := NewConfig(cfgDir)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	v = vip
 }
 
-func NewConfig(cfgDir string) *viper.Viper {
+func NewConfig(cfgDir string) (*viper.Viper, error) {
 	nv := viper.New()
 
 	nv.SetEnvPrefix("apigear")
 	nv.AutomaticEnv() // read in environment variables that match
 
-	packageDir := helper.Join(cfgDir, "templates")
-	nv.SetDefault(KeyTemplatesDir, packageDir)
+	templatesDir := helper.Join(cfgDir, "templates")
+	nv.SetDefault(KeyTemplatesDir, templatesDir)
 
-	err := helper.MakeDir(packageDir)
-	cobra.CheckErr(err)
+	err := helper.MakeDir(templatesDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create templates dir: %w", err)
+	}
 
 	registryDir := helper.Join(cfgDir, "registry")
 
@@ -69,16 +79,21 @@ func NewConfig(cfgDir string) *viper.Viper {
 
 	if !helper.IsFile(cfgFile) {
 		err := helper.MakeDir(cfgDir)
-		cobra.CheckErr(err)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create config dir: %w", err)
+		}
 		err = helper.WriteFile(cfgFile, []byte("{}"))
-		cobra.CheckErr(err)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create config file: %w", err)
+		}
 	}
 
 	// If a config file is found, read it in.
-	if err := nv.ReadInConfig(); err != nil {
-		cobra.CheckErr(err)
+	err = nv.ReadInConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
-	return nv
+	return nv, nil
 }
 
 func SetConfig(c *viper.Viper) {
