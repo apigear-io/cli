@@ -1,6 +1,8 @@
 package olnk
 
 import (
+	"strings"
+
 	"github.com/apigear-io/cli/pkg/sim"
 
 	"github.com/apigear-io/objectlink-core-go/log"
@@ -42,6 +44,11 @@ func (s *SimuSource) ObjectId() string {
 
 // Invoke invokes a method of the source.
 func (s *SimuSource) Invoke(name string, args core.Args) (core.Any, error) {
+	if strings.HasPrefix(name, "$signal.") {
+		signal := strings.TrimPrefix(name, "$signal.")
+		s.NotifySignal(signal, args)
+		return nil, nil
+	}
 	return s.Simu.InvokeOperation(s.Id, name, args)
 }
 
