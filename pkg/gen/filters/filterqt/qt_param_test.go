@@ -51,7 +51,7 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "const Enum1::Enum1Enum propEnum"},
+		{"test", "Test2", "propEnum", "Enum1::Enum1Enum propEnum"},
 		{"test", "Test2", "propStruct", "const Struct1& propStruct"},
 		{"test", "Test2", "propInterface", "Interface1 *propInterface"},
 		{"test", "Test2", "propEnumArray", "const QList<Enum1::Enum1Enum>& propEnumArray"},
