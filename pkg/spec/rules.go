@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/apigear-io/cli/pkg/log"
@@ -41,7 +42,7 @@ func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 
 // ComputeFeatures returns a filtered set of features based on the given features.
 // And the features that are required by the given features.
-func (r *RulesDoc) ComputeFeatures(wanted []string) {
+func (r *RulesDoc) ComputeFeatures(wanted []string) error {
 	log.Debug().Msgf("computing features: %v", wanted)
 	// we skip all features first
 	for _, f := range r.Features {
@@ -53,29 +54,31 @@ func (r *RulesDoc) ComputeFeatures(wanted []string) {
 			for _, f := range r.Features {
 				f.Skip = false
 			}
-			return
+			return nil
 		}
 	}
-	r.walkWantedFeatures(wanted)
+	return r.walkWantedFeatures(wanted)
 }
 
 // walkWantedFeatures walks the dependency graph of the given features.
-func (r *RulesDoc) walkWantedFeatures(features []string) {
+func (r *RulesDoc) walkWantedFeatures(features []string) error {
 	// make a set of wanted features
 	if len(features) == 0 {
-		return
+		return nil
 	}
 	// if no features are given, then no features are wanted
-	for _, f := range features {
+	for _, name := range features {
 		// resolve feature by name
-		f := r.FeatureByName(f)
-		if f != nil {
-			// mark feature as wanted
-			f.Skip = false
-			// recursively walk the dependency graph
-			r.walkWantedFeatures(f.Requires)
+		f := r.FeatureByName(name)
+		if f == nil {
+			return fmt.Errorf("feature %s not found", name)
 		}
+		// mark feature as wanted
+		f.Skip = false
+		// recursively walk the dependency graph
+		r.walkWantedFeatures(f.Requires)
 	}
+	return nil
 }
 
 func (r *RulesDoc) FeatureNamesMap() map[string]bool {

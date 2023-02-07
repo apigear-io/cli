@@ -83,3 +83,10 @@ func TestGeneratorRulesRequireAll(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, map[string]interface{}{"f1": true, "f2": true, "f3": true}, fts)
 }
+
+// TestErrorForMissingFeature tests that the generator will generate error when the feature is missing
+func TestErrorForMissingFeature(t *testing.T) {
+	rules := readRules(t, "testdata/fts/rules.yaml")
+	err := rules.ComputeFeatures([]string{"f4"})
+	assert.Error(t, err)
+}
