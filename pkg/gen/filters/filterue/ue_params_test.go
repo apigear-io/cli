@@ -52,7 +52,7 @@ func TestParamsSymbols(t *testing.T) {
 		rt string
 	}{
 
-		{"test", "Test4", "opEnum", "const ETestEnum1& Param1"},
+		{"test", "Test4", "opEnum", "ETestEnum1 Param1"},
 		{"test", "Test4", "opStruct", "const FTestStruct1& Param1"},
 		{"test", "Test4", "opInterface", "FTestInterface1* Param1"},
 		{"test", "Test4", "opEnumArray", "const TArray<ETestEnum1>& Param1"},
@@ -84,7 +84,7 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opIntInt", "int32 Param1, int32 Param2"},
 		{"test", "Test5", "opFloatFloat", "float Param1, float Param2"},
 		{"test", "Test5", "opStringString", "const FString& Param1, const FString& Param2"},
-		{"test", "Test5", "opEnumEnum", "const ETestEnum1& Param1, const ETestEnum1& Param2"},
+		{"test", "Test5", "opEnumEnum", "ETestEnum1 Param1, ETestEnum1 Param2"},
 		{"test", "Test5", "opStructStruct", "const FTestStruct1& Param1, const FTestStruct1& Param2"},
 		{"test", "Test5", "opInterfaceInterface", "FTestInterface1* Param1, FTestInterface1* Param2"},
 	}

@@ -33,7 +33,7 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeVoid:
 		text = "void"
 	case model.TypeEnum:
-		text = fmt.Sprintf("const %sE%s%s&", prefix, moduleId, schema.Type)
+		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("const %sF%s%s&", prefix, moduleId, schema.Type)
 	case model.TypeInterface:

@@ -55,7 +55,7 @@ func TestConstTypeSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "const ETestEnum1&"},
+		{"test", "Test2", "propEnum", "ETestEnum1"},
 		{"test", "Test2", "propStruct", "const FTestStruct1&"},
 		{"test", "Test2", "propInterface", "FTestInterface1*"},
 		{"test", "Test2", "propEnumArray", "const TArray<ETestEnum1>&"},
