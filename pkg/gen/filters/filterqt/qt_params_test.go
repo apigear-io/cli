@@ -51,7 +51,7 @@ func TestParamsSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test4", "opEnum", "const Enum1::Enum1Enum param1"},
+		{"test", "Test4", "opEnum", "Enum1::Enum1Enum param1"},
 		{"test", "Test4", "opStruct", "const Struct1& param1"},
 		{"test", "Test4", "opInterface", "Interface1 *param1"},
 		{"test", "Test4", "opEnumArray", "const QList<Enum1::Enum1Enum>& param1"},
@@ -83,7 +83,7 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opIntInt", "int param1, int param2"},
 		{"test", "Test5", "opFloatFloat", "qreal param1, qreal param2"},
 		{"test", "Test5", "opStringString", "const QString& param1, const QString& param2"},
-		{"test", "Test5", "opEnumEnum", "const Enum1::Enum1Enum param1, const Enum1::Enum1Enum param2"},
+		{"test", "Test5", "opEnumEnum", "Enum1::Enum1Enum param1, Enum1::Enum1Enum param2"},
 		{"test", "Test5", "opStructStruct", "const Struct1& param1, const Struct1& param2"},
 		{"test", "Test5", "opInterfaceInterface", "Interface1 *param1, Interface1 *param2"},
 	}
