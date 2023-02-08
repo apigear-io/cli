@@ -21,7 +21,7 @@ require (
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/getsentry/sentry-go v0.17.0
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-git/go-git/v5 v5.5.2
+	github.com/go-git/go-git/v5 v5.4.2
 	github.com/gocarina/gocsv v0.0.0-20230123225133-763e25b40669
 	github.com/google/uuid v1.3.0
 	github.com/rs/zerolog v1.29.0
@@ -42,10 +42,9 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
-	github.com/pjbgf/sha1cd v0.2.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/xanzy/go-gitlab v0.79.1 // indirect
