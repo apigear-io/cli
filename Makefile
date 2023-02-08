@@ -1,20 +1,22 @@
 .PHONY: antlr deb test build check cover
 
+export CGO_ENABLED=0
+
 test:
-	gotestsum
+	go test ./...
 
 
 build:
 	go build -o ./bin/apigear ./cmd/apigear
 
 run:
-	go run ./cmd/apigear
+	go run github.com/apigear-io/cli/cmd/apigear
 
 watch:
 	air
 
 debug:
-	dlv debug
+	dlv debug cmd/apigear/main.go
 
 antlr:
 	antlr -Dlanguage=Go pkg/idl/parser/ObjectApi.g4
