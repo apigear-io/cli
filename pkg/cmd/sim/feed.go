@@ -36,17 +36,17 @@ func (s *ObjectSink) ObjectId() string {
 }
 
 func (s *ObjectSink) OnSignal(signalId string, args core.Args) {
-	log.Info().Msgf("signal %s(%v)", signalId, args)
+	log.Info().Msgf("<- signal %s(%v)", signalId, args)
 }
 func (s *ObjectSink) OnPropertyChange(propertyId string, value core.Any) {
-	log.Info().Msgf("property %s = %v", propertyId, value)
+	log.Info().Msgf("<- property %s = %v", propertyId, value)
 }
 func (s *ObjectSink) OnInit(objectId string, props core.KWArgs, node *client.Node) {
 	s.objectId = objectId
-	log.Info().Msgf("init object %s", objectId)
+	log.Info().Msgf("<- init %s with %v", objectId, props)
 }
 func (s *ObjectSink) OnRelease() {
-	log.Info().Msgf("release object %s", s.objectId)
+	log.Info().Msgf("<- release %s", s.objectId)
 	s.objectId = ""
 }
 
@@ -69,6 +69,7 @@ func NewClientCommand() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options.script = args[0]
+			log.Info().Str("script", options.script).Str("addr", options.addr).Int("repeat", options.repeat).Dur("sleep", options.sleep).Msg("feed simulation")
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			registry := client.NewRegistry()
@@ -93,16 +94,21 @@ func NewClientCommand() *cobra.Command {
 				}()
 				go func() {
 					for data := range emitter {
-						log.Debug().Msgf("-> %s", data)
+						log.Debug().Msgf("send -> %s", data)
 						handleNodeData(node, data)
+						// sleep between messages
+						if options.sleep > 0 {
+							time.Sleep(options.sleep)
+						}
 					}
 					// wait for all messages to be sent
-					log.Info().Msg("wait for all messages sent and exit...")
+					log.Info().Msg("wait ...")
 					time.Sleep(1 * time.Second)
 					cancel()
 				}()
 			}
 			<-ctx.Done()
+			log.Info().Msg("done")
 			return nil
 		},
 	}
@@ -126,21 +132,21 @@ func handleNodeData(node *client.Node, data []byte) error {
 	switch m[0] {
 	case core.MsgLink:
 		objectId := m.AsLink()
-		log.Info().Msgf("link %s", objectId)
+		log.Info().Msgf("-> link %s", objectId)
 		node.LinkRemoteNode(objectId)
 	case core.MsgUnlink:
 		objectId := m.AsLink()
-		log.Info().Msgf("unlink %s", objectId)
+		log.Info().Msgf("-> unlink %s", objectId)
 		node.UnlinkRemoteNode(objectId)
 	case core.MsgSetProperty:
 		propertyId, value := m.AsSetProperty()
-		log.Info().Msgf("set %s = %v", propertyId, value)
+		log.Info().Msgf("-> set %s = %v", propertyId, value)
 		node.SetRemoteProperty(propertyId, value)
 	case core.MsgInvoke:
 		_, methodId, args := m.AsInvoke()
-		log.Info().Msgf("invoke %s(%v)", methodId, args)
+		log.Info().Msgf("-> invoke %s(%v)", methodId, args)
 		node.InvokeRemote(methodId, args, func(arg client.InvokeReplyArg) {
-			log.Info().Msgf("reply %s : %v", arg.Identifier, arg.Value)
+			log.Info().Msgf("<- reply %s : %v", arg.Identifier, arg.Value)
 		})
 	default:
 		log.Info().Msgf("not supported message type: %v", m)
