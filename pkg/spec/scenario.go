@@ -57,8 +57,6 @@ type SequenceEntry struct {
 	Description string `json:"description" yaml:"description"`
 	// Interface is the name of the default interface used.
 	Interface string `json:"interface" yaml:"interface"`
-	// AutoRun is true if the sequence should be run automatically on loading.
-	AutoRun bool `json:"autoRun" yaml:"autoRun"`
 	// Interval is the interval in milliseconds between runs.
 	Interval int `json:"interval" yaml:"interval"`
 	// Loops is the number of times the sequence should be run.

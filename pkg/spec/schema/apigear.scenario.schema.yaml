@@ -71,12 +71,12 @@ definitions:
       interval:
         description: "The interval between each step."
         type: integer
-      loop:
-        description: "If the sequence should be repeated forever"
-        type: boolean
-      repeat:
-        description: "The number of times the sequence should be repeated."
+      loops:
+        description: "The number of times the sequence should be looped."
         type: integer
+      forever:
+        description: "The sequence should be looped forever."
+        type: boolean
       steps:
         description: "The steps of the sequence."
         type: array
