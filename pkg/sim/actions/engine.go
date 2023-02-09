@@ -52,8 +52,8 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 			return fmt.Errorf("interface %s not found", seq.Interface)
 		}
 		p := NewPlayer(iface, seq)
-		go func() {
-			for frame := range p.FramesC {
+		go func(framesC chan PlayFrame) {
+			for frame := range framesC {
 				iface := frame.Interface
 				if iface != nil {
 					_, err := e.eval.EvalAction(iface.Name, frame.Action)
@@ -63,7 +63,7 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 				}
 			}
 			log.Debug().Msgf("sequence %s stopped", seq.Name)
-		}()
+		}(p.FramesC)
 		e.players = append(e.players, p)
 	}
 	return nil

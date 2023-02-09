@@ -1,7 +1,8 @@
-{ "method": "simu.state", "params": { "symbol": "demo.Counter" }}
-{ "method": "simu.call", "params": { "symbol": "demo.Counter/increment", "data": { "step": 1 } }}
-{ "method": "simu.call", "params": { "symbol": "demo.Counter/decrement", "data": { "step": 2 } }}
-{ "method": "simu.call", "params": { "symbol": "demo.Counter/increment", "data": { "step": 3 } }}
-{ "method": "simu.call", "params": { "symbol": "demo.Counter/decrement", "data": { "step": 4 } }}
-{ "method": "simu.state", "params": { "symbol": "demo.Counter", "data": { "count": 4 } }}
-{ "method": "simu.state", "params": { "symbol": "demo.Counter" }}
+["link", "demo.Counter"]
+["set", "demo.Counter/count", 10]
+["set", "demo.Counter/count", 11]
+["set", "demo.Counter/count", 12]
+["invoke", 1, "demo.Counter/increment", []]
+["invoke", 2, "demo.Counter/increment", []]
+["invoke", 3, "demo.Counter/decrement", []]
+["unlink", "demo.Counter"]
