@@ -1,5 +1,7 @@
 package core
 
+import "context"
+
 // IEngine is the interface for the simulation engine.
 type IEngine interface {
 	INotifier
@@ -8,8 +10,8 @@ type IEngine interface {
 	SetProperties(symbol string, params map[string]any) error
 	GetProperties(symbol string) (map[string]any, error)
 	HasSequence(name string) bool
-	PlaySequence(name string) error
+	PlaySequence(ctx context.Context, name string) error
 	StopSequence(name string)
-	PlayAllSequences() error
+	PlayAllSequences(ctx context.Context) error
 	StopAllSequences()
 }

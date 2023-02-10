@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/sim/core"
@@ -70,6 +71,8 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 }
 
 func (a *Engine) UnloadScenario(source string) error {
+	// make sure all players are stopped
+	a.StopAllSequences()
 	for i, d := range a.docs {
 		if d.Source == source {
 			a.docs = append(a.docs[:i], a.docs[i+1:]...)
@@ -142,13 +145,10 @@ func (e *Engine) HasSequence(name string) bool {
 	return false
 }
 
-func (e *Engine) PlayAllSequences() error {
+func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("actions engine play all sequences")
 	for _, p := range e.players {
-		err := p.Play()
-		if err != nil {
-			return err
-		}
+		p.Play(ctx)
 	}
 	return nil
 }
@@ -163,10 +163,13 @@ func (e *Engine) StopAllSequences() {
 	}
 }
 
-func (e *Engine) PlaySequence(name string) error {
+func (e *Engine) PlaySequence(ctx context.Context, name string) error {
 	for _, p := range e.players {
 		if p.SequenceName() == name {
-			return p.Play()
+			err := p.Play(ctx)
+			if err != nil {
+				log.Warn().Msgf("play sequence %s: %v", name, err)
+			}
 		}
 	}
 	return fmt.Errorf("sequence %s not found", name)

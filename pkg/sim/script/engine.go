@@ -1,6 +1,7 @@
 package script
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -109,7 +110,7 @@ func (e *Engine) HasSequence(sequenceId string) bool {
 	return ok
 }
 
-func (e *Engine) PlaySequence(sequenceId string) error {
+func (e *Engine) PlaySequence(ctx context.Context, sequenceId string) error {
 	obj := e.sequencers[sequenceId]
 	if obj == nil {
 		return fmt.Errorf("sequence %s not found", sequenceId)
@@ -145,7 +146,7 @@ func (e *Engine) init() {
 	}
 }
 
-func (e *Engine) PlayAllSequences() error {
+func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("script engine play all sequences")
 	return nil
 }

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -98,10 +99,10 @@ func (e *MultiEngine) HasSequence(sequencerId string) bool {
 	return false
 }
 
-func (e *MultiEngine) PlaySequence(sequenceId string) error {
+func (e *MultiEngine) PlaySequence(ctx context.Context, sequenceId string) error {
 	for _, entry := range e.entries {
 		if entry.HasSequence(sequenceId) {
-			return entry.PlaySequence(sequenceId)
+			return entry.PlaySequence(ctx, sequenceId)
 		}
 	}
 	return fmt.Errorf("sequence %s not found", sequenceId)
@@ -115,9 +116,9 @@ func (e *MultiEngine) StopSequence(sequenceId string) {
 	}
 }
 
-func (e *MultiEngine) PlayAllSequences() error {
+func (e *MultiEngine) PlayAllSequences(ctx context.Context) error {
 	for _, entry := range e.entries {
-		if err := entry.PlayAllSequences(); err != nil {
+		if err := entry.PlayAllSequences(ctx); err != nil {
 			return err
 		}
 	}

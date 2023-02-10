@@ -45,11 +45,16 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 	return doc, nil
 }
 
-func StartSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
+func RunSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
 	hub := net.NewSimuHub(ctx, simu)
 	s := net.NewHTTPServer()
 	s.Router().HandleFunc("/ws", hub.ServeHTTP)
-	return s.Start(addr)
+	go s.Start(addr)
+	go func() {
+		<-ctx.Done()
+		s.Stop()
+	}()
+	return nil
 }
 
 func NewServerCommand() *cobra.Command {
@@ -83,21 +88,19 @@ Using a scenario you can define additional static and scripted data and behavior
 				if err != nil {
 					return err
 				}
-				go func() {
-					err = simu.PlayAllSequences()
-					if err != nil {
-						log.Error().Msgf("play scenario: %v", err)
-					}
-				}()
+				// TODO: make the go-routine internal with ctx to cancel it
+				// TODO: add this to studio
+				err = simu.PlayAllSequences(ctx)
+				if err != nil {
+					return err
+				}
 			}
 			// start rpc server
 			log.Info().Msgf("olink server ws://%s/ws", addr)
-			go func() {
-				err := StartSimuServer(ctx, addr, simu)
-				if err != nil {
-					log.Error().Err(err).Msg("start rpc server")
-				}
-			}()
+			err := RunSimuServer(ctx, addr, simu)
+			if err != nil {
+				log.Error().Err(err).Msg("start rpc server")
+			}
 			// wait for interrupt
 			sigC := make(chan os.Signal, 1)
 			signal.Notify(sigC, os.Interrupt)

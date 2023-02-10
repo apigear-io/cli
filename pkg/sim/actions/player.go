@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"context"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/spec"
@@ -18,7 +19,8 @@ type PlayFrame struct {
 type Player struct {
 	iface   *spec.InterfaceEntry
 	seq     *spec.SequenceEntry
-	DoneC   chan bool
+	ctx     context.Context
+	cancel  context.CancelFunc
 	StepC   chan *spec.ActionListEntry
 	FramesC chan PlayFrame
 }
@@ -27,7 +29,6 @@ func NewPlayer(iface *spec.InterfaceEntry, seq *spec.SequenceEntry) *Player {
 	p := &Player{
 		iface:   iface,
 		seq:     seq,
-		DoneC:   make(chan bool),
 		StepC:   make(chan *spec.ActionListEntry),
 		FramesC: make(chan PlayFrame),
 	}
@@ -38,15 +39,13 @@ func (p *Player) SequenceName() string {
 	return p.seq.Name
 }
 
-func (p *Player) Play() error {
+func (p *Player) Play(ctx context.Context) error {
 	log.Debug().Msgf("play sequence %s", p.seq.Name)
+	ctx, cancel := context.WithCancel(ctx)
+	p.ctx = ctx
+	p.cancel = cancel
 	go p.loopPump(p.seq)
-	go func() {
-		err := p.framePump(p.seq.Interval)
-		if err != nil {
-			log.Error().Msgf("frame pump error: %v", err)
-		}
-	}()
+	go p.framePump(p.seq.Interval)
 	return nil
 }
 
@@ -57,37 +56,47 @@ func (p *Player) loopPump(seq *spec.SequenceEntry) {
 	}
 	for i := 0; i < loops; i++ {
 		for _, step := range seq.Steps {
-			p.StepC <- step
+			select {
+			case <-p.ctx.Done():
+				return
+			default:
+				p.StepC <- step
+			}
 		}
 	}
-	p.DoneC <- true
 	close(p.StepC)
 }
 
-func (p *Player) framePump(interval int) error {
+func (p *Player) framePump(interval int) {
 	for {
 		select {
 		case s := <-p.StepC:
 			if s == nil {
-				return nil
+				return
 			}
 			for _, action := range s.Actions {
-				p.FramesC <- PlayFrame{
-					Action:    action,
-					Interface: p.iface,
+				// every frame the player sends the action to the stream
+				// the stream is closed when the sequence is finished
+				// or the player is stopped
+				select {
+				case <-p.ctx.Done():
+					return
+				default:
+					p.FramesC <- PlayFrame{
+						Action:    action,
+						Interface: p.iface,
+					}
 				}
 			}
 			time.Sleep(time.Duration(interval) * time.Millisecond)
-		case <-p.DoneC:
+		case <-p.ctx.Done():
 			log.Debug().Msgf("frame pump %s is done", p.seq.Name)
-			close(p.FramesC)
-			close(p.DoneC)
-			return nil
+			return
 		}
 	}
 }
 
 func (p *Player) Stop() error {
-	close(p.DoneC)
+	p.cancel()
 	return nil
 }
