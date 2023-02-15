@@ -1,6 +1,11 @@
 package helper
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+
+	"github.com/ettle/strcase"
+)
 
 // Contains checks if a string contains a substring case insensitive
 func Contains(a string, b string) bool {
@@ -22,4 +27,15 @@ func ArrayToMap[T any](m map[string]T, e []T, f func(T) string) map[string]T {
 		m[f(v)] = v
 	}
 	return m
+}
+
+// Used by templates to generate abbreviation inside the code
+func Abbreviate(s string) string {
+	abbreviation := ""
+	for _, rune := range strcase.ToCase(s, strcase.TitleCase, '-') {
+		if unicode.IsUpper(rune) {
+			abbreviation += string(rune)
+		}
+	}
+	return abbreviation
 }
