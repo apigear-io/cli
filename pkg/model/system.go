@@ -1,5 +1,11 @@
 package model
 
+import (
+	"strings"
+
+	"github.com/apigear-io/cli/pkg/helper"
+)
+
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
@@ -81,4 +87,31 @@ func (s *System) ResolveAll() error {
 		}
 	}
 	return nil
+}
+
+// ApplyMeta applies the meta data to the system
+// It looks for a symbols section in the meta data
+// and applies the meta data to the corresponding
+// module or interface.
+func (s *System) ApplyMeta(meta map[string]interface{}) {
+	if meta != nil {
+		helper.MergeMaps(s.Meta, meta)
+	}
+	data, ok := s.Meta["symbols"].(map[string]interface{})
+	if !ok {
+		return
+	}
+	for k, v := range data {
+		m := s.LookupModule(k)
+		if m != nil {
+			m.Meta = v.(map[string]interface{})
+		}
+		kk := strings.Split(k, ".")
+		mName := strings.Join(kk[:len(kk)-1], ".")
+		iName := kk[len(kk)-1]
+		iface := s.LookupInterface(mName, iName)
+		if iface != nil {
+			iface.Meta = v.(map[string]interface{})
+		}
+	}
 }

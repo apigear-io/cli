@@ -21,6 +21,17 @@ type task struct {
 	sync.Mutex
 }
 
+type genConfig struct {
+	name         string
+	templatesDir string
+	rulesFile    string
+	outputDir    string
+	inputs       []string
+	features     []string
+	force        bool
+	meta         map[string]interface{}
+}
+
 func newTask(file string, doc *spec.SolutionDoc) (*task, error) {
 	t := &task{
 		file: file,
@@ -48,8 +59,21 @@ func (t *task) run() error {
 	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
+	meta := make(map[string]interface{})
+
+	// read meta file if exists
+	if t.doc.MetaFile != "" {
+		metaFile := helper.Join(t.doc.RootDir, t.doc.MetaFile)
+		err := helper.ReadDocument(metaFile, &meta)
+		if err != nil {
+			return err
+		}
+	}
+	cfg := genConfig{}
+	cfg.meta = meta
+
 	for _, layer := range t.doc.Layers {
-		err := t.processLayer(layer)
+		err := t.processLayer(layer, cfg)
 		if err != nil {
 			return err
 		}
@@ -59,43 +83,48 @@ func (t *task) run() error {
 
 // processLayer processes a layer from the solution.
 // A layer contains information about the inputs, used template and output.
-func (t *task) processLayer(layer *spec.SolutionLayer) error {
+func (t *task) processLayer(layer *spec.SolutionLayer, cfg genConfig) error {
 	log.Debug().Msgf("process layer %s", layer.Name)
 	rootDir := t.doc.RootDir
-	// TODO: template can be a dir or a name of a template
-	var templateDir string
-	td, err := GetTemplateDir(rootDir, layer.Template)
+
+	td, err := resolveTemplateDir(rootDir, layer.Template)
 	if err != nil {
 		return err
 	}
-	templateDir = td
-	var templatesDir = helper.Join(templateDir, "templates")
-	var rulesFile = helper.Join(templateDir, "rules.yaml")
-	var outputDir = helper.Join(rootDir, layer.Output)
-	// add templates dir and rules file as dependency
-	t.deps = append(t.deps, templatesDir, rulesFile)
-	var force = layer.Force
-	name := layer.Name
-	if name == "" {
+
+	cfg.templatesDir = helper.Join(td, "templates")
+	cfg.rulesFile = helper.Join(td, "rules.yaml")
+	// add templates dir and rules file as watcher dependency
+	t.deps = append(t.deps, cfg.templatesDir, cfg.rulesFile)
+
+	cfg.outputDir = helper.Join(rootDir, layer.Output)
+
+	cfg.name = layer.Name
+	if layer.Name == "" {
 		// if no layer name, name is the last part of the output directory
-		name = filepath.Base(outputDir)
+		cfg.name = filepath.Base(cfg.outputDir)
 	}
+
 	if layer.Inputs == nil {
 		return fmt.Errorf("inputs are empty")
 	}
-	features := layer.Features
-	if features == nil {
-		features = []string{"all"}
-	}
+	cfg.inputs = layer.Inputs
 
-	return t.runGenerator(name, layer.Inputs, outputDir, templateDir, features, force)
+	cfg.features = layer.Features
+	if layer.Features == nil {
+		cfg.features = []string{"all"}
+	}
+	cfg.force = layer.Force
+
+	// merge all meta data sources
+	cfg.meta = helper.MergeMaps(cfg.meta, t.doc.Meta, layer.Meta)
+
+	return t.runGenerator(cfg)
 }
 
-func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, features []string, force bool) error {
-	log.Debug().Msgf("run generator %s %v", name, inputs)
-	var templatesDir = helper.Join(templateDir, "templates")
-	var rulesFile = helper.Join(templateDir, "rules.yaml")
-	expanded, err := expandInputs(t.doc.RootDir, inputs)
+func (t *task) runGenerator(cfg genConfig) error {
+	log.Debug().Msgf("run generator %s %v", cfg.name, cfg.inputs)
+	expanded, err := expandInputs(t.doc.RootDir, cfg.inputs)
 	if err != nil {
 		return err
 	}
@@ -106,29 +135,32 @@ func (t *task) runGenerator(name string, inputs []string, outputDir string, temp
 	}
 	t.deps = append(t.deps, expanded...)
 
-	system := model.NewSystem(name)
+	system := model.NewSystem(cfg.name)
+
+	system.ApplyMeta(cfg.meta)
+
 	err = parseInputs(system, expanded)
 	if err != nil {
 		return err
 	}
 
-	err = helper.MakeDir(outputDir)
+	err = helper.MakeDir(cfg.outputDir)
 	if err != nil {
 		return fmt.Errorf("error creating output directory: %w", err)
 	}
 
 	opts := gen.GeneratorOptions{
-		OutputDir:    outputDir,
-		TemplatesDir: templatesDir,
+		OutputDir:    cfg.outputDir,
+		TemplatesDir: cfg.templatesDir,
 		System:       system,
-		UserFeatures: features,
-		UserForce:    force,
+		UserFeatures: cfg.features,
+		UserForce:    cfg.force,
 	}
 	generator, err := gen.New(opts)
 	if err != nil {
 		return err
 	}
-	doc, err := gen.ReadRulesDoc(rulesFile)
+	doc, err := gen.ReadRulesDoc(cfg.rulesFile)
 	if err != nil {
 		return err
 	}

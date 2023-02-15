@@ -8,7 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-func GetTemplateDir(rootDir string, template string) (string, error) {
+func resolveTemplateDir(rootDir string, template string) (string, error) {
 	var templateDir string
 	if helper.IsDir(helper.Join(rootDir, template)) {
 		templateDir = helper.Join(rootDir, template)

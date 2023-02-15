@@ -24,7 +24,7 @@ properties:
     description: "The root directory of the solution to map all other paths to."
   meta:
     type: object
-    description: "The meta section contains meta data about the solution."
+    description: "The meta added to the system in the template."
   layers:
     type: array
     items:
@@ -57,7 +57,7 @@ definitions:
         description: "the output directory of the layer."
       meta:
         type: object
-        description: "meta data about the layer which will be passed on to the template."
+        description: "meta data about the layer which will be passed on to the system in the template"
       template:
         type: string
         description: "path to the template which can be either template package name or a template folder with a rules document."
