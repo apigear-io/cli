@@ -15,8 +15,10 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		text = "void"
 	case "string":
 		text = "QString()"
-	case "int", "int32", "int64":
+	case "int", "int32":
 		text = "0"
+	case "int64":
+		text = "0LL"
 	case "float", "float32":
 		text = "0.0f"
 	case "float64":
