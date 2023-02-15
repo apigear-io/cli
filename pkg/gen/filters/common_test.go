@@ -2,6 +2,8 @@ package filters
 
 import (
 	"testing"
+
+	"github.com/apigear-io/cli/pkg/helper"
 )
 
 func TestIntToWordLower(t *testing.T) {
@@ -521,7 +523,7 @@ func TestAbbreviate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
-			if got := Abbreviate(tt.in); got != tt.out {
+			if got := helper.Abbreviate(tt.in); got != tt.out {
 				t.Errorf("Abbreviate(%q) = %q, want %q", tt.in, got, tt.out)
 			}
 		})

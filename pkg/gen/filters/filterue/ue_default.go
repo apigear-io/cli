@@ -2,8 +2,8 @@ package filterue
 
 import (
 	"fmt"
-	"unicode"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/ettle/strcase"
 )
@@ -57,12 +57,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]
 			typename := fmt.Sprintf("%s%s", moduleId, symbol.Name)
-			abbreviation := ""
-			for _, rune := range strcase.ToCase(typename, strcase.TitleCase, '-') {
-				if unicode.IsUpper(rune) {
-					abbreviation += string(rune)
-				}
-			}
+			abbreviation := helper.Abbreviate(typename)
 			// upper case first letter
 			// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
 			text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, strcase.ToCase(member.Name, strcase.UpperCase, '\x00'))

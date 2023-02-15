@@ -3,7 +3,6 @@ package filters
 import (
 	"fmt"
 	"strings"
-	"unicode"
 
 	"github.com/ettle/strcase"
 	"github.com/gertd/go-pluralize"
@@ -187,14 +186,4 @@ func Pluralize(s string, i int) string {
 		return s
 	}
 	return plural.Plural(s)
-}
-
-func Abbreviate(s string) string {
-	abbreviation := ""
-	for _, rune := range KebabTitleCase(s) {
-		if unicode.IsUpper(rune) {
-			abbreviation += string(rune)
-		}
-	}
-	return abbreviation
 }

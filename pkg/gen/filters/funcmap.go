@@ -9,6 +9,7 @@ import (
 	"github.com/apigear-io/cli/pkg/gen/filters/filterqt"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterts"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterue"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 )
 
@@ -45,7 +46,7 @@ func PopulateFuncMap() template.FuncMap {
 	fm["Int2Word"] = IntToWordTitle
 	fm["INT2WORD"] = IntToWordUpper
 	fm["plural"] = Pluralize
-	fm["abbreviate"] = Abbreviate
+	fm["abbreviate"] = helper.Abbreviate
 	fm["nl"] = NewLine
 
 	filtercpp.PopulateFuncMap(fm)
