@@ -65,7 +65,10 @@ func (r *Runner) Clear() {
 
 func runSolution(doc *spec.SolutionDoc) error {
 	log.Info().Msgf("run solution %s", doc.RootDir)
-	doc.Compute()
+	err := doc.Compute()
+	if err != nil {
+		return err
+	}
 	rootDir := doc.RootDir
 	if rootDir == "" {
 		return fmt.Errorf("root dir is empty")
@@ -85,9 +88,12 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if rulesFile == "" {
 			return fmt.Errorf("rules file is empty")
 		}
-		checkInputs(layer.ComputeExpandedInputs(rootDir))
+		err := checkInputs(layer.ComputeExpandedInputs(rootDir))
+		if err != nil {
+			return err
+		}
 		system := model.NewSystem(name)
-		err := parseInputs(system, layer.ComputeExpandedInputs(rootDir))
+		err = parseInputs(system, layer.ComputeExpandedInputs(rootDir))
 		if err != nil {
 			return err
 		}

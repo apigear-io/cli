@@ -41,7 +41,12 @@ func RunSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error
 	hub := net.NewSimuHub(ctx, simu)
 	s := net.NewHTTPServer()
 	s.Router().HandleFunc("/ws", hub.ServeHTTP)
-	go s.Start(addr)
+	go func() {
+		err := s.Start(addr)
+		if err != nil {
+			log.Error().Err(err).Msg("start simulation server")
+		}
+	}()
 	go func() {
 		<-ctx.Done()
 		s.Stop()
@@ -74,7 +79,10 @@ Using a scenario you can define additional static and scripted data and behavior
 					return runScenarioFile(source, simu)
 				}
 				tm.Register(source, run)
-				tm.Watch(ctx, source, source)
+				err := tm.Watch(ctx, source, source)
+				if err != nil {
+					log.Error().Err(err).Str("scenario", source).Msg("run scenario")
+				}
 			}
 
 			// start rpc server

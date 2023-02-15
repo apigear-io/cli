@@ -21,7 +21,6 @@ type Player struct {
 	sync.RWMutex
 	iface   *spec.InterfaceEntry
 	seq     *spec.SequenceEntry
-	ctx     context.Context
 	cancel  context.CancelFunc
 	StepC   chan *spec.ActionListEntry
 	FramesC chan PlayFrame

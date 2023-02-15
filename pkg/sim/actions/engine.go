@@ -38,7 +38,10 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 	doc.Source = source
 	for _, doc := range e.docs {
 		if doc.Source == source {
-			e.UnloadScenario(source)
+			err := e.UnloadScenario(source)
+			if err != nil {
+				log.Error().Err(err).Str("source", source).Msg("unload scenario")
+			}
 		}
 	}
 	e.docs = append(e.docs, doc)
@@ -153,7 +156,10 @@ func (e *Engine) HasSequence(name string) bool {
 func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("actions engine play all sequences")
 	for _, p := range e.players {
-		p.Play(ctx)
+		err := p.Play(ctx)
+		if err != nil {
+			log.Error().Err(err).Msgf("play sequence %s", p.SequenceName())
+		}
 	}
 	return nil
 }

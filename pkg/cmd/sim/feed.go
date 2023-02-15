@@ -95,7 +95,10 @@ func NewClientCommand() *cobra.Command {
 				go func() {
 					for data := range emitter {
 						log.Debug().Msgf("send -> %s", data)
-						handleNodeData(node, data)
+						err := handleNodeData(node, data)
+						if err != nil {
+							log.Error().Err(err).Str("node", node.Id()).Msg("handle node data")
+						}
 						// sleep between messages
 						if options.sleep > 0 {
 							time.Sleep(options.sleep)

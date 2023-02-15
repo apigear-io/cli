@@ -77,7 +77,10 @@ func (r *RulesDoc) walkWantedFeatures(features []string) error {
 		// mark feature as wanted
 		f.Skip = false
 		// recursively walk the dependency graph
-		r.walkWantedFeatures(f.Requires)
+		err := r.walkWantedFeatures(f.Requires)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

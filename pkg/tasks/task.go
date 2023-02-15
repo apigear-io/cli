@@ -9,15 +9,18 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+// TaskFunc is the function type of the task to run
 type TaskFunc func(ctx context.Context) error
+
+// TaskItem is the task item stored in the TaskManager
 type TaskItem struct {
 	sync.RWMutex
 	name     string
 	taskFunc TaskFunc
-	ctx      context.Context
 	cancel   context.CancelFunc
 }
 
+// NewTaskItem creates a new task item
 func NewTaskItem(name string, tf TaskFunc) *TaskItem {
 	return &TaskItem{
 		name:     name,
@@ -28,9 +31,16 @@ func NewTaskItem(name string, tf TaskFunc) *TaskItem {
 // Run runs the task once
 func (t *TaskItem) Run(ctx context.Context) {
 	log.Debug().Msgf("run task: %s", t.name)
-	t.ctx, t.cancel = context.WithCancel(ctx)
-	t.taskFunc(ctx)
-	t.ctx = nil
+	if t.cancel != nil {
+		// cancel the previous task
+		t.cancel()
+	}
+	ctx, t.cancel = context.WithCancel(ctx)
+	err := t.taskFunc(ctx)
+	if err != nil {
+		log.Error().Err(err).Str("task", t.name).Msg("failed to run task")
+	}
+	// clear the cancel function
 	t.cancel = nil
 }
 

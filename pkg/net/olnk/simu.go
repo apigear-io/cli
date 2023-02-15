@@ -2,6 +2,7 @@ package olnk
 
 import (
 	"github.com/apigear-io/cli/pkg/sim"
+	"github.com/apigear-io/objectlink-core-go/log"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 )
 
@@ -28,7 +29,11 @@ func (a *Adapter) CreateSource(objectId string) *SimuSource {
 		ObjectId: objectId,
 		Registry: a.registry,
 	})
-	a.registry.AddObjectSource(s)
+	err := a.registry.AddObjectSource(s)
+	if err != nil {
+		log.Error().Err(err).Str("id", objectId).Msg("failed to add object source")
+		return nil
+	}
 	return s
 }
 
