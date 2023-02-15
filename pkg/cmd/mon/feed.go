@@ -31,51 +31,29 @@ func NewClientCommand() *cobra.Command {
 			wg := &sync.WaitGroup{}
 			switch filepath.Ext(options.script) {
 			case ".json", ".ndjson":
-				emitter := make(chan *mon.Event)
 				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(fn string, emitter chan *mon.Event) {
-					defer wg.Done()
-					for i := 0; i < options.repeat; i++ {
-						err := mon.ReadJsonEvents(fn, emitter)
-						if err != nil {
-							log.Error().Err(err).Msg("error reading events")
-						}
-					}
-				}(options.script, emitter)
-				wg.Add(1)
-				go func(emitter chan *mon.Event, sleep time.Duration) {
-					defer wg.Done()
-					sender.SendEvents(emitter, sleep)
-				}(emitter, options.sleep)
-				wg.Wait()
-
-			case ".js":
-				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(script string, emitter chan *mon.Event) {
-					defer wg.Done()
-					vm := mon.NewEventScript(emitter)
-					err := vm.RunScriptFromFile(script)
-					if err != nil {
-						log.Error().Err(err).Msg("error running script")
-					}
-				}(options.script, emitter)
-				sender.SendEvents(emitter, options.sleep)
-				wg.Wait()
-			case ".csv":
-				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(fn string, emitter chan *mon.Event) {
-					defer wg.Done()
-					err := mon.ReadCsvEvents(fn, emitter)
+				for i := 0; i < options.repeat; i++ {
+					events, err := mon.ReadJsonEvents(options.script)
 					if err != nil {
 						log.Error().Err(err).Msg("error reading events")
 					}
-				}(options.script, emitter)
-				sender.SendEvents(emitter, options.sleep)
+					sender.SendEvents(events, options.sleep)
+				}
+			case ".js":
+				sender := mon.NewEventSender(options.url)
+				vm := mon.NewEventScript()
+				events, err := vm.RunScriptFromFile(options.script)
+				if err != nil {
+					log.Error().Err(err).Msg("error running script")
+				}
+				sender.SendEvents(events, options.sleep)
+			case ".csv":
+				sender := mon.NewEventSender(options.url)
+				events, err := mon.ReadCsvEvents(options.script)
+				if err != nil {
+					log.Error().Err(err).Msg("error reading events")
+				}
+				sender.SendEvents(events, options.sleep)
 				wg.Wait()
 			default:
 				return fmt.Errorf("unsupported script type: %s", options.script)

@@ -91,7 +91,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			if err != nil {
 				log.Error().Err(err).Msg("start rpc server")
 			}
-			helper.WaitForSig(cancel)
+			helper.WaitForInterrupt(cancel)
 			return nil
 		},
 	}

@@ -9,16 +9,16 @@ import (
 
 // ReadJsonEvents reads events from a json stream file
 // and sends them to the emitter channel.
-func ReadJsonEvents(fn string, emitter chan *Event) error {
+func ReadJsonEvents(fn string) ([]*Event, error) {
+	events := []*Event{}
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {
 		log.Error().Err(err).Msgf("open file %s", fn)
-		return err
+		return nil, err
 	}
 	defer func() {
 		file.Close()
-		close(emitter)
 	}()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -31,11 +31,11 @@ func ReadJsonEvents(fn string, emitter chan *Event) error {
 			log.Error().Err(err).Msgf("decode line: %s", line)
 			continue
 		}
-		emitter <- event
+		events = append(events, event)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Error().Err(err).Msgf("read file: %s", fn)
-		return err
+		return nil, err
 	}
-	return nil
+	return events, nil
 }

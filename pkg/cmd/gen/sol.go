@@ -56,7 +56,7 @@ as also the other options. To create a demo module or solution use the 'project 
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
-				go helper.WaitForSig(cancel)
+				go helper.WaitForInterrupt(cancel)
 			}
 			return nil
 		},

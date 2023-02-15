@@ -57,7 +57,7 @@ func NewExpertCommand() *cobra.Command {
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
-				go helper.WaitForSig(cancel)
+				go helper.WaitForInterrupt(cancel)
 			}
 			return nil
 		},

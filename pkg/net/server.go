@@ -36,7 +36,7 @@ func (s *Server) Start(addr string) error {
 		log.Info().Msgf("http server already started at %s", s.server.Addr)
 		return nil
 	}
-	log.Debug().Msgf("start http server at %s", addr)
+	log.Info().Msgf("start http server at %s", addr)
 	server := &http.Server{Addr: addr, Handler: s.router}
 	s.server = server
 	return server.ListenAndServe()
