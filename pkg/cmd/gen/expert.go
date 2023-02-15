@@ -1,10 +1,11 @@
 package gen
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"sync"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
 	"github.com/apigear-io/cli/pkg/spec"
@@ -42,22 +43,21 @@ func NewExpertCommand() *cobra.Command {
 				return fmt.Errorf("invalid solution document: %w", err)
 			}
 			runner := sol.NewRunner()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			err = runner.RunDoc(ctx, doc.RootDir, doc)
+			if err != nil {
+				return err
+			}
 
 			if options.watch {
-				// TODO: how to watch from a document and not from a file?
-				var wg sync.WaitGroup
-				wg.Add(1)
-				done, err := runner.StartWatch(doc.RootDir, doc)
+				err := runner.StartWatch(ctx, doc.RootDir, doc)
 				if err != nil {
-					return err
+					log.Error().Err(err).Msg("watching solution file")
+					cancel()
 				}
-				wg.Wait()
-				done <- true
-			} else {
-				err := runner.RunDoc(doc.RootDir, doc)
-				if err != nil {
-					return err
-				}
+				go helper.WaitForSig(cancel)
 			}
 			return nil
 		},

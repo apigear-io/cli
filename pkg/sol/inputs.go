@@ -57,7 +57,7 @@ func expandInputs(rootDir string, inputs []string) ([]string, error) {
 				if entry.IsDir() {
 					continue
 				}
-				if hasExtension(entry.Name(), []string{"module.yaml", "module.yml", "module.json", ".idl"}) {
+				if helper.HasExt(entry.Name(), "module.yaml", "module.yml", "module.json", ".idl") {
 					result = append(result, helper.Join(input, entry.Name()))
 				}
 			}

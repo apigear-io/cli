@@ -2,29 +2,21 @@ package sol
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
 func GetTemplateDir(rootDir string, template string) (string, error) {
-	var templateDir string
-	if helper.IsDir(helper.Join(rootDir, template)) {
-		templateDir = helper.Join(rootDir, template)
-	} else if helper.IsDir(helper.Join(cfg.TemplateCacheDir(), template)) {
-		templateDir = helper.Join(cfg.TemplateCacheDir(), template)
-	} else {
-		return "", fmt.Errorf("template dir %s not found", template)
-	}
-	return templateDir, nil
+	return FallbackDir(template, rootDir, cfg.TemplateCacheDir())
 }
 
-func hasExtension(file string, extensions []string) bool {
-	for _, ext := range extensions {
-		if strings.HasSuffix(file, ext) {
-			return true
+// FallbackDir returns the first dir that exists.
+func FallbackDir(name string, dirs ...string) (string, error) {
+	for _, dir := range dirs {
+		if helper.IsDir(helper.Join(dir, name)) {
+			return helper.Join(dir, name), nil
 		}
 	}
-	return false
+	return "", fmt.Errorf("dir %s not found", name)
 }

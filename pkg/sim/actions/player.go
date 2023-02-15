@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/spec"
@@ -17,6 +18,7 @@ type PlayFrame struct {
 // The stream is closed when the sequence is finished
 // Actions are evaluated in the context of an interface
 type Player struct {
+	sync.RWMutex
 	iface   *spec.InterfaceEntry
 	seq     *spec.SequenceEntry
 	ctx     context.Context
@@ -42,14 +44,16 @@ func (p *Player) SequenceName() string {
 func (p *Player) Play(ctx context.Context) error {
 	log.Debug().Msgf("play sequence %s", p.seq.Name)
 	ctx, cancel := context.WithCancel(ctx)
-	p.ctx = ctx
+	if p.cancel != nil {
+		p.cancel()
+	}
 	p.cancel = cancel
-	go p.loopPump(p.seq)
-	go p.framePump(p.seq.Interval)
+	go p.loopPump(ctx, p.seq)
+	go p.framePump(ctx, p.seq.Interval)
 	return nil
 }
 
-func (p *Player) loopPump(seq *spec.SequenceEntry) {
+func (p *Player) loopPump(ctx context.Context, seq *spec.SequenceEntry) {
 	loops := seq.Loops
 	if loops == 0 {
 		loops = 1
@@ -57,7 +61,7 @@ func (p *Player) loopPump(seq *spec.SequenceEntry) {
 	for i := 0; i < loops; i++ {
 		for _, step := range seq.Steps {
 			select {
-			case <-p.ctx.Done():
+			case <-ctx.Done():
 				return
 			default:
 				p.StepC <- step
@@ -67,7 +71,7 @@ func (p *Player) loopPump(seq *spec.SequenceEntry) {
 	close(p.StepC)
 }
 
-func (p *Player) framePump(interval int) {
+func (p *Player) framePump(ctx context.Context, interval int) {
 	for {
 		select {
 		case s := <-p.StepC:
@@ -79,7 +83,7 @@ func (p *Player) framePump(interval int) {
 				// the stream is closed when the sequence is finished
 				// or the player is stopped
 				select {
-				case <-p.ctx.Done():
+				case <-ctx.Done():
 					return
 				default:
 					p.FramesC <- PlayFrame{
@@ -89,7 +93,7 @@ func (p *Player) framePump(interval int) {
 				}
 			}
 			time.Sleep(time.Duration(interval) * time.Millisecond)
-		case <-p.ctx.Done():
+		case <-ctx.Done():
 			log.Debug().Msgf("frame pump %s is done", p.seq.Name)
 			return
 		}

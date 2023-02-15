@@ -136,6 +136,7 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 
 // ProcessRules processes a set of rules from a rules document
 func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
+	log.Debug().Msgf("processing rules: %s", doc.Name)
 	g.Stats = GeneratorStats{}
 	g.Stats.Start()
 	defer func() {

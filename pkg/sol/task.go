@@ -45,7 +45,6 @@ func (t *task) addDep(dep string) {
 func (t *task) run() error {
 	t.Lock()
 	defer t.Unlock()
-	log.Debug().Msgf("run task %s", t.file)
 	// reset deps
 	t.deps = make([]string, 0)
 	for _, layer := range t.doc.Layers {
@@ -62,18 +61,15 @@ func (t *task) run() error {
 func (t *task) processLayer(layer *spec.SolutionLayer) error {
 	log.Debug().Msgf("process layer %s", layer.Name)
 	rootDir := t.doc.RootDir
+	deps := layer.ComputeDependencies(rootDir)
 	// TODO: template can be a dir or a name of a template
-	var templateDir string
 	td, err := GetTemplateDir(rootDir, layer.Template)
 	if err != nil {
 		return err
 	}
-	templateDir = td
-	var templatesDir = helper.Join(templateDir, "templates")
-	var rulesFile = helper.Join(templateDir, "rules.yaml")
 	var outputDir = helper.Join(rootDir, layer.Output)
 	// add templates dir and rules file as dependency
-	t.deps = append(t.deps, templatesDir, rulesFile)
+	t.deps = append(t.deps, deps...)
 	var force = layer.Force
 	name := layer.Name
 	if name == "" {
@@ -88,14 +84,14 @@ func (t *task) processLayer(layer *spec.SolutionLayer) error {
 		features = []string{"all"}
 	}
 
-	return t.runGenerator(name, layer.Inputs, outputDir, templateDir, features, force)
+	return t.runGenerator(name, layer.Inputs, outputDir, td, features, force)
 }
 
 func (t *task) runGenerator(name string, inputs []string, outputDir string, templateDir string, features []string, force bool) error {
 	log.Debug().Msgf("run generator %s %v", name, inputs)
 	var templatesDir = helper.Join(templateDir, "templates")
 	var rulesFile = helper.Join(templateDir, "rules.yaml")
-	expanded, err := expandInputs(t.doc.RootDir, inputs)
+	expanded, err := helper.ExpandInputs(t.doc.RootDir, inputs...)
 	if err != nil {
 		return err
 	}

@@ -36,6 +36,11 @@ func NewEngine(store ostore.IObjectStore) *Engine {
 
 func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 	doc.Source = source
+	for _, doc := range e.docs {
+		if doc.Source == source {
+			e.UnloadScenario(source)
+		}
+	}
 	e.docs = append(e.docs, doc)
 	for _, iface := range doc.Interfaces {
 		if iface.Name == "" {
