@@ -55,7 +55,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		val string
 	}{
 		// EnumValues: {"test", "Test2", "propEnum", "ETestEnum1::Default"},
-		{"test", "Test2", "propEnum", "ETestEnum1::DEFAULT"},
+		{"test", "Test2", "propEnum", "ETestEnum1::TE_DEFAULT"},
 		{"test", "Test2", "propStruct", "FTestStruct1()"},
 		{"test", "Test2", "propInterface", "FTestInterface1()"},
 		{"test", "Test2", "propEnumArray", "TArray<ETestEnum1>()"},
