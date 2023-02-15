@@ -45,6 +45,7 @@ func PopulateFuncMap() template.FuncMap {
 	fm["Int2Word"] = IntToWordTitle
 	fm["INT2WORD"] = IntToWordUpper
 	fm["plural"] = Pluralize
+	fm["abbreviate"] = Abbreviate
 	fm["nl"] = NewLine
 
 	filtercpp.PopulateFuncMap(fm)
