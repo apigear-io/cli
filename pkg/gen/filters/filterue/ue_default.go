@@ -47,8 +47,10 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 			text = "FString()"
 		case model.TypeInt, model.TypeInt32, model.TypeInt64:
 			text = "0"
-		case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
+		case model.TypeFloat, model.TypeFloat32:
 			text = "0.0f"
+		case model.TypeFloat64:
+			text = "0.0"
 		case model.TypeBool:
 			text = "false"
 		case model.TypeVoid:
