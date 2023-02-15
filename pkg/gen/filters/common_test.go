@@ -496,3 +496,34 @@ func TestPluralize(t *testing.T) {
 		})
 	}
 }
+
+func TestAbbreviate(t *testing.T) {
+	var tests = []struct {
+		in  string
+		out string
+	}{
+		{"", ""},
+		{"foo", "F"},
+		{"hello.world", "HW"},
+		{"hEllo.worLd", "HEWL"},
+		{"HEllo.worLd", "HEWL"},
+		{"HEllo.worLD", "HEWL"},
+		{"HELlo.worLD", "HLWL"},
+		{"hello_world", "HW"},
+		{"heLlo_wOrld", "HLWO"},
+		{"hello world", "HW"},
+		{"hello worlD", "HWD"},
+		{"hello.2world", "H"},
+		{"1hello.world", "W"},
+		{"1hello.2world", ""},
+		{"1hELlo.2world", "EL"},
+		{"1hELLlo.2world", "EL"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.out, func(t *testing.T) {
+			if got := Abbreviate(tt.in); got != tt.out {
+				t.Errorf("Abbreviate(%q) = %q, want %q", tt.in, got, tt.out)
+			}
+		})
+	}
+}
