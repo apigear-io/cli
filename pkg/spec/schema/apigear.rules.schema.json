@@ -95,6 +95,10 @@
       },
       "type": "array"
     },
+    "name": {
+      "description": "The name of the rules engine.",
+      "type": "string"
+    },
     "schema": {
       "description": "The ApiGear Blueprint Rules specification version of this document.",
       "enum": [

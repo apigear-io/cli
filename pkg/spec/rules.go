@@ -27,6 +27,7 @@ const (
 )
 
 type RulesDoc struct {
+	Name     string         `json:"name" yaml:"name"`
 	Features []*FeatureRule `json:"features" yaml:"features"`
 }
 
