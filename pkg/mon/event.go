@@ -51,8 +51,9 @@ func NewEventFactory(source string) *EventFactory {
 
 // MakeEvent creates an event with the given kind, symbol and params.
 func (f EventFactory) MakeEvent(kind EventType, symbol string, data Payload) *Event {
+	id := uuid.New().String()
 	return &Event{
-		Id:        uuid.New().String(),
+		Id:        id,
 		Type:      kind,
 		Timestamp: time.Now(),
 		Source:    f.Source,

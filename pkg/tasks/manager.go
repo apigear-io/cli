@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"sync"
+
+	"github.com/apigear-io/objectlink-core-go/log"
 )
 
 // ErrTaskNotFound is returned when a task is not found
@@ -71,8 +73,7 @@ func (tm *TaskManager) Run(ctx context.Context, name string) error {
 	if task == nil {
 		return ErrTaskNotFound
 	}
-	task.Run(ctx)
-	return nil
+	return task.Run(ctx)
 }
 
 // Watch watches a task
@@ -81,7 +82,11 @@ func (tm *TaskManager) Watch(ctx context.Context, name string, dependencies ...s
 	if task == nil {
 		return ErrTaskNotFound
 	}
-	task.Watch(ctx, dependencies...)
+	err := task.Run(ctx)
+	if err != nil {
+		log.Error().Err(err).Str("task", name).Msg("failed to run task")
+	}
+	go task.Watch(ctx, dependencies...)
 	return nil
 }
 

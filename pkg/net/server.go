@@ -19,8 +19,6 @@ func NewHTTPServer() *Server {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.CleanPath)
-	r.Use(middleware.StripSlashes)
 	r.Use(middleware.Recoverer)
 	return &Server{
 		router: r,
@@ -36,7 +34,7 @@ func (s *Server) Start(addr string) error {
 		log.Info().Msgf("http server already started at %s", s.server.Addr)
 		return nil
 	}
-	log.Info().Msgf("start http server at %s", addr)
+	log.Debug().Msgf("start http server at %s", addr)
 	server := &http.Server{Addr: addr, Handler: s.router}
 	s.server = server
 	return server.ListenAndServe()

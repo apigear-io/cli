@@ -9,9 +9,9 @@ import (
 
 // ReadCsvEvents reads events from a csv file
 // and sends them to the emitter channel.
-func ReadCsvEvents(fn string) ([]*Event, error) {
+func ReadCsvEvents(fn string) ([]Event, error) {
 	log.Debug().Msgf("read csv events from %s", fn)
-	events := []*Event{}
+	var events []Event
 	// read file line by line using scanner
 	file, err := os.Open(fn)
 	if err != nil {
@@ -49,7 +49,7 @@ func ReadCsvEvents(fn string) ([]*Event, error) {
 			Symbol: row.Symbol,
 			Data:   data,
 		}
-		events = append(events, &evt)
+		events = append(events, evt)
 	}
 	return events, nil
 }

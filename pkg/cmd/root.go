@@ -25,7 +25,7 @@ func NewRootCommand() *cobra.Command {
 		Long:  `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 	}
 	cmd.SilenceErrors = false
-	cmd.SilenceUsage = false
+	cmd.SilenceUsage = true
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())

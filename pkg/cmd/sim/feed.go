@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/objectlink-core-go/olink/client"
 	"github.com/apigear-io/objectlink-core-go/olink/core"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
@@ -88,27 +88,19 @@ func NewClientCommand() *cobra.Command {
 			registry.AttachClientNode(node)
 			switch filepath.Ext(options.script) {
 			case ".ndjson":
-				emitter := make(chan []byte)
-				go func() {
-					net.ScanJsonDelimitedFile(options.script, options.sleep, options.repeat, emitter)
-				}()
-				go func() {
-					for data := range emitter {
-						log.Debug().Msgf("send -> %s", data)
-						err := handleNodeData(node, data)
-						if err != nil {
-							log.Error().Err(err).Str("node", node.Id()).Msg("handle node data")
-						}
-						// sleep between messages
-						if options.sleep > 0 {
-							time.Sleep(options.sleep)
-						}
+				items, err := helper.ScanFile(options.script)
+				if err != nil {
+					return err
+				}
+				ctrl := helper.NewSenderControl[[]byte](options.repeat, options.sleep)
+				ctrl.Run(items, func(data []byte) error {
+					log.Debug().Msgf("send -> %s", data)
+					err := handleNodeData(node, data)
+					if err != nil {
+						return err
 					}
-					// wait for all messages to be sent
-					log.Info().Msg("wait ...")
-					time.Sleep(1 * time.Second)
-					cancel()
-				}()
+					return nil
+				})
 			}
 			<-ctx.Done()
 			log.Info().Msg("done")
@@ -125,10 +117,12 @@ func handleNodeData(node *client.Node, data []byte) error {
 	var m core.Message
 	err := json.Unmarshal(data, &m)
 	if err != nil {
+		log.Error().Err(err).Msgf("invalid message: %s", data)
 		return err
 	}
 	s, ok := m[0].(string)
 	if !ok {
+		log.Error().Msgf("invalid message type, expected string: %v", m)
 		return fmt.Errorf("invalid message type, expected string: %v", m)
 	}
 	m[0] = core.MsgTypeFromString(s)
@@ -153,6 +147,7 @@ func handleNodeData(node *client.Node, data []byte) error {
 		})
 	default:
 		log.Info().Msgf("not supported message type: %v", m)
+		return fmt.Errorf("not supported message type: %v", m)
 	}
 	return nil
 }

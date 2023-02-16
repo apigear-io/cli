@@ -1,4 +1,4 @@
 { "type": "call", "symbol": "demo.Counter/increment" }
-{ "type": "state", "symbol": "demo.Counter", "data": { "count": 1 } } }
+{ "type": "state", "symbol": "demo.Counter", "data": { "count": 1 } }
 { "type": "call", "symbol": "demo.Counter/increment" }
 { "type": "state", "symbol": "demo.Counter", "data": { "count": 2 } }

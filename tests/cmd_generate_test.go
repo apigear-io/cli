@@ -28,8 +28,9 @@ func TestGenerateSolutionCmd(t *testing.T) {
 // test usage of generate expert command
 func TestGenerateExpertUsageCmd(t *testing.T) {
 	setup(t)
-	output := execute(t, "generate expert")
+	output := execute(t, "generate")
 	assert.Contains(t, output, "Usage:")
+
 }
 
 // test generate expert command with input, output and template flags

@@ -1,11 +1,11 @@
 package mon
 
 import (
+	"encoding/json"
 	"fmt"
-	"path/filepath"
-	"sync"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
 
@@ -28,40 +28,43 @@ func NewClientCommand() *cobra.Command {
 		RunE: func(_ *cobra.Command, args []string) error {
 			options.script = args[0]
 			log.Debug().Msgf("run script %s", options.script)
-			wg := &sync.WaitGroup{}
-			switch filepath.Ext(options.script) {
+			var events []mon.Event
+			var err error
+			switch helper.Ext(options.script) {
 			case ".json", ".ndjson":
-				sender := mon.NewEventSender(options.url)
-				for i := 0; i < options.repeat; i++ {
-					events, err := mon.ReadJsonEvents(options.script)
-					if err != nil {
-						log.Error().Err(err).Msg("error reading events")
-					}
-					sender.SendEvents(events, options.sleep)
+				events, err = mon.ReadJsonEvents(options.script)
+				log.Debug().Msgf("read %d events", len(events))
+				if err != nil {
+					return fmt.Errorf("error reading events: %w", err)
 				}
 			case ".js":
-				sender := mon.NewEventSender(options.url)
 				vm := mon.NewEventScript()
-				events, err := vm.RunScriptFromFile(options.script)
+				events, err = vm.RunScriptFromFile(options.script)
 				if err != nil {
-					log.Error().Err(err).Msg("error running script")
+					return fmt.Errorf("error running script: %w", err)
 				}
-				sender.SendEvents(events, options.sleep)
 			case ".csv":
-				sender := mon.NewEventSender(options.url)
-				events, err := mon.ReadCsvEvents(options.script)
+				events, err = mon.ReadCsvEvents(options.script)
 				if err != nil {
-					log.Error().Err(err).Msg("error reading events")
+					return fmt.Errorf("error reading events: %w", err)
 				}
-				sender.SendEvents(events, options.sleep)
-				wg.Wait()
 			default:
 				return fmt.Errorf("unsupported script type: %s", options.script)
 			}
+			if len(events) == 0 {
+				return fmt.Errorf("no events to send")
+			}
+			sender := helper.NewHTTPSender(options.url)
+			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
+			ctrl.Run(events, func(event mon.Event) error {
+				data, _ := json.Marshal(event.Data)
+				log.Debug().Msgf("send event: %s %s %s %s %s", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
+				return sender.SendValue(event)
+			})
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123/", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123", "monitor server address")
 	// repeat is -1 for infinite
 	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
 	// sleep is in milliseconds

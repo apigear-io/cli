@@ -29,7 +29,8 @@ func NewTaskItem(name string, tf TaskFunc) *TaskItem {
 }
 
 // Run runs the task once
-func (t *TaskItem) Run(ctx context.Context) {
+// TODO: add error handling
+func (t *TaskItem) Run(ctx context.Context) error {
 	log.Debug().Msgf("run task: %s", t.name)
 	if t.cancel != nil {
 		// cancel the previous task
@@ -37,11 +38,12 @@ func (t *TaskItem) Run(ctx context.Context) {
 	}
 	ctx, t.cancel = context.WithCancel(ctx)
 	err := t.taskFunc(ctx)
+	// handle the error
 	if err != nil {
 		log.Error().Err(err).Str("task", t.name).Msg("failed to run task")
+		return err
 	}
-	// clear the cancel function
-	t.cancel = nil
+	return nil
 }
 
 // Watch watches all the dependencies of the task and runs the task
@@ -74,7 +76,10 @@ func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
 		case event := <-watcher.Events:
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				log.Debug().Msgf("modified file: %s", event.Name)
-				t.Run(ctx)
+				err := t.Run(ctx)
+				if err != nil {
+					log.Error().Err(err).Msg("failed to run task")
+				}
 			}
 		case err := <-watcher.Errors:
 			log.Error().Msgf("error watching file: %s", err)

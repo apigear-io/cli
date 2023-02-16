@@ -9,39 +9,45 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 )
 
-func ScanJsonDelimitedFile(fn string, sleep time.Duration, repeat int, emitter chan []byte) {
-	log.Debug().Msgf("scan file %s", fn)
-	// read file line by line using scanner
-	file, err := os.Open(fn)
-	defer func() {
-		file.Close()
-		close(emitter)
-	}()
-	if err != nil {
-		log.Error().Err(err).Msgf("open file %s", fn)
-		return
-	}
-	if repeat == 0 {
-		repeat = 1
-	}
-	for i := 0; i < repeat; i++ {
-		log.Debug().Msgf("read json messages from file %s", fn)
-		err = readJsonLines(file, sleep, emitter)
-		if err != nil {
-			log.Error().Msgf("read messages from file %s: %v", fn, err)
-			return
-		}
+// NDJSONScanner scans a reader line by line and writes to the writer.
+type NDJSONScanner struct {
+	sleep  time.Duration
+	repeat int
+}
+
+// NewNDJSONScanner creates a new NDJSON scanner.
+func NewNDJSONScanner(sleep time.Duration, repeat int) *NDJSONScanner {
+	return &NDJSONScanner{
+		sleep:  sleep,
+		repeat: repeat,
 	}
 }
 
-func readJsonLines(r io.Reader, sleep time.Duration, emitter chan []byte) error {
+// Scan scans a reader line by line and writes to the writer.
+func (s *NDJSONScanner) Scan(r io.Reader, w io.Writer) error {
 	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log.Debug().Msgf("line: %s", line)
-		time.Sleep(sleep)
-		log.Debug().Msgf("emit message: %s", line)
-		emitter <- []byte(line)
+	for i := 0; i < s.repeat; i++ {
+		for scanner.Scan() {
+			line := scanner.Bytes()
+			log.Debug().Msgf("write: %s", line)
+			_, err := w.Write(line)
+			if err != nil {
+				return err
+			}
+			if s.sleep > 0 {
+				time.Sleep(s.sleep)
+			}
+		}
 	}
 	return scanner.Err()
+}
+
+// ScanFile scans a file line by line and writes to the writer.
+func (s *NDJSONScanner) ScanFile(path string, w io.Writer) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return s.Scan(f, w)
 }

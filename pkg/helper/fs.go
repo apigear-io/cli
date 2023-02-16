@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -205,4 +206,19 @@ func ExpandInputs(rootDir string, inputs ...string) ([]string, error) {
 		return HasExt(s, "module.yaml", "module.yml", "module.json", ".idl")
 	}
 	return ExpandFiles(rootDir, filter, inputs...)
+}
+
+func ScanFile(fn string) ([][]byte, error) {
+	f, err := os.Open(fn)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	scan := bufio.NewScanner(f)
+	result := make([][]byte, 0)
+	for scan.Scan() {
+		line := scan.Bytes()
+		result = append(result, line)
+	}
+	return result, scan.Err()
 }

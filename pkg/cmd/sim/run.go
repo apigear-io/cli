@@ -2,13 +2,14 @@ package sim
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
+	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/apigear-io/cli/pkg/tasks"
 
@@ -37,23 +38,6 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 	return doc, nil
 }
 
-func RunSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
-	hub := net.NewSimuHub(ctx, simu)
-	s := net.NewHTTPServer()
-	s.Router().HandleFunc("/ws", hub.ServeHTTP)
-	go func() {
-		err := s.Start(addr)
-		if err != nil {
-			log.Error().Err(err).Msg("start simulation server")
-		}
-	}()
-	go func() {
-		<-ctx.Done()
-		s.Stop()
-	}()
-	return nil
-}
-
 func NewServerCommand() *cobra.Command {
 	var addr string
 
@@ -69,8 +53,11 @@ Using a scenario you can define additional static and scripted data and behavior
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			log.Info().Msgf("run simulation server")
 			simu := sim.NewSimulation()
+			simu.OnEvent(func(event *core.SimuEvent) {
+				kwargs, _ := json.Marshal(event.KWArgs)
+				cmd.Printf("-> %s %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Type, event.Symbol, event.Name, event.Args, kwargs)
+			})
 
 			if len(args) == 1 {
 				source := args[0]
@@ -79,20 +66,17 @@ Using a scenario you can define additional static and scripted data and behavior
 					return runScenarioFile(source, simu)
 				}
 				tm.Register(source, run)
+				tm.Run(ctx, source)
 				err := tm.Watch(ctx, source, source)
 				if err != nil {
 					log.Error().Err(err).Str("scenario", source).Msg("run scenario")
 				}
 			}
-
-			// start rpc server
-			log.Info().Msgf("olink server ws://%s/ws", addr)
-			err := RunSimuServer(ctx, addr, simu)
-			if err != nil {
-				log.Error().Err(err).Msg("start rpc server")
-			}
-			helper.WaitForInterrupt(cancel)
-			return nil
+			hub := net.NewSimuHub(ctx, simu)
+			s := net.NewHTTPServer()
+			s.Router().HandleFunc("/ws", hub.ServeHTTP)
+			log.Info().Msgf("simulation server listens on ws://%s/ws", addr)
+			return s.Start(addr)
 		},
 	}
 	cmd.PostRun = func(cmd *cobra.Command, args []string) {

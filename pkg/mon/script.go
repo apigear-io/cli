@@ -19,7 +19,7 @@ func Must(err error) {
 
 type EventScript struct {
 	vm     *goja.Runtime
-	events []*Event
+	events []Event
 }
 
 func NewEventScript() *EventScript {
@@ -33,7 +33,7 @@ func NewEventScript() *EventScript {
 	return s
 }
 
-func (s *EventScript) RunScriptFromFile(file string) ([]*Event, error) {
+func (s *EventScript) RunScriptFromFile(file string) ([]Event, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("read script file: %v", err)
@@ -41,7 +41,7 @@ func (s *EventScript) RunScriptFromFile(file string) ([]*Event, error) {
 	return s.RunScript(string(content))
 }
 
-func (s *EventScript) RunScript(script string) ([]*Event, error) {
+func (s *EventScript) RunScript(script string) ([]Event, error) {
 	prog, err := goja.Compile("", script, true)
 	if err != nil {
 		return nil, fmt.Errorf("compile error: %v", err)
@@ -61,13 +61,13 @@ func (s *EventScript) init() {
 }
 
 // addEvent adds an event to the script
-func (s *EventScript) addEvent(evt *Event) {
+func (s *EventScript) addEvent(evt Event) {
 	s.events = append(s.events, evt)
 }
 
 func (s *EventScript) jsCall(symbol string, data Payload) {
 	log.Debug().Msgf("call: %s %v", symbol, data)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeCall,
 		Timestamp: time.Now(),
@@ -80,7 +80,7 @@ func (s *EventScript) jsCall(symbol string, data Payload) {
 
 func (s *EventScript) jsSignal(symbol string, data Payload) {
 	log.Debug().Msgf("signal: %s %v", symbol, data)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeSignal,
 		Timestamp: time.Now(),
@@ -93,7 +93,7 @@ func (s *EventScript) jsSignal(symbol string, data Payload) {
 
 func (s *EventScript) jsSet(symbol string, data Payload) {
 	log.Debug().Msgf("set: %s", symbol)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeState,
 		Timestamp: time.Now(),
