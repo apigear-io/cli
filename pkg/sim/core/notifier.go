@@ -67,15 +67,17 @@ func (n *EventNotifier) EmitPropertyChanged(ifaceId string, propName string, val
 	})
 }
 
-func (n *EventNotifier) EmitSimuStart() {
+func (n *EventNotifier) EmitSimuStart(name string) {
 	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStart,
+		Name: name,
 	})
 }
 
-func (n *EventNotifier) EmitSimuStop() {
+func (n *EventNotifier) EmitSimuStop(name string) {
 	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStop,
+		Name: name,
 	})
 }
 
