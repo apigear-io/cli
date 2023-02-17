@@ -59,7 +59,9 @@ func NewClientCommand() *cobra.Command {
 			ctrl.Run(events, func(event mon.Event) error {
 				data, _ := json.Marshal(event.Data)
 				log.Debug().Msgf("send event: %s %s %s %s %s", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
-				return sender.SendValue(event)
+				// send as an array of events
+				payload := [1]mon.Event{event}
+				return sender.SendValue(payload)
 			})
 			return nil
 		},
