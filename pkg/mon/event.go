@@ -3,6 +3,7 @@ package mon
 import (
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/google/uuid"
 )
 
@@ -50,8 +51,9 @@ func NewEventFactory(source string) *EventFactory {
 
 // MakeEvent creates an event with the given kind, symbol and params.
 func (f EventFactory) MakeEvent(kind EventType, symbol string, data Payload) *Event {
+	id := uuid.New().String()
 	return &Event{
-		Id:        uuid.New().String(),
+		Id:        id,
 		Type:      kind,
 		Timestamp: time.Now(),
 		Source:    f.Source,
@@ -89,14 +91,4 @@ func (f EventFactory) Sanitize(event *Event) *Event {
 	return event
 }
 
-var emitter = make(chan *Event)
-
-// Emitter returns the emitter channel.
-func Emitter() chan *Event {
-	return emitter
-}
-
-// EmitEvents writes events to the emitter channel.
-func EmitEvent(event *Event) {
-	emitter <- event
-}
+var Emitter = helper.NewEventEmitter[*Event]()

@@ -1,11 +1,13 @@
 package helper
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,6 +19,11 @@ func Join(elem ...string) string {
 	}
 	// otherwise join all elem
 	return filepath.Join(elem...)
+}
+
+// BaseName returns the last element of path.
+func BaseName(src string) string {
+	return filepath.Base(src)
 }
 
 func IsDir(elem string) bool {
@@ -134,8 +141,13 @@ func WriteFile(dst string, data []byte) error {
 	return os.WriteFile(dst, data, 0644)
 }
 
-func HasExt(file string, ext string) bool {
-	return filepath.Ext(file) == ext
+func HasExt(file string, exts ...string) bool {
+	for _, ext := range exts {
+		if strings.HasSuffix(file, ext) {
+			return true
+		}
+	}
+	return false
 }
 
 func Ext(file string) string {
@@ -151,4 +163,62 @@ func ListDir(path string) {
 	for _, file := range files {
 		log.Printf("file: %s", file.Name())
 	}
+}
+
+// FallbackDir returns the first dir that exists.
+func FallbackDir(name string, dirs ...string) (string, error) {
+	for _, dir := range dirs {
+		if IsDir(Join(dir, name)) {
+			return Join(dir, name), nil
+		}
+	}
+	return "", fmt.Errorf("dir %s not found", name)
+}
+
+type ExtFilter func(string) bool
+
+func ExpandFiles(rootDir string, filter ExtFilter, inputs ...string) ([]string, error) {
+	result := make([]string, 0)
+	for _, input := range inputs {
+		input = Join(rootDir, input)
+		if IsDir(input) {
+			entries, err := os.ReadDir(input)
+			if err != nil {
+				return nil, err
+			}
+			for _, entry := range entries {
+				if entry.IsDir() {
+					continue
+				}
+				if filter != nil && !filter(entry.Name()) {
+					result = append(result, Join(input, entry.Name()))
+				}
+			}
+		} else {
+			result = append(result, input)
+		}
+	}
+	return result, nil
+}
+
+func ExpandInputs(rootDir string, inputs ...string) ([]string, error) {
+	filter := func(s string) bool {
+		return HasExt(s, "module.yaml", "module.yml", "module.json", ".idl")
+	}
+	return ExpandFiles(rootDir, filter, inputs...)
+}
+
+func ScanFile(fn string) ([][]byte, error) {
+	f, err := os.Open(fn)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	scan := bufio.NewScanner(f)
+	result := make([][]byte, 0)
+	for scan.Scan() {
+		line := scan.Bytes()
+		result = append(result, line)
+	}
+	return result, scan.Err()
 }

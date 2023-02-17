@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"context"
+	"sync"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/spec"
@@ -16,9 +18,10 @@ type PlayFrame struct {
 // The stream is closed when the sequence is finished
 // Actions are evaluated in the context of an interface
 type Player struct {
+	sync.RWMutex
 	iface   *spec.InterfaceEntry
 	seq     *spec.SequenceEntry
-	DoneC   chan bool
+	cancel  context.CancelFunc
 	StepC   chan *spec.ActionListEntry
 	FramesC chan PlayFrame
 }
@@ -27,7 +30,6 @@ func NewPlayer(iface *spec.InterfaceEntry, seq *spec.SequenceEntry) *Player {
 	p := &Player{
 		iface:   iface,
 		seq:     seq,
-		DoneC:   make(chan bool),
 		StepC:   make(chan *spec.ActionListEntry),
 		FramesC: make(chan PlayFrame),
 	}
@@ -38,56 +40,66 @@ func (p *Player) SequenceName() string {
 	return p.seq.Name
 }
 
-func (p *Player) Play() error {
+func (p *Player) Play(ctx context.Context) error {
 	log.Debug().Msgf("play sequence %s", p.seq.Name)
-	go p.loopPump(p.seq)
-	go func() {
-		err := p.framePump(p.seq.Interval)
-		if err != nil {
-			log.Error().Msgf("frame pump error: %v", err)
-		}
-	}()
+	ctx, cancel := context.WithCancel(ctx)
+	if p.cancel != nil {
+		p.cancel()
+	}
+	p.cancel = cancel
+	go p.loopPump(ctx, p.seq)
+	go p.framePump(ctx, p.seq.Interval)
 	return nil
 }
 
-func (p *Player) loopPump(seq *spec.SequenceEntry) {
+func (p *Player) loopPump(ctx context.Context, seq *spec.SequenceEntry) {
 	loops := seq.Loops
 	if loops == 0 {
 		loops = 1
 	}
 	for i := 0; i < loops; i++ {
 		for _, step := range seq.Steps {
-			p.StepC <- step
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				p.StepC <- step
+			}
 		}
 	}
-	p.DoneC <- true
 	close(p.StepC)
 }
 
-func (p *Player) framePump(interval int) error {
+func (p *Player) framePump(ctx context.Context, interval int) {
 	for {
 		select {
 		case s := <-p.StepC:
 			if s == nil {
-				return nil
+				return
 			}
 			for _, action := range s.Actions {
-				p.FramesC <- PlayFrame{
-					Action:    action,
-					Interface: p.iface,
+				// every frame the player sends the action to the stream
+				// the stream is closed when the sequence is finished
+				// or the player is stopped
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					p.FramesC <- PlayFrame{
+						Action:    action,
+						Interface: p.iface,
+					}
 				}
 			}
 			time.Sleep(time.Duration(interval) * time.Millisecond)
-		case <-p.DoneC:
+		case <-ctx.Done():
 			log.Debug().Msgf("frame pump %s is done", p.seq.Name)
-			close(p.FramesC)
-			close(p.DoneC)
-			return nil
+			return
 		}
 	}
 }
 
 func (p *Player) Stop() error {
-	close(p.DoneC)
+	p.cancel()
 	return nil
 }

@@ -20,7 +20,7 @@ interfaces:
 sequences:
   - name: counter
     interface: demo.Counter
-    repeat: 3
+    loops: 10
     interval: 1000
     steps:
       - name: inc

@@ -1,9 +1,11 @@
 package gen
 
 import (
+	"context"
 	"fmt"
-	"sync"
 
+	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
 	"github.com/apigear-io/cli/pkg/spec"
 
@@ -40,20 +42,21 @@ as also the other options. To create a demo module or solution use the 'project 
 				return err
 			}
 			runner := sol.NewRunner()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			err = runner.RunDoc(ctx, file, doc)
+			if err != nil {
+				return err
+			}
+
 			if watch {
-				var wg = sync.WaitGroup{}
-				wg.Add(1)
-				done, err := runner.StartWatch(file, doc)
+				err := runner.StartWatch(ctx, file, doc)
 				if err != nil {
-					return err
+					log.Error().Err(err).Msg("watching solution file")
+					cancel()
 				}
-				wg.Wait()
-				done <- true
-			} else {
-				err := runner.RunDoc(file, doc)
-				if err != nil {
-					return err
-				}
+				go helper.WaitForInterrupt(cancel)
 			}
 			return nil
 		},

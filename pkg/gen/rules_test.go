@@ -12,15 +12,18 @@ import (
 // See testdata/fts/rules.yaml for the dependency graph
 func TestRulesFeatures(t *testing.T) {
 	rules := readRules(t, "testdata/fts/rules.yaml")
-	rules.ComputeFeatures([]string{"f1"})
+	err := rules.ComputeFeatures([]string{"f1"})
+	assert.NoError(t, err)
 	f := rules.FeatureNamesMap()
 	assert.Equal(t, f, map[string]bool{"f1": true, "f2": false, "f3": false})
 
-	rules.ComputeFeatures([]string{"f2"})
+	err = rules.ComputeFeatures([]string{"f2"})
+	assert.NoError(t, err)
 	f = rules.FeatureNamesMap()
 	assert.Equal(t, f, map[string]bool{"f1": true, "f2": true, "f3": false})
 
-	rules.ComputeFeatures([]string{"f3"})
+	err = rules.ComputeFeatures([]string{"f3"})
+	assert.NoError(t, err)
 	f = rules.FeatureNamesMap()
 	assert.Equal(t, f, map[string]bool{"f1": true, "f2": true, "f3": true})
 }

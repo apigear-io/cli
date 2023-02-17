@@ -2,26 +2,19 @@ package sim
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/actions"
+	"github.com/apigear-io/cli/pkg/sim/core"
 	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/tasks"
 
 	"github.com/spf13/cobra"
 )
-
-func handleSignal(cancel func()) {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
-	<-sigs
-	cancel()
-}
 
 func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 	result, err := spec.CheckFile(file)
@@ -45,13 +38,6 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 	return doc, nil
 }
 
-func StartSimuServer(ctx context.Context, addr string, simu *sim.Simulation) error {
-	hub := net.NewSimuHub(ctx, simu)
-	s := net.NewHTTPServer()
-	s.Router().HandleFunc("/ws", hub.ServeHTTP)
-	return s.Start(addr)
-}
-
 func NewServerCommand() *cobra.Command {
 	var addr string
 
@@ -67,45 +53,30 @@ Using a scenario you can define additional static and scripted data and behavior
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			go handleSignal(cancel)
-			log.Info().Msgf("run simulation server")
-			var doc *spec.ScenarioDoc
-			if len(args) == 1 {
-				aDoc, err := ReadScenario(args[0])
-				if err != nil {
-					log.Error().Msgf("read scenario file: %v", err)
-				}
-				doc = aDoc
-			}
 			simu := sim.NewSimulation()
-			if doc != nil {
-				err := simu.LoadScenario(doc.Name, doc)
-				if err != nil {
-					return err
-				}
-				go func() {
-					err = simu.PlayAllSequences()
-					if err != nil {
-						log.Error().Msgf("play scenario: %v", err)
-					}
-				}()
-			}
-			// start rpc server
-			log.Info().Msgf("olink server ws://%s/ws", addr)
-			go func() {
-				err := StartSimuServer(ctx, addr, simu)
-				if err != nil {
-					log.Error().Err(err).Msg("start rpc server")
-				}
-			}()
-			// wait for interrupt
-			sigC := make(chan os.Signal, 1)
-			signal.Notify(sigC, os.Interrupt)
-			<-sigC
-			cancel()
+			simu.OnEvent(func(event *core.SimuEvent) {
+				kwargs, _ := json.Marshal(event.KWArgs)
+				cmd.Printf("-> %s %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Type, event.Symbol, event.Name, event.Args, kwargs)
+			})
 
-			log.Debug().Msgf("shutting down rpc hub")
-			return nil
+			if len(args) == 1 {
+				source := args[0]
+				tm := tasks.New()
+				run := func(ctx context.Context) error {
+					return runScenarioFile(source, simu)
+				}
+				tm.Register(source, run)
+				tm.Run(ctx, source)
+				err := tm.Watch(ctx, source, source)
+				if err != nil {
+					log.Error().Err(err).Str("scenario", source).Msg("run scenario")
+				}
+			}
+			hub := net.NewSimuHub(ctx, simu)
+			s := net.NewHTTPServer()
+			s.Router().HandleFunc("/ws", hub.ServeHTTP)
+			log.Info().Msgf("simulation server listens on ws://%s/ws", addr)
+			return s.Start(addr)
 		},
 	}
 	cmd.PostRun = func(cmd *cobra.Command, args []string) {
@@ -113,4 +84,21 @@ Using a scenario you can define additional static and scripted data and behavior
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:4333", "address to listen on")
 	return cmd
+}
+
+func runScenarioFile(source string, simu *sim.Simulation) error {
+	log.Debug().Msgf("run scenario file %s", source)
+	doc, err := ReadScenario(source)
+	if err != nil {
+		return err
+	}
+	err = simu.LoadScenario(doc.Name, doc)
+	if err != nil {
+		return err
+	}
+	err = simu.PlayAllSequences(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
 }

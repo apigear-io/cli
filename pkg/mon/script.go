@@ -18,40 +18,39 @@ func Must(err error) {
 }
 
 type EventScript struct {
-	vm      *goja.Runtime
-	emitter chan *Event
+	vm     *goja.Runtime
+	events []Event
 }
 
-func NewEventScript(emitter chan *Event) *EventScript {
+func NewEventScript() *EventScript {
 	vm := goja.New()
 	new(require.Registry).Enable(vm)
 	console.Enable(vm)
-	s := &EventScript{vm: vm, emitter: emitter}
+	s := &EventScript{
+		vm: vm,
+	}
 	s.init()
 	return s
 }
 
-func (s *EventScript) RunScriptFromFile(file string) error {
+func (s *EventScript) RunScriptFromFile(file string) ([]Event, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {
-		return fmt.Errorf("read script file: %v", err)
+		return nil, fmt.Errorf("read script file: %v", err)
 	}
 	return s.RunScript(string(content))
 }
 
-func (s *EventScript) RunScript(script string) error {
+func (s *EventScript) RunScript(script string) ([]Event, error) {
 	prog, err := goja.Compile("", script, true)
-	defer func() {
-		close(s.emitter)
-	}()
 	if err != nil {
-		return fmt.Errorf("compile error: %v", err)
+		return nil, fmt.Errorf("compile error: %v", err)
 	}
 	_, err = s.vm.RunProgram(prog)
 	if err != nil {
-		return fmt.Errorf("run script: %v", err)
+		return nil, fmt.Errorf("run script: %v", err)
 	}
-	return nil
+	return s.events, nil
 }
 
 func (s *EventScript) init() {
@@ -61,9 +60,14 @@ func (s *EventScript) init() {
 	Must(s.vm.Set("sleep", s.jsSleep))
 }
 
+// addEvent adds an event to the script
+func (s *EventScript) addEvent(evt Event) {
+	s.events = append(s.events, evt)
+}
+
 func (s *EventScript) jsCall(symbol string, data Payload) {
 	log.Debug().Msgf("call: %s %v", symbol, data)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeCall,
 		Timestamp: time.Now(),
@@ -71,12 +75,12 @@ func (s *EventScript) jsCall(symbol string, data Payload) {
 		Symbol:    symbol,
 		Data:      data,
 	}
-	s.emitter <- evt
+	s.addEvent(evt)
 }
 
 func (s *EventScript) jsSignal(symbol string, data Payload) {
 	log.Debug().Msgf("signal: %s %v", symbol, data)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeSignal,
 		Timestamp: time.Now(),
@@ -84,12 +88,12 @@ func (s *EventScript) jsSignal(symbol string, data Payload) {
 		Symbol:    symbol,
 		Data:      data,
 	}
-	s.emitter <- evt
+	s.addEvent(evt)
 }
 
 func (s *EventScript) jsSet(symbol string, data Payload) {
 	log.Debug().Msgf("set: %s", symbol)
-	evt := &Event{
+	evt := Event{
 		Id:        uuid.New().String(),
 		Type:      TypeState,
 		Timestamp: time.Now(),
@@ -97,7 +101,7 @@ func (s *EventScript) jsSet(symbol string, data Payload) {
 		Symbol:    symbol,
 		Data:      data,
 	}
-	s.emitter <- evt
+	s.addEvent(evt)
 }
 
 func (s *EventScript) jsSleep(duration int) {

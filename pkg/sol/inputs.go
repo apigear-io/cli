@@ -2,7 +2,6 @@ package sol
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/helper"
@@ -42,30 +41,6 @@ func parseInputs(s *model.System, inputs []string) error {
 		return fmt.Errorf("error resolving system: %w", err)
 	}
 	return nil
-}
-
-func expandInputs(rootDir string, inputs []string) ([]string, error) {
-	result := make([]string, 0)
-	for _, input := range inputs {
-		input = helper.Join(rootDir, input)
-		if helper.IsDir(input) {
-			entries, err := os.ReadDir(input)
-			if err != nil {
-				return nil, err
-			}
-			for _, entry := range entries {
-				if entry.IsDir() {
-					continue
-				}
-				if hasExtension(entry.Name(), []string{"module.yaml", "module.yml", "module.json", ".idl"}) {
-					result = append(result, helper.Join(input, entry.Name()))
-				}
-			}
-		} else {
-			result = append(result, input)
-		}
-	}
-	return result, nil
 }
 
 func checkInputs(inputs []string) error {

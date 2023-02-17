@@ -1,11 +1,11 @@
 package mon
 
 import (
+	"encoding/json"
 	"fmt"
-	"path/filepath"
-	"sync"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
 
@@ -28,62 +28,43 @@ func NewClientCommand() *cobra.Command {
 		RunE: func(_ *cobra.Command, args []string) error {
 			options.script = args[0]
 			log.Debug().Msgf("run script %s", options.script)
-			wg := &sync.WaitGroup{}
-			switch filepath.Ext(options.script) {
+			var events []mon.Event
+			var err error
+			switch helper.Ext(options.script) {
 			case ".json", ".ndjson":
-				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(fn string, emitter chan *mon.Event) {
-					defer wg.Done()
-					for i := 0; i < options.repeat; i++ {
-						err := mon.ReadJsonEvents(fn, emitter)
-						if err != nil {
-							log.Error().Err(err).Msg("error reading events")
-						}
-					}
-				}(options.script, emitter)
-				wg.Add(1)
-				go func(emitter chan *mon.Event, sleep time.Duration) {
-					defer wg.Done()
-					sender.SendEvents(emitter, sleep)
-				}(emitter, options.sleep)
-				wg.Wait()
-
+				events, err = mon.ReadJsonEvents(options.script)
+				log.Debug().Msgf("read %d events", len(events))
+				if err != nil {
+					return fmt.Errorf("error reading events: %w", err)
+				}
 			case ".js":
-				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(script string, emitter chan *mon.Event) {
-					defer wg.Done()
-					vm := mon.NewEventScript(emitter)
-					err := vm.RunScriptFromFile(script)
-					if err != nil {
-						log.Error().Err(err).Msg("error running script")
-					}
-				}(options.script, emitter)
-				sender.SendEvents(emitter, options.sleep)
-				wg.Wait()
+				vm := mon.NewEventScript()
+				events, err = vm.RunScriptFromFile(options.script)
+				if err != nil {
+					return fmt.Errorf("error running script: %w", err)
+				}
 			case ".csv":
-				emitter := make(chan *mon.Event)
-				sender := mon.NewEventSender(options.url)
-				wg.Add(1)
-				go func(fn string, emitter chan *mon.Event) {
-					defer wg.Done()
-					err := mon.ReadCsvEvents(fn, emitter)
-					if err != nil {
-						log.Error().Err(err).Msg("error reading events")
-					}
-				}(options.script, emitter)
-				sender.SendEvents(emitter, options.sleep)
-				wg.Wait()
+				events, err = mon.ReadCsvEvents(options.script)
+				if err != nil {
+					return fmt.Errorf("error reading events: %w", err)
+				}
 			default:
 				return fmt.Errorf("unsupported script type: %s", options.script)
 			}
+			if len(events) == 0 {
+				return fmt.Errorf("no events to send")
+			}
+			sender := helper.NewHTTPSender(options.url)
+			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
+			ctrl.Run(events, func(event mon.Event) error {
+				data, _ := json.Marshal(event.Data)
+				log.Debug().Msgf("send event: %s %s %s %s %s", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
+				return sender.SendValue(event)
+			})
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123/", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123", "monitor server address")
 	// repeat is -1 for infinite
 	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
 	// sleep is in milliseconds

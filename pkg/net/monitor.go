@@ -18,12 +18,14 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 	log.Debug().Msg("handle monitor request")
 	source := chi.URLParam(r, "source")
 	if source == "" {
+		log.Error().Msg("source id is required")
 		http.Error(w, "source id is required", http.StatusBadRequest)
 		return
 	}
 	event := &mon.Event{}
-	if err := json.NewDecoder(r.Body).Decode(event); err != nil {
-		log.Info().Msgf("decode event: %v", err)
+	err := json.NewDecoder(r.Body).Decode(event)
+	if err != nil {
+		log.Error().Msgf("decode event: %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -33,5 +35,5 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 		event.Timestamp = time.Now()
 	}
 	log.Debug().Msgf("emit event: %+v", event)
-	mon.EmitEvent(event)
+	mon.Emitter.Emit(event)
 }

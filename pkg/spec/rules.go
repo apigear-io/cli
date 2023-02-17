@@ -27,6 +27,7 @@ const (
 )
 
 type RulesDoc struct {
+	Name     string         `json:"name" yaml:"name"`
 	Features []*FeatureRule `json:"features" yaml:"features"`
 }
 
@@ -76,7 +77,10 @@ func (r *RulesDoc) walkWantedFeatures(features []string) error {
 		// mark feature as wanted
 		f.Skip = false
 		// recursively walk the dependency graph
-		r.walkWantedFeatures(f.Requires)
+		err := r.walkWantedFeatures(f.Requires)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

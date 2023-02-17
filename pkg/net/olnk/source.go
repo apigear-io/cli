@@ -54,8 +54,7 @@ func (s *SimuSource) Invoke(name string, args core.Args) (core.Any, error) {
 
 // SetProperty sets a property of the source.
 func (s *SimuSource) SetProperty(name string, value core.Any) error {
-	s.Simu.SetProperties(s.Id, core.KWArgs{name: value})
-	return nil
+	return s.Simu.SetProperties(s.Id, core.KWArgs{name: value})
 }
 
 // CollectProperties collects all properties of the source.

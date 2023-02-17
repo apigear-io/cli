@@ -42,6 +42,9 @@ properties:
     type: string
     enum: ["apigear.rules/1.0"]
     description: "The ApiGear Blueprint Rules specification version of this document."
+  name:
+    type: string
+    description: "The name of the rules engine."
   features:
     description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
     type: array
