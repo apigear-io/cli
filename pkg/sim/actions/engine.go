@@ -156,6 +156,7 @@ func (e *Engine) HasSequence(name string) bool {
 func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("actions engine play all sequences")
 	for _, p := range e.players {
+		e.EmitSimuStart(p.SequenceName())
 		err := p.Play(ctx)
 		if err != nil {
 			log.Error().Err(err).Msgf("play sequence %s", p.SequenceName())
@@ -167,6 +168,7 @@ func (e *Engine) PlayAllSequences(ctx context.Context) error {
 func (e *Engine) StopAllSequences() {
 	log.Debug().Msgf("actions engine stop all sequences")
 	for _, p := range e.players {
+		e.EmitSimuStop(p.SequenceName())
 		err := p.Stop()
 		if err != nil {
 			log.Warn().Msgf("stop sequence %s: %v", p.SequenceName(), err)
@@ -177,6 +179,7 @@ func (e *Engine) StopAllSequences() {
 func (e *Engine) PlaySequence(ctx context.Context, name string) error {
 	for _, p := range e.players {
 		if p.SequenceName() == name {
+			e.EmitSimuStart(name)
 			err := p.Play(ctx)
 			if err != nil {
 				log.Warn().Msgf("play sequence %s: %v", name, err)
@@ -189,6 +192,7 @@ func (e *Engine) PlaySequence(ctx context.Context, name string) error {
 func (e *Engine) StopSequence(name string) {
 	for _, p := range e.players {
 		if p.SequenceName() == name {
+			e.EmitSimuStop(name)
 			err := p.Stop()
 			if err != nil {
 				log.Warn().Msgf("stop sequence %s: %v", name, err)
