@@ -5,6 +5,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/objectlink-core-go/log"
 )
 
@@ -15,18 +16,20 @@ var ErrTaskNotFound = errors.New("task not found")
 type TaskManager struct {
 	sync.RWMutex
 	tasks map[string]*TaskItem
+	*helper.EventEmitter[*TaskEvent]
 }
 
-// New creates a new task manager
-func New() *TaskManager {
+// NewTaskManager creates a new task manager
+func NewTaskManager() *TaskManager {
 	return &TaskManager{
-		tasks: make(map[string]*TaskItem),
+		tasks:        make(map[string]*TaskItem),
+		EventEmitter: helper.NewEventEmitter[*TaskEvent](),
 	}
 }
 
 // Register creates a new task
-func (tm *TaskManager) Register(name string, tf TaskFunc) *TaskItem {
-	task := NewTaskItem(name, tf)
+func (tm *TaskManager) Register(name string, meta map[string]interface{}, tf TaskFunc) *TaskItem {
+	task := NewTaskItem(name, meta, tf)
 	tm.AddTask(task)
 	return task
 }
@@ -42,6 +45,7 @@ func (tm *TaskManager) AddTask(task *TaskItem) {
 	tm.Lock()
 	defer tm.Unlock()
 	tm.tasks[task.name] = task
+	tm.Emit(NewTaskEvent(task, TaskStateAdded))
 }
 
 // RmTask removes a task from the task manager
@@ -53,6 +57,7 @@ func (tm *TaskManager) RmTask(name string) error {
 	tm.Lock()
 	defer tm.Unlock()
 	delete(tm.tasks, name)
+	tm.Emit(NewTaskEvent(task, TaskStateRemoved))
 	return nil
 }
 
@@ -73,7 +78,15 @@ func (tm *TaskManager) Run(ctx context.Context, name string) error {
 	if task == nil {
 		return ErrTaskNotFound
 	}
-	return task.Run(ctx)
+	tm.Emit(NewTaskEvent(task, TaskStateRunning))
+	err := task.Run(ctx)
+	if err != nil {
+		log.Error().Err(err).Str("task", name).Msg("failed to run task")
+		tm.Emit(NewTaskEvent(task, TaskStateFailed))
+		return err
+	}
+	tm.Emit(NewTaskEvent(task, TaskStateFinished))
+	return nil
 }
 
 // Watch watches a task
@@ -87,6 +100,7 @@ func (tm *TaskManager) Watch(ctx context.Context, name string, dependencies ...s
 		log.Error().Err(err).Str("task", name).Msg("failed to run task")
 	}
 	go task.Watch(ctx, dependencies...)
+	tm.Emit(NewTaskEvent(task, TaskStateWatching))
 	return nil
 }
 
@@ -116,6 +130,7 @@ func (tm *TaskManager) Cancel(name string) error {
 		return ErrTaskNotFound
 	}
 	task.Cancel()
+	tm.Emit(NewTaskEvent(task, TaskStateStopped))
 	return nil
 }
 

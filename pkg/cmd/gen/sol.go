@@ -8,6 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sol"
 	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/tasks"
 
 	"github.com/spf13/cobra"
 )
@@ -42,6 +43,9 @@ as also the other options. To create a demo module or solution use the 'project 
 				return err
 			}
 			runner := sol.NewRunner()
+			runner.OnTask(func(evt *tasks.TaskEvent) {
+				log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
+			})
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 

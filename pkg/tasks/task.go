@@ -16,14 +16,16 @@ type TaskFunc func(ctx context.Context) error
 type TaskItem struct {
 	sync.RWMutex
 	name     string
+	meta     map[string]interface{}
 	taskFunc TaskFunc
 	cancel   context.CancelFunc
 }
 
 // NewTaskItem creates a new task item
-func NewTaskItem(name string, tf TaskFunc) *TaskItem {
+func NewTaskItem(name string, meta map[string]interface{}, tf TaskFunc) *TaskItem {
 	return &TaskItem{
 		name:     name,
+		meta:     meta,
 		taskFunc: tf,
 	}
 }
@@ -41,6 +43,9 @@ func (t *TaskItem) Run(ctx context.Context) error {
 	// handle the error
 	if err != nil {
 		log.Error().Err(err).Str("task", t.name).Msg("failed to run task")
+		t.UpdateMeta(map[string]interface{}{
+			"error": err.Error(),
+		})
 		return err
 	}
 	return nil
@@ -93,4 +98,13 @@ func (t *TaskItem) Cancel() {
 		return
 	}
 	t.cancel()
+}
+
+// UpdateMeta updates the meta data of the task
+func (t *TaskItem) UpdateMeta(meta map[string]interface{}) {
+	t.Lock()
+	defer t.Unlock()
+	for k, v := range meta {
+		t.meta[k] = v
+	}
 }
