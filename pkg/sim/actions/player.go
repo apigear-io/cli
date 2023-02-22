@@ -67,7 +67,8 @@ func (p *Player) loopPump(ctx context.Context, seq *spec.SequenceEntry) {
 			}
 		}
 	}
-	close(p.StepC)
+	// no need to close channel
+	// play might be restarted
 }
 
 func (p *Player) framePump(ctx context.Context, interval int) {

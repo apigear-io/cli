@@ -19,7 +19,7 @@ type Runner struct {
 func NewRunner() *Runner {
 	return &Runner{
 		// tasks: make(map[string]*task),
-		tm: tasks.New(),
+		tm: tasks.NewTaskManager(),
 	}
 }
 
@@ -31,12 +31,19 @@ func (r *Runner) TaskFiles() []string {
 	return r.tm.Names()
 }
 
+func (r *Runner) OnTask(fn func(*tasks.TaskEvent)) {
+	r.tm.On(fn)
+}
+
 // RunDoc runs the given file task once.
 func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
 	run := func(ctx context.Context) error {
 		return runSolution(doc)
 	}
-	r.tm.Register(file, run)
+	meta := map[string]interface{}{
+		"solution": file,
+	}
+	r.tm.Register(file, meta, run)
 	return r.tm.Run(ctx, file)
 }
 
@@ -47,7 +54,10 @@ func (r *Runner) StartWatch(ctx context.Context, file string, doc *spec.Solution
 	run := func(ctx context.Context) error {
 		return runSolution(doc)
 	}
-	r.tm.Register(file, run)
+	meta := map[string]interface{}{
+		"solution": file,
+	}
+	r.tm.Register(file, meta, run)
 	return r.tm.Watch(ctx, file, deps...)
 }
 

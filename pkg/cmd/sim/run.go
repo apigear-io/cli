@@ -61,11 +61,17 @@ Using a scenario you can define additional static and scripted data and behavior
 
 			if len(args) == 1 {
 				source := args[0]
-				tm := tasks.New()
+				tm := tasks.NewTaskManager()
+				tm.On(func(evt *tasks.TaskEvent) {
+					log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
+				})
 				run := func(ctx context.Context) error {
 					return runScenarioFile(source, simu)
 				}
-				tm.Register(source, run)
+				meta := map[string]interface{}{
+					"scenario": source,
+				}
+				tm.Register(source, meta, run)
 				tm.Run(ctx, source)
 				err := tm.Watch(ctx, source, source)
 				if err != nil {
