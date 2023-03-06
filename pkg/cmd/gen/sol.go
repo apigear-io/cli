@@ -60,7 +60,7 @@ as also the other options. To create a demo module or solution use the 'project 
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
-				go helper.WaitForInterrupt(cancel)
+				helper.WaitForInterrupt(cancel)
 			}
 			return nil
 		},
