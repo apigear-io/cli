@@ -37,15 +37,15 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	}
 	e := schema.Module.LookupEnum(t)
 	if e != nil {
-		return fmt.Sprintf("%s::%sEnum %s", e.Name, e.Name, name), nil
+		return fmt.Sprintf("%s%s::%sEnum %s", prefix, e.Name, e.Name, name), nil
 	}
 	s := schema.Module.LookupStruct(t)
 	if s != nil {
-		return fmt.Sprintf("const %s& %s", s.Name, name), nil
+		return fmt.Sprintf("const %s%s& %s", prefix, s.Name, name), nil
 	}
 	i := schema.Module.LookupInterface(t)
 	if i != nil {
-		return fmt.Sprintf("%s *%s", i.Name, name), nil
+		return fmt.Sprintf("%s%s *%s", prefix, i.Name, name), nil
 	}
 	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
 }
