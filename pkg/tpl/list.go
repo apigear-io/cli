@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/git"
@@ -23,18 +22,22 @@ func ListTemplates() ([]*git.RepoInfo, error) {
 		return []*git.RepoInfo{}, err
 	}
 	// merge
-	for _, info := range registry {
-		info.InCache = false
-		info.InRegistry = true
-		set[info.Name] = info
+	for _, remoteInfo := range registry {
+		remoteInfo.InCache = false
+		remoteInfo.InRegistry = true
+		set[remoteInfo.Name] = remoteInfo
 	}
-	for _, info := range cached {
-		if _, ok := set[info.Name]; ok {
-			set[info.Name].InCache = true
+	for _, cachedInfo := range cached {
+		remoteInfo, ok := set[cachedInfo.Name]
+		if ok {
+			remoteInfo.InCache = true
+			remoteInfo.InRegistry = true
+			remoteInfo.Tag = cachedInfo.Tag
+			remoteInfo.Commit = cachedInfo.Commit
 		} else {
-			info.InCache = true
-			info.InRegistry = false
-			set[info.Name] = info
+			cachedInfo.InCache = true
+			cachedInfo.InRegistry = false
+			set[cachedInfo.Name] = cachedInfo
 		}
 	}
 	// convert to list
@@ -71,20 +74,14 @@ func ListCachedRepos() ([]*git.RepoInfo, error) {
 		if err != nil {
 			return fmt.Errorf("walk template dir: %s", err)
 		}
-		if info.IsDir() && info.Name() != "." && info.Name() != ".." {
-			if helper.IsDir(helper.Join(path, ".git")) {
-				name, err := filepath.Rel(dir, path)
-				if err != nil {
-					return fmt.Errorf("get relative path for %s", path)
-				}
-				infos = append(infos, &git.RepoInfo{
-					Name:    strings.ReplaceAll(name, "\\", "/"),
-					Path:    path,
-					InCache: true,
-				})
-				// no need to traverse into this dir
-				return filepath.SkipDir
+		if git.IsLocalGitRepo(path) {
+			info, err := git.LocalRepoInfo(dir, path)
+			if err != nil {
+				return fmt.Errorf("get local repo info: %s", err)
 			}
+			infos = append(infos, info)
+			// no need to traverse into this dir
+			return filepath.SkipDir
 		}
 		return nil
 	})

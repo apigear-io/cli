@@ -31,6 +31,9 @@ func (c VersionCollection) Swap(i, j int) {
 
 // Latest returns the latest tag info
 func (c VersionCollection) Latest() VersionInfo {
+	if len(c) == 0 {
+		return VersionInfo{}
+	}
 	return c[0]
 }
 
@@ -56,6 +59,7 @@ type RepoInfo struct {
 	Path        string            `json:"path"`
 	Git         string            `json:"git"`
 	Commit      string            `json:"commit"`
+	Tag         string            `json:"tag"`
 	Latest      VersionInfo       `json:"latest"`
 	Versions    VersionCollection `json:"tags"`
 	InCache     bool              `json:"inCache"`
@@ -70,7 +74,7 @@ func SortRepoInfo(infos []*RepoInfo) {
 
 func RemoteRepoInfo(url string) (RepoInfo, error) {
 	log.Debug().Msgf("remote repo info for %s", url)
-	result := RepoInfo{
+	info := RepoInfo{
 		Git: url,
 	}
 	remote := git.NewRemote(memory.NewStorage(), &gconf.RemoteConfig{
@@ -102,9 +106,9 @@ func RemoteRepoInfo(url string) (RepoInfo, error) {
 				latestTag = tag
 			}
 			tags = append(tags, tag)
-			result.Versions = tags
+			info.Versions = tags
 		}
 	}
-	result.Latest = latestTag
-	return result, nil
+	info.Latest = latestTag
+	return info, nil
 }
