@@ -1,0 +1,61 @@
+# This is a proof of concept for a taskfile
+version: "3"
+
+env:
+  GO111MODULE: on
+  CGO_ENABLED: 0
+
+tasks:
+  setup:
+    desc: Setup the project
+    cmds:
+      - go mod tidy
+  build:
+    desc: Build the project
+    cmds:
+      - go build -o ./bin/apigear ./cmd/apigear
+  lint:
+    desc: Lint the project
+    cmds:
+      - golangci-lint run ./...
+  test:
+    desc: Run tests
+    cmds:
+      - go test -failfast -race ./... -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt
+  cover:
+    desc: Show coverage
+    cmds:
+      - go tool cover -html=coverage.txt
+  ci:
+    desc: Run all CI checks
+    cmds:
+      - task: setup
+      - task: lint
+      - task: test
+  run:
+    desc: Run command line
+    cmds:
+      - go run ./cmd/apigear {{.CLI_ARGS}}
+    sources:
+      - "**/*.go"
+  debug:
+    desc: Debug command line
+    cmds:
+      - dlv debug ./cmd/apigear -- {{.CLI_ARGS}}
+  default:
+    desc: Run all CI checks
+    cmds:
+      - task: ci
+  clean:
+    desc: Clean the project
+    cmds:
+      - rm -rf ./bin
+      - rm -rf ./coverage.txt
+  vuln:
+    desc: Check for vulnerabilities
+    cmds:
+      - govulncheck ./...
+  generate:
+    desc: Generate code
+    cmds:
+      - antlr -Dlanguage=Go pkg/idl/parser/ObjectApi.g4

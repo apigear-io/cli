@@ -30,5 +30,6 @@ tmp/
 out/
 bin/
 dist/
+# task cache
+.task/*
 
-# idea ide
