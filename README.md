@@ -4,12 +4,12 @@
 
 ApiGear CLI is a command line application that runs on Windows, Mac and Linux. You can download the latest version from [here](https://github.com/apigear-io/cli-releases/releases/latest).
 
-The product has not yet a certification from Microsoft, Apple or Linux. So you may need to disable the security check to run the application.
+Note: *The product has not yet a certification from Microsoft, Apple or Linux. So you may need to disable the security check to run the application.*
 
 
 ## Building from source
 
-Install Go 1.19.x or later (see [Go Dev](https://go.dev))
+Install latest Go (see [Go Dev](https://go.dev))
 
 build using
 
