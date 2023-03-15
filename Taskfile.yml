@@ -1,4 +1,3 @@
-# This is a proof of concept for a taskfile
 version: "3"
 
 env:
@@ -14,6 +13,8 @@ tasks:
     desc: Build the project
     cmds:
       - go build -o ./bin/apigear ./cmd/apigear
+    sources:
+      - "**/*.go"
   lint:
     desc: Lint the project
     cmds:
