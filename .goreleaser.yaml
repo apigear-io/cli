@@ -8,7 +8,7 @@ release:
   github:
     owner: apigear-io
     name: cli
-  discussion_category_name: General
+  discussion_category_name: Announcements
 builds:
   - id: apigear
     env:
