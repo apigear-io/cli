@@ -59,3 +59,9 @@ tasks:
     desc: Generate code
     cmds:
       - antlr -Dlanguage=Go pkg/idl/parser/ObjectApi.g4
+  docs:
+    desc: Generate docs
+    cmds:
+      - rm -rf ./docs
+      - mkdir -p ./docs
+      - go run ./cmd/apigear x doc
