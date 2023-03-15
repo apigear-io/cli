@@ -35,6 +35,6 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
