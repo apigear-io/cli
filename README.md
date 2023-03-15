@@ -1,15 +1,19 @@
 # ApiGear CLI
 
+## CLI Flags
+
+Command line documentation is available in the [docs](docs/apigear.md) folder.
+
 ## Install
 
-ApiGear CLI is a command line application that runs on Windows, Mac and Linux. You can download the latest version from [here](https://github.com/apigear-io/cli-releases/releases/latest).
+ApiGear CLI is a command line application that runs on Windows, Mac and Linux. You can download the latest version from the [release page](https://github.com/apigear-io/cli/releases/latest).
 
 Note: *The product has not yet a certification from Microsoft, Apple or Linux. So you may need to disable the security check to run the application.*
 
 
 ## Building from source
 
-Install latest Go (see [Go Dev](https://go.dev))
+Install latest Go from [Go Dev](https://go.dev)
 
 build using
 
