@@ -7,7 +7,7 @@ before:
 release:
   github:
     owner: apigear-io
-    name: cli-releases
+    name: cli
   discussion_category_name: General
 builds:
   - id: apigear
