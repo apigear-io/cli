@@ -16,7 +16,7 @@ func NewUpdateCommand() *cobra.Command {
 		Short: "update the program",
 		Long:  `check and update the program to the latest version`,
 		Run: func(cmd *cobra.Command, args []string) {
-			repo := "apigear-io/cli-releases"
+			repo := "apigear-io/cli"
 			version := cfg.BuildVersion()
 			ctx := context.Background()
 			u, err := up.NewUpdater(repo, version)
