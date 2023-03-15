@@ -66,3 +66,7 @@ tasks:
       - rm -rf ./docs
       - mkdir -p ./docs
       - go run ./cmd/apigear x doc
+  schema:
+    desc: convert yaml schemas to json
+    cmds:
+      - go run ./cmd/apigear x y2j 'pkg/spec/schema/*.yaml'
