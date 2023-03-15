@@ -9,13 +9,6 @@ on:
 
 # See https://github.com/mvdan/github-actions-golang/blob/master/README.md#how-do-i-install-private-modules
 
-env:
-  GITHUB_AUTH_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
-  GOPRIVATE: "github.com/apigear-io/*"
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PUBLIC_TOKEN: ${{ secrets.PUBLIC_TOKEN }}
-  REPO_TOKEN: ${{ secrets.APIGEAR_REPOS }}
-
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -25,16 +18,10 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.19.x
-      - run: git config --global url."https://jryannel:${{env.token}}@github.com".insteadOf "https://github.com"
-        shell: bash
-        env:
-          token: ${{ secrets.APIGEAR_REPOS }}
+          go-version: 1.20.x
       - run: go test ./...
       - uses: goreleaser/goreleaser-action@v3
         with:
           distribution: goreleaser
           version: latest
           args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.WOLFGANG_REPO_PACKAGE_READ }}
