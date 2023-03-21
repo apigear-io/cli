@@ -56,11 +56,22 @@ func NewClientCommand() *cobra.Command {
 			}
 			sender := helper.NewHTTPSender(options.url)
 			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
+			ids := helper.MakeIdGenerator("M")
 			ctrl.Run(events, func(event mon.Event) error {
-				data, _ := json.Marshal(event.Data)
-				log.Debug().Msgf("send event: %s %s %s %s %s", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
+				if event.Timestamp.IsZero() {
+					event.Timestamp = time.Now()
+				}
+				if event.Id == "" {
+					event.Id = ids()
+				}
+				if event.Source == "" {
+					event.Source = "123"
+				}
+				data, _ := json.Marshal(event)
+				log.Info().Msgf("-> %s", string(data))
 				// send as an array of events
 				payload := [1]mon.Event{event}
+
 				return sender.SendValue(payload)
 			})
 			return nil
