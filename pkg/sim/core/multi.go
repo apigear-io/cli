@@ -108,21 +108,22 @@ func (e *MultiEngine) PlaySequence(ctx context.Context, sequenceId string) error
 	return fmt.Errorf("sequence %s not found", sequenceId)
 }
 
-func (e *MultiEngine) StopSequence(sequenceId string) {
+func (e *MultiEngine) StopSequence(sequenceId string) error {
+	var lastError error
 	for _, entry := range e.entries {
 		if entry.HasSequence(sequenceId) {
-			entry.StopSequence(sequenceId)
+			lastError = entry.StopSequence(sequenceId)
 		}
 	}
+	return lastError
 }
 
 func (e *MultiEngine) PlayAllSequences(ctx context.Context) error {
+	var lastError error
 	for _, entry := range e.entries {
-		if err := entry.PlayAllSequences(ctx); err != nil {
-			return err
-		}
+		lastError = entry.PlayAllSequences(ctx)
 	}
-	return nil
+	return lastError
 }
 
 func (e *MultiEngine) StopAllSequences() {

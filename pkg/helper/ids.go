@@ -1,6 +1,10 @@
 package helper
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 func MakeIdGenerator(prefix string) func() string {
 	id := 0
@@ -16,4 +20,8 @@ func MakeIntIdGenerator() func() uint64 {
 		id++
 		return id
 	}
+}
+
+func NewUUID() string {
+	return uuid.NewString()
 }
