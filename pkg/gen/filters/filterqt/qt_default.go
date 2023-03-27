@@ -31,11 +31,11 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s::%s", e.Name, e.Members[0].Name)
+			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, e.Members[0].Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {
-			text = fmt.Sprintf("%s()", s.Name)
+			text = fmt.Sprintf("%s%s()", prefix, s.Name)
 		}
 		i := schema.Module.LookupInterface(t)
 		if i != nil {
