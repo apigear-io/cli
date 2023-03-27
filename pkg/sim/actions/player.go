@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
@@ -18,89 +19,77 @@ type PlayFrame struct {
 // The stream is closed when the sequence is finished
 // Actions are evaluated in the context of an interface
 type Player struct {
+	id string
 	sync.RWMutex
-	iface   *spec.InterfaceEntry
-	seq     *spec.SequenceEntry
-	cancel  context.CancelFunc
-	StepC   chan *spec.ActionListEntry
-	FramesC chan PlayFrame
+	e      *Engine
+	iface  *spec.InterfaceEntry
+	seq    *spec.SequenceEntry
+	cancel context.CancelFunc
 }
 
-func NewPlayer(iface *spec.InterfaceEntry, seq *spec.SequenceEntry) *Player {
+// NewPlayer creates a new sequence player
+func NewPlayer(e *Engine, iface *spec.InterfaceEntry, seq *spec.SequenceEntry) *Player {
 	p := &Player{
-		iface:   iface,
-		seq:     seq,
-		StepC:   make(chan *spec.ActionListEntry),
-		FramesC: make(chan PlayFrame),
+		id:    helper.NewUUID(),
+		e:     e,
+		iface: iface,
+		seq:   seq,
 	}
+	log.Debug().Msgf("%s: NewPlayer", p.id)
 	return p
 }
 
+// SequenceName returns the name of the sequence
 func (p *Player) SequenceName() string {
 	return p.seq.Name
 }
 
+// Play starts the sequence
+// It runs the sequence in a goroutine
 func (p *Player) Play(ctx context.Context) error {
-	log.Debug().Msgf("play sequence %s", p.seq.Name)
-	ctx, cancel := context.WithCancel(ctx)
+	log.Debug().Msgf("%s: Player.play", p.id)
 	if p.cancel != nil {
 		p.cancel()
 	}
+	ctx, cancel := context.WithCancel(ctx)
 	p.cancel = cancel
-	go p.loopPump(ctx, p.seq)
-	go p.framePump(ctx, p.seq.Interval)
+	go p.runSequence(ctx, p.seq)
 	return nil
 }
 
-func (p *Player) loopPump(ctx context.Context, seq *spec.SequenceEntry) {
+// runSequence runs the sequence
+func (p *Player) runSequence(ctx context.Context, seq *spec.SequenceEntry) {
+	log.Debug().Msgf("%s: Player.run", p.id)
+	defer func() {
+		log.Info().Msgf("%s Player.run finished", p.id)
+	}()
 	loops := seq.Loops
 	if loops == 0 {
 		loops = 1
 	}
 	for i := 0; i < loops; i++ {
-		for _, step := range seq.Steps {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				p.StepC <- step
-			}
-		}
-	}
-	// no need to close channel
-	// play might be restarted
-}
-
-func (p *Player) framePump(ctx context.Context, interval int) {
-	for {
-		select {
-		case s := <-p.StepC:
-			if s == nil {
-				return
-			}
-			for _, action := range s.Actions {
-				// every frame the player sends the action to the stream
-				// the stream is closed when the sequence is finished
-				// or the player is stopped
-				select {
-				case <-ctx.Done():
+		helper.EachTicked(ctx, seq.Steps, func(step *spec.ActionListEntry) {
+			for _, action := range step.Actions {
+				if p.iface == nil {
+					log.Error().Msgf("interface %s not found", seq.Interface)
 					return
-				default:
-					p.FramesC <- PlayFrame{
-						Action:    action,
-						Interface: p.iface,
-					}
+				}
+				_, err := p.e.eval.EvalAction(p.iface.Name, action)
+				if err != nil {
+					log.Error().Msgf("error evaluating action %#v: %s", action, err)
+					return
 				}
 			}
-			time.Sleep(time.Duration(interval) * time.Millisecond)
-		case <-ctx.Done():
-			log.Debug().Msgf("frame pump %s is done", p.seq.Name)
-			return
-		}
+		}, time.Duration(seq.Interval)*time.Millisecond)
 	}
 }
 
+// Stop stops the play loop
 func (p *Player) Stop() error {
-	p.cancel()
+	log.Debug().Msgf("%s: Player.stop", p.id)
+	if p.cancel != nil {
+		p.cancel()
+		p.cancel = nil
+	}
 	return nil
 }

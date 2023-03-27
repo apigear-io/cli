@@ -33,3 +33,4 @@ dist/
 # task cache
 .task/*
 
+coverage.txt

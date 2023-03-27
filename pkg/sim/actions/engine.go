@@ -9,15 +9,20 @@ import (
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
+type ScenarioEntry struct {
+	Source  string
+	Doc     *spec.ScenarioDoc
+	Players []*Player
+}
+
 // engine implements core.IEngine interface
 var _ core.IEngine = (*Engine)(nil)
 
 type Engine struct {
 	store ostore.IObjectStore
 	eval  *eval
-	docs  []*spec.ScenarioDoc
 	core.EventNotifier
-	players []*Player
+	entries map[string]*ScenarioEntry
 }
 
 func NewEngine(store ostore.IObjectStore) *Engine {
@@ -25,8 +30,7 @@ func NewEngine(store ostore.IObjectStore) *Engine {
 	e := &Engine{
 		store:   store,
 		eval:    eval,
-		docs:    make([]*spec.ScenarioDoc, 0),
-		players: make([]*Player, 0),
+		entries: make(map[string]*ScenarioEntry),
 	}
 	eval.OnEvent(func(evt *core.SimuEvent) {
 		e.EmitEvent(evt)
@@ -34,24 +38,41 @@ func NewEngine(store ostore.IObjectStore) *Engine {
 	return e
 }
 
+// ScenarioBySource returns the scenario with the given source
+func (e *Engine) ScenarioBySource(source string) *ScenarioEntry {
+	entry, ok := e.entries[source]
+	if !ok {
+		return nil
+	}
+	return entry
+}
+
 func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
-	doc.Source = source
-	for _, doc := range e.docs {
-		if doc.Source == source {
-			err := e.UnloadScenario(source)
-			if err != nil {
-				log.Error().Err(err).Str("source", source).Msg("unload scenario")
-			}
+
+	entry := e.ScenarioBySource(source)
+	if entry != nil {
+		// remove existing scenario and stop all players
+		err := e.UnloadScenario(source)
+		if err != nil {
+			return err
 		}
 	}
-	e.docs = append(e.docs, doc)
-	for _, iface := range doc.Interfaces {
+	// create new scenario and add it to the engine
+	doc.Source = source
+	entry = &ScenarioEntry{
+		Source:  source,
+		Doc:     doc,
+		Players: make([]*Player, 0),
+	}
+	e.entries[source] = entry
+
+	for _, iface := range entry.Doc.Interfaces {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
 		}
 		log.Debug().Msgf("registering interface %s", iface.Name)
 	}
-	for _, seq := range doc.Sequences {
+	for _, seq := range entry.Doc.Sequences {
 		log.Debug().Msgf("registering sequence %s", seq.Name)
 		if seq.Interface == "" {
 			return fmt.Errorf("sequence %v has no interface", seq)
@@ -60,20 +81,8 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 		if iface == nil {
 			return fmt.Errorf("interface %s not found", seq.Interface)
 		}
-		p := NewPlayer(iface, seq)
-		go func(framesC chan PlayFrame) {
-			for frame := range framesC {
-				iface := frame.Interface
-				if iface != nil {
-					_, err := e.eval.EvalAction(iface.Name, frame.Action)
-					if err != nil {
-						log.Error().Msgf("eval action %s: %v", frame.Action, err)
-					}
-				}
-			}
-			log.Debug().Msgf("sequence %s stopped", seq.Name)
-		}(p.FramesC)
-		e.players = append(e.players, p)
+		p := NewPlayer(e, iface, seq)
+		entry.Players = append(entry.Players, p)
 	}
 	return nil
 }
@@ -81,28 +90,19 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 func (a *Engine) UnloadScenario(source string) error {
 	// make sure all players are stopped
 	a.StopAllSequences()
-	for i, d := range a.docs {
-		if d.Source == source {
-			a.docs = append(a.docs[:i], a.docs[i+1:]...)
-			return nil
-		}
-	}
-	return fmt.Errorf("scenario %s not found", source)
+	delete(a.entries, source)
+	return nil
 }
 
 func (e *Engine) HasInterface(ifaceId string) bool {
-	for _, d := range e.docs {
-		if d.GetInterface(ifaceId) != nil {
-			return true
-		}
-	}
-	return false
+	return e.GetInterface(ifaceId) != nil
 }
 
 func (e *Engine) GetInterface(ifaceId string) *spec.InterfaceEntry {
-	for _, d := range e.docs {
-		if s := d.GetInterface(ifaceId); s != nil {
-			return s
+	for _, entry := range e.entries {
+		iface := entry.Doc.GetInterface(ifaceId)
+		if iface != nil {
+			return iface
 		}
 	}
 	return nil
@@ -144,60 +144,63 @@ func (e *Engine) GetProperties(symbol string) (map[string]any, error) {
 	return e.store.Get(symbol), nil
 }
 
-func (e *Engine) HasSequence(name string) bool {
-	for _, d := range e.docs {
-		if d.GetSequence(name) != nil {
-			return true
+// GetPlayer returns the player with the given name
+func (e *Engine) GetPlayer(name string) *Player {
+	for _, entry := range e.entries {
+		for _, p := range entry.Players {
+			if p.SequenceName() == name {
+				return p
+			}
 		}
 	}
-	return false
+	return nil
+}
+
+func (e *Engine) HasSequence(name string) bool {
+	return e.GetPlayer(name) != nil
 }
 
 func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("actions engine play all sequences")
-	for _, p := range e.players {
-		e.EmitSimuStart(p.SequenceName())
-		err := p.Play(ctx)
-		if err != nil {
-			log.Error().Err(err).Msgf("play sequence %s", p.SequenceName())
+	for _, entry := range e.entries {
+		for _, p := range entry.Players {
+			e.EmitSimuStart(p.SequenceName())
+			err := p.Play(ctx)
+			if err != nil {
+				log.Error().Err(err).Msgf("play sequence %s", p.SequenceName())
+			}
 		}
 	}
 	return nil
 }
 
 func (e *Engine) StopAllSequences() {
-	log.Debug().Msgf("actions engine stop all sequences")
-	for _, p := range e.players {
-		e.EmitSimuStop(p.SequenceName())
-		err := p.Stop()
-		if err != nil {
-			log.Warn().Msgf("stop sequence %s: %v", p.SequenceName(), err)
+	log.Debug().Msgf("actions engine stop all sequence players")
+	for _, entry := range e.entries {
+		for _, p := range entry.Players {
+			e.EmitSimuStop(p.SequenceName())
+			err := p.Stop()
+			if err != nil {
+				log.Warn().Msgf("stop sequence player %s: %v", p.SequenceName(), err)
+			}
 		}
 	}
 }
 
 func (e *Engine) PlaySequence(ctx context.Context, name string) error {
-	for _, p := range e.players {
-		if p.SequenceName() == name {
-			e.EmitSimuStart(name)
-			err := p.Play(ctx)
-			if err != nil {
-				log.Warn().Msgf("play sequence %s: %v", name, err)
-			}
-		}
+	p := e.GetPlayer(name)
+	if p == nil {
+		return fmt.Errorf("sequence player %s not found", name)
 	}
-	return fmt.Errorf("sequence %s not found", name)
+	e.EmitSimuStart(name)
+	return p.Play(ctx)
 }
 
-func (e *Engine) StopSequence(name string) {
-	for _, p := range e.players {
-		if p.SequenceName() == name {
-			e.EmitSimuStop(name)
-			err := p.Stop()
-			if err != nil {
-				log.Warn().Msgf("stop sequence %s: %v", name, err)
-			}
-		}
+func (e *Engine) StopSequence(name string) error {
+	p := e.GetPlayer(name)
+	if p != nil {
+		return fmt.Errorf("sequence player %s not found", name)
 	}
-	log.Warn().Msgf("sequence %s not found", name)
+	e.EmitSimuStop(name)
+	return p.Stop()
 }

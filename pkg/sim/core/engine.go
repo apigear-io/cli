@@ -11,7 +11,7 @@ type IEngine interface {
 	GetProperties(symbol string) (map[string]any, error)
 	HasSequence(name string) bool
 	PlaySequence(ctx context.Context, name string) error
-	StopSequence(name string)
+	StopSequence(name string) error
 	PlayAllSequences(ctx context.Context) error
 	StopAllSequences()
 }

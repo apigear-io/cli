@@ -120,8 +120,9 @@ func (e *Engine) PlaySequence(ctx context.Context, sequenceId string) error {
 	return nil
 }
 
-func (e *Engine) StopSequence(sequenceId string) {
+func (e *Engine) StopSequence(sequenceId string) error {
 	log.Info().Msgf("StopSequencer: %s", sequenceId)
+	return nil
 }
 
 func (e *Engine) init() {
