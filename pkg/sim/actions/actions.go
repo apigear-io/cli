@@ -14,14 +14,16 @@ import (
 type ActionHandler func(symbol string, args map[string]any) (any, error)
 
 type eval struct {
+	engine  core.IEngine
 	store   ostore.IObjectStore
 	actions map[string]ActionHandler
 	core.EventNotifier
 	mu sync.Mutex
 }
 
-func NewEval(store ostore.IObjectStore) *eval {
+func NewActionsEvaluator(engine core.IEngine, store ostore.IObjectStore) *eval {
 	e := &eval{
+		engine:  engine,
 		store:   store,
 		actions: map[string]ActionHandler{},
 	}
@@ -30,6 +32,7 @@ func NewEval(store ostore.IObjectStore) *eval {
 	e.register("$return", e.actionReturn)
 	e.register("$signal", e.actionSignal)
 	e.register("$change", e.actionChange)
+	e.register("$call", e.actionCall)
 	return e
 }
 
@@ -83,23 +86,38 @@ func (e *eval) actionSet(ifaceId string, kwargs map[string]any) (any, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.store.Set(ifaceId, kwargs)
+	for k := range kwargs {
+		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
+	}
 	return nil, nil
 }
 
-// actionSet sets properties of the interface and notifies the change.
+// actionUpdate updates partial properties of the interface and notifies the change.
+// Otherwise it is the same as $set.
 func (e *eval) actionUpdate(ifaceId string, kwargs map[string]any) (any, error) {
 	log.Debug().Msgf("$update: %v", kwargs)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.store.Update(ifaceId, kwargs)
+	for k := range kwargs {
+		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
+	}
 	return nil, nil
 }
 
 // actionReturn returns the result of the action.
+// it returns the 'result' property of the action kwargs
+// if the 'result' property is not set, it returns the whole
+// action kwargs
+// > $return: {result: value}
 func (e *eval) actionReturn(ifaceId string, kwargs map[string]any) (any, error) {
 	log.Debug().Msgf("$return: %v", kwargs)
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	v, ok := kwargs["result"]
+	if ok {
+		return v, nil
+	}
 	return kwargs, nil
 }
 
@@ -120,4 +138,21 @@ func (e *eval) actionChange(ifaceId string, kwargs map[string]any) (any, error) 
 		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
 	}
 	return nil, nil
+}
+
+// actionCall invokes an operation of the interface.
+// If several operations are specified, the last operation result is returned.
+// On error, the first error is returned.
+func (e *eval) actionCall(ifaceId string, kwargs map[string]any) (any, error) {
+	log.Debug().Fields(kwargs).Msg("$call")
+	var lastValue any
+	for k := range kwargs {
+		args := helper.ToSlice(kwargs[k])
+		v, err := e.engine.InvokeOperation(ifaceId, k, args)
+		if err != nil {
+			return nil, err
+		}
+		lastValue = v
+	}
+	return lastValue, nil
 }

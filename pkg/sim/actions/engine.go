@@ -26,15 +26,15 @@ type Engine struct {
 }
 
 func NewEngine(store ostore.IObjectStore) *Engine {
-	eval := NewEval(store)
 	e := &Engine{
 		store:   store,
-		eval:    eval,
 		entries: make(map[string]*ScenarioEntry),
 	}
+	eval := NewActionsEvaluator(e, store)
 	eval.OnEvent(func(evt *core.SimuEvent) {
 		e.EmitEvent(evt)
 	})
+	e.eval = eval
 	return e
 }
 
