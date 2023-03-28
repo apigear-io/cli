@@ -43,6 +43,7 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 
 func NewServerCommand() *cobra.Command {
 	var addr string
+	var sequences []string
 
 	// cmd represents the simSvr command
 	var cmd = &cobra.Command{
@@ -68,7 +69,7 @@ Using a scenario you can define additional static and scripted data and behavior
 					log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
 				})
 				run := func(ctx context.Context) error {
-					return runScenarioFile(ctx, source, simu)
+					return runScenarioFile(ctx, source, simu, sequences)
 				}
 				meta := map[string]interface{}{
 					"scenario": source,
@@ -109,10 +110,11 @@ Using a scenario you can define additional static and scripted data and behavior
 		log.Debug().Msg("stop simulation server")
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:4333", "address to listen on")
+	sequences = *cmd.Flags().StringSliceP("sequences", "s", []string{}, "sequence list to run. If not specified, all sequences are run")
 	return cmd
 }
 
-func runScenarioFile(ctx context.Context, source string, simu *sim.Simulation) error {
+func runScenarioFile(ctx context.Context, source string, simu *sim.Simulation, sequences []string) error {
 	log.Debug().Msgf("run scenario file %s", source)
 	doc, err := ReadScenario(source)
 	if err != nil {
@@ -122,9 +124,15 @@ func runScenarioFile(ctx context.Context, source string, simu *sim.Simulation) e
 	if err != nil {
 		return err
 	}
-	err = simu.PlayAllSequences(ctx)
-	if err != nil {
-		return err
+	if len(sequences) == 0 {
+		err = simu.PlayAllSequences(ctx)
+	} else {
+		for _, name := range sequences {
+			err = simu.PlaySequence(ctx, name)
+			if err != nil {
+				return err
+			}
+		}
 	}
-	return nil
+	return err
 }

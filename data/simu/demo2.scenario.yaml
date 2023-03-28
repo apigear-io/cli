@@ -1,0 +1,44 @@
+schema: apigear.scenario/1.0
+
+name: demo
+version: "1.0"
+
+interfaces:
+  - name: demo.Counter
+    properties:
+      count: 0
+    operations:
+      - name: increment
+        actions:
+          - $set: { count: 1 }
+          - $change: { count: 1 }
+          - $signal: { shutdown: [1] }
+      - name: decrement
+        actions:
+          - $set: { count: 0 }
+          - $change: { count: 0 }
+sequences:
+  - name: one
+    interface: demo.Counter
+    loops: 2
+    interval: 1000
+    steps:
+      - name: inc
+        actions:
+          - $set: { count: 1 }
+          - $change: { count: 2 }
+      - name: dec
+        actions:
+          - $set: { count: -1 }
+  - name: ten
+    interface: demo.Counter
+    loops: 2
+    interval: 1000
+    steps:
+      - name: inc
+        actions:
+          - $set: { count: 10 }
+          - $change: { count: 20 }
+      - name: dec
+        actions:
+          - $set: { count: -10 }
