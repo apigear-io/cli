@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/cli/pkg/sim/mock"
 	"github.com/apigear-io/cli/pkg/sim/ostore"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,8 @@ import (
 
 func TestEval(t *testing.T) {
 	store := ostore.NewMemoryStore()
-	e := NewEval(store)
+	engine := mock.NewMockEngine()
+	e := NewActionsEvaluator(engine, store)
 	assert.NotNil(t, e)
 	var table = []struct {
 		symbol string
@@ -36,7 +38,8 @@ func TestEval(t *testing.T) {
 
 func TestActionSet(t *testing.T) {
 	store := ostore.NewMemoryStore()
-	e := NewEval(store)
+	engine := mock.NewMockEngine()
+	e := NewActionsEvaluator(engine, store)
 	assert.NotNil(t, e)
 	store.Set("demo.Counter", map[string]any{"count": 0})
 	args := map[string]any{"count": 1}
@@ -54,20 +57,27 @@ func TestActionSet(t *testing.T) {
 
 func TestActionReturn(t *testing.T) {
 	store := ostore.NewMemoryStore()
-	e := NewEval(store)
+	engine := mock.NewMockEngine()
+	e := NewActionsEvaluator(engine, store)
 	assert.NotNil(t, e)
 	store.Set("demo.Counter", map[string]any{"count": 0})
-	args := map[string]any{"value": 2}
+	args := map[string]any{"x": 1}
 	symbol := "demo.Counter"
 	result, err := e.EvalAction(symbol, spec.ActionEntry{"$return": args})
 	assert.NoError(t, err)
 	assert.Equal(t, 0, store.Get("demo.Counter")["count"])
-	assert.Equal(t, map[string]any{"value": 2}, result)
+	assert.Equal(t, map[string]any{"x": 1}, result)
+
+	args = map[string]any{"result": 1}
+	result, err = e.EvalAction(symbol, spec.ActionEntry{"$return": args})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, result)
 }
 
 func TestActionSignal(t *testing.T) {
 	store := ostore.NewMemoryStore()
-	e := NewEval(store)
+	engine := mock.NewMockEngine()
+	e := NewActionsEvaluator(engine, store)
 	var sigName string
 	var sigArgs []any
 	e.OnEvent(func(e *core.SimuEvent) {
@@ -95,4 +105,19 @@ func TestActionSignal(t *testing.T) {
 	assert.Nil(t, result)
 	assert.Equal(t, "shutdown2", sigName)
 	assert.Equal(t, []any{2}, sigArgs)
+}
+
+func TestActionCall(t *testing.T) {
+	store := ostore.NewMemoryStore()
+	engine := mock.NewMockEngine()
+	e := NewActionsEvaluator(engine, store)
+	assert.NotNil(t, e)
+	action := map[string]any{"increment": 1}
+	symbol := "demo.Counter"
+	_, err := e.EvalAction(symbol, spec.ActionEntry{"$call": action})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(engine.Events))
+	assert.Equal(t, "demo.Counter", engine.Events[0].Symbol)
+	assert.Equal(t, "increment", engine.Events[0].Name)
+	assert.Equal(t, "invoke", engine.Events[0].Command)
 }
