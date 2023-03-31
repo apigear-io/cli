@@ -52,7 +52,7 @@ func NewExpertCommand() *cobra.Command {
 			}
 
 			if options.watch {
-				err := runner.StartWatch(ctx, doc.RootDir, doc)
+				err := runner.WatchDoc(ctx, doc.RootDir, doc)
 				if err != nil {
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()

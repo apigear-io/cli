@@ -14,7 +14,7 @@ import (
 )
 
 func NewSolutionCommand() *cobra.Command {
-	var file string
+	var source string
 	var watch bool
 	var exec string
 	var cmd = &cobra.Command{
@@ -26,8 +26,8 @@ func NewSolutionCommand() *cobra.Command {
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			file = args[0]
-			result, err := spec.CheckFileAndType(file, spec.DocumentTypeSolution)
+			source = args[0]
+			result, err := spec.CheckFileAndType(source, spec.DocumentTypeSolution)
 			if err != nil {
 				return err
 			}
@@ -38,10 +38,6 @@ as also the other options. To create a demo module or solution use the 'project 
 				}
 				return fmt.Errorf("solution file is not valid")
 			}
-			doc, err := sol.ReadSolutionDoc(file)
-			if err != nil {
-				return err
-			}
 			runner := sol.NewRunner()
 			runner.OnTask(func(evt *tasks.TaskEvent) {
 				log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
@@ -49,18 +45,18 @@ as also the other options. To create a demo module or solution use the 'project 
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			err = runner.RunDoc(ctx, file, doc)
-			if err != nil {
-				return err
-			}
-
 			if watch {
-				err := runner.StartWatch(ctx, file, doc)
+				err := runner.WatchSource(ctx, source)
 				if err != nil {
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
 				helper.WaitForInterrupt(cancel)
+			} else {
+				err = runner.RunSource(ctx, source)
+				if err != nil {
+					return err
+				}
 			}
 			return nil
 		},

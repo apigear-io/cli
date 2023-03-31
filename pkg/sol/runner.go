@@ -35,7 +35,20 @@ func (r *Runner) OnTask(fn func(*tasks.TaskEvent)) {
 	r.tm.On(fn)
 }
 
+func (r *Runner) RunSource(ctx context.Context, source string) error {
+	run := func(ctx context.Context) error {
+		return RunSolutionSource(ctx, source)
+	}
+	meta := map[string]interface{}{
+		"solution": source,
+	}
+	r.tm.Register(source, meta, run)
+	return r.tm.Run(ctx, source)
+}
+
 // RunDoc runs the given file task once.
+// TODO: Run should always act on a source of truth, such as a file.
+// It should not act on a cached value.
 func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
 	run := func(ctx context.Context) error {
 		return runSolution(doc)
@@ -47,8 +60,25 @@ func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc)
 	return r.tm.Run(ctx, file)
 }
 
-// StartWatch starts the watch of the given file task.
-func (r *Runner) StartWatch(ctx context.Context, file string, doc *spec.SolutionDoc) error {
+func (r *Runner) WatchSource(ctx context.Context, source string) error {
+	doc, err := ReadSolutionDoc(source)
+	if err != nil {
+		return err
+	}
+	deps := doc.ComputeDependencies()
+	deps = append(deps, source)
+	run := func(ctx context.Context) error {
+		return RunSolutionSource(ctx, source)
+	}
+	meta := map[string]interface{}{
+		"solution": source,
+	}
+	r.tm.Register(source, meta, run)
+	return r.tm.Watch(ctx, source, deps...)
+}
+
+// WatchDoc starts the watch of the given file task.
+func (r *Runner) WatchDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
 	deps := doc.ComputeDependencies()
 	deps = append(deps, file)
 	run := func(ctx context.Context) error {
@@ -71,6 +101,14 @@ func (r *Runner) StopWatch(file string) {
 
 func (r *Runner) Clear() {
 	r.tm.CancelAll()
+}
+
+func RunSolutionSource(ctx context.Context, source string) error {
+	doc, err := ReadSolutionDoc(source)
+	if err != nil {
+		return err
+	}
+	return runSolution(doc)
 }
 
 func runSolution(doc *spec.SolutionDoc) error {

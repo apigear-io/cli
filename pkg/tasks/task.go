@@ -3,8 +3,10 @@ package tasks
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/fsnotify/fsnotify"
 )
@@ -68,9 +70,23 @@ func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
 			log.Debug().Msgf("file %s does not exist", dep)
 			continue
 		}
+		log.Info().Msgf("watching file %s", dep)
 		err := watcher.Add(dep)
 		if err != nil {
 			log.Debug().Msgf("error watching file %s: %s", dep, err)
+		}
+		// check if the dependency is a directory
+		if helper.IsDir(dep) {
+			filepath.WalkDir(dep, func(path string, d os.DirEntry, err error) error {
+				if err != nil {
+					log.Error().Err(err).Msgf("error walking directory %s", dep)
+					return err
+				}
+				if d.IsDir() {
+					watcher.Add(path)
+				}
+				return nil
+			})
 		}
 	}
 
