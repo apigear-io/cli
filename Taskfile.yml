@@ -22,6 +22,10 @@ tasks:
   test:
     desc: Run tests
     cmds:
+      - go test ./...
+  test::ci:
+    desc: Run tests on CI
+    cmds:
       - go test -failfast -race ./...
   cover:
     desc: Show coverage
@@ -32,7 +36,7 @@ tasks:
     cmds:
       - task: setup
       - task: lint
-      - task: test
+      - task: test::ci
   run:
     desc: Run command line
     cmds:
@@ -56,8 +60,8 @@ tasks:
     desc: Check for vulnerabilities
     cmds:
       - govulncheck ./...
-  generate:
-    desc: Generate code
+  antlr:
+    desc: Generate antlr parser
     cmds:
       - antlr -Dlanguage=Go pkg/idl/parser/ObjectApi.g4
   docs:
