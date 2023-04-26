@@ -13,22 +13,22 @@ func TestParam(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "propBool", "propBool: bool"},
-		{"test", "Test1", "propInt", "propInt: int"},
-		{"test", "Test1", "propInt32", "propInt32: int32"},
-		{"test", "Test1", "propInt64", "propInt64: int64"},
-		{"test", "Test1", "propFloat", "propFloat: float"},
-		{"test", "Test1", "propFloat32", "propFloat32: float32"},
-		{"test", "Test1", "propFloat64", "propFloat64: float64"},
-		{"test", "Test1", "propString", "propString: str"},
-		{"test", "Test1", "propBoolArray", "propBoolArray: list[bool]"},
-		{"test", "Test1", "propIntArray", "propIntArray: list[int]"},
-		{"test", "Test1", "propInt32Array", "propInt32Array: list[int32]"},
-		{"test", "Test1", "propInt64Array", "propInt64Array: list[int64]"},
-		{"test", "Test1", "propFloatArray", "propFloatArray: list[float]"},
-		{"test", "Test1", "propFloat32Array", "propFloat32Array: list[float32]"},
-		{"test", "Test1", "propFloat64Array", "propFloat64Array: list[float64]"},
-		{"test", "Test1", "propStringArray", "propStringArray: list[str]"},
+		{"test", "Test1", "propBool", "prop_bool: bool"},
+		{"test", "Test1", "propInt", "prop_int: int"},
+		{"test", "Test1", "propInt32", "prop_int32: int32"},
+		{"test", "Test1", "propInt64", "prop_int64: int64"},
+		{"test", "Test1", "propFloat", "prop_float: float"},
+		{"test", "Test1", "propFloat32", "prop_float32: float32"},
+		{"test", "Test1", "propFloat64", "prop_float64: float64"},
+		{"test", "Test1", "propString", "prop_string: str"},
+		{"test", "Test1", "propBoolArray", "prop_bool_array: list[bool]"},
+		{"test", "Test1", "propIntArray", "prop_int_array: list[int]"},
+		{"test", "Test1", "propInt32Array", "prop_int32_array: list[int32]"},
+		{"test", "Test1", "propInt64Array", "prop_int64_array: list[int64]"},
+		{"test", "Test1", "propFloatArray", "prop_float_array: list[float]"},
+		{"test", "Test1", "propFloat32Array", "prop_float32_array: list[float32]"},
+		{"test", "Test1", "propFloat64Array", "prop_float64_array: list[float64]"},
+		{"test", "Test1", "propStringArray", "prop_string_array: list[str]"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -51,12 +51,12 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "propEnum: Enum1"},
-		{"test", "Test2", "propStruct", "propStruct: Struct1"},
-		{"test", "Test2", "propInterface", "propInterface: Interface1"},
-		{"test", "Test2", "propEnumArray", "propEnumArray: list[Enum1]"},
-		{"test", "Test2", "propStructArray", "propStructArray: list[Struct1]"},
-		{"test", "Test2", "propInterfaceArray", "propInterfaceArray: list[Interface1]"},
+		{"test", "Test2", "propEnum", "prop_enum: Enum1"},
+		{"test", "Test2", "propStruct", "prop_struct: Struct1"},
+		{"test", "Test2", "propInterface", "prop_interface: Interface1"},
+		{"test", "Test2", "propEnumArray", "prop_enum_array: list[Enum1]"},
+		{"test", "Test2", "propStructArray", "prop_struct_array: list[Struct1]"},
+		{"test", "Test2", "propInterfaceArray", "prop_interface_array: list[Interface1]"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

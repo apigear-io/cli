@@ -29,6 +29,9 @@ func NewTaskManager() *TaskManager {
 
 // Register creates a new task
 func (tm *TaskManager) Register(name string, meta map[string]interface{}, tf TaskFunc) *TaskItem {
+	if tm.Has(name) {
+		tm.RmTask(name)
+	}
 	task := NewTaskItem(name, meta, tf)
 	tm.AddTask(task)
 	return task
@@ -54,6 +57,7 @@ func (tm *TaskManager) RmTask(name string) error {
 	if task == nil {
 		return ErrTaskNotFound
 	}
+	task.Cancel()
 	tm.Lock()
 	defer tm.Unlock()
 	delete(tm.tasks, name)

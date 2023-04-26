@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
+	"github.com/ettle/strcase"
 )
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
+	name = strcase.ToSnake(name)
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
