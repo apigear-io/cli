@@ -6,6 +6,7 @@ type SolutionDoc struct {
 	Name        string           `json:"name" yaml:"name"`
 	Description string           `json:"description" yaml:"description"`
 	RootDir     string           `json:"rootDir" yaml:"rootDir"`
+	Meta        map[string]any   `json:"meta" yaml:"meta"`
 	Layers      []*SolutionLayer `json:"layers" yaml:"layers"`
 }
 

@@ -18,8 +18,6 @@ import (
 // Generator parses documents and applies
 // template transformation on a set of files.
 
-type DataMap map[string]any
-
 type GeneratorStats struct {
 	FilesWritten int           `json:"files_written"`
 	FilesSkipped int           `json:"files_skipped"`
@@ -52,6 +50,7 @@ type GeneratorOptions struct {
 	UserForce    bool
 	Output       Output
 	DryRun       bool
+	Meta         map[string]any
 }
 
 // generator applies template transformation on a set of files define in rules
@@ -66,6 +65,7 @@ type generator struct {
 	DryRun           bool
 	Stats            GeneratorStats
 	Output           Output
+	Meta             map[string]any
 }
 
 func New(o GeneratorOptions) (*generator, error) {
@@ -87,6 +87,7 @@ func New(o GeneratorOptions) (*generator, error) {
 		UserFeatures: o.UserFeatures,
 		DryRun:       o.DryRun,
 		Output:       o.Output,
+		Meta:         o.Meta,
 	}
 	g.Template.Funcs(filters.PopulateFuncMap())
 	err := g.ParseTemplatesDir(o.TemplatesDir)
@@ -169,6 +170,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 	ctx := model.SystemScope{
 		System:   g.System,
 		Features: g.ComputedFeatures,
+		Meta:     g.Meta,
 	}
 	scopes := f.FindScopesByMatch(spec.ScopeSystem)
 	for _, scope := range scopes {
@@ -184,6 +186,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			System:   g.System,
 			Module:   module,
 			Features: g.ComputedFeatures,
+			Meta:     g.Meta,
 		}
 		for _, scope := range scopes {
 			err := g.processScope(scope, ctx)
@@ -198,6 +201,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 				Module:    module,
 				Interface: iface,
 				Features:  g.ComputedFeatures,
+				Meta:      g.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeInterface)
 			for _, scope := range scopes {
@@ -214,6 +218,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 				Module:   module,
 				Struct:   struct_,
 				Features: g.ComputedFeatures,
+				Meta:     g.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeStruct)
 			for _, scope := range scopes {
@@ -230,6 +235,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 				Module:   module,
 				Enum:     enum,
 				Features: g.ComputedFeatures,
+				Meta:     g.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeEnum)
 			for _, scope := range scopes {
