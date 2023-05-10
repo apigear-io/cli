@@ -3,6 +3,7 @@ package filters
 import (
 	"text/template"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/gen/filters/filtercpp"
 	"github.com/apigear-io/cli/pkg/gen/filters/filtergo"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterjs"
@@ -11,44 +12,42 @@ import (
 	"github.com/apigear-io/cli/pkg/gen/filters/filterts"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterue"
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 func PopulateFuncMap() template.FuncMap {
-	log.Debug().Msg("populate func map")
 	fm := make(template.FuncMap)
-	fm["snake"] = SnakeCaseLower
-	fm["Snake"] = SnakeTitleCase
-	fm["SNAKE"] = SnakeUpperCase
-	fm["camel"] = CamelLowerCase
-	fm["Camel"] = CamelTitleCase
-	fm["CAMEL"] = CamelUpperCase
-	fm["dot"] = DotLowerCase
-	fm["Dot"] = DotTitleCase
-	fm["DOT"] = DotUpperCase
-	fm["kebap"] = KebabLowerCase
-	fm["Kebab"] = KebabTitleCase
-	fm["KEBAP"] = KebabUpperCase
-	fm["path"] = PathLowerCase
-	fm["Path"] = PathTitleCase
-	fm["PATH"] = PathUpperCase
-	fm["lower"] = LowerCase
-	fm["upper"] = UpperCase
-	fm["upper1"] = UpperFirst
-	fm["lower1"] = LowerFirst
-	fm["first"] = FirstCharLower
-	fm["First"] = FirstChar
-	fm["FIRST"] = FirstCharUpper
-	fm["join"] = Join
-	fm["trimPrefix"] = TrimPrefix
-	fm["trimSuffix"] = TrimSuffix
-	fm["replace"] = Replace
-	fm["int2word"] = IntToWordLower
-	fm["Int2Word"] = IntToWordTitle
-	fm["INT2WORD"] = IntToWordUpper
-	fm["plural"] = Pluralize
+	fm["snake"] = common.SnakeCaseLower
+	fm["Snake"] = common.SnakeTitleCase
+	fm["SNAKE"] = common.SnakeUpperCase
+	fm["camel"] = common.CamelLowerCase
+	fm["Camel"] = common.CamelTitleCase
+	fm["CAMEL"] = common.CamelUpperCase
+	fm["dot"] = common.DotLowerCase
+	fm["Dot"] = common.DotTitleCase
+	fm["DOT"] = common.DotUpperCase
+	fm["kebap"] = common.KebabLowerCase
+	fm["Kebab"] = common.KebabTitleCase
+	fm["KEBAP"] = common.KebabUpperCase
+	fm["path"] = common.PathLowerCase
+	fm["Path"] = common.PathTitleCase
+	fm["PATH"] = common.PathUpperCase
+	fm["lower"] = common.LowerCase
+	fm["upper"] = common.UpperCase
+	fm["upper1"] = common.UpperFirst
+	fm["lower1"] = common.LowerFirst
+	fm["first"] = common.FirstCharLower
+	fm["First"] = common.FirstChar
+	fm["FIRST"] = common.FirstCharUpper
+	fm["join"] = common.Join
+	fm["trimPrefix"] = common.TrimPrefix
+	fm["trimSuffix"] = common.TrimSuffix
+	fm["replace"] = common.Replace
+	fm["int2word"] = common.IntToWordLower
+	fm["Int2Word"] = common.IntToWordTitle
+	fm["INT2WORD"] = common.IntToWordUpper
+	fm["plural"] = common.Pluralize
 	fm["abbreviate"] = helper.Abbreviate
-	fm["nl"] = NewLine
+	fm["nl"] = common.NewLine
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)
