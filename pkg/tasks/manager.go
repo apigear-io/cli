@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/objectlink-core-go/log"
 )
 
 // ErrTaskNotFound is returned when a task is not found
