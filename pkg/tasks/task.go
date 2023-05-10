@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/fsnotify/fsnotify"
 )
 

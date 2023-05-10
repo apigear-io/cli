@@ -36,3 +36,7 @@ func (s *Struct) LookupField(name string) *TypedNode {
 	}
 	return nil
 }
+
+func (s *Struct) NoFields() bool {
+	return len(s.Fields) == 0
+}

@@ -3,15 +3,15 @@ package filterpy
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/ettle/strcase"
 )
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
-	name = strcase.ToSnake(name)
+	name = common.SnakeCaseLower(name)
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
@@ -43,19 +43,22 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		if e == nil {
 			return "xxx", fmt.Errorf("ToParamString enum %s not found", schema.Type)
 		}
-		return fmt.Sprintf("%s: %s%s", name, prefix, e.Name), nil
+		ident := common.CamelTitleCase(e.Name)
+		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeStruct:
 		s := schema.Module.LookupStruct(schema.Type)
 		if s == nil {
 			return "xxx", fmt.Errorf("ToParamString struct %s not found", schema.Type)
 		}
-		return fmt.Sprintf("%s: %s%s", name, prefix, s.Name), nil
+		ident := common.CamelTitleCase(s.Name)
+		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeInterface:
 		i := schema.Module.LookupInterface(schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("ToParamString interface %s not found", schema.Type)
 		}
-		return fmt.Sprintf("%s: %s%s", name, prefix, i.Name), nil
+		ident := common.CamelTitleCase(i.Name)
+		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	default:
 		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}

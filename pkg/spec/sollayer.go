@@ -5,7 +5,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 type SolutionLayer struct {

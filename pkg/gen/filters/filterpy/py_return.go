@@ -3,6 +3,7 @@ package filterpy
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -30,19 +31,22 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 		if e == nil {
 			return "xxx", fmt.Errorf("enum %s not found", schema.Type)
 		}
-		text = fmt.Sprintf("%s%s", prefix, e.Name)
+		ident := common.CamelTitleCase(e.Name)
+		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeStruct:
 		s := schema.Module.LookupStruct(schema.Type)
 		if s == nil {
 			return "xxx", fmt.Errorf("ToReturnString struct %s not found", schema.Type)
 		}
-		text = fmt.Sprintf("%s%s", prefix, s.Name)
+		ident := common.CamelTitleCase(s.Name)
+		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeInterface:
 		i := schema.Module.LookupInterface(schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("ToReturnString interface %s not found", schema.Type)
 		}
-		text = fmt.Sprintf("%s%s", prefix, i.Name)
+		ident := common.CamelTitleCase(i.Name)
+		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeVoid:
 		text = "None"
 	default:

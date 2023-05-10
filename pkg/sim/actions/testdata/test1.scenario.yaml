@@ -1,6 +1,5 @@
 schema: apigear.scenario/1.0
 name: "Demo Scenario"
-version: 1.0
 
 interfaces:
   - name: demo.Counter

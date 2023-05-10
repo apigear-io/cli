@@ -3,7 +3,6 @@ package filtergo
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/ettle/strcase"
 )
@@ -80,7 +79,6 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 
 func goDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		log.Warn().Msg("goDefault called with nil node")
 		return "xxx", fmt.Errorf("goDefault node is nil")
 	}
 	return ToDefaultString(&node.Schema, prefix)

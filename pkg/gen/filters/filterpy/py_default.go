@@ -3,7 +3,7 @@ package filterpy
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -33,7 +33,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			if e == nil {
 				return "xxx", fmt.Errorf("ToDefaultString enum %s not found", schema.Type)
 			}
-			text = fmt.Sprintf("%s%s.%s", prefix, e.Name, e.Members[0].Name)
+			name := common.CamelTitleCase(e.Name)
+			member := common.SnakeUpperCase(e.Members[0].Name)
+			text = fmt.Sprintf("%s%s.%s", prefix, name, member)
 		case model.TypeStruct:
 			s := schema.Module.LookupStruct(schema.Type)
 			if s == nil {
@@ -63,6 +65,5 @@ func pyDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("called with nil node")
 	}
-	log.Debug().Msgf("pyDefault: %s", node.Name)
 	return ToDefaultString(&node.Schema, prefix)
 }

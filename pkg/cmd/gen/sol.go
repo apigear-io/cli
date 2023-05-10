@@ -2,7 +2,6 @@ package gen
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
@@ -17,6 +16,7 @@ func NewSolutionCommand() *cobra.Command {
 	var source string
 	var watch bool
 	var exec string
+	var force bool
 	var cmd = &cobra.Command{
 		Use:     "solution [solution-file]",
 		Short:   "Generate SDK using a solution document",
@@ -33,10 +33,9 @@ as also the other options. To create a demo module or solution use the 'project 
 			}
 			if !result.Valid() {
 				for _, err := range result.Errors() {
-					entry := err.Field() + ": " + err.Description()
-					cmd.Println(entry)
+					log.Warn().Msgf("source %s at %s error %s", source, err.Field(), err.Description())
 				}
-				return fmt.Errorf("solution file is not valid")
+				return nil
 			}
 			runner := sol.NewRunner()
 			runner.OnTask(func(evt *tasks.TaskEvent) {
@@ -46,14 +45,14 @@ as also the other options. To create a demo module or solution use the 'project 
 			defer cancel()
 
 			if watch {
-				err := runner.WatchSource(ctx, source)
+				err := runner.WatchSource(ctx, source, force)
 				if err != nil {
 					log.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
 				helper.WaitForInterrupt(cancel)
 			} else {
-				err = runner.RunSource(ctx, source)
+				err = runner.RunSource(ctx, source, force)
 				if err != nil {
 					return err
 				}
@@ -63,5 +62,6 @@ as also the other options. To create a demo module or solution use the 'project 
 	}
 	cmd.Flags().BoolVarP(&watch, "watch", "", false, "watch solution file for changes")
 	cmd.Flags().StringVarP(&exec, "exec", "", "", "execute a command after generation")
+	cmd.Flags().BoolVarP(&force, "force", "", false, "force overwrite")
 	return cmd
 }
