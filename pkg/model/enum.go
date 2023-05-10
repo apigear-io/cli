@@ -16,6 +16,7 @@ func NewEnum(name string) *Enum {
 	}
 }
 
+// ResolveAll resolves all references in the enum.
 func (e *Enum) ResolveAll(mod *Module) error {
 	autoValue := true
 	for _, mem := range e.Members {
@@ -35,6 +36,7 @@ func (e *Enum) ResolveAll(mod *Module) error {
 	return nil
 }
 
+// LookupMember returns the member with the given name, or nil if no such member exists.
 func (e *Enum) LookupMember(name string) *EnumMember {
 	for _, mem := range e.Members {
 		if mem.Name == name {
@@ -44,11 +46,17 @@ func (e *Enum) LookupMember(name string) *EnumMember {
 	return nil
 }
 
+// Default returns the default member of the enum, which is the first member
 func (e *Enum) Default() *EnumMember {
 	if len(e.Members) > 0 {
 		return e.Members[0]
 	}
 	return &EnumMember{}
+}
+
+// NoMembers returns true if the enum has no members.
+func (e *Enum) NoMembers() bool {
+	return len(e.Members) == 0
 }
 
 // EnumMember is a member of an enumeration.
@@ -68,6 +76,7 @@ func NewEnumMember(name string, value int) *EnumMember {
 	}
 }
 
+// ResolveAll resolves all references in the enum member.
 func (e *EnumMember) ResolveAll(m *Module) error {
 	return nil
 }
