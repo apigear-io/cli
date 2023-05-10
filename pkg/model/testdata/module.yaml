@@ -24,8 +24,6 @@ interfaces:
   - name: Interface04
     operations:
       - name: operation01
-        return:
-          type: void
       - name: operation02
       - name: operation03
         return:
