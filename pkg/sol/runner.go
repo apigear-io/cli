@@ -35,9 +35,9 @@ func (r *Runner) OnTask(fn func(*tasks.TaskEvent)) {
 	r.tm.On(fn)
 }
 
-func (r *Runner) RunSource(ctx context.Context, source string) error {
+func (r *Runner) RunSource(ctx context.Context, source string, force bool) error {
 	run := func(ctx context.Context) error {
-		return RunSolutionSource(ctx, source)
+		return RunSolutionSource(ctx, source, force)
 	}
 	meta := map[string]interface{}{
 		"solution": source,
@@ -60,7 +60,7 @@ func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc)
 	return r.tm.Run(ctx, file)
 }
 
-func (r *Runner) WatchSource(ctx context.Context, source string) error {
+func (r *Runner) WatchSource(ctx context.Context, source string, force bool) error {
 	doc, err := ReadSolutionDoc(source)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (r *Runner) WatchSource(ctx context.Context, source string) error {
 	deps := doc.ComputeDependencies()
 	deps = append(deps, source)
 	run := func(ctx context.Context) error {
-		return RunSolutionSource(ctx, source)
+		return RunSolutionSource(ctx, source, force)
 	}
 	meta := map[string]interface{}{
 		"solution": source,
@@ -103,10 +103,15 @@ func (r *Runner) Clear() {
 	r.tm.CancelAll()
 }
 
-func RunSolutionSource(ctx context.Context, source string) error {
+func RunSolutionSource(ctx context.Context, source string, force bool) error {
 	doc, err := ReadSolutionDoc(source)
 	if err != nil {
 		return err
+	}
+	if force {
+		for _, layer := range doc.Layers {
+			layer.Force = true
+		}
 	}
 	return runSolution(doc)
 }
@@ -155,6 +160,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 			System:       system,
 			UserFeatures: layer.Features,
 			UserForce:    layer.Force,
+			Meta:         doc.Meta,
 		}
 		g, err := gen.New(opts)
 		if err != nil {
