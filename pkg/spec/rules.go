@@ -3,8 +3,6 @@ package spec
 import (
 	"fmt"
 	"sort"
-
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 // A rules document defines a set of rules how to apply transformations
