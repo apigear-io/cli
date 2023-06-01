@@ -41,7 +41,8 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			if s == nil {
 				return "xxx", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
 			}
-			text = "{}"
+			ident := common.CamelTitleCase(s.Name)
+			text = fmt.Sprintf("%s%s()", prefix, ident)
 		case model.TypeInterface:
 			i := schema.Module.LookupInterface(schema.Type)
 			if i == nil {
