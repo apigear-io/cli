@@ -141,6 +141,18 @@ interfaces:
         return:
           type: string
           array: true
+      - name: op_Bool
+        params:
+          - name: param_Bool
+            type: bool
+      - name: op_bool
+        params:
+          - name: param_bool
+            type: bool
+      - name: op_1
+        params:
+          - name: param_1
+            type: bool
   - name: Test4
     operations:
       - name: opEnum
