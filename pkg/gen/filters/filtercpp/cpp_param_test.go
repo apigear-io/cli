@@ -25,6 +25,9 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propIntArray", "const std::list<int>& propIntArray"},
 		{"test", "Test1", "propFloatArray", "const std::list<float>& propFloatArray"},
 		{"test", "Test1", "propStringArray", "const std::list<std::string>& propStringArray"},
+		{"test", "Test1", "prop_Bool", "bool prop_Bool"},
+		{"test", "Test1", "prop_bool", "bool prop_bool"},
+		{"test", "Test1", "prop_1", "bool prop_1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

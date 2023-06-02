@@ -29,6 +29,9 @@ func TestVar(t *testing.T) {
 		{"test", "Test1", "propIntArray", "propIntArray"},
 		{"test", "Test1", "propFloatArray", "propFloatArray"},
 		{"test", "Test1", "propStringArray", "propStringArray"},
+		{"test", "Test1", "prop_Bool", "prop_Bool"},
+		{"test", "Test1", "prop_bool", "prop_bool"},
+		{"test", "Test1", "prop_1", "prop_1"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
