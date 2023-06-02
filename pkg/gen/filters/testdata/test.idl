@@ -18,6 +18,9 @@ interface Test1 {
     propFloat32Array: float32[]
     propFloat64Array: float64[]
     propStringArray: string[]
+    prop_Bool: bool
+    prop_bool: bool
+    prop_1: bool
 }
 
 interface Test2 {

@@ -18,6 +18,9 @@ interfaces:
       - { name: propIntArray, type: int, array: true }
       - { name: propFloatArray, type: float, array: true }
       - { name: propStringArray, type: string, array: true }
+      - { name: prop_Bool, type: bool }
+      - { name: prop_bool, type: bool }
+      - { name: prop_1, type: bool }
   - name: Test2
     properties:
       - { name: propEnum, type: Enum1 }
