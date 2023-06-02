@@ -29,6 +29,9 @@ func TestParams(t *testing.T) {
 		{"test", "Test3", "opFloat32Array", "self, param1: list[float32]"},
 		{"test", "Test3", "opFloat64Array", "self, param1: list[float64]"},
 		{"test", "Test3", "opStringArray", "self, param1: list[str]"},
+		{"test", "Test3", "op_Bool", "self, param_bool: bool"},
+		{"test", "Test3", "op_bool", "self, param_bool: bool"},
+		{"test", "Test3", "op_1", "self, param_1: bool"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
