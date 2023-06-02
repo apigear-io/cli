@@ -11,7 +11,7 @@ func ToVarString(node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("ToVarString node is nil")
 	}
-	return strcase.ToCamel(node.Name), nil
+	return node.Name, nil
 }
 
 func ToPublicVarString(node *model.TypedNode) (string, error) {
