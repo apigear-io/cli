@@ -21,6 +21,9 @@ func TestVars(t *testing.T) {
 		{"test", "Test3", "opIntArray", "Param1"},
 		{"test", "Test3", "opFloatArray", "Param1"},
 		{"test", "Test3", "opStringArray", "Param1"},
+		{"test", "Test3", "op_Bool", "bParamBool"},
+		{"test", "Test3", "op_bool", "bParamBool"},
+		{"test", "Test3", "op_1", "bParam1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
