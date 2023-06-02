@@ -29,6 +29,9 @@ func TestParams(t *testing.T) {
 		{"test", "Test3", "opFloat32Array", "const TArray<float>& Param1"},
 		{"test", "Test3", "opFloat64Array", "const TArray<double>& Param1"},
 		{"test", "Test3", "opStringArray", "const TArray<FString>& Param1"},
+		{"test", "Test3", "op_Bool", "bool bParamBool"},
+		{"test", "Test3", "op_bool", "bool bParamBool"},
+		{"test", "Test3", "op_1", "bool bParam1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
