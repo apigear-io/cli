@@ -29,6 +29,9 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propFloat32Array", "propFloat32Array: number[]"},
 		{"test", "Test1", "propFloat64Array", "propFloat64Array: number[]"},
 		{"test", "Test1", "propStringArray", "propStringArray: string[]"},
+		{"test", "Test1", "prop_Bool", "prop_Bool: boolean"},
+		{"test", "Test1", "prop_bool", "prop_bool: boolean"},
+		{"test", "Test1", "prop_1", "prop_1: boolean"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
