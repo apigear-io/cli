@@ -27,8 +27,8 @@ func (l *SolutionLayer) ResolveTemplateDir(rootDir string) string {
 	if helper.IsDir(helper.Join(rootDir, l.Template)) {
 		return helper.Join(rootDir, l.Template)
 	}
-	if helper.IsDir(helper.Join(cfg.TemplateCacheDir(), l.Template)) {
-		return helper.Join(cfg.TemplateCacheDir(), l.Template)
+	if helper.IsDir(helper.Join(cfg.CacheDir(), l.Template)) {
+		return helper.Join(cfg.CacheDir(), l.Template)
 	}
 	return ""
 }

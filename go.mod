@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	github.com/Masterminds/semver v1.5.0
+	github.com/Masterminds/semver/v3 v3.2.0
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20221202181307-76fa05c21b12
 	github.com/apigear-io/objectlink-core-go v0.4.0
 	github.com/creativeprojects/go-selfupdate v1.0.1
@@ -32,7 +32,6 @@ require (
 
 require (
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
-	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/cloudflare/circl v1.3.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

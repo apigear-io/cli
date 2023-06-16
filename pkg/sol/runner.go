@@ -7,6 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/gen"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/repos"
 	"github.com/apigear-io/cli/pkg/spec"
 	"github.com/apigear-io/cli/pkg/tasks"
 )
@@ -132,7 +133,10 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if name == "" {
 			name = helper.BaseName(outDir)
 		}
-
+		err := repos.InstallTemplateFromFQN(layer.Template)
+		if err != nil {
+			log.Warn().Err(err).Msgf("failed to install template %s", layer.Template)
+		}
 		tplDir := layer.GetTemplatesDir(rootDir)
 		if tplDir == "" {
 			return fmt.Errorf("templates dir is empty")
@@ -141,7 +145,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if rulesFile == "" {
 			return fmt.Errorf("rules file is empty")
 		}
-		err := checkInputs(layer.ComputeExpandedInputs(rootDir))
+		err = checkInputs(layer.ComputeExpandedInputs(rootDir))
 		if err != nil {
 			return err
 		}

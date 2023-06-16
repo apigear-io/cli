@@ -111,8 +111,8 @@ func ConfigFileUsed() string {
 	return v.ConfigFileUsed()
 }
 
-func TemplateCacheDir() string {
-	return v.GetString(KeyTemplatesDir)
+func CacheDir() string {
+	return v.GetString(KeyCacheDir)
 }
 
 func RegistryUrl() string {

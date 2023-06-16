@@ -1,7 +1,7 @@
-package tpl
+package registry
 
 import (
-	"github.com/apigear-io/cli/pkg/tpl"
+	"github.com/apigear-io/cli/pkg/repos"
 
 	"github.com/spf13/cobra"
 )
@@ -13,7 +13,7 @@ func NewUpdateCommand() *cobra.Command {
 		Short: "update template registry",
 		Long:  `update registry from remote source.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := tpl.UpdateRegistry()
+			err := repos.Registry.Update()
 			if err != nil {
 				cmd.PrintErrln(err)
 			}
