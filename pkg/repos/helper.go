@@ -28,6 +28,7 @@ func InstallTemplateFromFQN(fqn string) error {
 	}
 	url := info.Git
 	version := info.Latest.Name
+	log.Info().Msgf("installing template %s@%s from %s", fqn, version, url)
 	_, err = Cache.Install(url, version)
 	if err != nil {
 		return err

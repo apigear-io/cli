@@ -54,7 +54,6 @@ func (l *SolutionLayer) GetTemplatesDir(rootDir string) string {
 func (l *SolutionLayer) GetRulesFile(rootDir string) string {
 	tDir := l.ResolveTemplateDir(rootDir)
 	if tDir == "" {
-		log.Error().Msgf("template dir not found")
 		return ""
 	}
 	return helper.Join(tDir, "rules.yaml")
