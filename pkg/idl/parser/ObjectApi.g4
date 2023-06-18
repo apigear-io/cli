@@ -17,7 +17,7 @@ interfaceRule:
 interfaceMembersRule: propertyRule | operationRule | signalRule;
 
 propertyRule:
-	metaRule* name = IDENTIFIER ':' schema = schemaRule;
+	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule;
 operationRule:
 	metaRule* name = IDENTIFIER '(' params = operationParamRule* ')' operationReturnRule?;
 

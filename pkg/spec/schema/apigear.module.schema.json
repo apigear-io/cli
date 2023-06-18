@@ -98,6 +98,9 @@
         "name": {
           "type": "string"
         },
+        "readonly": {
+          "type": "boolean"
+        },
         "type": {
           "$ref": "#/definitions/TypeKey"
         }
