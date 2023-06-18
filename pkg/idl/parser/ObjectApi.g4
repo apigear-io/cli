@@ -32,7 +32,7 @@ structRule:
 	metaRule* 'struct' name = IDENTIFIER '{' structFieldRule* '}';
 
 structFieldRule:
-	metaRule* name = IDENTIFIER ':' schema = schemaRule;
+	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule;
 
 // enums
 enumRule:

@@ -251,7 +251,12 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 	IsNil(o.schema)
 	IsNil(o.field)
 	name := c.GetName().GetText()
+	readOnly := false
+	if c.GetReadonly() != nil {
+		readOnly = true
+	}
 	o.field = model.NewTypedNode(name, model.KindField)
+	o.field.IsReadOnly = readOnly
 }
 
 // ExitStructFieldRule is called when exiting the structFieldRule production.
