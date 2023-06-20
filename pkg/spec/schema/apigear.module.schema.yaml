@@ -53,6 +53,7 @@ definitions:
       meta: { type: object }
       type: { $ref: "#/definitions/TypeKey" }
       array: { type: boolean }
+      readonly: { type: boolean }
   Type:
     type: object
     required: [type]

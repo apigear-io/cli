@@ -1,0 +1,8 @@
+module demo 1.0
+
+@IgnoreReadonly: true
+interface Demo {
+    prop01: int
+    readonly prop02: int
+    @IsReadOnly: false
+    readonly prop03: int

@@ -28,6 +28,16 @@ interfaces:
       - name: operation03
         return:
           type: int
+  - name: Interface05
+    properties:
+      - name: prop01
+        type: int
+      - name: prop02
+        type: int
+        readonly: true
+      - name: prop03
+        type: int
+        readonly: false
 enums:
   - name: Enum1
     members:

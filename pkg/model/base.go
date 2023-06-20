@@ -82,8 +82,9 @@ func (n NamedNode) IsEmpty() bool {
 // TypedNode is a base node with a schema type.
 // { name: "foo", kind: "property", type: "string" }
 type TypedNode struct {
-	NamedNode `json:",inline" yaml:",inline"`
-	Schema    `json:",inline" yaml:",inline"`
+	NamedNode  `json:",inline" yaml:",inline"`
+	Schema     `json:",inline" yaml:",inline"`
+	IsReadOnly bool `json:"readonly" yaml:"readonly"`
 }
 
 // NewTypedNode creates a new typed node
