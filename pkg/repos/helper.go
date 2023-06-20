@@ -10,11 +10,11 @@ func InstallTemplate(name, version string) error {
 	return InstallTemplateFromFQN(fqn)
 }
 
-// InstallTemplateFromFQN tyies to install a template
+// InstallTemplateFromFQN tries to install a template
 // from a fully qualified name (e.g. name@version)
 func InstallTemplateFromFQN(fqn string) error {
 	if !IsFQN(fqn) {
-		return fmt.Errorf("invalid fqn: %s", fqn)
+		return fmt.Errorf("invalid template name (should be name@version) : %s", fqn)
 	}
 	if Cache.Exists(fqn) {
 		return nil
@@ -47,7 +47,7 @@ func MakeFQN(name, version string) string {
 func ParseFQN(fqn string) (string, string, error) {
 	parts := strings.Split(fqn, "@")
 	if len(parts) != 2 {
-		return "", "", fmt.Errorf("invalid fqn: %s", fqn)
+		return "", "", fmt.Errorf("invalid template name (should be name@version): %s", fqn)
 	}
 	return parts[0], parts[1], nil
 }

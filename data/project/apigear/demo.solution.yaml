@@ -1,6 +1,6 @@
 schema: apigear.solution/1.0
 layers:
-  - template: apigear-io/template-qtcpp@v0.1.3
+  - template: apigear-io/template-qtcpp
     inputs:
       - sample.module.yaml
     output: ../out
