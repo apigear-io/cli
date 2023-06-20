@@ -135,15 +135,15 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 		err := repos.InstallTemplateFromFQN(layer.Template)
 		if err != nil {
-			log.Warn().Err(err).Msgf("failed to install template %s", layer.Template)
+			log.Info().Err(err).Msgf("not a registry template %s. Try local template", layer.Template)
 		}
 		tplDir := layer.GetTemplatesDir(rootDir)
 		if tplDir == "" {
-			return fmt.Errorf("templates dir is empty")
+			return fmt.Errorf("template dir does not exist")
 		}
 		rulesFile := layer.GetRulesFile(rootDir)
 		if rulesFile == "" {
-			return fmt.Errorf("rules file is empty")
+			return fmt.Errorf("no rules document or document is empty")
 		}
 		err = checkInputs(layer.ComputeExpandedInputs(rootDir))
 		if err != nil {

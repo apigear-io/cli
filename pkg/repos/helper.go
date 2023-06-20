@@ -14,7 +14,7 @@ func InstallTemplate(name, version string) error {
 // from a fully qualified name (e.g. name@version)
 func InstallTemplateFromFQN(fqn string) error {
 	if !IsFQN(fqn) {
-		return fmt.Errorf("invalid template name (should be name@version) : %s", fqn)
+		return fmt.Errorf("invalid template name (should be name@version): %s", fqn)
 	}
 	if Cache.Exists(fqn) {
 		return nil

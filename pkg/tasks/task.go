@@ -43,7 +43,6 @@ func (t *TaskItem) Run(ctx context.Context) error {
 	err := t.taskFunc(ctx)
 	// handle the error
 	if err != nil {
-		log.Error().Err(err).Str("task", t.name).Msg("failed to run task")
 		t.UpdateMeta(map[string]interface{}{
 			"error": err.Error(),
 		})
