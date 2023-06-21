@@ -13,7 +13,7 @@ const (
 	KeyServerPort    = "server_port"
 	KeyEditorCommand = "editor_command"
 	KeyUpdateChannel = "update_channel"
-	KeyTemplatesDir  = "templates_dir"
+	KeyCacheDir      = "templates_dir"
 	KeyRegistryDir   = "registry_dir"
 	KeyRegistryUrl   = "registry_url"
 	KeyVersion       = "version"
@@ -22,7 +22,9 @@ const (
 )
 
 const (
-	registryUrl = "https://github.com/apigear-io/template-registry.git"
+	registryUrl  = "https://github.com/apigear-io/template-registry.git"
+	cacheName    = "cache"
+	registryName = "registry"
 )
 
 var (
@@ -50,15 +52,21 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	nv.SetEnvPrefix("apigear")
 	nv.AutomaticEnv() // read in environment variables that match
 
-	templatesDir := helper.Join(cfgDir, "templates")
-	nv.SetDefault(KeyTemplatesDir, templatesDir)
+	cacheDir := helper.Join(cfgDir, "cache")
+	nv.Set(KeyCacheDir, cacheDir)
 
-	err := helper.MakeDir(templatesDir)
+	err := helper.MakeDir(cacheDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create templates dir: %w", err)
+		return nil, fmt.Errorf("failed to create cache dir: %w", err)
 	}
 
 	registryDir := helper.Join(cfgDir, "registry")
+	nv.Set(KeyRegistryDir, registryDir)
+
+	err = helper.MakeDir(registryDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create registry dir: %w", err)
+	}
 
 	nv.SetDefault(KeyRegistryUrl, registryUrl)
 	nv.SetDefault(KeyRegistryDir, registryDir)

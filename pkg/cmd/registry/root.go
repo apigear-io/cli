@@ -1,4 +1,4 @@
-package tpl
+package registry
 
 import (
 	"github.com/spf13/cobra"
@@ -6,10 +6,10 @@ import (
 
 func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
-		Use:     "template",
-		Aliases: []string{"t", "tpl"},
-		Short:   "manage sdk templates",
-		Long:    `sdk templates are git repositories that contain a sdk template.`,
+		Use:     "registry",
+		Aliases: []string{"r"},
+		Short:   "template registry management",
+		Long:    `Discover and search templates from the remote registry.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := cmd.Usage()
 			if err != nil {
@@ -21,9 +21,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewInstallCommand())
 	cmd.AddCommand(NewInfoCommand())
 	cmd.AddCommand(NewListCommand())
-	cmd.AddCommand(NewRemoveCommand())
 	cmd.AddCommand(NewUpdateCommand())
-	cmd.AddCommand(NewUpgradeCommand())
-	cmd.AddCommand(NewImportCommand())
 	return cmd
 }

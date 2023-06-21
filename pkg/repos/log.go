@@ -1,4 +1,4 @@
-package tpl
+package repos
 
 import (
 	zlog "github.com/apigear-io/cli/pkg/log"

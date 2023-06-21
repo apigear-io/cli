@@ -27,8 +27,8 @@ func (l *SolutionLayer) ResolveTemplateDir(rootDir string) string {
 	if helper.IsDir(helper.Join(rootDir, l.Template)) {
 		return helper.Join(rootDir, l.Template)
 	}
-	if helper.IsDir(helper.Join(cfg.TemplateCacheDir(), l.Template)) {
-		return helper.Join(cfg.TemplateCacheDir(), l.Template)
+	if helper.IsDir(helper.Join(cfg.CacheDir(), l.Template)) {
+		return helper.Join(cfg.CacheDir(), l.Template)
 	}
 	return ""
 }
@@ -54,7 +54,6 @@ func (l *SolutionLayer) GetTemplatesDir(rootDir string) string {
 func (l *SolutionLayer) GetRulesFile(rootDir string) string {
 	tDir := l.ResolveTemplateDir(rootDir)
 	if tDir == "" {
-		log.Error().Msgf("template dir not found")
 		return ""
 	}
 	return helper.Join(tDir, "rules.yaml")

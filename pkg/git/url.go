@@ -7,7 +7,7 @@ import (
 	urls "github.com/whilp/git-urls"
 )
 
-func ParseGitUrl(url string) (*url.URL, error) {
+func ParseAsUrl(url string) (*url.URL, error) {
 	return urls.Parse(url)
 }
 
@@ -16,6 +16,6 @@ func IsValidGitUrl(url string) bool {
 	return err == nil
 }
 
-func GitUrlInfo(url string) (*vcsurl.VCS, error) {
+func ParseAsVcsUrl(url string) (*vcsurl.VCS, error) {
 	return vcsurl.Parse(url)
 }
