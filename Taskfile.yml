@@ -15,6 +15,10 @@ tasks:
       - go build -o ./bin/apigear ./cmd/apigear
     sources:
       - "**/*.go"
+  install:
+    desc: Install the project
+    cmds:
+      - go install ./cmd/apigear
   lint:
     desc: Lint the project
     cmds:
