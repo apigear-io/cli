@@ -133,7 +133,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if name == "" {
 			name = helper.BaseName(outDir)
 		}
-		err := repos.InstallTemplateFromFQN(layer.Template)
+		err := repos.InstallTemplateFromRepoID(layer.Template)
 		if err != nil {
 			log.Info().Err(err).Msgf("not a registry template %s. Try local template", layer.Template)
 		}

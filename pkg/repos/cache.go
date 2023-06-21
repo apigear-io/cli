@@ -45,14 +45,15 @@ func (c *cache) List() ([]*git.RepoInfo, error) {
 	return cached, nil
 }
 
-func (c *cache) ListVersions(name string) ([]*git.RepoInfo, error) {
+func (c *cache) ListVersions(repoID string) ([]*git.RepoInfo, error) {
+	repoID = EnsureRepoID(repoID)
 	infos, err := c.List()
 	if err != nil {
 		return nil, err
 	}
 	var versions []*git.RepoInfo
 	for _, info := range infos {
-		if info.Name == name {
+		if info.Name == repoID {
 			versions = append(versions, info)
 		}
 	}
@@ -74,13 +75,14 @@ func (c *cache) Search(pattern string) ([]*git.RepoInfo, error) {
 }
 
 // Remove removes template by name from the cache
-func (c *cache) Remove(fqn string) error {
-	log.Info().Msgf("remove template %s from %s", fqn, c.cacheDir)
+func (c *cache) Remove(name string) error {
+	name = EnsureRepoID(name)
+	log.Info().Msgf("remove template %s from %s", name, c.cacheDir)
 	// remove dir from packageDir
 	// check if dir exists
-	target := helper.Join(c.cacheDir, fqn)
+	target := helper.Join(c.cacheDir, name)
 	if !helper.IsDir(target) {
-		return fmt.Errorf("template %s does not exist", fqn)
+		return fmt.Errorf("template %s does not exist", name)
 	}
 	return os.RemoveAll(target)
 }
@@ -98,23 +100,25 @@ func (c *cache) Clean() error {
 
 // Info returns information about a template
 // either from an installed of from a template registry
-func (c *cache) Info(name string, version string) (*git.RepoInfo, error) {
+func (c *cache) Info(repoID string) (*git.RepoInfo, error) {
+	repoID = EnsureRepoID(repoID)
 	// get git info for template
-	target := helper.Join(c.cacheDir, name, version)
+	target := helper.Join(c.cacheDir, repoID)
 	if !helper.IsDir(target) {
-		return nil, fmt.Errorf("template %s not found", name)
+		return nil, fmt.Errorf("template %s not found", repoID)
 	}
 	info, err := git.LocalRepoInfo(target)
 	if err != nil {
 		return nil, err
 	}
-	info.Name = name
+	info.Name = repoID
 	return info, nil
 }
 
 // Exists returns true if template exists in the cache
-func (c *cache) Exists(fqn string) bool {
-	target := helper.Join(c.cacheDir, fqn)
+func (c *cache) Exists(repoID string) bool {
+	repoID = EnsureRepoID(repoID)
+	target := helper.Join(c.cacheDir, repoID)
 	return helper.IsDir(target)
 }
 
@@ -128,8 +132,8 @@ func (c *cache) Install(url string, version string) (string, error) {
 		return "", err
 	}
 	name := vcs.FullName
-	fqn := MakeFQN(name, version)
-	dst := helper.Join(c.cacheDir, fqn)
+	name = MakeRepoID(name, version)
+	dst := helper.Join(c.cacheDir, name)
 	err = git.CloneOrPull(url, dst)
 	if err != nil {
 		return "", err
@@ -138,7 +142,7 @@ func (c *cache) Install(url string, version string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fqn, nil
+	return name, nil
 }
 
 // ListTemplates lists all templates in the cache
@@ -181,6 +185,7 @@ func (c *cache) Upgrade(names []string) error {
 	log.Info().Msgf("update templates %s", names)
 	for _, name := range names {
 		// update template
+		name = EnsureRepoID(name)
 		dst := helper.Join(cfg.CacheDir(), name)
 		err := git.Pull(dst)
 		if err != nil {
