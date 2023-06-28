@@ -17,8 +17,8 @@ func NewInstallCommand() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			repoID := args[0]
-			cmd.Printf("installing template from %s\n", repoID)
-			err := repos.InstallTemplateFromRepoID(repoID)
+			fixedRepoId, err := repos.GetOrInstallTemplateFromRepoID(repoID)
+			cmd.Printf("using template %s\n", fixedRepoId)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return

@@ -208,3 +208,12 @@ func (c *cache) UpgradeAll() error {
 	}
 	return c.Upgrade(names)
 }
+
+func (c *cache) GetTemplateDir(repoId string) (string, error) {
+	repoId = EnsureRepoID(repoId)
+	target := helper.Join(c.cacheDir, repoId)
+	if !helper.IsDir(target) {
+		return "", fmt.Errorf("template %s not found", repoId)
+	}
+	return target, nil
+}

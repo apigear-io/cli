@@ -13,7 +13,7 @@ func NewInfoCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			info, err := repos.Registry.Info(name)
+			info, err := repos.Registry.Get(name)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return

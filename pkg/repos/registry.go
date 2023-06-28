@@ -85,21 +85,6 @@ func (r *registry) List() ([]*git.RepoInfo, error) {
 	return r.Registry.Entries, nil
 }
 
-// Info returns the template info
-func (r *registry) Info(repoID string) (*git.RepoInfo, error) {
-	repoID = NameFromRepoID(repoID)
-	err := r.ensureRegistry()
-	if err != nil {
-		return nil, err
-	}
-	for _, info := range r.Registry.Entries {
-		if info.Name == repoID {
-			return info, nil
-		}
-	}
-	return nil, fmt.Errorf("template not found: %s", repoID)
-}
-
 // Search searches for templates in the registry
 func (c *registry) Search(pattern string) ([]*git.RepoInfo, error) {
 	err := c.ensureRegistry()
@@ -176,4 +161,16 @@ func (r *registry) Reset() error {
 		return err
 	}
 	return git.CloneOrPull(r.RegistryURL, r.RegistryDir)
+}
+
+func (r *registry) FixRepoId(repoID string) (string, error) {
+	version := VersionFromRepoID(repoID)
+	if !IsRepoID(repoID) || version == "latest" {
+		info, err := r.Get(repoID)
+		if err != nil {
+			return "", err
+		}
+		repoID = MakeRepoID(info.Name, info.Latest.Name)
+	}
+	return repoID, nil
 }

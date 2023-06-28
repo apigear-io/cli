@@ -1,34 +1,26 @@
 package repos
 
-import (
-	"fmt"
-)
-
 // InstallTemplateFromFQN tries to install a template
 // from a fully qualified name (e.g. name@version)
-func InstallTemplateFromRepoID(repoID string) error {
-	version := VersionFromRepoID(repoID)
-	info, err := Registry.Get(repoID)
+func GetOrInstallTemplateFromRepoID(repoID string) (string, error) {
+	fixedRepoId, err := Registry.FixRepoId(repoID)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if version == "latest" {
-		version = info.Latest.Name
-		if version == "" {
-			return fmt.Errorf("no version found for template: %s", repoID)
-		}
-		repoID = MakeRepoID(info.Name, version)
-		log.Info().Msgf("use latest version %s ", repoID)
+	if Cache.Exists(fixedRepoId) {
+		log.Info().Msgf("template %s already installed", fixedRepoId)
+		return fixedRepoId, nil
 	}
-	if Cache.Exists(repoID) {
-		log.Info().Msgf("template %s already installed", repoID)
-		return nil
+	info, err := Registry.Get(fixedRepoId)
+	if err != nil {
+		return "", err
 	}
 	url := info.Git
-	log.Info().Msgf("installing template %s@%s from %s", repoID, version, url)
+	log.Info().Msgf("installing template %s from %s", fixedRepoId, url)
+	version := VersionFromRepoID(fixedRepoId)
 	_, err = Cache.Install(url, version)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return fixedRepoId, nil
 }

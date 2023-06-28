@@ -26,7 +26,7 @@ func init() {
 	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05"}
 	multi := zerolog.MultiLevelWriter(
 		console,
-		NewReportWriter(),
+		NewEventLogWriter(),
 		newRollingFile(logFile),
 	)
 	logger = zerolog.New(multi).With().Timestamp().Logger().Level(level)

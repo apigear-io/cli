@@ -133,18 +133,35 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if name == "" {
 			name = helper.BaseName(outDir)
 		}
-		err := repos.InstallTemplateFromRepoID(layer.Template)
-		if err != nil {
-			log.Info().Err(err).Msgf("not a registry template %s. Try local template", layer.Template)
+		// check for local template
+		tplDir := helper.Join(rootDir, layer.Template)
+		if helper.IsDir(tplDir) {
+			log.Info().Msgf("using local template %s", tplDir)
+		} else {
+			log.Info().Msgf("try to detect registered template %s", layer.Template)
+			repoId, err := repos.GetOrInstallTemplateFromRepoID(layer.Template)
+			if err != nil {
+				return err
+			}
+			tplDir, err = repos.Cache.GetTemplateDir(repoId)
+			if err != nil {
+				return fmt.Errorf("can't find template %s", layer.Template)
+			}
+			// update template id based on the resolved repo id
+			layer.Template = repoId
+			log.Info().Msgf("using registered template %s", tplDir)
 		}
-		tplDir := layer.GetTemplatesDir(rootDir)
 		if tplDir == "" {
-			return fmt.Errorf("template dir does not exist")
+			// we don't have a template
+			return fmt.Errorf("template is neither local nor registry template: %s", layer.Template)
 		}
-		rulesFile := layer.GetRulesFile(rootDir)
-		if rulesFile == "" {
-			return fmt.Errorf("no rules document or document is empty")
+		log.Info().Msgf("using template dir %s", tplDir)
+		rulesFile := helper.Join(tplDir, "rules.yaml")
+		if !helper.IsFile(rulesFile) {
+			return fmt.Errorf("rules document not found: %s", rulesFile)
 		}
+		log.Debug().Msgf("using rules document %s", rulesFile)
+		layer.UpdateTemplateDependencies(tplDir, rulesFile)
 		err = checkInputs(layer.ComputeExpandedInputs(rootDir))
 		if err != nil {
 			return err
@@ -160,7 +177,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 		opts := gen.GeneratorOptions{
 			OutputDir:    outDir,
-			TemplatesDir: tplDir,
+			TemplatesDir: helper.Join(tplDir, "templates"),
 			System:       system,
 			UserFeatures: layer.Features,
 			UserForce:    layer.Force,

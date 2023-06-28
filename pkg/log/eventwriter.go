@@ -19,14 +19,14 @@ type ReportEvent struct {
 	Error     string    `json:"error,omitempty"`
 }
 
-type ReportWriter struct {
+type EventLogWriter struct {
 }
 
-func NewReportWriter() io.Writer {
-	return &ReportWriter{}
+func NewEventLogWriter() io.Writer {
+	return &EventLogWriter{}
 }
 
-func (w *ReportWriter) Write(p []byte) (n int, err error) {
+func (w *EventLogWriter) Write(p []byte) (n int, err error) {
 	if bytesEmitter != nil {
 		bytesEmitter(string(p))
 	}

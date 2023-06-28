@@ -7,7 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-type Output interface {
+type OutputWriter interface {
 	Write(input []byte, target string, force bool) error
 	Copy(source, target string, force bool) error
 	Compare(input []byte, target string) (bool, error)

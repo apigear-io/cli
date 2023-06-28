@@ -54,6 +54,11 @@ func SortRepoInfo(infos []*RepoInfo) {
 	sort.Slice(infos, func(i, j int) bool {
 		return infos[i].Name < infos[j].Name
 	})
+	for _, info := range infos {
+		sort.Slice(info.Versions, func(i, j int) bool {
+			return info.Versions[i].Name >= info.Versions[j].Name
+		})
+	}
 }
 
 func LocalRepoInfo(source string) (*RepoInfo, error) {

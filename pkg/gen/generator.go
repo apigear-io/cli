@@ -43,14 +43,22 @@ func (s *GeneratorStats) TotalFiles() int {
 }
 
 type GeneratorOptions struct {
-	OutputDir    string
+	// OutputDir is the directory where files are written
+	OutputDir string
+	// TemplatesDir is the directory where templates are located
 	TemplatesDir string
-	System       *model.System
+	// System is the root system model
+	System *model.System
+	// UserFeatures is a list of features defined by user
 	UserFeatures []string
-	UserForce    bool
-	Output       Output
-	DryRun       bool
-	Meta         map[string]any
+	// UserForce forces overwrite of existing files
+	UserForce bool
+	// Output is the output writer
+	Output OutputWriter
+	// DryRun does not write files
+	DryRun bool
+	// Meta is a map of metadata
+	Meta map[string]any
 }
 
 // generator applies template transformation on a set of files define in rules
@@ -64,7 +72,7 @@ type generator struct {
 	OutputDir        string
 	DryRun           bool
 	Stats            GeneratorStats
-	Output           Output
+	Output           OutputWriter
 	Meta             map[string]any
 }
 
