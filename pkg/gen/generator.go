@@ -370,7 +370,7 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 
 		if same {
 			g.Stats.FilesSkipped++
-			log.Info().Msgf("skipping file %s", target)
+			log.Debug().Msgf("skipping file %s", target)
 			return nil
 		}
 	}

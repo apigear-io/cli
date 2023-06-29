@@ -50,7 +50,7 @@ func (r *registry) Load() error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("read registry file: %s", src)
+	log.Debug().Msgf("read registry file: %s", src)
 	// unmarshal
 	var registry TemplateRegistry
 	err = json.Unmarshal(bytes, &registry)

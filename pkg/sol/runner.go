@@ -118,7 +118,7 @@ func RunSolutionSource(ctx context.Context, source string, force bool) error {
 }
 
 func runSolution(doc *spec.SolutionDoc) error {
-	log.Info().Msgf("run solution %s", doc.RootDir)
+	log.Debug().Msgf("run solution %s", doc.RootDir)
 	err := doc.Compute()
 	if err != nil {
 		return err
@@ -149,13 +149,13 @@ func runSolution(doc *spec.SolutionDoc) error {
 			}
 			// update template id based on the resolved repo id
 			layer.Template = repoId
-			log.Info().Msgf("using registered template %s", tplDir)
+			log.Debug().Msgf("using registered template %s", tplDir)
 		}
 		if tplDir == "" {
 			// we don't have a template
 			return fmt.Errorf("template is neither local nor registry template: %s", layer.Template)
 		}
-		log.Info().Msgf("using template dir %s", tplDir)
+		log.Info().Msgf("using template from: %s", tplDir)
 		rulesFile := helper.Join(tplDir, "rules.yaml")
 		if !helper.IsFile(rulesFile) {
 			return fmt.Errorf("rules document not found: %s", rulesFile)
