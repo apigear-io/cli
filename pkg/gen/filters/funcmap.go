@@ -22,6 +22,9 @@ func PopulateFuncMap() template.FuncMap {
 	fm["camel"] = common.CamelLowerCase
 	fm["Camel"] = common.CamelTitleCase
 	fm["CAMEL"] = common.CamelUpperCase
+	fm["space"] = common.SpaceLowerCase
+	fm["Space"] = common.SpaceTitleCase
+	fm["SPACE"] = common.SpaceUpperCase
 	fm["dot"] = common.DotLowerCase
 	fm["Dot"] = common.DotTitleCase
 	fm["DOT"] = common.DotUpperCase

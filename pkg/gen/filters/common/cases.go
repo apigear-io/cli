@@ -90,3 +90,18 @@ func LowerCase(s string) string {
 func UpperCase(s string) string {
 	return strings.ToUpper(s)
 }
+
+// SpaceTitleCase returns a string representation of the value in Space Title Case.
+func SpaceTitleCase(s string) string {
+	return strcase.ToCase(s, strcase.TitleCase, ' ')
+}
+
+// SpaceUpperCase returns a string representation of the value in SPACE UPPER CASE.
+func SpaceUpperCase(s string) string {
+	return strcase.ToCase(s, strcase.UpperCase, ' ')
+}
+
+// SpaceLowerCase returns a string representation of the value in space lower case.
+func SpaceLowerCase(s string) string {
+	return strcase.ToCase(s, strcase.LowerCase, ' ')
+}
