@@ -8,6 +8,8 @@ type SolutionDoc struct {
 	RootDir     string           `json:"rootDir" yaml:"rootDir"`
 	Meta        map[string]any   `json:"meta" yaml:"meta"`
 	Layers      []*SolutionLayer `json:"layers" yaml:"layers"`
+	// computed fields
+	computed bool `json:"-" yaml:"-"`
 }
 
 func (s *SolutionDoc) Validate() error {
@@ -23,30 +25,30 @@ func (s *SolutionDoc) Validate() error {
 	return nil
 }
 
-// ComputeDependencies computes the dependencies of a solution.
-// A solution is a list of layers. Each layer has a list of inputs.
-// The dependencies of a solution are:
-// - the inputs of all layers
-// - the solution file
-// - the template dir and rules file
-// The inputs are relative paths to the root directory of the solution.
-func (s *SolutionDoc) ComputeDependencies() []string {
-	deps := make([]string, 0)
-	for _, l := range s.Layers {
-		l.ComputeDependencies(s.RootDir)
-		deps = append(deps, l.dependencies...)
-	}
-	return deps
-}
-
 // Compute computes the solution.
 // It computes the dependencies and expanded inputs of each layer.
-func (s *SolutionDoc) Compute() error {
-	for _, l := range s.Layers {
-		err := l.Compute(s.RootDir)
+func (s *SolutionDoc) Compute(compute ...func(doc *SolutionDoc) error) error {
+	s.computed = true
+	for _, c := range compute {
+		err := c(s)
 		if err != nil {
 			return err
 		}
 	}
-	return nil
+	for _, l := range s.Layers {
+		err := l.Compute(s)
+		if err != nil {
+			return err
+		}
+	}
+	return s.Validate()
+}
+
+// AggregateDependencies computes the dependencies of each layer.
+func (s *SolutionDoc) AggregateDependencies() []string {
+	deps := make([]string, 0)
+	for _, l := range s.Layers {
+		deps = append(deps, l.Dependencies()...)
+	}
+	return deps
 }
