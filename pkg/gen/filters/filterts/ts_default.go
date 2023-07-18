@@ -32,13 +32,13 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			if e == nil {
 				return "xxx", fmt.Errorf("ToDefaultString enum %s not found", schema.Type)
 			}
-			text = fmt.Sprintf("%s.%s", e.Name, e.Members[0].Name)
+			text = fmt.Sprintf("%s%s.%s", prefix, e.Name, e.Members[0].Name)
 		case model.TypeStruct:
 			s := schema.Module.LookupStruct(schema.Type)
 			if s == nil {
 				return "xxx", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
 			}
-			text = fmt.Sprintf("new %s%s()", prefix, s.Name)
+			text = "{}"
 		case model.TypeInterface:
 			i := schema.Module.LookupInterface(schema.Type)
 			if i == nil {

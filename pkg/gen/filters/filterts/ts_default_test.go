@@ -56,7 +56,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		rt string
 	}{
 		{"test", "Test2", "propEnum", "Enum1.Default"},
-		{"test", "Test2", "propStruct", "new Struct1()"},
+		{"test", "Test2", "propStruct", "{}"},
 		{"test", "Test2", "propInterface", "null"},
 		{"test", "Test2", "propEnumArray", "[]"},
 		{"test", "Test2", "propStructArray", "[]"},
