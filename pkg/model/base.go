@@ -161,16 +161,16 @@ func (t TypedNode) TypeName() string {
 // TypeNode is a node with type information.
 // { type: array, items: { type: string } }
 type Schema struct {
-	Type        string `json:"type" yaml:"type"`
-	IsArray     bool   `json:"array" yaml:"array"`
-	Module      *Module
-	KindType    KindType
-	struct_     *Struct
-	enum        *Enum
-	interface_  *Interface
-	IsPrimitive bool
-	IsSymbol    bool
-	IsResolved  bool
+	Type        string     `json:"type" yaml:"type"`
+	IsArray     bool       `json:"array" yaml:"array"`
+	Module      *Module    `json:"-" yaml:"-"`
+	KindType    KindType   `json:"kindType" yaml:"kindType"`
+	struct_     *Struct    `json:"-" yaml:"-"`
+	enum        *Enum      `json:"-" yaml:"-"`
+	interface_  *Interface `json:"-" yaml:"-"`
+	IsPrimitive bool       `json:"isPrimitive" yaml:"isPrimitive"`
+	IsSymbol    bool       `json:"isSymbol" yaml:"isSymbol"`
+	IsResolved  bool       `json:"-" yaml:"-"`
 }
 
 // IsEmpty returns true if the schema is empty

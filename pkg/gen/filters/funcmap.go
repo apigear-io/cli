@@ -51,6 +51,7 @@ func PopulateFuncMap() template.FuncMap {
 	fm["plural"] = common.Pluralize
 	fm["abbreviate"] = helper.Abbreviate
 	fm["nl"] = common.NewLine
+	fm["toJson"] = common.ToJson
 
 	filtercpp.PopulateFuncMap(fm)
 	filtergo.PopulateFuncMap(fm)
