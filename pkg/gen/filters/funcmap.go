@@ -42,6 +42,10 @@ func PopulateFuncMap() template.FuncMap {
 	fm["First"] = common.FirstChar
 	fm["FIRST"] = common.FirstCharUpper
 	fm["join"] = common.Join
+	fm["split"] = common.Split
+	fm["splitLast"] = common.SplitLast
+	fm["splitFirst"] = common.SplitFirst
+	fm["trim"] = common.Trim
 	fm["trimPrefix"] = common.TrimPrefix
 	fm["trimSuffix"] = common.TrimSuffix
 	fm["replace"] = common.Replace

@@ -48,6 +48,10 @@ func Join(sep string, a []string) string {
 	return strings.Join(a, sep)
 }
 
+func Trim(s string) string {
+	return strings.TrimSpace(s)
+}
+
 func TrimPrefix(s, prefix string) string {
 	return strings.TrimPrefix(s, prefix)
 }
@@ -58,4 +62,25 @@ func TrimSuffix(s, postfix string) string {
 
 func Replace(s, old, new string) string {
 	return strings.Replace(s, old, new, -1)
+}
+
+func Split(s, sep string) []string {
+	return strings.Split(s, sep)
+}
+
+// SplitLast splits the string s at the last occurrence of sep and returns the result.
+func SplitLast(s, sep string) string {
+	idx := strings.LastIndex(s, sep)
+	if idx == -1 {
+		return s
+	}
+	return s[idx+1:]
+}
+
+func SplitFirst(s, sep string) string {
+	idx := strings.Index(s, sep)
+	if idx == -1 {
+		return s
+	}
+	return s[:idx]
 }
