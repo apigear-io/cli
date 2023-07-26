@@ -1,0 +1,6 @@
+schema: apigear.solution/1.0
+layers:
+  - inputs:
+      - "001.module.yaml"
+    output: "out"
+    template: template-python

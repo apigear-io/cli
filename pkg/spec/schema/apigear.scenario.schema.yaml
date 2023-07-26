@@ -2,29 +2,39 @@ $schema: "http://json-schema.org/draft-07/schema#"
 title: "Scenario 1.0 Schema"
 type: object
 additionalProperties: false
+required: [schema, name, version]
 properties:
   schema:
     type: string
     enum: ["apigear.scenario/1.0"]
+    default: "apigear.scenario/1.0"
     description: "The simulation scenario specification version of this document."
   name:
     type: string
+    description: "The name of the scenario."
+    default: "demo"
   version:
     type: string
+    description: "The version of the scenario."
+    default: "1.0"
   interfaces:
     type: array
     items:
       $ref: "#/definitions/Interface"
+    description: "The interfaces of the scenario."
+    default: []
   sequences:
     type: array
+    description: "The sequences of the scenario."
     items:
       $ref: "#/definitions/Sequence"
-  additionalProperties: false
 
 definitions:
   Interface:
     type: object
     description: "An interface is a collection of endpoints."
+    additionalProperties: false
+    required: [name]
     properties:
       name:
         type: string
@@ -37,10 +47,11 @@ definitions:
         description: "The operations of the interface."
         items:
           $ref: "#/definitions/Operation"
-    additionalProperties: false
   Operation:
     type: object
     description: "An operation is a n endpoint inside an interface."
+    additionalProperties: false
+    required: [name]
     properties:
       name:
         type: string
@@ -57,34 +68,39 @@ definitions:
       return:
         type: object
         description: "The return value of the operation."
-      additionalProperties: false
   Sequence:
     description: "A sequence is a list of steps to be performed."
     type: object
+    additionalProperties: false
+    required: [name, steps, interface]
     properties:
       name:
         description: "The name of the sequence."
         type: string
       interface:
         description: "The default interface of the sequence."
-        type: string
+        type: string        
       interval:
         description: "The interval between each step."
         type: integer
+        default: 1000
       loops:
         description: "The number of times the sequence should be looped."
         type: integer
+        default: 1
       forever:
         description: "The sequence should be looped forever."
         type: boolean
+        default: false
       steps:
         description: "The steps of the sequence."
         type: array
         items:
           $ref: "#/definitions/Step"
-    additionalProperties: false
   Step:
     type: object
+    additionalProperties: false
+    required: [name, actions]
     properties:
       name:
         description: "The name of the step."
@@ -94,4 +110,3 @@ definitions:
         type: array
         items:
           type: object
-    additionalProperties: false

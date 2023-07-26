@@ -38,10 +38,10 @@ func (l *SolutionLayer) GetOutputDir(rootDir string) string {
 func (l *SolutionLayer) Validate() error {
 	// basic validation
 	if l.Output == "" {
-		return fmt.Errorf("layer output is required")
+		return fmt.Errorf("layer %s: output is required", l.Name)
 	}
 	if l.Template == "" {
-		return fmt.Errorf("layer template is required")
+		return fmt.Errorf("layer %s: template is required", l.Name)
 	}
 	if l.Inputs == nil {
 		l.Inputs = make([]string, 0)
@@ -53,13 +53,13 @@ func (l *SolutionLayer) Validate() error {
 	// check for advanced validation
 	if l.computed {
 		if !helper.IsDir(l.TemplateDir) {
-			return fmt.Errorf("template dir not found: %s", l.TemplateDir)
+			return fmt.Errorf("layer %s: template dir not found: %s", l.Name, l.TemplateDir)
 		}
 		if !helper.IsDir(l.TemplatesDir) {
-			return fmt.Errorf("templates dir not found: %s", l.TemplatesDir)
+			return fmt.Errorf("layer %s: templates dir not found: %s", l.Name, l.TemplatesDir)
 		}
 		if !helper.IsFile(l.RulesFile) {
-			return fmt.Errorf("rules file not found: %s", l.RulesFile)
+			return fmt.Errorf("layer %s: rules file not found: %s", l.Name, l.RulesFile)
 		}
 		// check inputs
 		for _, input := range l.expandedInputs {
@@ -70,10 +70,10 @@ func (l *SolutionLayer) Validate() error {
 					return err
 				}
 				if !result.Valid() {
-					for _, e := range result.Errors() {
+					for _, e := range result.Errors {
 						log.Warn().Msg(e.String())
 					}
-					return fmt.Errorf("invalid file: %s", input)
+					return fmt.Errorf("layer %s: invalid file: %s", l.Name, input)
 				}
 			case ".idl":
 				err := CheckIdlFile(input)

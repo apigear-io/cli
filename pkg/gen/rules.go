@@ -42,7 +42,7 @@ func CheckRulesJson(file string, bytes []byte) error {
 	}
 	if !result.Valid() {
 		log.Warn().Msgf("document %s is invalid", file)
-		for _, desc := range result.Errors() {
+		for _, desc := range result.Errors {
 			log.Warn().Msg(desc.String())
 			err = fmt.Errorf("%s", desc.String())
 		}

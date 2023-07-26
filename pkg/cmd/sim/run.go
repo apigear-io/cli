@@ -25,9 +25,9 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 		return nil, err
 	}
 	if !result.Valid() {
-		log.Error().Msgf("scenario file is not valid: %v", result.Errors())
-		for _, err := range result.Errors() {
-			entry := fmt.Sprintf("%s: %s", err.Field(), err.Description())
+		log.Error().Msgf("scenario file is not valid: %v", result.Errors)
+		for _, err := range result.Errors {
+			entry := fmt.Sprintf("%s: %s", err.Field, err.Description)
 			log.Error().Msg(entry)
 		}
 	}

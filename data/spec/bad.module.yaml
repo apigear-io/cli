@@ -1,0 +1,8 @@
+schema: apigear.module/1.0
+namex: good
+version: 1.0.0
+interfaces:
+  - name: Demo
+    propertiesx:
+      - name: value
+        type: int

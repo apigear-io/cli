@@ -13,10 +13,38 @@ import (
 	"github.com/apigear-io/cli/pkg/idl"
 
 	"github.com/gocarina/gocsv"
-	"github.com/xeipuuv/gojsonschema"
 )
 
-func CheckFileAndType(file string, t DocumentType) (*gojsonschema.Result, error) {
+type Result struct {
+	File   string        `json:"file"`
+	Errors []ErrorResult `json:"errors"`
+}
+
+func (r *Result) Valid() bool {
+	return len(r.Errors) == 0
+}
+
+type ErrorResult struct {
+	Field       string `json:"field"`
+	Description string `json:"description"`
+	Related     string `json:"related"`
+}
+
+func (e ErrorResult) String() string {
+	str := ""
+	if e.Description != "" {
+		str += fmt.Sprintf("error: %s\n", e.Description)
+	}
+	if e.Field != "" {
+		str += fmt.Sprintf("field: %s\n", e.Field)
+	}
+	if e.Related != "" {
+		str += fmt.Sprintf("--- related value\n%s\n---", e.Related)
+	}
+	return str
+}
+
+func CheckFileAndType(file string, t DocumentType) (*Result, error) {
 	dt, error := GetDocumentType(file)
 	if error != nil {
 		return nil, error
@@ -27,7 +55,7 @@ func CheckFileAndType(file string, t DocumentType) (*gojsonschema.Result, error)
 	return CheckFile(file)
 }
 
-func CheckFile(file string) (*gojsonschema.Result, error) {
+func CheckFile(file string) (*Result, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("error reading file: %w", err)

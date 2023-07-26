@@ -13,7 +13,7 @@ func NewCheckCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "check",
-		Aliases: []string{"c"},
+		Aliases: []string{"c", "lint"},
 		Short:   "Check document",
 		Long:    `Check documents and report errors`,
 		Args:    cobra.ExactArgs(1),
@@ -28,9 +28,10 @@ func NewCheckCommand() *cobra.Command {
 				if result.Valid() {
 					fmt.Printf("valid: %s\n", file)
 				} else {
-					fmt.Printf("invalid: %s\n", file)
-					for _, desc := range result.Errors() {
+					for _, desc := range result.Errors {
+						fmt.Printf("file: %s \n", file)
 						fmt.Println(desc.String())
+
 					}
 				}
 			case ".csv":

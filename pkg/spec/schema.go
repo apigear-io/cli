@@ -33,7 +33,7 @@ const (
 	DocumentTypeUnknown  DocumentType = "unknown"
 )
 
-func CheckJson(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
+func CheckJson(t DocumentType, jsonDoc []byte) (*Result, error) {
 	schemaLoader, err := LoadSchema(t)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,19 @@ func CheckJson(t DocumentType, jsonDoc []byte) (*gojsonschema.Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("validate document: %w", err)
 	}
-	return result, nil
+	r := &Result{}
+	for _, desc := range result.Errors() {
+		related, err := yaml.Marshal(desc.Value())
+		if err != nil {
+			related = []byte{}
+		}
+		r.Errors = append(r.Errors, ErrorResult{
+			Field:       desc.Field(),
+			Description: desc.Description(),
+			Related:     string(related),
+		})
+	}
+	return r, nil
 }
 
 func YamlToJson(data []byte) ([]byte, error) {

@@ -32,7 +32,6 @@ func NewTaskItem(name string, meta map[string]interface{}, tf TaskFunc) *TaskIte
 }
 
 // Run runs the task once
-// TODO: add error handling
 func (t *TaskItem) Run(ctx context.Context) error {
 	log.Debug().Msgf("run task: %s", t.name)
 	if t.cancel != nil {

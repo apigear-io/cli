@@ -32,8 +32,8 @@ as also the other options. To create a demo module or solution use the 'project 
 				return err
 			}
 			if !result.Valid() {
-				for _, err := range result.Errors() {
-					log.Warn().Msgf("source %s at %s error %s", source, err.Field(), err.Description())
+				for _, err := range result.Errors {
+					log.Warn().Msgf("source %s at %s error %s", source, err.Field, err.Description)
 				}
 				return nil
 			}

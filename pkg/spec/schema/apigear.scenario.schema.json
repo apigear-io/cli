@@ -22,9 +22,13 @@
           "type": "object"
         }
       },
+      "required": [
+        "name"
+      ],
       "type": "object"
     },
     "Operation": {
+      "additionalProperties": false,
       "description": "An operation is a n endpoint inside an interface.",
       "properties": {
         "actions": {
@@ -35,7 +39,6 @@
           },
           "type": "array"
         },
-        "additionalProperties": false,
         "description": {
           "description": "The description of the operation.",
           "type": "string"
@@ -49,6 +52,9 @@
           "type": "object"
         }
       },
+      "required": [
+        "name"
+      ],
       "type": "object"
     },
     "Sequence": {
@@ -56,6 +62,7 @@
       "description": "A sequence is a list of steps to be performed.",
       "properties": {
         "forever": {
+          "default": false,
           "description": "The sequence should be looped forever.",
           "type": "boolean"
         },
@@ -64,10 +71,12 @@
           "type": "string"
         },
         "interval": {
+          "default": 1000,
           "description": "The interval between each step.",
           "type": "integer"
         },
         "loops": {
+          "default": 1,
           "description": "The number of times the sequence should be looped.",
           "type": "integer"
         },
@@ -83,6 +92,11 @@
           "type": "array"
         }
       },
+      "required": [
+        "name",
+        "steps",
+        "interface"
+      ],
       "type": "object"
     },
     "Step": {
@@ -100,21 +114,29 @@
           "type": "string"
         }
       },
+      "required": [
+        "name",
+        "actions"
+      ],
       "type": "object"
     }
   },
   "properties": {
-    "additionalProperties": false,
     "interfaces": {
+      "default": [],
+      "description": "The interfaces of the scenario.",
       "items": {
         "$ref": "#/definitions/Interface"
       },
       "type": "array"
     },
     "name": {
+      "default": "demo",
+      "description": "The name of the scenario.",
       "type": "string"
     },
     "schema": {
+      "default": "apigear.scenario/1.0",
       "description": "The simulation scenario specification version of this document.",
       "enum": [
         "apigear.scenario/1.0"
@@ -122,15 +144,23 @@
       "type": "string"
     },
     "sequences": {
+      "description": "The sequences of the scenario.",
       "items": {
         "$ref": "#/definitions/Sequence"
       },
       "type": "array"
     },
     "version": {
+      "default": "1.0",
+      "description": "The version of the scenario.",
       "type": "string"
     }
   },
+  "required": [
+    "schema",
+    "name",
+    "version"
+  ],
   "title": "Scenario 1.0 Schema",
   "type": "object"
 }
