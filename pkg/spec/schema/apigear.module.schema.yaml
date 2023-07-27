@@ -1,4 +1,32 @@
 $schema: "http://json-schema.org/draft-07/schema#"
+description: |
+  This is the schema for the ObjectAPI 1.0 specification. 
+  It is used to validate the ObjectAPI 1.0 specification.
+
+  An example of a valid ObjectAPI 1.0 specification is:
+
+  ```
+  schema: apigear.module/1.0
+  name: my.module
+  version: 1.0
+  interfaces:
+    - name: Counter
+      properties:
+        - name: value
+          type: int
+      operations:
+        - name: increment
+          params:
+            - name: value
+              type: int
+          return: int
+        - name: decrement
+          params:
+            - name: value
+              type: int
+          return: int
+  ```
+
 title: "ObjectAPI 1.0 Schema"
 type: object
 additionalProperties: false
@@ -6,126 +34,198 @@ required: [name, version]
 properties:
   schema:
     type: string
-    enum: ["apigear.module/1.0"]
     description: "The ApiGear ObjectAPI specification version of this document."
+    enum: ["apigear.module/1.0"]
+    default: "apigear.module/1.0"
   name:
     type: string
-    description: module name, should be all lowercase and only contain letters and dots.
+    description: module name, should be a valid module identifier, starting with a letter, followed by letters, numbers and dot.
+    pattern: "^[a-zA-Z][0-9A-Za-z_]+([.][0-9A-Za-z_]+)*$"
   version:
     type: string
-    description: the version of this document as string, typically something like '1.0'
+    description: module version, should be a major and minor version, separated by a dot.
+    pattern: "^[0-9]+[.][0-9]+$"
   description:
     type: string
-    description: the module description. Will be added to the module documentation
+    description: module description. Should be a short description of the module.
   meta:
     type: object
-    description: meta information are read by the individual blueprint. Read the blueprint manual which meta tags are supported.
-  interfaces: # array of interfaces
+    description: meta information are read by the individual template. Read the template manual which meta tags are supported.
+  interfaces:
+    type: array
     description: a list of interfaces, exported by this module
-    type: array
-    items: # each interface is and object with at least a name
+    items:
       $ref: "#/definitions/Interface"
-  structs: # array of structs
+  structs:
+    type: array
     description: a list of data structures, exported by this module
-    type: array
-    items: # each struct is an object with at least a name
+    items:
       $ref: "#/definitions/Struct"
-  enums: # array of items inside a module
-    description: a list of enumerations, exported by this module
+  enums:
     type: array
-    items: # each enum is an object with at least a name
+    description: a list of enumerations, exported by this module
+    items:
       $ref: "#/definitions/Enum"
 
 definitions:
-  TypeKey:
-    oneOf:
-      - type: string
-        enum: [int, int32, int64, float, float32, float64, bool, string]
-      - type: string
-        pattern: "^[A-Z][0-9A-Za-z_]+$"
   NamedType:
     type: object
+    description: "A named type is a type with a name and a type."
     required: [name, type]
     additionalProperties: false
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
-      type: { $ref: "#/definitions/TypeKey" }
-      array: { type: boolean }
-      readonly: { type: boolean }
+      name: 
+        type: string
+        description: "A name, must be an identifier, starting with a letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the type."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      type:
+        type: string
+        description: "A type either a primitive type or a declared type name."
+      array: 
+        type: boolean
+        description: "If true, the type is an array of the given type."
+      readonly: 
+        type: boolean
+        description: "If true, the type is readonly."
   Type:
     type: object
+    description: "A type is a type key with additional information."
     required: [type]
     additionalProperties: false
     properties:
-      description: { type: string }
-      meta: { type: object }
-      type: { $ref: "#/definitions/TypeKey" }
-      array: { type: boolean }
+      description:  
+        type: string
+        description: "A description of the type."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      type: 
+        type: string
+        description: "A primitive type or a declared type name."
+      array: 
+        type: boolean
+        description: "If true, the type is an array of the given type."
+
   Interface:
     type: object
+    description: "An interface is a collection of properties, operations and signals."
     required: [name]
     additionalProperties: false
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
-      properties: # properties inside interface
+      name: 
+        type: string
+        description: "The name of the interface, starting with an letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the interface."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      properties:
         type: array
+        description: "A list of properties."
         items:
           $ref: "#/definitions/NamedType"
-      operations: # operations inside interface
+      operations:
         type: array
+        description: "A list of operations."
         items:
           $ref: "#/definitions/Operation"
-      signals: # signals inside interface
+      signals:
         type: array
+        description: "A list of signals."
         items:
           $ref: "#/definitions/Operation"
   Struct:
     type: object
+    description: "A struct is a collection of fields."
     required: [name]
     additionalProperties: false
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
-      fields: # fields inside struct
+      name: 
+        type: string
+        description: "The name of the struct, starting with an letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the struct."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      fields:
         type: array
+        description: "A list of fields."
         items:
           $ref: "#/definitions/NamedType"
   Enum:
     type: object
+    description: "An enum is a collection of name, value pairs."
     required: [name]
     additionalProperties: false
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
-      members: # members are name value pairs, where the value must be an integer, or empty
+      name: 
+        type: string
+        description: "The name of the enum, starting with a letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the enum."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      members:
         type: array
+        description: "A list of members."
         items:
           $ref: "#/definitions/EnumMember"
-  Operation: # a operation or signal inside an interface
+  Operation:
     type: object
+    description: "An operation is a function with a name, parameters and a return type."
     additionalProperties: false
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
+      name: 
+        type: string
+        description: "A name, starting with a letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the operation."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       return:
         $ref: "#/definitions/Type"
       params:
         type: array
+        description: "A list of operation parameters."
         items:
           $ref: "#/definitions/NamedType"
   EnumMember: # member value inside an enum
     type: object
+    description: "An enum member is a name, value pair."
     additionalProperties: false
     required: [name]
     properties:
-      name: { type: string }
-      description: { type: string }
-      meta: { type: object }
-      value: { type: integer }
+      name: 
+        type: string
+        description: "The name of the enum member, starting with a letter, followed by letters, numbers and underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]+$"
+      description: 
+        type: string
+        description: "A description of the enum member."
+      meta: 
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+      value: 
+        type: integer
+        description: "The value of the enum member. It must be unique within the enum and must be a positive integer."
+        minimum: 0
+
+

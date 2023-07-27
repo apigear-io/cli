@@ -4,20 +4,26 @@
   "definitions": {
     "Enum": {
       "additionalProperties": false,
+      "description": "An enum is a collection of name, value pairs.",
       "properties": {
         "description": {
+          "description": "A description of the enum.",
           "type": "string"
         },
         "members": {
+          "description": "A list of members.",
           "items": {
             "$ref": "#/definitions/EnumMember"
           },
           "type": "array"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "The name of the enum, starting with a letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         }
       },
@@ -28,17 +34,24 @@
     },
     "EnumMember": {
       "additionalProperties": false,
+      "description": "An enum member is a name, value pair.",
       "properties": {
         "description": {
+          "description": "A description of the enum member.",
           "type": "string"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "The name of the enum member, starting with a letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         },
         "value": {
+          "description": "The value of the enum member. It must be unique within the enum and must be a positive integer.",
+          "minimum": 0,
           "type": "integer"
         }
       },
@@ -49,29 +62,37 @@
     },
     "Interface": {
       "additionalProperties": false,
+      "description": "An interface is a collection of properties, operations and signals.",
       "properties": {
         "description": {
+          "description": "A description of the interface.",
           "type": "string"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "The name of the interface, starting with an letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         },
         "operations": {
+          "description": "A list of operations.",
           "items": {
             "$ref": "#/definitions/Operation"
           },
           "type": "array"
         },
         "properties": {
+          "description": "A list of properties.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
         "signals": {
+          "description": "A list of signals.",
           "items": {
             "$ref": "#/definitions/Operation"
           },
@@ -85,24 +106,32 @@
     },
     "NamedType": {
       "additionalProperties": false,
+      "description": "A named type is a type with a name and a type.",
       "properties": {
         "array": {
+          "description": "If true, the type is an array of the given type.",
           "type": "boolean"
         },
         "description": {
+          "description": "A description of the type.",
           "type": "string"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "A name, must be an identifier, starting with a letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         },
         "readonly": {
+          "description": "If true, the type is readonly.",
           "type": "boolean"
         },
         "type": {
-          "$ref": "#/definitions/TypeKey"
+          "description": "A type either a primitive type or a declared type name.",
+          "type": "string"
         }
       },
       "required": [
@@ -113,17 +142,23 @@
     },
     "Operation": {
       "additionalProperties": false,
+      "description": "An operation is a function with a name, parameters and a return type.",
       "properties": {
         "description": {
+          "description": "A description of the operation.",
           "type": "string"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "A name, starting with a letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         },
         "params": {
+          "description": "A list of operation parameters.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
@@ -137,20 +172,26 @@
     },
     "Struct": {
       "additionalProperties": false,
+      "description": "A struct is a collection of fields.",
       "properties": {
         "description": {
+          "description": "A description of the struct.",
           "type": "string"
         },
         "fields": {
+          "description": "A list of fields.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
+          "description": "The name of the struct, starting with an letter, followed by letters, numbers and underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
           "type": "string"
         }
       },
@@ -161,50 +202,35 @@
     },
     "Type": {
       "additionalProperties": false,
+      "description": "A type is a type key with additional information.",
       "properties": {
         "array": {
+          "description": "If true, the type is an array of the given type.",
           "type": "boolean"
         },
         "description": {
+          "description": "A description of the type.",
           "type": "string"
         },
         "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "type": {
-          "$ref": "#/definitions/TypeKey"
+          "description": "A primitive type or a declared type name.",
+          "type": "string"
         }
       },
       "required": [
         "type"
       ],
       "type": "object"
-    },
-    "TypeKey": {
-      "oneOf": [
-        {
-          "enum": [
-            "int",
-            "int32",
-            "int64",
-            "float",
-            "float32",
-            "float64",
-            "bool",
-            "string"
-          ],
-          "type": "string"
-        },
-        {
-          "pattern": "^[A-Z][0-9A-Za-z_]+$",
-          "type": "string"
-        }
-      ]
     }
   },
+  "description": "This is the schema for the ObjectAPI 1.0 specification. \nIt is used to validate the ObjectAPI 1.0 specification.\n\nAn example of a valid ObjectAPI 1.0 specification is:\n\n```\nschema: apigear.module/1.0\nname: my.module\nversion: 1.0\ninterfaces:\n  - name: Counter\n    properties:\n      - name: value\n        type: int\n    operations:\n      - name: increment\n        params:\n          - name: value\n            type: int\n        return: int\n      - name: decrement\n        params:\n          - name: value\n            type: int\n        return: int\n```\n",
   "properties": {
     "description": {
-      "description": "the module description. Will be added to the module documentation",
+      "description": "module description. Should be a short description of the module.",
       "type": "string"
     },
     "enums": {
@@ -222,14 +248,16 @@
       "type": "array"
     },
     "meta": {
-      "description": "meta information are read by the individual blueprint. Read the blueprint manual which meta tags are supported.",
+      "description": "meta information are read by the individual template. Read the template manual which meta tags are supported.",
       "type": "object"
     },
     "name": {
-      "description": "module name, should be all lowercase and only contain letters and dots.",
+      "description": "module name, should be a valid module identifier, starting with a letter, followed by letters, numbers and dot.",
+      "pattern": "^[a-zA-Z][0-9A-Za-z_]+([.][0-9A-Za-z_]+)*$",
       "type": "string"
     },
     "schema": {
+      "default": "apigear.module/1.0",
       "description": "The ApiGear ObjectAPI specification version of this document.",
       "enum": [
         "apigear.module/1.0"
@@ -244,7 +272,8 @@
       "type": "array"
     },
     "version": {
-      "description": "the version of this document as string, typically something like '1.0'",
+      "description": "module version, should be a major and minor version, separated by a dot.",
+      "pattern": "^[0-9]+[.][0-9]+$",
       "type": "string"
     }
   },

@@ -6,33 +6,38 @@ description: |
   Rules engine to drive the object api generator
   A typical setup looks like this:
   ```
-  schema: apigear.rules: "1.0"
+  schema: apigear.rules/1.0
+  name: simple cpp template
   features:
     - name: api
-      path: {{module|identifier}}/
+      path: {{dot .Module.Name}}/
       scopes:
         - match: module
           documents:
             - source: api.h
+              target: api.h
+
     - name: core
       requires: [api]
-      path: {{module|identifier}}/
+      path: {{dot .Module.Name}}/
       scopes:
-        - match: module:
+        - match: module
           documents:
             - source: core.h
+            - target: core.h
             - source: core.cpp
+              target: core.cpp
     - name: init
       requires: [core]
-      path: {{module|identifier}}/
+      path: {{dot .Module.Name}}/
       scopes:
-        - name: module:
+        - name: module
           documents:
             - source: Makefile
             - source: service.h
-              target: {{interface.name|lower}}.h
+              target: {{snake .Interface.Name}}.h
             - source: service.cpp
-              target: {{interface.name|lower}}.cpp
+              target: {{snake .Interface.Name}}.cpp
   ```
 
 type: object
@@ -58,50 +63,57 @@ definitions:
     properties:
       name:
         type: string
-        description: name defines the name of the feature.
+        description: Name of the feature. This is used to enable/disable the feature on the command line. All features are enabled by default. Features must be lowercase and only contain letters.
+        pattern: "^[a-z]+$"
       requires:
         type: array
+        description: Requires defines a list of features which must be run before this feature can be used.
         items:
           type: string
-        description: requires defines a list of features which must be run before this feature can be used.
+          description: name of the feature which must be run before this feature can be used.
+          pattern: "^[a-z]+$"
       path:
-        description: Path defines the base path (prefix) for all following selectors.
+        description: Path defines the path where the documents will be written to. It is a template which can be evaluated in the given context.
         type: string
       scopes:
-        description: Scopes define a list of selectors which can be enabled/disabled on the command line.
+        description: Scopes defines a list of scopes which will be applied to the documents.
         type: array
         items:
           $ref: "#/definitions/Scope"
   Scope:
-    description: Scope defines a selector where the documents will be applied to
     type: object
+    description: Scope defines a set of documents which will be transformed.
+    additionalProperties: false
     properties:
       match:
         type: string
+        description: Match defines the context where this scope is applied to.
         enum: [system, module, interface, struct, enum]
-        description: match defines the context where this scope is applied to.
       prefix:
         type: string
-        description: prefix defines the prefix for all document targets.
+        description: Prefix defines the prefix for all document targets.
       documents:
-        description: Documents defines a list of documents which will be transformed.
         type: array
+        description: List of documents which will be transformed.
         items:
           "$ref": "#/definitions/Document"
   Document:
     type: object
+    description: Document defines a document which will be transformed in the form os source and target.
     required: [source]
+    additionalProperties: false
     properties:
       source:
         type: string
-        description: source defines the source file name.
+        description: Source defines the source file name, relative to the templates folder. If only the source is given, the target will be the same as the source.
       target:
         type: string
-        description: target defines the document target path relative to the output folder
+        description: Target defines the document target path relative to the output folder
       force:
         type: boolean
-        description: force defines whether the document should be overwritten if it already exists.
+        description: Force defines whether the document should be overwritten if it already exists.
+        default: false
       raw:
         type: boolean
-        description: raw defines whether the document should be written as is.
-    additionalProperties: false
+        description: Defines whether the document should be processed by the template engine or not.
+        default: false

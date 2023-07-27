@@ -1,8 +1,22 @@
 schema: apigear.module/1.0
-namex: good
-version: 1.0.0
+name: Hello
+version: "1.0"
 interfaces:
-  - name: Demo
-    propertiesx:
+  - name: Hello
+    properties:
       - name: value
         type: int
+      - name: name
+        type: MyStruct
+
+structs:
+  - name: MyStruct
+    meta:
+      name: description
+      value: "This is a struct"
+    fields:
+      - name: name
+        type: string
+      - name: value
+        type: int
+
