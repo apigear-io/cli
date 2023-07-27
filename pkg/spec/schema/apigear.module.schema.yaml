@@ -43,8 +43,9 @@ properties:
     pattern: "^[a-zA-Z][0-9A-Za-z_]+([.][0-9A-Za-z_]+)*$"
   version:
     type: string
-    description: module version, should be a major and minor version, separated by a dot.
-    pattern: "^[0-9]+[.][0-9]+$"
+    description: module version, should be a major and minor, patch version, separated by a dot.
+    pattern: "^[0-9]+[.][0-9]+[.][0-9]+$"
+    default: "0.1.0"
   description:
     type: string
     description: module description. Should be a short description of the module.

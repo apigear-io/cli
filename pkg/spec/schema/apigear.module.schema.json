@@ -272,8 +272,9 @@
       "type": "array"
     },
     "version": {
-      "description": "module version, should be a major and minor version, separated by a dot.",
-      "pattern": "^[0-9]+[.][0-9]+$",
+      "default": "0.1.0",
+      "description": "module version, should be a major and minor, patch version, separated by a dot.",
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$",
       "type": "string"
     }
   },

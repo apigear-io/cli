@@ -91,7 +91,9 @@
       "type": "string"
     },
     "version": {
+      "default": "0.1.0",
       "description": "The version of the solution.",
+      "pattern": "^[0-9]+[.][0-9]+[.][0-9]+$",
       "type": "string"
     }
   },
