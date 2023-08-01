@@ -1,5 +1,5 @@
 name: Module01
-version: "1.0"
+version: "1.0.0"
 interfaces:
   - name: Interface01
     properties:

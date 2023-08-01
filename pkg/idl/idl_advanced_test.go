@@ -7,7 +7,7 @@ import (
 )
 
 func TestManyParamsFuncs(t *testing.T) {
-	s, err := loadIdl("advanced", []string{"./testdata/advanced.idl"})
+	s, err := LoadIdlFromFiles("advanced", []string{"./testdata/advanced.idl"})
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 	table := []struct {
@@ -39,7 +39,7 @@ func TestManyParamsFuncs(t *testing.T) {
 }
 
 func TestManyParamsSigs(t *testing.T) {
-	s, err := loadIdl("advanced", []string{"./testdata/advanced.idl"})
+	s, err := LoadIdlFromFiles("advanced", []string{"./testdata/advanced.idl"})
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 	table := []struct {

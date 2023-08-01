@@ -7,7 +7,7 @@ import (
 )
 
 func TestProperties(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/properties.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/properties.idl"})
 	assert.NoError(t, err)
 	iface := s.LookupInterface("demo", "Demo")
 	assert.NotNil(t, iface)

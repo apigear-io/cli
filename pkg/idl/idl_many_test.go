@@ -7,7 +7,7 @@ import (
 )
 
 func TestManyModules(t *testing.T) {
-	s, err := loadIdl("many", []string{"./testdata/simple.idl", "./testdata/data.idl", "./testdata/enum.idl"})
+	s, err := LoadIdlFromFiles("many", []string{"./testdata/simple.idl", "./testdata/data.idl", "./testdata/enum.idl"})
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 	assert.Equal(t, "many", s.Name)

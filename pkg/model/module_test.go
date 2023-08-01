@@ -21,5 +21,5 @@ func TestModuleJson(t *testing.T) {
 	err := helper.ReadDocument("./testdata/module.json", &module)
 	assert.NoError(t, err)
 	assert.Equal(t, "Module01", module.Name)
-	assert.Equal(t, "1.0", string(module.Version))
+	assert.Equal(t, "1.0.0", string(module.Version))
 }

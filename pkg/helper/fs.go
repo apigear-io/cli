@@ -116,6 +116,10 @@ func ReadYamlFromData(in []byte, out any) error {
 	return yaml.Unmarshal(in, out)
 }
 
+func ReadYamlFromString(in string, out any) error {
+	return yaml.Unmarshal([]byte(in), out)
+}
+
 func YamlToJson(in []byte) ([]byte, error) {
 	out := make(map[string]any)
 	err := yaml.Unmarshal(in, &out)

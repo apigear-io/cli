@@ -8,7 +8,7 @@ import (
 )
 
 func TestEnumIdl(t *testing.T) {
-	s, err := loadIdl("enum", []string{"./testdata/enum.idl"})
+	s, err := LoadIdlFromFiles("enum", []string{"./testdata/enum.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		eName string
@@ -40,7 +40,7 @@ func TestEnumIdl(t *testing.T) {
 }
 
 func TestEnumProps(t *testing.T) {
-	s, err := loadIdl("enum", []string{"./testdata/enum.idl"})
+	s, err := LoadIdlFromFiles("enum", []string{"./testdata/enum.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -70,7 +70,7 @@ func TestEnumProps(t *testing.T) {
 }
 
 func TestEnumFuncs(t *testing.T) {
-	s, err := loadIdl("enum", []string{"./testdata/enum.idl"})
+	s, err := LoadIdlFromFiles("enum", []string{"./testdata/enum.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -105,7 +105,7 @@ func TestEnumFuncs(t *testing.T) {
 }
 
 func TestEnumSignals(t *testing.T) {
-	s, err := loadIdl("enum", []string{"./testdata/enum.idl"})
+	s, err := LoadIdlFromFiles("enum", []string{"./testdata/enum.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
