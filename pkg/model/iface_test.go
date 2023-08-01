@@ -13,7 +13,7 @@ func TestInterface(t *testing.T) {
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, err)
 	assert.Equal(t, "Module01", module.Name)
-	assert.Equal(t, "1.0", string(module.Version))
+	assert.Equal(t, "1.0.0", string(module.Version))
 	assert.Equal(t, 5, len(module.Interfaces))
 	iface0 := module.Interfaces[0]
 	assert.Equal(t, "Interface01", iface0.Name)
