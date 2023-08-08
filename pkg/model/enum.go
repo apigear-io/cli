@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 // Enum is an enumeration.
 type Enum struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -18,8 +20,13 @@ func NewEnum(name string) *Enum {
 
 // ResolveAll resolves all references in the enum.
 func (e *Enum) ResolveAll(mod *Module) error {
+	names := make(map[string]bool)
 	autoValue := true
 	for _, mem := range e.Members {
+		if names[mem.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", e.Name, mem.Name)
+		}
+		names[mem.Name] = true
 		err := mem.ResolveAll(mod)
 		if err != nil {
 			return err

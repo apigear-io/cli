@@ -3,6 +3,7 @@ package cfg
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/spf13/viper"
@@ -28,7 +29,8 @@ const (
 )
 
 var (
-	v *viper.Viper
+	v  *viper.Viper
+	rw = sync.RWMutex{}
 )
 
 func init() {
@@ -43,7 +45,9 @@ func init() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	rw.Lock()
 	v = vip
+	rw.Unlock()
 }
 
 func NewConfig(cfgDir string) (*viper.Viper, error) {
@@ -105,5 +109,7 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 }
 
 func SetConfig(c *viper.Viper) {
+	rw.Lock()
 	v = c
+	rw.Unlock()
 }

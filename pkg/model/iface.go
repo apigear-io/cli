@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Params    []*TypedNode `json:"params" yaml:"params"`
@@ -122,19 +124,33 @@ func (i Interface) LookupSignal(name string) *Signal {
 }
 
 func (i *Interface) ResolveAll(mod *Module) error {
+	// check if any names are duplicated
+	names := make(map[string]bool)
 	for _, p := range i.Properties {
+		if names[p.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", i.Name, p.Name)
+		}
+		names[p.Name] = true
 		err := p.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
 	for _, op := range i.Operations {
+		if names[op.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", i.Name, op.Name)
+		}
+		names[op.Name] = true
 		err := op.ResolveAll(mod)
 		if err != nil {
 			return err
 		}
 	}
 	for _, s := range i.Signals {
+		if names[s.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", i.Name, s.Name)
+		}
+		names[s.Name] = true
 		err := s.ResolveAll(mod)
 		if err != nil {
 			return err

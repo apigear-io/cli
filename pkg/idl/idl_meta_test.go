@@ -10,7 +10,7 @@ import (
 )
 
 func TestSimpleTag(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/meta.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/meta.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		ifaceId string
@@ -31,7 +31,7 @@ func TestSimpleTag(t *testing.T) {
 }
 
 func TestPropertyMeta(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/meta.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/meta.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		ifaceId string
@@ -54,7 +54,7 @@ func TestPropertyMeta(t *testing.T) {
 }
 
 func TestOperationMeta(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/meta.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/meta.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		ifaceId string
@@ -77,7 +77,7 @@ func TestOperationMeta(t *testing.T) {
 }
 
 func TestSignalMeta(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/meta.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/meta.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		ifaceId string
@@ -100,7 +100,7 @@ func TestSignalMeta(t *testing.T) {
 }
 
 func TestStructMeta(t *testing.T) {
-	s, err := loadIdl("meta", []string{"./testdata/meta.idl"})
+	s, err := LoadIdlFromFiles("meta", []string{"./testdata/meta.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		structId string
@@ -204,7 +204,7 @@ const out1 = `
 `
 
 func TestTemplate(t *testing.T) {
-	s, err := loadIdlFromString("meta", idl1)
+	s, err := LoadIdlFromString("meta", idl1)
 	assert.NoError(t, err)
 	tpl, err := template.New("test").Parse(tpl1)
 	assert.NoError(t, err)

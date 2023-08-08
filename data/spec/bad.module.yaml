@@ -1,6 +1,6 @@
 schema: apigear.module/1.0
-name: Hello
-version: "1.0"
+name: demo
+version: 1.0.0
 interfaces:
   - name: Hello
     properties:

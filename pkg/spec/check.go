@@ -70,7 +70,15 @@ func CheckFile(file string) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	return CheckJson(typ, data)
+	result, error := CheckJson(typ, data)
+	if error != nil {
+		return nil, error
+	}
+	if !result.Valid() {
+		result.File = file
+		log.Error().Msgf("file %s is not valid: %s", file, result.Errors)
+	}
+	return result, nil
 }
 
 func CheckNdjsonFile(name string) error {

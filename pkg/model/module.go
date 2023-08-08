@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -136,19 +137,33 @@ func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
 }
 
 func (m *Module) ResolveAll() error {
+	// check for duplicate names
+	names := make(map[string]bool)
 	for _, i := range m.Interfaces {
+		if names[i.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, i.Name)
+		}
+		names[i.Name] = true
 		err := i.ResolveAll(m)
 		if err != nil {
 			return err
 		}
 	}
 	for _, s := range m.Structs {
+		if names[s.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, s.Name)
+		}
+		names[s.Name] = true
 		err := s.ResolveAll(m)
 		if err != nil {
 			return err
 		}
 	}
 	for _, e := range m.Enums {
+		if names[e.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, e.Name)
+		}
+		names[e.Name] = true
 		err := e.ResolveAll(m)
 		if err != nil {
 			return err

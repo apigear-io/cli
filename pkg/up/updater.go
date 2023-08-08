@@ -51,10 +51,19 @@ func (u *Updater) Check(ctx context.Context) (*selfupdate.Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	if found && latest.GreaterThan(u.version) {
-		return latest, nil
+	if !found {
+		return nil, fmt.Errorf("no release found for %s", u.repo)
 	}
-	return nil, nil
+	if latest == nil {
+		return nil, fmt.Errorf("no release found for %s", u.repo)
+	}
+	log.Info().Msgf("latest release: %s", latest.Version())
+	if !latest.GreaterThan(u.version) {
+		log.Info().Msgf("current version %s is the latest", u.version)
+		return nil, nil
+	}
+	log.Info().Msgf("new version %s is available", latest.Version())
+	return latest, nil
 }
 
 // Update updates the current executable to the latest release

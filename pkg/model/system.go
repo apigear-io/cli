@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
@@ -74,7 +76,12 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 }
 
 func (s *System) ResolveAll() error {
+	names := make(map[string]bool)
 	for _, m := range s.Modules {
+		if names[m.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", s.Name, m.Name)
+		}
+		names[m.Name] = true
 		err := m.ResolveAll()
 		if err != nil {
 			return err

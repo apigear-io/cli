@@ -13,7 +13,7 @@ func TestInterface(t *testing.T) {
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, err)
 	assert.Equal(t, "Module01", module.Name)
-	assert.Equal(t, "1.0", string(module.Version))
+	assert.Equal(t, "1.0.0", string(module.Version))
 	assert.Equal(t, 5, len(module.Interfaces))
 	iface0 := module.Interfaces[0]
 	assert.Equal(t, "Interface01", iface0.Name)
@@ -62,5 +62,55 @@ func TestOperations(t *testing.T) {
 	assert.Equal(t, "param01", op0.Params[0].Name)
 	assert.Equal(t, "bool", op0.Params[0].Schema.Type)
 	assert.Equal(t, "bool", op0.Return.Schema.Type)
+}
 
+const duplicatesYAML = `schema: apigear.module/1.0
+name: demo
+version: "0.0.1"
+interfaces:
+  - name: Hello
+  - name: Hello`
+
+func TestInterfaceNameDuplicates(t *testing.T) {
+	var module Module
+	err := helper.ReadYamlFromString(duplicatesYAML, &module)
+	assert.NoError(t, err)
+	err = module.ResolveAll()
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
+}
+
+const duplicates2YAML = `schema: apigear.module/1.0
+name: demo
+version: "0.0.1"
+interfaces:
+  - name: Hello
+structs:
+  - name: Hello`
+
+func TestStructNameDuplicates(t *testing.T) {
+	var module Module
+	err := helper.ReadYamlFromString(duplicates2YAML, &module)
+	assert.NoError(t, err)
+	err = module.ResolveAll()
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
+}
+
+const duplicates3YAML = `schema: apigear.module/1.0
+name: demo
+version: "0.0.1"
+interfaces:
+  - name: Hello
+enums:
+  - name: Hello
+`
+
+func TestEnumNameDuplicates(t *testing.T) {
+	var module Module
+	err := helper.ReadYamlFromString(duplicates3YAML, &module)
+	assert.NoError(t, err)
+	err = module.ResolveAll()
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
 }

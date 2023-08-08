@@ -12,6 +12,13 @@ var (
 	logger zerolog.Logger
 )
 
+type UUIDHook struct {
+}
+
+func (h UUIDHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
+	e.Str("id", helper.NewUUID())
+}
+
 func init() {
 	level := zerolog.InfoLevel
 	debug := os.Getenv("DEBUG") == "1"
@@ -29,7 +36,8 @@ func init() {
 		NewEventLogWriter(),
 		newRollingFile(logFile),
 	)
-	logger = zerolog.New(multi).With().Timestamp().Logger().Level(level)
+	logger = zerolog.New(multi).
+		With().Timestamp().Logger().Hook(&UUIDHook{}).Level(level)
 
 	if verbose {
 		logger = logger.With().Caller().Logger()

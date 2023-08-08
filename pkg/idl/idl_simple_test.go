@@ -8,7 +8,7 @@ import (
 )
 
 func TestSimpleProps(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -39,7 +39,7 @@ func TestSimpleProps(t *testing.T) {
 }
 
 func TestSimpleFuncs(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -75,7 +75,7 @@ func TestSimpleFuncs(t *testing.T) {
 }
 
 func TestSimpleSignals(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -110,7 +110,7 @@ func TestSimpleSignals(t *testing.T) {
 }
 
 func TestSimpleArrayProps(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -142,7 +142,7 @@ func TestSimpleArrayProps(t *testing.T) {
 }
 
 func TestSimpleArrayFuncs(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string
@@ -179,7 +179,7 @@ func TestSimpleArrayFuncs(t *testing.T) {
 }
 
 func TestSimpleArraySignals(t *testing.T) {
-	s, err := loadIdl("simple", []string{"./testdata/simple.idl"})
+	s, err := LoadIdlFromFiles("simple", []string{"./testdata/simple.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName string

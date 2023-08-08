@@ -7,7 +7,7 @@ import (
 )
 
 func TestDataProps(t *testing.T) {
-	s, err := loadIdl("data", []string{"./testdata/data.idl"})
+	s, err := LoadIdlFromFiles("data", []string{"./testdata/data.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName   string
@@ -44,7 +44,7 @@ func TestDataProps(t *testing.T) {
 }
 
 func TestDataFuncs(t *testing.T) {
-	s, err := loadIdl("data", []string{"./testdata/data.idl"})
+	s, err := LoadIdlFromFiles("data", []string{"./testdata/data.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName   string
@@ -84,7 +84,7 @@ func TestDataFuncs(t *testing.T) {
 }
 
 func TestDataSignals(t *testing.T) {
-	s, err := loadIdl("data", []string{"./testdata/data.idl"})
+	s, err := LoadIdlFromFiles("data", []string{"./testdata/data.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		iName   string
@@ -124,7 +124,7 @@ func TestDataSignals(t *testing.T) {
 }
 
 func TestStructs(t *testing.T) {
-	s, err := loadIdl("structs", []string{"./testdata/data.idl"})
+	s, err := LoadIdlFromFiles("structs", []string{"./testdata/data.idl"})
 	assert.NoError(t, err)
 	table := []struct {
 		sName string
