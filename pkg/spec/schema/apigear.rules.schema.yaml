@@ -68,15 +68,15 @@ definitions:
     properties:
       name:
         type: string
-        description: Name of the feature. This is used to enable/disable the feature on the command line. All features are enabled by default. Features must be lowercase and only contain letters.
-        pattern: "^[a-z]+$"
+        description: Name of the feature. This is used to enable/disable the feature on the command line. All features are enabled by default. Features must be lowercase and start with a letter, they can contain letters, numbers, hyphens and underscores.
+        pattern: "^[a-z][a-z0-9-_]*$"
       requires:
         type: array
         description: Requires defines a list of features which must be run before this feature can be used.
         items:
           type: string
-          description: name of the feature which must be run before this feature can be used.
-          pattern: "^[a-z]+$"
+          description: Name of the feature which must be run before this feature can be used.
+          pattern: "^[a-z][a-z0-9-_]*$"
       path:
         description: Path defines the path where the documents will be written to. It is a template which can be evaluated in the given context.
         type: string
