@@ -6,7 +6,9 @@ import (
 )
 
 func ConfigDir() string {
+	rw.RLock()
 	file := v.ConfigFileUsed()
+	rw.RUnlock()
 	return filepath.Dir(file)
 }
 
@@ -27,8 +29,15 @@ func AppendRecentEntry(value string) error {
 	}
 	// prepend the new value
 	recent = append([]string{value}, recent...)
+
+	rw.Lock()
 	v.Set(KeyRecent, recent)
-	return v.WriteConfig()
+	err := v.WriteConfig()
+	rw.Unlock()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RemoveRecentEntry removes a recent entry from the list
@@ -40,13 +49,24 @@ func RemoveRecentEntry(value string) error {
 			break
 		}
 	}
+	rw.Lock()
 	v.Set(KeyRecent, recent)
-	return v.WriteConfig()
+	err := v.WriteConfig()
+	rw.Unlock()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RecentEntries returns the list of recent entries
 func RecentEntries() []string {
+	rw.RLock()
 	items := v.GetStringSlice(KeyRecent)
+	rw.RUnlock()
+	if len(items) == 0 {
+		return []string{}
+	}
 	if len(items) > 5 {
 		return items[len(items)-5:]
 	}
@@ -54,49 +74,68 @@ func RecentEntries() []string {
 }
 
 func SetBuildInfo(version, commit, date string) {
+	rw.Lock()
 	v.Set(KeyVersion, version)
 	v.Set(KeyCommit, commit)
 	v.Set(KeyDate, date)
 	err := v.WriteConfig()
+	rw.Unlock()
 	if err != nil {
 		log.Printf("error writing config: %v", err)
 	}
 }
 
 func IsSet(key string) bool {
-	return v.IsSet(key)
+	rw.RLock()
+	result := v.IsSet(key)
+	rw.RUnlock()
+	return result
 }
 
 func Set(key string, value any) {
+	rw.Lock()
 	v.Set(key, value)
+	rw.Unlock()
 }
 
 func Get(key string) any {
-	return v.Get(key)
+	rw.RLock()
+	result := v.Get(key)
+	rw.RUnlock()
+	return result
 }
 
 func GetString(key string) string {
-	return v.GetString(key)
+	rw.RLock()
+	result := v.GetString(key)
+	rw.RUnlock()
+	return result
 }
 
 func WriteConfig() error {
-	return v.WriteConfig()
+	rw.Lock()
+	err := v.WriteConfig()
+	rw.Unlock()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func EditorCommand() string {
-	return v.GetString(KeyEditorCommand)
+	return GetString(KeyEditorCommand)
 }
 
 func ServerPort() string {
-	return v.GetString(KeyServerPort)
+	return GetString(KeyServerPort)
 }
 
 func UpdateChannel() string {
-	return v.GetString(KeyUpdateChannel)
+	return GetString(KeyUpdateChannel)
 }
 
 func RegistryDir() string {
-	return v.GetString(KeyRegistryDir)
+	return GetString(KeyRegistryDir)
 }
 
 func RegistryCachePath() string {
@@ -104,29 +143,35 @@ func RegistryCachePath() string {
 }
 
 func AllSettings() map[string]interface{} {
-	return v.AllSettings()
+	rw.RLock()
+	result := v.AllSettings()
+	rw.RUnlock()
+	return result
 }
 
 func ConfigFileUsed() string {
-	return v.ConfigFileUsed()
+	rw.RLock()
+	result := v.ConfigFileUsed()
+	rw.RUnlock()
+	return result
 }
 
 func CacheDir() string {
-	return v.GetString(KeyCacheDir)
+	return GetString(KeyCacheDir)
 }
 
 func RegistryUrl() string {
-	return v.GetString(KeyRegistryUrl)
+	return GetString(KeyRegistryUrl)
 }
 
 func BuildVersion() string {
-	return v.GetString(KeyVersion)
+	return GetString(KeyVersion)
 }
 
 func BuildDate() string {
-	return v.GetString(KeyDate)
+	return GetString(KeyDate)
 }
 
 func BuildCommit() string {
-	return v.GetString(KeyCommit)
+	return GetString(KeyCommit)
 }

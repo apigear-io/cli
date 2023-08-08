@@ -4,20 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"time"
 )
 
 var (
-	eventEmitter func(*ReportEvent)
+	eventEmitter func(e map[string]interface{})
 	bytesEmitter func(s string)
 )
-
-type ReportEvent struct {
-	Level     string    `json:"level"`
-	Message   string    `json:"message"`
-	Timestamp time.Time `json:"timestamp"`
-	Error     string    `json:"error,omitempty"`
-}
 
 type EventLogWriter struct {
 }
@@ -31,19 +23,20 @@ func (w *EventLogWriter) Write(p []byte) (n int, err error) {
 		bytesEmitter(string(p))
 	}
 	if eventEmitter != nil {
-		var event ReportEvent
+		event := map[string]interface{}{}
 		d := json.NewDecoder(bytes.NewReader(p))
 		d.UseNumber()
 		err = d.Decode(&event)
 		if err != nil {
 			return 0, err
 		}
-		eventEmitter(&event)
+		// event["id"] = uuid.New().String()
+		eventEmitter(event)
 	}
 	return len(p), nil
 }
 
-func OnReportEvent(handler func(*ReportEvent)) {
+func OnReportEvent(handler func(e map[string]interface{})) {
 	eventEmitter = handler
 }
 
