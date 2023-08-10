@@ -13,6 +13,9 @@ func Clone(src string, dst string) error {
 		URL:  src,
 		Auth: auth(),
 	})
+	if err == git.NoErrAlreadyUpToDate {
+		return nil
+	}
 	return err
 }
 

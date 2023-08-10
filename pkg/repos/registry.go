@@ -158,9 +158,13 @@ func (r *registry) Reset() error {
 	log.Info().Msgf("resetting registry %s", r.RegistryDir)
 	err := helper.RemoveDir(r.RegistryDir)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to reset registry: %s", err)
 	}
-	return git.CloneOrPull(r.RegistryURL, r.RegistryDir)
+	err = git.CloneOrPull(r.RegistryURL, r.RegistryDir)
+	if err != nil {
+		return fmt.Errorf("failed to clone registry: %s", err)
+	}
+	return nil
 }
 
 func (r *registry) FixRepoId(repoID string) (string, error) {
