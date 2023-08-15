@@ -13,19 +13,19 @@ func TestParam(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "propBool", "propBool: bool"},
-		{"test", "Test1", "propInt", "propInt: i32"},
-		{"test", "Test1", "propInt32", "propInt32: i32"},
-		{"test", "Test1", "propInt64", "propInt64: i64"},
-		{"test", "Test1", "propFloat", "propFloat: f32"},
-		{"test", "Test1", "propFloat32", "propFloat32: f32"},
-		{"test", "Test1", "propFloat64", "propFloat64: f64"},
-		{"test", "Test1", "propString", "propString: &String"},
-		{"test", "Test1", "propBoolArray", "propBoolArray: &[bool]"},
-		{"test", "Test1", "propIntArray", "propIntArray: &[i32]"},
-		{"test", "Test1", "propFloatArray", "propFloatArray: &[f32]"},
-		{"test", "Test1", "propStringArray", "propStringArray: &[String]"},
-		{"test", "Test1", "prop_Bool", "prop_Bool: bool"},
+		{"test", "Test1", "propBool", "prop_bool: bool"},
+		{"test", "Test1", "propInt", "prop_int: i32"},
+		{"test", "Test1", "propInt32", "prop_int32: i32"},
+		{"test", "Test1", "propInt64", "prop_int64: i64"},
+		{"test", "Test1", "propFloat", "prop_float: f32"},
+		{"test", "Test1", "propFloat32", "prop_float32: f32"},
+		{"test", "Test1", "propFloat64", "prop_float64: f64"},
+		{"test", "Test1", "propString", "prop_string: &String"},
+		{"test", "Test1", "propBoolArray", "prop_bool_array: &[bool]"},
+		{"test", "Test1", "propIntArray", "prop_int_array: &[i32]"},
+		{"test", "Test1", "propFloatArray", "prop_float_array: &[f32]"},
+		{"test", "Test1", "propStringArray", "prop_string_array: &[String]"},
+		{"test", "Test1", "prop_Bool", "prop_bool: bool"},
 		{"test", "Test1", "prop_bool", "prop_bool: bool"},
 		{"test", "Test1", "prop_1", "prop_1: bool"},
 	}
@@ -50,12 +50,12 @@ func TestParamSymbols(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test2", "propEnum", "propEnum: Enum1Enum"},
-		{"test", "Test2", "propStruct", "propStruct: &Struct1"},
-		{"test", "Test2", "propInterface", "propInterface: &Interface1"},
-		{"test", "Test2", "propEnumArray", "propEnumArray: &[Enum1Enum]"},
-		{"test", "Test2", "propStructArray", "propStructArray: &[Struct1]"},
-		{"test", "Test2", "propInterfaceArray", "propInterfaceArray: &[&Interface1]"},
+		{"test", "Test2", "propEnum", "prop_enum: Enum1Enum"},
+		{"test", "Test2", "propStruct", "prop_struct: &Struct1"},
+		{"test", "Test2", "propInterface", "prop_interface: &Interface1"},
+		{"test", "Test2", "propEnumArray", "prop_enum_array: &[Enum1Enum]"},
+		{"test", "Test2", "propStructArray", "prop_struct_array: &[Struct1]"},
+		{"test", "Test2", "propInterfaceArray", "prop_interface_array: &[&Interface1]"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
