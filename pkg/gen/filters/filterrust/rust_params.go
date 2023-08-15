@@ -19,5 +19,5 @@ func rustParams(prefix string, nodes []*model.TypedNode) (string, error) {
 		}
 		params = append(params, r)
 	}
-	return strings.Join(params, ", "), nil
+	return strings.Join(params, ",\n"), nil
 }
