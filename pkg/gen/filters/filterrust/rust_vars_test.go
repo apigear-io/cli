@@ -25,7 +25,7 @@ func TestVars(t *testing.T) {
 		{"test", "Test3", "opIntArray", "param1"},
 		{"test", "Test3", "opFloatArray", "param1"},
 		{"test", "Test3", "opStringArray", "param1"},
-		{"test", "Test3", "op_Bool", "param_Bool"},
+		{"test", "Test3", "op_Bool", "param_bool"},
 		{"test", "Test3", "op_bool", "param_bool"},
 		{"test", "Test3", "op_1", "param_1"},
 	}

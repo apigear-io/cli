@@ -29,7 +29,7 @@ func TestParams(t *testing.T) {
 		{"test", "Test3", "opFloat32Array", "param1: &[f32]"},
 		{"test", "Test3", "opFloat64Array", "param1: &[f64]"},
 		{"test", "Test3", "opStringArray", "param1: &[String]"},
-		{"test", "Test3", "op_Bool", "param_Bool: bool"},
+		{"test", "Test3", "op_Bool", "param_bool: bool"},
 		{"test", "Test3", "op_bool", "param_bool: bool"},
 		{"test", "Test3", "op_1", "param_1: bool"},
 	}
