@@ -20,7 +20,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	}
 	switch t {
 	case "string":
-		return fmt.Sprintf("%s: &String", common.SnakeCaseLower(name)), nil
+		return fmt.Sprintf("%s: &str", common.SnakeCaseLower(name)), nil
 	case "int":
 		return fmt.Sprintf("%s: i32", common.SnakeCaseLower(name)), nil
 	case "int32":
