@@ -20,7 +20,7 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propFloat", "prop_float: f32"},
 		{"test", "Test1", "propFloat32", "prop_float32: f32"},
 		{"test", "Test1", "propFloat64", "prop_float64: f64"},
-		{"test", "Test1", "propString", "prop_string: &String"},
+		{"test", "Test1", "propString", "prop_string: &str"},
 		{"test", "Test1", "propBoolArray", "prop_bool_array: &[bool]"},
 		{"test", "Test1", "propIntArray", "prop_int_array: &[i32]"},
 		{"test", "Test1", "propFloatArray", "prop_float_array: &[f32]"},
