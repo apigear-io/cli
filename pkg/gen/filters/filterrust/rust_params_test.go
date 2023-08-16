@@ -39,7 +39,7 @@ func TestParams(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, meth)
-				r, err := rustParams("", meth.Params)
+				r, err := rustParams("", ", ", meth.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -67,7 +67,7 @@ func TestParamsSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", op.Params)
+				r, err := rustParams("", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -82,13 +82,13 @@ func TestParamsMultiple(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test5", "opBoolBool", "param1: bool,\nparam2: bool"},
-		{"test", "Test5", "opIntInt", "param1: i32,\nparam2: i32"},
-		{"test", "Test5", "opFloatFloat", "param1: f32,\nparam2: f32"},
-		{"test", "Test5", "opStringString", "param1: &str,\nparam2: &str"},
-		{"test", "Test5", "opEnumEnum", "param1: Enum1Enum,\nparam2: Enum1Enum"},
-		{"test", "Test5", "opStructStruct", "param1: &Struct1,\nparam2: &Struct1"},
-		{"test", "Test5", "opInterfaceInterface", "param1: &Interface1,\nparam2: &Interface1"},
+		{"test", "Test5", "opBoolBool", "param1: bool, param2: bool"},
+		{"test", "Test5", "opIntInt", "param1: i32, param2: i32"},
+		{"test", "Test5", "opFloatFloat", "param1: f32, param2: f32"},
+		{"test", "Test5", "opStringString", "param1: &str, param2: &str"},
+		{"test", "Test5", "opEnumEnum", "param1: Enum1Enum, param2: Enum1Enum"},
+		{"test", "Test5", "opStructStruct", "param1: &Struct1, param2: &Struct1"},
+		{"test", "Test5", "opInterfaceInterface", "param1: &Interface1, param2: &Interface1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -96,7 +96,7 @@ func TestParamsMultiple(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", op.Params)
+				r, err := rustParams("", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
