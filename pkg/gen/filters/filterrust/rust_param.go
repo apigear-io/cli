@@ -16,7 +16,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
-		return fmt.Sprintf("%s: &[%s]", common.SnakeCaseLower(name), ret), nil
+		return fmt.Sprintf("%s: &Vec<%s>", common.SnakeCaseLower(name), ret), nil
 	}
 	switch t {
 	case "string":
