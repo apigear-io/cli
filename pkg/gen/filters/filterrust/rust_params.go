@@ -7,7 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func rustParams(prefix string, nodes []*model.TypedNode) (string, error) {
+func rustParams(prefix string, separator string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("rustParams called with nil nodes")
 	}
@@ -19,5 +19,5 @@ func rustParams(prefix string, nodes []*model.TypedNode) (string, error) {
 		}
 		params = append(params, r)
 	}
-	return strings.Join(params, ",\n"), nil
+	return strings.Join(params, separator), nil
 }
