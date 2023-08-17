@@ -13,7 +13,7 @@ func rustParams(prefix string, separator string, nodes []*model.TypedNode) (stri
 	}
 	var params []string
 	for _, p := range nodes {
-		r, err := ToParamString(prefix, &p.Schema, p.Name)
+		r, err := ToParamString(prefix, &p.Schema, p)
 		if err != nil {
 			return "xxx", err
 		}
