@@ -7,13 +7,13 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToVarString(node *model.TypedNode) (string, error) {
+func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("ToVarString node is nil")
 	}
-	return common.SnakeCaseLower(node.Name), nil
+	return fmt.Sprintf("%s%s", prefix, common.SnakeCaseLower(node.Name)), nil
 }
 
-func rustVar(node *model.TypedNode) (string, error) {
-	return ToVarString(node)
+func rustVar(prefix string, node *model.TypedNode) (string, error) {
+	return ToVarString(prefix, node)
 }

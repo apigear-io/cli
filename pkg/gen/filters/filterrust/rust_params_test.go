@@ -39,7 +39,7 @@ func TestParams(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, meth)
-				r, err := rustParams("", ", ", meth.Params)
+				r, err := rustParams("", "", ", ", meth.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -67,7 +67,7 @@ func TestParamsSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", ", ", op.Params)
+				r, err := rustParams("", "", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -96,7 +96,36 @@ func TestParamsMultiple(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", ", ", op.Params)
+				r, err := rustParams("", "", ", ", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestParamsMultiplePrefixVarName(t *testing.T) {
+	table := []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test5", "opBoolBool", "_param1: bool, _param2: bool"},
+		{"test", "Test5", "opIntInt", "_param1: i32, _param2: i32"},
+		{"test", "Test5", "opFloatFloat", "_param1: f32, _param2: f32"},
+		{"test", "Test5", "opStringString", "_param1: &str, _param2: &str"},
+		{"test", "Test5", "opEnumEnum", "_param1: Enum1Enum, _param2: Enum1Enum"},
+		{"test", "Test5", "opStructStruct", "_param1: &Struct1, _param2: &Struct1"},
+		{"test", "Test5", "opInterfaceInterface", "_param1: &Interface1, _param2: &Interface1"},
+	}
+	syss := loadTestSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := rustParams("_", "", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
