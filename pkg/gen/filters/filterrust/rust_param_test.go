@@ -21,10 +21,10 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propFloat32", "prop_float32: f32"},
 		{"test", "Test1", "propFloat64", "prop_float64: f64"},
 		{"test", "Test1", "propString", "prop_string: &str"},
-		{"test", "Test1", "propBoolArray", "prop_bool_array: &Vec<bool>"},
-		{"test", "Test1", "propIntArray", "prop_int_array: &Vec<i32>"},
-		{"test", "Test1", "propFloatArray", "prop_float_array: &Vec<f32>"},
-		{"test", "Test1", "propStringArray", "prop_string_array: &Vec<String>"},
+		{"test", "Test1", "propBoolArray", "prop_bool_array: &[bool]"},
+		{"test", "Test1", "propIntArray", "prop_int_array: &[i32]"},
+		{"test", "Test1", "propFloatArray", "prop_float_array: &[f32]"},
+		{"test", "Test1", "propStringArray", "prop_string_array: &[String]"},
 		{"test", "Test1", "prop_Bool", "prop_bool: bool"},
 		{"test", "Test1", "prop_bool", "prop_bool: bool"},
 		{"test", "Test1", "prop_1", "prop_1: bool"},
@@ -53,9 +53,9 @@ func TestParamSymbols(t *testing.T) {
 		{"test", "Test2", "propEnum", "prop_enum: Enum1Enum"},
 		{"test", "Test2", "propStruct", "prop_struct: &Struct1"},
 		{"test", "Test2", "propInterface", "prop_interface: &Interface1"},
-		{"test", "Test2", "propEnumArray", "prop_enum_array: &Vec<Enum1Enum>"},
-		{"test", "Test2", "propStructArray", "prop_struct_array: &Vec<Struct1>"},
-		{"test", "Test2", "propInterfaceArray", "prop_interface_array: &Vec<&Interface1>"},
+		{"test", "Test2", "propEnumArray", "prop_enum_array: &[Enum1Enum]"},
+		{"test", "Test2", "propStructArray", "prop_struct_array: &[Struct1]"},
+		{"test", "Test2", "propInterfaceArray", "prop_interface_array: &[&Interface1]"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
