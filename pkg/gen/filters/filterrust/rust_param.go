@@ -19,7 +19,7 @@ func ToParamString(prefixVarName string, prefixComplexType string, schema *model
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
-		return fmt.Sprintf("%s: &Vec<%s>", name, ret), nil
+		return fmt.Sprintf("%s: &[%s]", name, ret), nil
 	}
 	switch t {
 	case "string":
