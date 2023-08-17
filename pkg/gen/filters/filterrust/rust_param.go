@@ -6,7 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToParamString(prefix string, schema *model.Schema, node *model.TypedNode) (string, error) {
+func ToParamString(prefixComplexType string, schema *model.Schema, node *model.TypedNode) (string, error) {
 	t := schema.Type
 	name, err := ToVarString(node)
 	if err != nil {
@@ -15,7 +15,7 @@ func ToParamString(prefix string, schema *model.Schema, node *model.TypedNode) (
 	if schema.IsArray {
 		inner := *schema
 		inner.IsArray = false
-		ret, err := ToReturnString(prefix, &inner)
+		ret, err := ToReturnString(prefixComplexType, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
@@ -54,9 +54,9 @@ func ToParamString(prefix string, schema *model.Schema, node *model.TypedNode) (
 	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
 }
 
-func rustParam(prefix string, node *model.TypedNode) (string, error) {
+func rustParam(prefixComplexType string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rustParam node is nil")
 	}
-	return ToParamString(prefix, &node.Schema, node)
+	return ToParamString(prefixComplexType, &node.Schema, node)
 }
