@@ -6,7 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func ToReturnString(prefix string, schema *model.Schema) (string, error) {
+func ToReturnString(prefixComplexType string, schema *model.Schema) (string, error) {
 	t := schema.Type
 	text := ""
 	switch t {
@@ -34,15 +34,15 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
+			text = fmt.Sprintf("%s%sEnum", prefixComplexType, e.Name)
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {
-			text = fmt.Sprintf("%s%s", prefix, s.Name)
+			text = fmt.Sprintf("%s%s", prefixComplexType, s.Name)
 		}
 		i := schema.Module.LookupInterface(t)
 		if i != nil {
-			text = fmt.Sprintf("&%s%s", prefix, i.Name)
+			text = fmt.Sprintf("&%s%s", prefixComplexType, i.Name)
 		}
 	}
 	if schema.IsArray {
@@ -52,9 +52,9 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 }
 
 // cast value to TypedNode and deduct the rust return type
-func rustReturn(prefix string, node *model.TypedNode) (string, error) {
+func rustReturn(prefixComplexType string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rustReturn node is nil")
 	}
-	return ToReturnString(prefix, &node.Schema)
+	return ToReturnString(prefixComplexType, &node.Schema)
 }
