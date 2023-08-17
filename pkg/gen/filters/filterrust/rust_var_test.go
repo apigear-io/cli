@@ -38,7 +38,7 @@ func TestVar(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVar(prop)
+				r, err := rustVar("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -66,7 +66,35 @@ func TestVarSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVar(prop)
+				r, err := rustVar("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestVarSymbolsPrefixVarName(t *testing.T) {
+	syss := loadTestSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test2", "propEnum", "_prop_enum"},
+		{"test", "Test2", "propStruct", "_prop_struct"},
+		{"test", "Test2", "propInterface", "_prop_interface"},
+		{"test", "Test2", "propEnumArray", "_prop_enum_array"},
+		{"test", "Test2", "propStructArray", "_prop_struct_array"},
+		{"test", "Test2", "propInterfaceArray", "_prop_interface_array"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := rustVar("_", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
