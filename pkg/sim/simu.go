@@ -8,7 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/spec"
 )
 
-// Simulate runs one or more simulation scenarios.
+// Simulation runs one or more simulation scenarios.
 // To unload a scenario call the Stop operation with the scenario name.
 // To stop all scenarios call the StopAll operation.
 // A scenario can simulation properties, operations and signals using static values or scripted behavior.

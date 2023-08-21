@@ -5,7 +5,7 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-// GetLatestTagFromRepo returns the latest tag and a list of all tags from a repo
+// GetTagsFromRemote returns the latest tag and a list of all tags from a repo
 func GetTagsFromRemote(remote *git.Remote) (VersionInfo, VersionCollection, error) {
 	refs, err := remote.List(&git.ListOptions{Auth: auth()})
 	if err != nil {
