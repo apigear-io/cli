@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIntToWordLower(t *testing.T) {
@@ -130,6 +131,27 @@ func TestAbbreviate(t *testing.T) {
 			if got := helper.Abbreviate(tt.in); got != tt.out {
 				t.Errorf("Abbreviate(%q) = %q, want %q", tt.in, got, tt.out)
 			}
+		})
+	}
+}
+
+func TestSort(t *testing.T) {
+	var tests = []struct {
+		in  []string
+		out []string
+	}{
+		{nil, nil},
+		{[]string{}, []string{}},
+		{[]string{"foo"}, []string{"foo"}},
+		{[]string{"foo", "bar"}, []string{"bar", "foo"}},
+		{[]string{"foo", "bar", "baz"}, []string{"bar", "baz", "foo"}},
+		{[]string{"foo", "bar", "baz", "qux"}, []string{"bar", "baz", "foo", "qux"}},
+	}
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			got, err := Sort(tt.in)
+			assert.NoError(t, err)
+			assert.ElementsMatch(t, tt.out, got)
 		})
 	}
 }

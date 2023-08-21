@@ -2,6 +2,8 @@ package common
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
 
 	"github.com/ettle/strcase"
 	"github.com/gertd/go-pluralize"
@@ -44,4 +46,43 @@ func Pluralize(s string, i int) string {
 		return s
 	}
 	return plural.Plural(s)
+}
+
+func Sort(in any) ([]any, error) {
+	items, err := ConvertInterfaceToSlice(in)
+	if err != nil {
+		return nil, err
+	}
+	if len(items) == 0 {
+		return items, nil
+	}
+	out := make([]any, len(items))
+	copy(out, items)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].(string) < out[j].(string)
+	})
+	return out, nil
+}
+
+func ConvertInterfaceToSlice(input any) ([]any, error) {
+	if input == nil {
+		return nil, nil
+	}
+	items, ok := input.([]any)
+	if ok {
+		return items, nil
+	}
+	i := reflect.ValueOf(input)
+	k := i.Kind()
+	switch k {
+	case reflect.Slice, reflect.Array:
+		items = make([]any, i.Len())
+		for j := 0; j < i.Len(); j++ {
+			items[j] = i.Index(j).Interface()
+		}
+		return items, nil
+	default:
+		return nil, fmt.Errorf("expected []any, got %T", input)
+	}
+
 }
