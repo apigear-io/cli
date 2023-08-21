@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -170,4 +171,40 @@ func (m *Module) ResolveAll() error {
 		}
 	}
 	return nil
+}
+
+func (m *Module) SortedImports() []*Import {
+	out := make([]*Import, len(m.Imports))
+	copy(out, m.Imports)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
+}
+
+func (m *Module) SortedInterfaces() []*Interface {
+	out := make([]*Interface, len(m.Interfaces))
+	copy(out, m.Interfaces)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
+}
+
+func (m *Module) SortedStructs() []*Struct {
+	out := make([]*Struct, len(m.Structs))
+	copy(out, m.Structs)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
+}
+
+func (m *Module) SortedEnums() []*Enum {
+	out := make([]*Enum, len(m.Enums))
+	copy(out, m.Enums)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
 }

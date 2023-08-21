@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -173,4 +176,31 @@ func (i Interface) NoSignals() bool {
 
 func (i Interface) NoMembers() bool {
 	return i.NoProperties() && i.NoOperations() && i.NoSignals()
+}
+
+func (i Interface) SortedProperties() []*TypedNode {
+	out := make([]*TypedNode, len(i.Properties))
+	copy(out, i.Properties)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
+}
+
+func (i Interface) SortedOperations() []*Operation {
+	out := make([]*Operation, len(i.Operations))
+	copy(out, i.Operations)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
+}
+
+func (i Interface) SortedSignals() []*Signal {
+	out := make([]*Signal, len(i.Signals))
+	copy(out, i.Signals)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Name < out[j].Name
+	})
+	return out
 }
