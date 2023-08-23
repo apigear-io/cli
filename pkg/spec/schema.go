@@ -110,6 +110,9 @@ func LoadSchema(t DocumentType) (gojsonschema.JSONLoader, error) {
 }
 
 func GetDocumentType(file string) (DocumentType, error) {
+	if filepath.Ext(file) == ".idl" {
+		return DocumentTypeModule, nil
+	}
 	base := filepath.Base(file)
 	t, err := DocumentTypeFromFileName(base)
 	if err != nil {
@@ -130,6 +133,9 @@ func GetDocumentType(file string) (DocumentType, error) {
 }
 
 func DocumentTypeFromFileName(fn string) (string, error) {
+	if filepath.Ext(fn) == ".idl" {
+		return "module", nil
+	}
 	if fn == "rules.yaml" {
 		return "rules", nil
 	}

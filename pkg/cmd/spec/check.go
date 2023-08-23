@@ -2,7 +2,6 @@ package spec
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/spec"
 
@@ -19,44 +18,17 @@ func NewCheckCommand() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var file = args[0]
-			switch filepath.Ext(file) {
-			case ".json", ".yaml":
-				result, err := spec.CheckFile(file)
-				if err != nil {
-					return err
+			spec, err := spec.CheckFile(file)
+			if err != nil {
+				return err
+			}
+			if spec.Valid() {
+				fmt.Printf("valid: %s\n", file)
+			} else {
+				for _, desc := range spec.Errors {
+					fmt.Printf("file: %s \n", file)
+					fmt.Println(desc.String())
 				}
-				if result.Valid() {
-					fmt.Printf("valid: %s\n", file)
-				} else {
-					for _, desc := range result.Errors {
-						fmt.Printf("file: %s \n", file)
-						fmt.Println(desc.String())
-
-					}
-				}
-			case ".csv":
-				err := spec.CheckCsvFile(file)
-				if err != nil {
-					return err
-				} else {
-					fmt.Printf("valid: %s\n", file)
-				}
-			case ".ndjson":
-				err := spec.CheckNdjsonFile(file)
-				if err != nil {
-					return err
-				} else {
-					fmt.Printf("valid: %s\n", file)
-				}
-			case ".idl":
-				err := spec.CheckIdlFile(file)
-				if err != nil {
-					return err
-				} else {
-					fmt.Printf("valid: %s\n", file)
-				}
-			default:
-				fmt.Printf("unknown file type %s", file)
 			}
 			return nil
 		},

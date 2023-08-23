@@ -56,6 +56,21 @@ func CheckFileAndType(file string, t DocumentType) (*Result, error) {
 }
 
 func CheckFile(file string) (*Result, error) {
+	switch filepath.Ext(file) {
+	case ".yaml", ".yml", ".json":
+		return checkSchemaFile(file)
+	case ".ndjson":
+		return checkNdjsonFile(file)
+	case ".csv":
+		return CheckCsvFile(file)
+	case ".idl":
+		return CheckIdlFile(file)
+	default:
+		return nil, fmt.Errorf("unsupported file type: %s", file)
+	}
+}
+
+func checkSchemaFile(file string) (*Result, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("error reading file: %w", err)
@@ -81,11 +96,11 @@ func CheckFile(file string) (*Result, error) {
 	return result, nil
 }
 
-func CheckNdjsonFile(name string) error {
+func checkNdjsonFile(name string) (*Result, error) {
 	// read file line by line with scanner
 	file, err := os.Open(name)
 	if err != nil {
-		return fmt.Errorf("open file %s: %w", name, err)
+		return nil, fmt.Errorf("open file %s: %w", name, err)
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
@@ -95,36 +110,40 @@ func CheckNdjsonFile(name string) error {
 		var event any
 		err := json.NewDecoder(bufio.NewReader(strings.NewReader(line))).Decode(&event)
 		if err != nil {
-			return fmt.Errorf("decode line %s: %w", line, err)
+			return nil, fmt.Errorf("decode line %s: %w", line, err)
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("read file %s: %w", name, err)
+		return nil, fmt.Errorf("read file %s: %w", name, err)
 	}
-	return nil
+	return &Result{}, nil
 }
 
-func CheckCsvFile(name string) error {
+func CheckCsvFile(name string) (*Result, error) {
 	// read file line by line using scanner
 	file, err := os.Open(name)
 	if err != nil {
-		return fmt.Errorf("open file %s: %w", name, err)
+		return nil, fmt.Errorf("open file %s: %w", name, err)
 	}
 	defer file.Close()
 	var data []any
 	err = gocsv.UnmarshalFile(file, &data)
 	if err != nil {
-		return fmt.Errorf("unmarshal file %s: %w", name, err)
+		return nil, fmt.Errorf("unmarshal file %s: %w", name, err)
 	}
-	return nil
+	return &Result{}, nil
 }
 
-func CheckIdlFile(name string) error {
+func CheckIdlFile(name string) (*Result, error) {
 	s := model.NewSystem("check")
 	parser := idl.NewParser(s)
 	err := parser.ParseFile(name)
 	if err != nil {
-		return fmt.Errorf("parse file %s: %w", name, err)
+		return nil, fmt.Errorf("parse file %s: %w", name, err)
 	}
-	return s.ResolveAll()
+	err = s.ResolveAll()
+	if err != nil {
+		return nil, fmt.Errorf("resolve file %s: %w", name, err)
+	}
+	return &Result{}, nil
 }

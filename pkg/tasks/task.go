@@ -16,10 +16,11 @@ type TaskFunc func(ctx context.Context) error
 // TaskItem is the task item stored in the TaskManager
 type TaskItem struct {
 	sync.RWMutex
-	name     string
-	meta     map[string]interface{}
-	taskFunc TaskFunc
-	cancel   context.CancelFunc
+	name        string
+	meta        map[string]interface{}
+	taskFunc    TaskFunc
+	cancel      context.CancelFunc
+	watchCancel context.CancelFunc
 }
 
 // NewTaskItem creates a new task item
@@ -53,6 +54,11 @@ func (t *TaskItem) Run(ctx context.Context) error {
 // Watch watches all the dependencies of the task and runs the task
 // it uses fsnotify to watch the files
 func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
+	if t.watchCancel != nil {
+		t.watchCancel()
+	}
+	ctx, t.watchCancel = context.WithCancel(ctx)
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Error().Msgf("error creating watcher: %s", err)
@@ -111,6 +117,13 @@ func (t *TaskItem) Cancel() {
 		return
 	}
 	t.cancel()
+}
+
+func (t *TaskItem) CancelWatch() {
+	if t.watchCancel == nil {
+		return
+	}
+	t.watchCancel()
 }
 
 // UpdateMeta updates the meta data of the task
