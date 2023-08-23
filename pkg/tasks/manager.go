@@ -132,6 +132,7 @@ func (tm *TaskManager) Cancel(name string) error {
 	if task == nil {
 		return ErrTaskNotFound
 	}
+	task.CancelWatch()
 	task.Cancel()
 	tm.Emit(NewTaskEvent(task, TaskStateStopped))
 	return nil

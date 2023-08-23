@@ -63,25 +63,15 @@ func (l *SolutionLayer) Validate() error {
 		}
 		// check inputs
 		for _, input := range l.expandedInputs {
-			switch helper.Ext(input) {
-			case ".yaml", ".yml", ".json":
-				result, err := CheckFile(input)
-				if err != nil {
-					return err
+			result, err := CheckFile(input)
+			if err != nil {
+				return err
+			}
+			if !result.Valid() {
+				for _, e := range result.Errors {
+					log.Warn().Msg(e.String())
 				}
-				if !result.Valid() {
-					for _, e := range result.Errors {
-						log.Warn().Msg(e.String())
-					}
-					return fmt.Errorf("layer %s: invalid file: %s", l.Name, input)
-				}
-			case ".idl":
-				err := CheckIdlFile(input)
-				if err != nil {
-					return err
-				}
-			default:
-				return fmt.Errorf("unknown type %s", input)
+				return fmt.Errorf("layer %s: invalid file: %s", l.Name, input)
 			}
 		}
 	}
