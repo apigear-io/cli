@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -48,10 +48,10 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	return text, nil
 }
 
-// rustDefault returns the default value for a type
-func rustDefault(prefix string, node *model.TypedNode) (string, error) {
+// rsDefault returns the default value for a type
+func rsDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("rustDefault node is nil")
+		return "xxx", fmt.Errorf("rsDefault node is nil")
 	}
 	return ToDefaultString(prefix, &node.Schema)
 }

@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -14,6 +14,6 @@ func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 	return fmt.Sprintf("%s%s", prefix, common.SnakeCaseLower(node.Name)), nil
 }
 
-func rustVar(prefix string, node *model.TypedNode) (string, error) {
+func rsVar(prefix string, node *model.TypedNode) (string, error) {
 	return ToVarString(prefix, node)
 }

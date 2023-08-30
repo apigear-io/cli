@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"testing"
@@ -39,7 +39,7 @@ func TestReturn(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustReturn("", prop)
+				r, err := rsReturn("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -74,7 +74,7 @@ func TestOperationReturn(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustReturn("", op.Return)
+				r, err := rsReturn("", op.Return)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -102,7 +102,7 @@ func TestReturnSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustReturn("", prop)
+				r, err := rsReturn("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})

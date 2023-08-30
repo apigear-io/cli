@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"testing"
@@ -38,7 +38,7 @@ func TestVar(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVar("", prop)
+				r, err := rsVar("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -66,7 +66,7 @@ func TestVarSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVar("", prop)
+				r, err := rsVar("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -94,7 +94,7 @@ func TestVarSymbolsPrefixVarName(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVar("_", prop)
+				r, err := rsVar("_", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})

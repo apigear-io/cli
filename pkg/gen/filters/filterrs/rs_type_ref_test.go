@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"testing"
@@ -36,7 +36,7 @@ func TestTypeRef(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustTypeRef("", prop)
+				r, err := rsTypeRef("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -64,7 +64,7 @@ func TestTypeRefSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustTypeRef("", prop)
+				r, err := rsTypeRef("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})

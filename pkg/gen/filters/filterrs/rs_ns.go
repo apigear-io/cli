@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-// cast value to module and concate module name to rust open namespaces
+// cast value to module and concate module name to rs open namespaces
 func nsOpen(node reflect.Value) (reflect.Value, error) {
 	module := node.Interface().(*model.Module)
 	if module == nil {
@@ -22,7 +22,7 @@ func nsOpen(node reflect.Value) (reflect.Value, error) {
 	return reflect.ValueOf(result), nil
 }
 
-// cast value to module and concate module name to rust closing namespaces
+// cast value to module and concate module name to rs closing namespaces
 func nsClose(node reflect.Value) (reflect.Value, error) {
 	module := node.Interface().(*model.Module)
 	if module == nil {
@@ -39,7 +39,7 @@ func nsClose(node reflect.Value) (reflect.Value, error) {
 	return reflect.ValueOf(result), nil
 }
 
-// ns is a filter that concate module name to rust namespaces
+// ns is a filter that concate module name to rs namespaces
 func ns(node reflect.Value) (reflect.Value, error) {
 	module := node.Interface().(*model.Module)
 	if module == nil {
