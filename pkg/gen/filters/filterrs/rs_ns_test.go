@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"reflect"

@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -51,10 +51,10 @@ func ToReturnString(prefixComplexType string, schema *model.Schema) (string, err
 	return text, nil
 }
 
-// cast value to TypedNode and deduct the rust return type
-func rustReturn(prefixComplexType string, node *model.TypedNode) (string, error) {
+// cast value to TypedNode and deduct the rs return type
+func rsReturn(prefixComplexType string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("rustReturn node is nil")
+		return "xxx", fmt.Errorf("rsReturn node is nil")
 	}
 	return ToReturnString(prefixComplexType, &node.Schema)
 }

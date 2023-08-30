@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -54,9 +54,9 @@ func ToParamString(prefixVarName string, prefixComplexType string, schema *model
 	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
 }
 
-func rustParam(prefixVarName string, prefixComplexType string, node *model.TypedNode) (string, error) {
+func rsParam(prefixVarName string, prefixComplexType string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("rustParam node is nil")
+		return "xxx", fmt.Errorf("rsParam node is nil")
 	}
 	return ToParamString(prefixVarName, prefixComplexType, &node.Schema, node)
 }

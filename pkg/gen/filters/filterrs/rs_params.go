@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func rustParams(prefixVarName string, prefixComplexType string, separator string, nodes []*model.TypedNode) (string, error) {
+func rsParams(prefixVarName string, prefixComplexType string, separator string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "xxx", fmt.Errorf("rustParams called with nil nodes")
+		return "xxx", fmt.Errorf("rsParams called with nil nodes")
 	}
 	var params []string
 	for _, p := range nodes {

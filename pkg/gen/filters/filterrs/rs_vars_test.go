@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"testing"
@@ -35,7 +35,7 @@ func TestVars(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, meth)
-				r, err := rustVars("", meth.Params)
+				r, err := rsVars("", meth.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -64,7 +64,7 @@ func TestVarsSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVars("", prop.Params)
+				r, err := rsVars("", prop.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -93,7 +93,7 @@ func TestVarsMultiple(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVars("", prop.Params)
+				r, err := rsVars("", prop.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -122,7 +122,7 @@ func TestVarsMultiplePrefixVarName(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				prop := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, prop)
-				r, err := rustVars("_", prop.Params)
+				r, err := rsVars("_", prop.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})

@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 )
 
-func rustVars(prefix string, nodes []*model.TypedNode) (string, error) {
+func rsVars(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("goNames called with nil nodes")
 	}

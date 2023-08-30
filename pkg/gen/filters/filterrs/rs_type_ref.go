@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"fmt"
@@ -57,10 +57,10 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	return text, nil
 }
 
-// cast value to TypedNode and deduct the rust return type
-func rustTypeRef(prefix string, node *model.TypedNode) (string, error) {
+// cast value to TypedNode and deduct the rs return type
+func rsTypeRef(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("rustTypeRef node is nil")
+		return "xxx", fmt.Errorf("rsTypeRef node is nil")
 	}
 	return ToTypeRefString(prefix, &node.Schema)
 }

@@ -1,4 +1,4 @@
-package filterrust
+package filterrs
 
 import (
 	"testing"
@@ -39,7 +39,7 @@ func TestParams(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				meth := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, meth)
-				r, err := rustParams("", "", ", ", meth.Params)
+				r, err := rsParams("", "", ", ", meth.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -67,7 +67,7 @@ func TestParamsSymbols(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", "", ", ", op.Params)
+				r, err := rsParams("", "", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -96,7 +96,7 @@ func TestParamsMultiple(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("", "", ", ", op.Params)
+				r, err := rsParams("", "", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
@@ -125,7 +125,7 @@ func TestParamsMultiplePrefixVarName(t *testing.T) {
 			t.Run(tt.pn, func(t *testing.T) {
 				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
 				assert.NotNil(t, op)
-				r, err := rustParams("_", "", ", ", op.Params)
+				r, err := rsParams("_", "", ", ", op.Params)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
 			})
