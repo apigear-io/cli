@@ -94,7 +94,12 @@ func OpenEditor(d string) error {
 		return fmt.Errorf("find editor %s: %s", editor, err)
 	}
 	cmd := exec.Command(path, d)
-	return cmd.Run()
+	err = cmd.Run()
+	if err != nil {
+		log.Error().Err(err).Msgf("run editor %s from %s", editor, path)
+		return fmt.Errorf("run editor %s: %s", editor, err)
+	}
+	return nil
 }
 
 func OpenStudio(d string) error {
