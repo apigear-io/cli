@@ -96,7 +96,7 @@ func (r *Runner) WatchDoc(ctx context.Context, file string, doc *spec.SolutionDo
 func (r *Runner) StopWatch(file string) {
 	err := r.tm.Cancel(file)
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to stop watch %s", file)
+		log.Warn().Err(err).Msgf("stop watch %s", file)
 	}
 }
 

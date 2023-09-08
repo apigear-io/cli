@@ -102,7 +102,7 @@ func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
 				log.Debug().Msgf("modified file: %s", event.Name)
 				err := t.Run(ctx)
 				if err != nil {
-					log.Debug().Err(err).Msg("task run error")
+					log.Error().Err(err).Msgf("failed to run task %s", t.name)
 				}
 			}
 		case err := <-watcher.Errors:
