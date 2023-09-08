@@ -105,6 +105,13 @@ func Get(key string) any {
 	return result
 }
 
+func GetInt(key string) int {
+	rw.RLock()
+	result := v.GetInt(key)
+	rw.RUnlock()
+	return result
+}
+
 func GetBool(key string) bool {
 	rw.RLock()
 	result := v.GetBool(key)

@@ -20,6 +20,8 @@ const (
 	KeyVersion       = "version"
 	KeyCommit        = "commit"
 	KeyDate          = "date"
+	KeyWindowHeight  = "window_height"
+	KeyWindowWidth   = "window_width"
 )
 
 const (
@@ -78,6 +80,8 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	nv.SetDefault(KeyEditorCommand, "code")
 	nv.SetDefault(KeyUpdateChannel, "stable")
 	nv.SetDefault(KeyVersion, "0.0.0")
+	nv.SetDefault(KeyWindowWidth, 960)
+	nv.SetDefault(KeyWindowHeight, 720)
 	// public repo token for github to avoid rate limit
 	nv.SetDefault(KeyCommit, "none")
 	nv.SetDefault(KeyDate, "unknown")
