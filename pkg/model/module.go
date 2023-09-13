@@ -1,6 +1,9 @@
 package model
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -68,6 +71,7 @@ type Module struct {
 	Interfaces []*Interface `json:"interfaces" yaml:"interfaces"`
 	Structs    []*Struct    `json:"structs" yaml:"structs"`
 	Enums      []*Enum      `json:"enums" yaml:"enums"`
+	Checksum   string       `json:"checksum" yaml:"checksum"`
 }
 
 func NewModule(n string, v string) *Module {
@@ -173,4 +177,48 @@ func (m *Module) Validate() error {
 		names[e.Name] = true
 	}
 	return nil
+}
+
+func (m *Module) ComputeChecksum() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(m.Name)
+	for _, i := range m.Interfaces {
+		buffer.WriteString(i.Name)
+		for _, o := range i.Operations {
+			buffer.WriteString(o.Name)
+			for _, p := range o.Params {
+				buffer.WriteString(p.Name)
+				buffer.WriteString(p.Type)
+			}
+			buffer.WriteString(o.Return.Type)
+		}
+		for _, p := range i.Properties {
+			buffer.WriteString(p.Name)
+			buffer.WriteString(p.Type)
+		}
+		for _, s := range i.Signals {
+			buffer.WriteString(s.Name)
+			for _, p := range s.Params {
+				buffer.WriteString(p.Name)
+				buffer.WriteString(p.Type)
+			}
+		}
+	}
+	for _, s := range m.Structs {
+		buffer.WriteString(s.Name)
+		for _, p := range s.Fields {
+			buffer.WriteString(p.Name)
+			buffer.WriteString(p.Type)
+		}
+	}
+	for _, e := range m.Enums {
+		buffer.WriteString(e.Name)
+		for _, p := range e.Members {
+			buffer.WriteString(p.Name)
+			buffer.WriteString(strconv.Itoa(p.Value))
+		}
+	}
+	sum := md5.Sum(buffer.Bytes())
+	m.Checksum = hex.EncodeToString(sum[:])
+	return m.Checksum
 }

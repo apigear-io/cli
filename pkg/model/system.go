@@ -1,14 +1,19 @@
 package model
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/spec/rkw"
 )
 
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
+	Checksum  string    `json:"checksum" yaml:"checksum"`
 }
 
 func NewSystem(name string) *System {
@@ -96,6 +101,8 @@ func (s *System) Validate() error {
 		names[m.Name] = true
 	}
 	s.ComputeIdentifier()
+	s.ComputeChecksum()
+	log.Info().Msgf("system %s resolved: %s", s.Name, s.Checksum)
 	return nil
 }
 
@@ -137,4 +144,14 @@ func (s *System) ComputeIdentifier() {
 			}
 		}
 	}
+}
+
+func (s *System) ComputeChecksum() {
+	var buffer bytes.Buffer
+	for _, m := range s.Modules {
+		sum := m.ComputeChecksum()
+		buffer.WriteString(sum)
+	}
+	sum := md5.Sum(buffer.Bytes())
+	s.Checksum = hex.EncodeToString(sum[:])
 }
