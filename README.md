@@ -1,7 +1,11 @@
 # ApiGear CLI
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/apigear-io/cli)](https://goreportcard.com/report/github.com/apigear-io/cli)
-[![Build Status](https://github.com/apigear-io/cli/actions/workflows/tests.yml//badge.svg)](https://github.com/apigear-io/cli/actions/workflows/tests.yml)
+
+[![Build Status](https://github.com/apigear-io/cli/actions/workflows/tests.yml/badge.svg)](https://github.com/apigear-io/cli/actions/workflows/tests.yml)
+
+[!Release Status](https://github.com/apigear-io/cli/actions/workflows/release.yml/badge.svg)](https://github.com/apigear-io/cli/actions/workflows/release.yml)
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/apigear-io/cli.svg)](https://pkg.go.dev/github.com/apigear-io/cli)
 
 The cli repo provides a command line application (cmd/apigear/main.go) and a set of packages (pkg) to access the ApiGear API. The go documentation is available at [pkg.go.dev](https://pkg.go.dev/github.com/apigear-io/cli).
