@@ -57,6 +57,7 @@ type IModuleProvider interface {
 // NamedNode is a base node with a name and a kind.
 // { "name": "foo", "kind": "interface" }
 type NamedNode struct {
+	Id          uint                   `json:"-" yaml:"-"` // internal id
 	Name        string                 `json:"name" yaml:"name"`
 	Kind        Kind                   `json:"kind" yaml:"kind"`
 	Description string                 `json:"description" yaml:"description"`

@@ -95,5 +95,46 @@ func (s *System) Validate() error {
 		}
 		names[m.Name] = true
 	}
+	s.ComputeIdentifier()
 	return nil
+}
+
+func (s *System) ComputeIdentifier() {
+	var idx uint = 1
+	for _, m := range s.Modules {
+		m.Id = idx
+		idx++
+		for _, i := range m.Interfaces {
+			i.Id = idx
+			idx++
+			for _, o := range i.Operations {
+				o.Id = idx
+				idx++
+			}
+			for _, p := range i.Properties {
+				p.Id = idx
+				idx++
+			}
+			for _, s := range i.Signals {
+				s.Id = idx
+				idx++
+			}
+		}
+		for _, s := range m.Structs {
+			s.Id = idx
+			idx++
+			for _, p := range s.Fields {
+				p.Id = idx
+				idx++
+			}
+		}
+		for _, e := range m.Enums {
+			e.Id = idx
+			idx++
+			for _, p := range e.Members {
+				p.Id = idx
+				idx++
+			}
+		}
+	}
 }
