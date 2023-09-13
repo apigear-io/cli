@@ -106,6 +106,7 @@ func (s *System) Validate() error {
 	return nil
 }
 
+// TODO: clean up this code
 func (s *System) ComputeIdentifier() {
 	var idx uint = 1
 	for _, m := range s.Modules {
@@ -146,6 +147,7 @@ func (s *System) ComputeIdentifier() {
 	}
 }
 
+// TODO: clean up this code
 func (s *System) ComputeChecksum() {
 	var buffer bytes.Buffer
 	for _, m := range s.Modules {

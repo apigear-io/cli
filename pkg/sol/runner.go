@@ -3,6 +3,7 @@ package sol
 import (
 	"context"
 
+	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/gen"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
@@ -136,6 +137,20 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 		if err := helper.MakeDir(outDir); err != nil {
 			return err
+		}
+		// TODO: clean up this code
+		if doc.Meta == nil {
+			doc.Meta = make(map[string]interface{})
+		}
+		doc.Meta["Layer"] = layer
+		doc.Meta["App"] = struct {
+			Version string
+			Date    string
+			Commit  string
+		}{
+			Version: cfg.BuildVersion(),
+			Date:    cfg.BuildDate(),
+			Commit:  cfg.BuildCommit(),
 		}
 		opts := gen.GeneratorOptions{
 			OutputDir:    outDir,

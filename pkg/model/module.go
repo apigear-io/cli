@@ -179,6 +179,7 @@ func (m *Module) Validate() error {
 	return nil
 }
 
+// TODO: clean up this code
 func (m *Module) ComputeChecksum() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(m.Name)
