@@ -175,6 +175,7 @@ func (m *Module) Validate() error {
 		}
 		names[e.Name] = true
 	}
+	m.computeChecksum()
 	return nil
 }
 
