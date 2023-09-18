@@ -7,7 +7,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr4-go/antlr/v4"
 	"github.com/apigear-io/cli/pkg/idl/parser"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
