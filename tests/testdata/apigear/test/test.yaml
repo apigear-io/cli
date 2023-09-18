@@ -3,6 +3,3 @@ name: test
 version: 1.0.0
 interfaces:
     - name: Counter
-mod: 1 / int: 2 / op: 3
-mod: 1 / int: 2 / op: 4
-mod: 1 / int: 2 / prop: 5

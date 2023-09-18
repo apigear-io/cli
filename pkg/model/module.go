@@ -1,7 +1,6 @@
 package model
 
 import (
-	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
@@ -180,8 +179,8 @@ func (m *Module) Validate() error {
 }
 
 // TODO: clean up this code
-func (m *Module) ComputeChecksum() string {
-	var buffer bytes.Buffer
+func (m *Module) computeChecksum() {
+	var buffer strings.Builder
 	buffer.WriteString(m.Name)
 	for _, i := range m.Interfaces {
 		buffer.WriteString(i.Name)
@@ -219,7 +218,6 @@ func (m *Module) ComputeChecksum() string {
 			buffer.WriteString(strconv.Itoa(p.Value))
 		}
 	}
-	sum := md5.Sum(buffer.Bytes())
+	sum := md5.Sum([]byte(buffer.String()))
 	m.Checksum = hex.EncodeToString(sum[:])
-	return m.Checksum
 }

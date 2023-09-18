@@ -100,14 +100,17 @@ func (s *System) Validate() error {
 		}
 		names[m.Name] = true
 	}
-	s.ComputeIdentifier()
-	s.ComputeChecksum()
+	s.computeIdentifier()
+	err := s.computeChecksum()
+	if err != nil {
+		return err
+	}
 	log.Info().Msgf("system %s resolved: %s", s.Name, s.Checksum)
 	return nil
 }
 
 // TODO: clean up this code
-func (s *System) ComputeIdentifier() {
+func (s *System) computeIdentifier() {
 	var idx uint = 1
 	for _, m := range s.Modules {
 		m.Id = idx
@@ -148,12 +151,15 @@ func (s *System) ComputeIdentifier() {
 }
 
 // TODO: clean up this code
-func (s *System) ComputeChecksum() {
+func (s *System) computeChecksum() error {
 	var buffer bytes.Buffer
 	for _, m := range s.Modules {
-		sum := m.ComputeChecksum()
-		buffer.WriteString(sum)
+		if len(m.Checksum) == 0 {
+			return fmt.Errorf("module %s checksum not computed", m.Name)
+		}
+		buffer.WriteString(m.Checksum)
 	}
 	sum := md5.Sum(buffer.Bytes())
 	s.Checksum = hex.EncodeToString(sum[:])
+	return nil
 }
