@@ -1,0 +1,9 @@
+features:
+  - name: core
+    scopes:
+      - match: system
+        documents:
+          - { source: "system.name.tpl", target: "system-force.txt", force: true }
+      - match: module
+        documents:
+          - { source: "module.name.tpl", target: "module-force.txt", force: true }

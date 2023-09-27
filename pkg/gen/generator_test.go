@@ -8,16 +8,16 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 )
 
 func readRules(t *testing.T, filename string) *spec.RulesDoc {
 	content, err := os.ReadFile(filename)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	var doc spec.RulesDoc
 	err = yaml.Unmarshal(content, &doc)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return &doc
 }
 
@@ -30,9 +30,9 @@ func createGenerator(t *testing.T) *generator {
 		UserFeatures: []string{"all"},
 	}
 	g, err := New(opts)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	err = g.ParseTemplatesDir("testdata/templates")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return g
 }
 
@@ -47,34 +47,36 @@ func createMockGenerator(t *testing.T, tplDir string, features []string) (*gener
 		Output:       out,
 	}
 	g, err := New(opts)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	rules := readRules(t, helper.Join(tplDir, "rules.yaml"))
 	err = g.ProcessRules(rules)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return g, out
 }
 
 func TestEmptyRules(t *testing.T) {
 	g := createGenerator(t)
 	doc, err := ReadRulesDoc("testdata/empty.rules.yaml")
-	assert.NoError(t, err)
-	assert.NoError(t, g.ProcessRules(doc))
+	require.NoError(t, err)
+	require.NoError(t, g.ProcessRules(doc))
 }
 
 func TestHelloRules(t *testing.T) {
 	g := createGenerator(t)
+	g.UserForce = true
 	r := readRules(t, "testdata/test.rules.yaml")
 	err := g.ProcessRules(r)
-	assert.NoError(t, err)
-	length := len(g.Stats.FilesTouched)
-	assert.Equal(t, length, 1)
-	assert.Contains(t, g.Stats.FilesTouched[0], "system.txt")
+	require.NoError(t, err)
+	require.Len(t, g.Stats.FilesTouched, 0)
 }
 
-func TestModules(t *testing.T) {
+func TestHelloForcedRules(t *testing.T) {
 	g := createGenerator(t)
-	r := readRules(t, "testdata/test.rules.yaml")
+	g.UserForce = true
+	r := readRules(t, "testdata/test-force.rules.yaml")
 	err := g.ProcessRules(r)
-	assert.NoError(t, err)
-	assert.Contains(t, g.Stats.FilesTouched[0], "system.txt")
+	require.NoError(t, err)
+	length := len(g.Stats.FilesTouched)
+	require.Equal(t, 1, length)
+	require.Contains(t, g.Stats.FilesTouched[0], "system-force.txt")
 }
