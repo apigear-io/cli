@@ -66,6 +66,8 @@ func TestHelloRules(t *testing.T) {
 	r := readRules(t, "testdata/test.rules.yaml")
 	err := g.ProcessRules(r)
 	assert.NoError(t, err)
+	length := len(g.Stats.FilesTouched)
+	assert.Equal(t, length, 1)
 	assert.Contains(t, g.Stats.FilesTouched[0], "system.txt")
 }
 

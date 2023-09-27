@@ -3,7 +3,7 @@ features:
     scopes:
       - match: system
         documents:
-          - { source: "system.name.tpl", target: "system.txt" }
+          - { source: "system.name.tpl", target: "system.txt", force: true }
       - match: module
         documents:
           - { source: "module.name.tpl", target: "module.txt" }

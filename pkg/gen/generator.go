@@ -96,6 +96,10 @@ func New(o GeneratorOptions) (*generator, error) {
 		DryRun:       o.DryRun,
 		Output:       o.Output,
 		Meta:         o.Meta,
+		Stats: GeneratorStats{
+			RunStart:     time.Now(),
+			FilesTouched: []string{},
+		},
 	}
 	g.Template.Funcs(filters.PopulateFuncMap())
 	err := g.ParseTemplatesDir(o.TemplatesDir)
@@ -285,7 +289,6 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	// the docTarget destination file
 	var docTarget = filepath.Clean(doc.Target)
 	// either user can force an overwrite or the target or the rules document
-	force := doc.Force || g.UserForce
 	// transform the target name using the context
 	target, err := g.RenderString(docTarget, ctx)
 	if err != nil {
@@ -294,14 +297,14 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	// TODO: when doc.Raw is set, we should just copy it to the target
 	if doc.Raw {
 		// copy the source to the target
-		err := g.CopyFile(source, target, force)
+		err := g.CopyFile(source, target, g.UserForce)
 		if err != nil {
 			log.Warn().Msgf("copy file %s to %s: %s", source, target, err)
 			return err
 		}
 	} else {
 		// render the source file to the target
-		err := g.RenderFile(source, target, ctx, force)
+		err := g.RenderFile(source, target, ctx, doc.Force)
 		if err != nil {
 			return err
 		}
@@ -339,7 +342,7 @@ func (g *generator) CopyFile(source, target string, force bool) error {
 	return g.Output.Copy(source, target, force)
 }
 
-func (g *generator) RenderFile(source, target string, ctx any, force bool) error {
+func (g *generator) RenderFile(source, target string, ctx any, docForce bool) error {
 	// var force = doc.Force
 	// var transform = doc.Transform
 	log.Debug().Msgf("render %s -> %s", source, target)
@@ -352,7 +355,7 @@ func (g *generator) RenderFile(source, target string, ctx any, force bool) error
 	}
 	// write the file
 	log.Debug().Msgf("write %s", target)
-	err = g.WriteFile(buf.Bytes(), target, force)
+	err = g.WriteFile(buf.Bytes(), target, docForce)
 	if err != nil {
 		log.Warn().Msgf("write file %s: %s", target, err)
 		return fmt.Errorf("write file %s: %w", target, err)
@@ -360,20 +363,28 @@ func (g *generator) RenderFile(source, target string, ctx any, force bool) error
 	return nil
 }
 
-func (g *generator) WriteFile(input []byte, target string, force bool) error {
+func (g *generator) WriteFile(input []byte, target string, docForce bool) error {
 	target = helper.Join(g.OutputDir, target)
-	if !force {
+	// whatever happens, an existing user editable file is never overwritten
+	if !docForce && helper.IsFile(target) {
+		g.Stats.FilesSkipped++
+		log.Debug().Msgf("skipping user editable file %s", target)
+		return nil
+	}
+	userForce := g.UserForce
+	if !userForce {
 		same, err := g.Output.Compare(input, target)
 		if err != nil {
 			return err
 		}
-
+		// don't overwrite if same and we are not force to overwrite
 		if same {
 			g.Stats.FilesSkipped++
-			log.Debug().Msgf("skipping file %s", target)
+			log.Debug().Msgf("skipping same file %s", target)
 			return nil
 		}
 	}
+	// we either are force to overwrite or the file is different
 	log.Debug().Msgf("write file %s", target)
 	g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 	g.Stats.FilesWritten++
@@ -381,5 +392,5 @@ func (g *generator) WriteFile(input []byte, target string, force bool) error {
 		log.Info().Msgf("dry run: writing file %s", target)
 		return nil
 	}
-	return g.Output.Write(input, target, force)
+	return g.Output.Write(input, target, docForce)
 }
