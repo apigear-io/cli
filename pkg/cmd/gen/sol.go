@@ -26,6 +26,7 @@ func NewSolutionCommand() *cobra.Command {
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			log.Info().Msgf("generating solution %s", args[0])
 			source = args[0]
 			result, err := spec.CheckFileAndType(source, spec.DocumentTypeSolution)
 			if err != nil {

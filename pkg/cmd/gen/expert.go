@@ -82,7 +82,7 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	return &spec.SolutionDoc{
 		Schema:  "apigear.solution/1.0",
 		RootDir: rootDir,
-		Layers: []*spec.SolutionLayer{
+		Targets: []*spec.SolutionTarget{
 			{
 				Inputs:   options.inputs,
 				Output:   options.outputDir,

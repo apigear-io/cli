@@ -3,4 +3,4 @@ features:
     scopes:
       - match: "module"
         documents:
-          - { source: "module.yaml.tpl", target: "{{dot .Module.Name}}.yaml" }
+          - { source: "module.yaml.tpl", target: "{{dot .Module.Name}}.yaml", force: true }

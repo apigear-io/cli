@@ -1,0 +1,6 @@
+features:
+  - name: "core"
+    scopes:
+      - match: "module"
+        documents:
+          - { source: "module.yaml.tpl", target: "module.yaml" }

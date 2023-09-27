@@ -46,7 +46,6 @@ func (r *Runner) RunSource(ctx context.Context, source string, force bool) error
 }
 
 // RunDoc runs the given file task once.
-// TODO: Run should always act on a source of truth, such as a file.
 // It should not act on a cached value.
 func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
 	run := func(ctx context.Context) error {
@@ -110,7 +109,7 @@ func RunSolutionSource(ctx context.Context, source string, force bool) error {
 		return err
 	}
 	if force {
-		for _, layer := range doc.Layers {
+		for _, layer := range doc.Targets {
 			layer.Force = true
 		}
 	}
@@ -124,14 +123,15 @@ func runSolution(doc *spec.SolutionDoc) error {
 		return err
 	}
 	rootDir := doc.RootDir
-	for _, layer := range doc.Layers {
-		name := layer.Name
-		outDir := layer.GetOutputDir(rootDir)
+
+	for _, target := range doc.Targets {
+		name := target.Name
+		outDir := target.GetOutputDir(rootDir)
 		if name == "" {
 			name = helper.BaseName(outDir)
 		}
 		system := model.NewSystem(name)
-		err = parseInputs(system, layer.ExpandedInputs())
+		err = parseInputs(system, target.ExpandedInputs())
 		if err != nil {
 			return err
 		}
@@ -141,17 +141,17 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 		opts := gen.GeneratorOptions{
 			OutputDir:    outDir,
-			TemplatesDir: layer.TemplatesDir,
+			TemplatesDir: target.TemplatesDir,
 			System:       system,
-			UserFeatures: layer.Features,
-			UserForce:    layer.Force,
+			UserFeatures: target.Features,
+			UserForce:    target.Force,
 			Meta:         doc.Meta,
 		}
 		g, err := gen.New(opts)
 		if err != nil {
 			return err
 		}
-		doc, err := gen.ReadRulesDoc(layer.RulesFile)
+		doc, err := gen.ReadRulesDoc(target.RulesFile)
 		if err != nil {
 			return err
 		}

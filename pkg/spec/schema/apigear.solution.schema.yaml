@@ -4,7 +4,6 @@ type: object
 additionalProperties: false
 required:
   - schema
-  - layers
 properties:
   schema:
     type: string
@@ -30,36 +29,42 @@ properties:
   layers:
     type: array
     items:
-      $ref: "#/definitions/Layer"
-    description: "The layers section contains a list of layers which are used to generate the solution."
+      $ref: "#/definitions/Target"
+    description: "The layers section contains a list of targets which are used to generate the solution."
+    deprecated: true
+  targets:
+    type: array
+    items:
+      $ref: "#/definitions/Target"
+    description: "The targets section contains a list of targets which are used to generate the solution."
 definitions:
-  Layer:
+  Target:
     type: object
     required:
       - inputs
       - output
       - template
     additionalProperties: false
-    description: "The Layer section defines a layer which is used to generate the solution."
+    description: "The target section defines a target which is used to generate the solution."
     properties:
       name:
         type: string
-        description: "name of the layer."
+        description: "name of the target."
       description:
         type: string
-        description: "description of the layer."
+        description: "description of the target."
       inputs:
         type: array
         items:
           type: string
-        description: "list of input files which are used to generate the layer."
+        description: "list of input files which are used to generate the target."
         default: []
       output:
         type: string
-        description: "the output directory of the layer."
+        description: "the output directory of the target."
       meta:
         type: object
-        description: "meta data about the layer which will be passed on to the template."
+        description: "meta data about the target which will be passed on to the template."
       template:
         type: string
         description: "path to the template which can be either template package name or a template folder with a rules document."
@@ -71,7 +76,7 @@ definitions:
         default: []
       dryRun:
         type: boolean
-        description: "if true the layer will not be generated."
+        description: "if true the target will not be generated."
       force:
         type: boolean
-        description: "if true the layer will be generated even if it already exists."
+        description: "if true the target will be generated even if it already exists."

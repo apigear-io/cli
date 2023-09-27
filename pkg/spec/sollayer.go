@@ -7,7 +7,7 @@ import (
 	"github.com/apigear-io/cli/pkg/repos"
 )
 
-type SolutionLayer struct {
+type SolutionTarget struct {
 	Name        string   `json:"name" yaml:"name"`
 	Description string   `json:"description" yaml:"description"`
 	Inputs      []string `json:"inputs" yaml:"inputs"`
@@ -19,8 +19,8 @@ type SolutionLayer struct {
 	computed bool `json:"-" yaml:"-"`
 	// expandedInputs is the inputs with the variables expanded
 	expandedInputs []string `json:"-"` // expanded inputs
-	// dependencies are the dependencies of the layer
-	dependencies []string `json:"-"` // dependencies of the layer
+	// dependencies are the dependencies of the target
+	dependencies []string `json:"-"` // dependencies of the target
 	// TemplateDir is the directory of the template
 	TemplateDir string `json:"-" yaml:"-"`
 	// TemplatesDir is the "templates" directory inside the template dir
@@ -31,17 +31,17 @@ type SolutionLayer struct {
 
 // GetOutputDir returns the output dir.
 // The output dir can be relative to the root dir of the solution.
-func (l *SolutionLayer) GetOutputDir(rootDir string) string {
+func (l *SolutionTarget) GetOutputDir(rootDir string) string {
 	return helper.Join(rootDir, l.Output)
 }
 
-func (l *SolutionLayer) Validate() error {
+func (l *SolutionTarget) Validate() error {
 	// basic validation
 	if l.Output == "" {
-		return fmt.Errorf("layer %s: output is required", l.Name)
+		return fmt.Errorf("target %s: output is required", l.Name)
 	}
 	if l.Template == "" {
-		return fmt.Errorf("layer %s: template is required", l.Name)
+		return fmt.Errorf("target %s: template is required", l.Name)
 	}
 	if l.Inputs == nil {
 		l.Inputs = make([]string, 0)
@@ -53,13 +53,13 @@ func (l *SolutionLayer) Validate() error {
 	// check for advanced validation
 	if l.computed {
 		if !helper.IsDir(l.TemplateDir) {
-			return fmt.Errorf("layer %s: template dir not found: %s", l.Name, l.TemplateDir)
+			return fmt.Errorf("target %s: template dir not found: %s", l.Name, l.TemplateDir)
 		}
 		if !helper.IsDir(l.TemplatesDir) {
-			return fmt.Errorf("layer %s: templates dir not found: %s", l.Name, l.TemplatesDir)
+			return fmt.Errorf("target %s: templates dir not found: %s", l.Name, l.TemplatesDir)
 		}
 		if !helper.IsFile(l.RulesFile) {
-			return fmt.Errorf("layer %s: rules file not found: %s", l.Name, l.RulesFile)
+			return fmt.Errorf("target %s: rules file not found: %s", l.Name, l.RulesFile)
 		}
 		// check inputs
 		for _, input := range l.expandedInputs {
@@ -71,15 +71,15 @@ func (l *SolutionLayer) Validate() error {
 				for _, e := range result.Errors {
 					log.Warn().Msg(e.String())
 				}
-				return fmt.Errorf("layer %s: invalid file: %s", l.Name, input)
+				return fmt.Errorf("target %s: invalid file: %s", l.Name, input)
 			}
 		}
 	}
 	return nil
 }
 
-// Compute computes the dependencies and expanded inputs of a layer.
-func (l *SolutionLayer) Compute(doc *SolutionDoc) error {
+// Compute computes the dependencies and expanded inputs of a target.
+func (l *SolutionTarget) Compute(doc *SolutionDoc) error {
 	if l.computed {
 		return nil
 	}
@@ -137,16 +137,16 @@ func (l *SolutionLayer) Compute(doc *SolutionDoc) error {
 	return nil
 }
 
-func (l *SolutionLayer) Dependencies() []string {
+func (l *SolutionTarget) Dependencies() []string {
 	if !l.computed {
-		log.Error().Msg("layer not computed, dependencies not available")
+		log.Error().Msg("target not computed, dependencies not available")
 	}
 	return l.dependencies
 }
 
-func (l *SolutionLayer) ExpandedInputs() []string {
+func (l *SolutionTarget) ExpandedInputs() []string {
 	if !l.computed {
-		log.Error().Msg("layer not computed, expanded inputs not available")
+		log.Error().Msg("target not computed, expanded inputs not available")
 	}
 	return l.expandedInputs
 }

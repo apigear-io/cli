@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -22,6 +23,7 @@ func TestGenerateSolutionCmd(t *testing.T) {
 	assert.NoError(t, err)
 	log.Printf("cwd: %s", cwd)
 	output := execute(t, "generate solution ./apigear/test.solution.yaml")
+	fmt.Printf("output: %s\n", output)
 	assert.Contains(t, output, "generated 1 files")
 }
 

@@ -294,7 +294,6 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	if err != nil {
 		return fmt.Errorf("render rules target %s: %s", docTarget, err)
 	}
-	// TODO: when doc.Raw is set, we should just copy it to the target
 	if doc.Raw {
 		// copy the source to the target
 		err := g.CopyFile(source, target, g.UserForce)

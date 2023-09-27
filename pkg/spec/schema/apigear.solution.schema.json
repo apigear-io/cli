@@ -2,16 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "definitions": {
-    "Layer": {
+    "Target": {
       "additionalProperties": false,
-      "description": "The Layer section defines a layer which is used to generate the solution.",
+      "description": "The target section defines a target which is used to generate the solution.",
       "properties": {
         "description": {
-          "description": "description of the layer.",
+          "description": "description of the target.",
           "type": "string"
         },
         "dryRun": {
-          "description": "if true the layer will not be generated.",
+          "description": "if true the target will not be generated.",
           "type": "boolean"
         },
         "features": {
@@ -23,27 +23,27 @@
           "type": "array"
         },
         "force": {
-          "description": "if true the layer will be generated even if it already exists.",
+          "description": "if true the target will be generated even if it already exists.",
           "type": "boolean"
         },
         "inputs": {
           "default": [],
-          "description": "list of input files which are used to generate the layer.",
+          "description": "list of input files which are used to generate the target.",
           "items": {
             "type": "string"
           },
           "type": "array"
         },
         "meta": {
-          "description": "meta data about the layer which will be passed on to the template.",
+          "description": "meta data about the target which will be passed on to the template.",
           "type": "object"
         },
         "name": {
-          "description": "name of the layer.",
+          "description": "name of the target.",
           "type": "string"
         },
         "output": {
-          "description": "the output directory of the layer.",
+          "description": "the output directory of the target.",
           "type": "string"
         },
         "template": {
@@ -65,9 +65,10 @@
       "type": "string"
     },
     "layers": {
-      "description": "The layers section contains a list of layers which are used to generate the solution.",
+      "deprecated": true,
+      "description": "The layers section contains a list of targets which are used to generate the solution.",
       "items": {
-        "$ref": "#/definitions/Layer"
+        "$ref": "#/definitions/Target"
       },
       "type": "array"
     },
@@ -90,6 +91,13 @@
       ],
       "type": "string"
     },
+    "targets": {
+      "description": "The targets section contains a list of targets which are used to generate the solution.",
+      "items": {
+        "$ref": "#/definitions/Target"
+      },
+      "type": "array"
+    },
     "version": {
       "default": "0.1.0",
       "description": "The version of the solution. Should be a major and minor and an optional patch version, separated by a dot (e.g. 0.1 or 0.1.0).",
@@ -98,8 +106,7 @@
     }
   },
   "required": [
-    "schema",
-    "layers"
+    "schema"
   ],
   "title": "ApiGear Solution 1.0 Schema",
   "type": "object"
