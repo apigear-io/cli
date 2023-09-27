@@ -1,30 +1,25 @@
 template: {{.Meta.Layer.Template}}
 name: {{.Module.Name}}
 version: {{.Module.Version}}
+
 interfaces:
 {{- range .Module.Interfaces }}
     - name: {{.Name}}
-{{- end }}
-
-
-{{- range .System.Modules }}
-{{- $module := . }}
-{{- range .Interfaces }}
-{{- $interface := . }}
-{{- range .Operations }}
-{{- $operation := . }}
-mod: {{ $module.Id }} / int: {{ $interface.Id }} / op: {{ $operation.Id }}
-{{- end }}
+      id: {{.Id}}
+      properties:
 {{- range .Properties }}
-{{- $property := . }}
-mod: {{ $module.Id }} / int: {{ $interface.Id }} / prop: {{ $property.Id }}
+        - name: {{.Name}}
+          id: {{.Id}}
 {{- end }}
+      operations:
+{{- range .Operations }}
+        - name: {{.Name}}
+          id: {{.Id}}
+{{- end }}
+      signals:
 {{- range .Signals }}
-{{- $signal := . }}
-mod: {{ $module.Id }} / int: {{ $interface.Id }} / sig: {{ $signal.Id }}
+        - name: {{.Name}}
+          id: {{.Id}}
 {{- end }}
 {{- end }}
-{{- range .Structs }}
-{{- $structs := . }}
-{{- end }}
-{{- end }}
+

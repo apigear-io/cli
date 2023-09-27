@@ -1,5 +1,17 @@
 template: ../tpl
 name: test
 version: 1.0.0
+
 interfaces:
     - name: Counter
+      id: 2
+      properties:
+        - name: value
+          id: 5
+      operations:
+        - name: increment
+          id: 3
+        - name: decrement
+          id: 4
+      signals:
+
