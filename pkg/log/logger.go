@@ -30,7 +30,7 @@ func init() {
 		level = zerolog.TraceLevel
 	}
 	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
-	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05"}
+	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05", FieldsExclude: []string{"id"}}
 	multi := zerolog.MultiLevelWriter(
 		console,
 		NewEventLogWriter(),

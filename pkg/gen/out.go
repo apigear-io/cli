@@ -17,6 +17,7 @@ type FileOutput struct {
 }
 
 func (f *FileOutput) Write(input []byte, target string, force bool) error {
+
 	// write document to file system
 	dir := filepath.Dir(target)
 	err := os.MkdirAll(dir, 0755)
