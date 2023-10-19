@@ -116,9 +116,9 @@ func (t TypedNode) GetSchema() *Schema {
 	return &t.Schema
 }
 
-// ResolveAll resolves all the types in the schema
-func (t *TypedNode) ResolveAll(m *Module) error {
-	return t.Schema.ResolveAll(m)
+// Validate resolves all the types in the schema
+func (t *TypedNode) Validate(m *Module) error {
+	return t.Schema.Validate(m)
 }
 
 // IsVoid returns true if the schema is void
@@ -183,8 +183,8 @@ func (s Schema) LookupNode(name string) *NamedNode {
 	return s.Module.LookupNode(name)
 }
 
-// ResolveAll resolves all the types in the schema
-func (s *Schema) ResolveAll(m *Module) error {
+// Validate resolves all the types in the schema
+func (s *Schema) Validate(m *Module) error {
 	if s.IsResolved {
 		return nil
 	}

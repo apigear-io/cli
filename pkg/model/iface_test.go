@@ -75,7 +75,7 @@ func TestInterfaceNameDuplicates(t *testing.T) {
 	var module Module
 	err := helper.ReadYamlFromString(duplicatesYAML, &module)
 	assert.NoError(t, err)
-	err = module.ResolveAll()
+	err = module.Validate()
 	assert.Error(t, err)
 	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
 }
@@ -92,7 +92,7 @@ func TestStructNameDuplicates(t *testing.T) {
 	var module Module
 	err := helper.ReadYamlFromString(duplicates2YAML, &module)
 	assert.NoError(t, err)
-	err = module.ResolveAll()
+	err = module.Validate()
 	assert.Error(t, err)
 	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
 }
@@ -110,7 +110,7 @@ func TestEnumNameDuplicates(t *testing.T) {
 	var module Module
 	err := helper.ReadYamlFromString(duplicates3YAML, &module)
 	assert.NoError(t, err)
-	err = module.ResolveAll()
+	err = module.Validate()
 	assert.Error(t, err)
 	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
 }

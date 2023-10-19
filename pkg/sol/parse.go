@@ -34,7 +34,7 @@ func parseInputs(s *model.System, inputs []string) error {
 			log.Error().Msgf("unknown type %s. skip", file)
 		}
 	}
-	err := s.ResolveAll()
+	err := s.Validate()
 	if err != nil {
 		return fmt.Errorf("error resolving system: %w", err)
 	}

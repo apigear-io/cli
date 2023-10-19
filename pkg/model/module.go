@@ -136,7 +136,7 @@ func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
 	return nil
 }
 
-func (m *Module) ResolveAll() error {
+func (m *Module) Validate() error {
 	// check for duplicate names
 	names := make(map[string]bool)
 	for _, i := range m.Interfaces {
@@ -144,7 +144,7 @@ func (m *Module) ResolveAll() error {
 			return fmt.Errorf("%s: duplicate name %s", m.Name, i.Name)
 		}
 		names[i.Name] = true
-		err := i.ResolveAll(m)
+		err := i.Validate(m)
 		if err != nil {
 			return err
 		}
@@ -154,7 +154,7 @@ func (m *Module) ResolveAll() error {
 			return fmt.Errorf("%s: duplicate name %s", m.Name, s.Name)
 		}
 		names[s.Name] = true
-		err := s.ResolveAll(m)
+		err := s.Validate(m)
 		if err != nil {
 			return err
 		}
@@ -164,7 +164,7 @@ func (m *Module) ResolveAll() error {
 			return fmt.Errorf("%s: duplicate name %s", m.Name, e.Name)
 		}
 		names[e.Name] = true
-		err := e.ResolveAll(m)
+		err := e.Validate(m)
 		if err != nil {
 			return err
 		}

@@ -18,8 +18,8 @@ func NewEnum(name string) *Enum {
 	}
 }
 
-// ResolveAll resolves all references in the enum.
-func (e *Enum) ResolveAll(mod *Module) error {
+// Validate resolves all references in the enum.
+func (e *Enum) Validate(mod *Module) error {
 	names := make(map[string]bool)
 	autoValue := true
 	for _, mem := range e.Members {
@@ -27,7 +27,7 @@ func (e *Enum) ResolveAll(mod *Module) error {
 			return fmt.Errorf("%s: duplicate name: %s", e.Name, mem.Name)
 		}
 		names[mem.Name] = true
-		err := mem.ResolveAll(mod)
+		err := mem.Validate(mod)
 		if err != nil {
 			return err
 		}
@@ -83,7 +83,7 @@ func NewEnumMember(name string, value int) *EnumMember {
 	}
 }
 
-// ResolveAll resolves all references in the enum member.
-func (e *EnumMember) ResolveAll(m *Module) error {
+// Validate resolves all references in the enum member.
+func (e *EnumMember) Validate(m *Module) error {
 	return nil
 }

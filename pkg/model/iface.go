@@ -17,12 +17,12 @@ func NewSignal(name string) *Signal {
 	}
 }
 
-func (s *Signal) ResolveAll(m *Module) error {
+func (s *Signal) Validate(m *Module) error {
 	if s.Params == nil {
 		s.Params = make([]*TypedNode, 0)
 	}
 	for _, i := range s.Params {
-		err := i.ResolveAll(m)
+		err := i.Validate(m)
 		if err != nil {
 			return err
 		}
@@ -47,7 +47,7 @@ func NewOperation(name string) *Operation {
 	}
 }
 
-func (m *Operation) ResolveAll(mod *Module) error {
+func (m *Operation) Validate(mod *Module) error {
 	if m.Return == nil {
 		m.Return = NewTypedNode("", KindReturn)
 	}
@@ -55,13 +55,13 @@ func (m *Operation) ResolveAll(mod *Module) error {
 		m.Params = make([]*TypedNode, 0)
 	}
 	for _, p := range m.Params {
-		err := p.ResolveAll(mod)
+		err := p.Validate(mod)
 		if err != nil {
 			return err
 		}
 	}
 	if m.Return != nil {
-		err := m.Return.ResolveAll(mod)
+		err := m.Return.Validate(mod)
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func (i Interface) LookupSignal(name string) *Signal {
 	return nil
 }
 
-func (i *Interface) ResolveAll(mod *Module) error {
+func (i *Interface) Validate(mod *Module) error {
 	// check if any names are duplicated
 	names := make(map[string]bool)
 	for _, p := range i.Properties {
@@ -131,7 +131,7 @@ func (i *Interface) ResolveAll(mod *Module) error {
 			return fmt.Errorf("%s: duplicate name: %s", i.Name, p.Name)
 		}
 		names[p.Name] = true
-		err := p.ResolveAll(mod)
+		err := p.Validate(mod)
 		if err != nil {
 			return err
 		}
@@ -141,8 +141,7 @@ func (i *Interface) ResolveAll(mod *Module) error {
 			return fmt.Errorf("%s: duplicate name: %s", i.Name, op.Name)
 		}
 		names[op.Name] = true
-		err := op.ResolveAll(mod)
-		if err != nil {
+		if err := op.Validate(mod); err != nil {
 			return err
 		}
 	}
@@ -151,8 +150,7 @@ func (i *Interface) ResolveAll(mod *Module) error {
 			return fmt.Errorf("%s: duplicate name: %s", i.Name, s.Name)
 		}
 		names[s.Name] = true
-		err := s.ResolveAll(mod)
-		if err != nil {
+		if err := s.Validate(mod); err != nil {
 			return err
 		}
 	}

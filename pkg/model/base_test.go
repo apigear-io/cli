@@ -10,7 +10,7 @@ import (
 func TestVoidReturn(t *testing.T) {
 	var module Module
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
-	assert.NoError(t, module.ResolveAll())
+	assert.NoError(t, module.Validate())
 	assert.NoError(t, err)
 	assert.Equal(t, 5, len(module.Interfaces))
 	iface3 := module.Interfaces[3]

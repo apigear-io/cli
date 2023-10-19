@@ -141,7 +141,7 @@ func CheckIdlFile(name string) (*Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse file %s: %w", name, err)
 	}
-	err = s.ResolveAll()
+	err = s.Validate()
 	if err != nil {
 		return nil, fmt.Errorf("resolve file %s: %w", name, err)
 	}

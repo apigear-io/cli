@@ -13,7 +13,7 @@ func TestAutoValue(t *testing.T) {
 		NewEnumMember("b", 0),
 		NewEnumMember("c", 0),
 	}
-	err := e.ResolveAll(nil)
+	err := e.Validate(nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, e.Members[0].Value)
 	assert.Equal(t, 1, e.Members[1].Value)
@@ -27,7 +27,7 @@ func TestNoAutoValue(t *testing.T) {
 		NewEnumMember("b", 2),
 		NewEnumMember("c", 1),
 	}
-	err := e.ResolveAll(nil)
+	err := e.Validate(nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, e.Members[0].Value)
 	assert.Equal(t, 2, e.Members[1].Value)

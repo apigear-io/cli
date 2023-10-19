@@ -17,7 +17,7 @@ func NewStruct(name string) *Struct {
 	}
 }
 
-func (s *Struct) ResolveAll(m *Module) error {
+func (s *Struct) Validate(m *Module) error {
 	// check for duplicate fields
 	names := make(map[string]bool)
 	if s.Fields == nil {
@@ -28,7 +28,7 @@ func (s *Struct) ResolveAll(m *Module) error {
 			return fmt.Errorf("%s: duplicate name: %s", s.Name, f.Name)
 		}
 		names[f.Name] = true
-		err := f.ResolveAll(m)
+		err := f.Validate(m)
 		if err != nil {
 			return err
 		}

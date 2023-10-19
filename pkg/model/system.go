@@ -75,14 +75,14 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 	return i.LookupSignal(eventName)
 }
 
-func (s *System) ResolveAll() error {
+func (s *System) Validate() error {
 	names := make(map[string]bool)
 	for _, m := range s.Modules {
 		if names[m.Name] {
 			return fmt.Errorf("%s: duplicate name: %s", s.Name, m.Name)
 		}
 		names[m.Name] = true
-		err := m.ResolveAll()
+		err := m.Validate()
 		if err != nil {
 			return err
 		}

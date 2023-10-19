@@ -14,14 +14,14 @@ func LoadTestSystems(t *testing.T) []*model.System {
 	p := idl.NewParser(sys1)
 	err := p.ParseFile("../testdata/test.idl")
 	assert.NoError(t, err)
-	err = sys1.ResolveAll()
+	err = sys1.Validate()
 	assert.NoError(t, err)
 
 	sys2 := model.NewSystem("sys2")
 	dp := model.NewDataParser(sys2)
 	err = dp.ParseFile("../testdata/test.module.yaml")
 	assert.NoError(t, err)
-	err = sys2.ResolveAll()
+	err = sys2.Validate()
 	assert.NoError(t, err)
 	return []*model.System{sys1}
 }
