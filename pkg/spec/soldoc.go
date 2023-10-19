@@ -1,7 +1,5 @@
 package spec
 
-import "fmt"
-
 type SolutionDoc struct {
 	Schema      string            `json:"schema" yaml:"schema"`
 	Version     string            `json:"version" yaml:"version"`
@@ -16,18 +14,15 @@ type SolutionDoc struct {
 }
 
 func (s *SolutionDoc) Validate() error {
-	err := s.Compute()
-	if err != nil {
-		return err
-	}
-	if s.Layers != nil {
-		return fmt.Errorf("sol-doc %s: layers are deprecated, use targets instead", s.Name)
-	}
+	// basic validation
 	if s.Targets == nil {
 		s.Targets = make([]*SolutionTarget, 0)
 	}
+	if err := s.compute(); err != nil {
+		return err
+	}
 	for _, l := range s.Targets {
-		err := l.Validate()
+		err := l.Validate(s)
 		if err != nil {
 			return err
 		}
@@ -35,31 +30,18 @@ func (s *SolutionDoc) Validate() error {
 	return nil
 }
 
-// Compute computes the solution.
-// It computes the dependencies and expanded inputs of each layer.
-func (s *SolutionDoc) Compute(compute ...func(doc *SolutionDoc) error) error {
+// compute computes derived fields.
+func (s *SolutionDoc) compute() error {
 	if s.computed {
 		return nil
-	}
-	s.computed = true
-	for _, c := range compute {
-		err := c(s)
-		if err != nil {
-			return err
-		}
 	}
 	if len(s.Layers) > 0 {
 		log.Warn().Msg("layers inside solutions are deprecated, use targets instead")
 		s.Targets = append(s.Targets, s.Layers...)
 		s.Layers = nil
 	}
-	for _, t := range s.Targets {
-		err := t.Compute(s)
-		if err != nil {
-			return err
-		}
-	}
-	return s.Validate()
+	s.computed = true
+	return nil
 }
 
 // AggregateDependencies computes the dependencies of each layer.

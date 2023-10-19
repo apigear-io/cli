@@ -63,7 +63,6 @@ func (r *Runner) WatchSource(ctx context.Context, source string, force bool) err
 	if err != nil {
 		return err
 	}
-	doc.Compute()
 	deps := doc.AggregateDependencies()
 	deps = append(deps, source)
 	run := func(ctx context.Context) error {
@@ -78,7 +77,9 @@ func (r *Runner) WatchSource(ctx context.Context, source string, force bool) err
 
 // WatchDoc starts the watch of the given file task.
 func (r *Runner) WatchDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
-	doc.Compute()
+	if err := doc.Validate(); err != nil {
+		return err
+	}
 	deps := doc.AggregateDependencies()
 	deps = append(deps, file)
 	run := func(ctx context.Context) error {
@@ -118,8 +119,7 @@ func RunSolutionSource(ctx context.Context, source string, force bool) error {
 
 func runSolution(doc *spec.SolutionDoc) error {
 	log.Debug().Msgf("run solution %s", doc.RootDir)
-	err := doc.Compute()
-	if err != nil {
+	if err := doc.Validate(); err != nil {
 		return err
 	}
 	rootDir := doc.RootDir
@@ -131,12 +131,10 @@ func runSolution(doc *spec.SolutionDoc) error {
 			name = helper.BaseName(outDir)
 		}
 		system := model.NewSystem(name)
-		err = parseInputs(system, target.ExpandedInputs())
-		if err != nil {
+		if err := parseInputs(system, target.ExpandedInputs()); err != nil {
 			return err
 		}
-		err = helper.MakeDir(outDir)
-		if err != nil {
+		if err := helper.MakeDir(outDir); err != nil {
 			return err
 		}
 		opts := gen.GeneratorOptions{

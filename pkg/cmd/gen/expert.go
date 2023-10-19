@@ -38,16 +38,14 @@ func NewExpertCommand() *cobra.Command {
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			doc := makeSolution(options)
-			err := doc.Validate()
-			if err != nil {
+			if err := doc.Validate(); err != nil {
 				return fmt.Errorf("invalid solution document: %w", err)
 			}
 			runner := sol.NewRunner()
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			err = runner.RunDoc(ctx, doc.RootDir, doc)
-			if err != nil {
+			if err := runner.RunDoc(ctx, doc.RootDir, doc); err != nil {
 				return err
 			}
 

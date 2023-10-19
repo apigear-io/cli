@@ -1,5 +1,7 @@
 package spec
 
+import "fmt"
+
 // ScenarioDoc is a scenario document as part of a simulation.
 type ScenarioDoc struct {
 	Schema      string            `json:"schema" yaml:"schema"`
@@ -9,6 +11,26 @@ type ScenarioDoc struct {
 	Version     string            `json:"version" yaml:"version"`
 	Interfaces  []*InterfaceEntry `json:"interfaces" yaml:"interfaces"`
 	Sequences   []*SequenceEntry  `json:"sequences" yaml:"sequences"`
+}
+
+func (d *ScenarioDoc) Validate() error {
+	if d.Interfaces == nil {
+		d.Interfaces = make([]*InterfaceEntry, 0)
+	}
+	if d.Sequences == nil {
+		d.Sequences = make([]*SequenceEntry, 0)
+	}
+	for _, iface := range d.Interfaces {
+		if err := iface.Validate(); err != nil {
+			return err
+		}
+	}
+	for _, sequence := range d.Sequences {
+		if err := sequence.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetInterface returns the interface entry with the given name.
@@ -39,6 +61,16 @@ type InterfaceEntry struct {
 	Operations  []*ActionListEntry `json:"operations" yaml:"operations"`
 }
 
+func (e *InterfaceEntry) Validate() error {
+	if e.Properties == nil {
+		e.Properties = make(map[string]any)
+	}
+	if e.Operations == nil {
+		e.Operations = make([]*ActionListEntry, 0)
+	}
+	return nil
+}
+
 // GetOperation returns the operation entry with the given name.
 func (e InterfaceEntry) GetOperation(name string) *ActionListEntry {
 	for _, o := range e.Operations {
@@ -65,6 +97,16 @@ type SequenceEntry struct {
 	Forever bool `json:"forever" yaml:"forever"`
 	// Steps is the list of steps in the sequence.
 	Steps []*ActionListEntry `json:"steps" yaml:"steps"`
+}
+
+func (e *SequenceEntry) Validate() error {
+	if e.Interface == "" {
+		return fmt.Errorf("sequence %s: interface is required", e.Name)
+	}
+	if e.Steps == nil {
+		e.Steps = make([]*ActionListEntry, 0)
+	}
+	return nil
 }
 
 // ActionListEntry represents a list of actions

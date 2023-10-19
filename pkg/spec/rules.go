@@ -39,6 +39,18 @@ func (r *RulesDoc) FeatureByName(name string) *FeatureRule {
 	return nil
 }
 
+func (d *RulesDoc) Validate() error {
+	if d.Features == nil {
+		d.Features = make([]*FeatureRule, 0)
+	}
+	for _, f := range d.Features {
+		if err := f.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ComputeFeatures returns a filtered set of features based on the given features.
 // And the features that are required by the given features.
 func (r *RulesDoc) ComputeFeatures(wanted []string) error {
@@ -102,6 +114,18 @@ type FeatureRule struct {
 	Skip   bool         `json:"-" yaml:"-"`
 }
 
+func (r *FeatureRule) Validate() error {
+	if r.Scopes == nil {
+		r.Scopes = make([]*ScopeRule, 0)
+	}
+	for _, s := range r.Scopes {
+		if err := s.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // FindScopeByMatch returns the first scope that matches the given match.
 func (s *FeatureRule) FindScopesByMatch(match ScopeType) []*ScopeRule {
 	var scopes []*ScopeRule
@@ -123,6 +147,18 @@ type ScopeRule struct {
 	Documents []DocumentRule `json:"documents" yaml:"documents"`
 }
 
+func (r *ScopeRule) Validate() error {
+	if r.Documents == nil {
+		r.Documents = make([]DocumentRule, 0)
+	}
+	for _, d := range r.Documents {
+		if err := d.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // DocumentRule defines a document rule with a source and target document.
 type DocumentRule struct {
 	// Source is the source document to apply the transformation to.
@@ -133,6 +169,10 @@ type DocumentRule struct {
 	Raw bool `json:"raw" yaml:"raw"`
 	// Force is true if the target file should be overwritten.
 	Force bool `json:"force" yaml:"force"`
+}
+
+func (r *DocumentRule) Validate() error {
+	return nil
 }
 
 func FeatureRulesToStrings(features []*FeatureRule) []string {

@@ -35,7 +35,7 @@ func (l *SolutionTarget) GetOutputDir(rootDir string) string {
 	return helper.Join(rootDir, l.Output)
 }
 
-func (l *SolutionTarget) Validate() error {
+func (l *SolutionTarget) Validate(doc *SolutionDoc) error {
 	// basic validation
 	if l.Output == "" {
 		return fmt.Errorf("target %s: output is required", l.Name)
@@ -50,41 +50,41 @@ func (l *SolutionTarget) Validate() error {
 		// if no features, use all
 		l.Features = []string{"all"}
 	}
-	// check for advanced validation
-	if l.computed {
-		if !helper.IsDir(l.TemplateDir) {
-			return fmt.Errorf("target %s: template dir not found: %s", l.Name, l.TemplateDir)
+	// compute derived fields
+	if err := l.compute(doc); err != nil {
+		return err
+	}
+	// extended validation
+	if !helper.IsDir(l.TemplateDir) {
+		return fmt.Errorf("target %s: template dir not found: %s", l.Name, l.TemplateDir)
+	}
+	if !helper.IsDir(l.TemplatesDir) {
+		return fmt.Errorf("target %s: templates dir not found: %s", l.Name, l.TemplatesDir)
+	}
+	if !helper.IsFile(l.RulesFile) {
+		return fmt.Errorf("target %s: rules file not found: %s", l.Name, l.RulesFile)
+	}
+	// check inputs
+	for _, input := range l.expandedInputs {
+		result, err := CheckFile(input)
+		if err != nil {
+			return err
 		}
-		if !helper.IsDir(l.TemplatesDir) {
-			return fmt.Errorf("target %s: templates dir not found: %s", l.Name, l.TemplatesDir)
-		}
-		if !helper.IsFile(l.RulesFile) {
-			return fmt.Errorf("target %s: rules file not found: %s", l.Name, l.RulesFile)
-		}
-		// check inputs
-		for _, input := range l.expandedInputs {
-			result, err := CheckFile(input)
-			if err != nil {
-				return err
+		if !result.Valid() {
+			for _, e := range result.Errors {
+				log.Warn().Msg(e.String())
 			}
-			if !result.Valid() {
-				for _, e := range result.Errors {
-					log.Warn().Msg(e.String())
-				}
-				return fmt.Errorf("target %s: invalid file: %s", l.Name, input)
-			}
+			return fmt.Errorf("target %s: invalid file: %s", l.Name, input)
 		}
 	}
 	return nil
 }
 
-// Compute computes the dependencies and expanded inputs of a target.
-func (l *SolutionTarget) Compute(doc *SolutionDoc) error {
+// compute computes the dependencies and expanded inputs of a target.
+func (l *SolutionTarget) compute(doc *SolutionDoc) error {
 	if l.computed {
 		return nil
 	}
-	l.computed = true
-
 	// compute template dir
 	tplDir := helper.Join(doc.RootDir, l.Template)
 	if helper.IsDir(tplDir) {
@@ -134,6 +134,7 @@ func (l *SolutionTarget) Compute(doc *SolutionDoc) error {
 		l.expandedInputs = append(l.expandedInputs, expanded...)
 	}
 	l.dependencies = append(l.dependencies, l.expandedInputs...)
+	l.computed = true
 	return nil
 }
 
