@@ -27,7 +27,7 @@ func ReadSolutionDoc(file string) (*spec.SolutionDoc, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = doc.Validate()
+	err = spec.LintSolutionFS(doc)
 	if err != nil {
 		return nil, err
 	}

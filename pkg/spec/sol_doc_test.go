@@ -48,7 +48,7 @@ var docLayers = SolutionDoc{
 
 func TestUseTargets(t *testing.T) {
 	doc := docTargets
-	err := doc.Compute()
+	err := LintSolutionFS(&doc)
 	require.NoError(t, err)
 	require.Equal(t, 2, len(doc.Targets))
 	require.Equal(t, "target1", doc.Targets[0].Name)
@@ -57,7 +57,7 @@ func TestUseTargets(t *testing.T) {
 
 func TestUseLayers(t *testing.T) {
 	doc := docLayers
-	err := doc.Compute()
+	err := LintSolutionFS(&doc)
 	require.NoError(t, err)
 	require.Equal(t, 0, len(doc.Layers))
 	require.Equal(t, 2, len(doc.Targets))
