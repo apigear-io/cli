@@ -49,6 +49,8 @@ func PopulateFuncMap() template.FuncMap {
 	fm["trimPrefix"] = common.TrimPrefix
 	fm["trimSuffix"] = common.TrimSuffix
 	fm["replace"] = common.Replace
+	fm["contains"] = common.Contains
+	fm["indexOf"] = common.IndexOf
 	fm["int2word"] = common.IntToWordLower
 	fm["Int2Word"] = common.IntToWordTitle
 	fm["INT2WORD"] = common.IntToWordUpper
