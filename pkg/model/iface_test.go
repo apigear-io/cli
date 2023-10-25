@@ -112,5 +112,5 @@ func TestEnumNameDuplicates(t *testing.T) {
 	assert.NoError(t, err)
 	err = module.Validate()
 	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "demo: duplicate name Hello")
+	assert.Equal(t, "demo: duplicate name Hello", err.Error())
 }

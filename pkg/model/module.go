@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/apigear-io/cli/pkg/spec/rkw"
 )
 
 type Version string
@@ -137,37 +139,38 @@ func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
 }
 
 func (m *Module) Validate() error {
+	rkw.CheckName(m.Name, "module")
 	// check for duplicate names
 	names := make(map[string]bool)
 	for _, i := range m.Interfaces {
-		if names[i.Name] {
-			return fmt.Errorf("%s: duplicate name %s", m.Name, i.Name)
-		}
-		names[i.Name] = true
 		err := i.Validate(m)
 		if err != nil {
 			return err
 		}
+		if names[i.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, i.Name)
+		}
+		names[i.Name] = true
 	}
 	for _, s := range m.Structs {
-		if names[s.Name] {
-			return fmt.Errorf("%s: duplicate name %s", m.Name, s.Name)
-		}
-		names[s.Name] = true
 		err := s.Validate(m)
 		if err != nil {
 			return err
 		}
+		if names[s.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, s.Name)
+		}
+		names[s.Name] = true
 	}
 	for _, e := range m.Enums {
-		if names[e.Name] {
-			return fmt.Errorf("%s: duplicate name %s", m.Name, e.Name)
-		}
-		names[e.Name] = true
 		err := e.Validate(m)
 		if err != nil {
 			return err
 		}
+		if names[e.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, e.Name)
+		}
+		names[e.Name] = true
 	}
 	return nil
 }

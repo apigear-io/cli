@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/apigear-io/cli/pkg/spec/rkw"
 	"github.com/ettle/strcase"
 )
 
@@ -118,6 +119,7 @@ func (t TypedNode) GetSchema() *Schema {
 
 // Validate resolves all the types in the schema
 func (t *TypedNode) Validate(m *Module) error {
+	rkw.CheckName(t.Name, "type")
 	return t.Schema.Validate(m)
 }
 

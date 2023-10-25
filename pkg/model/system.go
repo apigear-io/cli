@@ -1,6 +1,10 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/apigear-io/cli/pkg/spec/rkw"
+)
 
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -76,16 +80,20 @@ func (s System) LookupSignal(moduleName string, ifaceName string, eventName stri
 }
 
 func (s *System) Validate() error {
+	rkw.CheckName(s.Name, "system")
+	for _, m := range s.Modules {
+		err := m.Validate()
+		if err != nil {
+			return err
+		}
+	}
+	// check if there are duplicate module names
 	names := make(map[string]bool)
 	for _, m := range s.Modules {
 		if names[m.Name] {
 			return fmt.Errorf("%s: duplicate name: %s", s.Name, m.Name)
 		}
 		names[m.Name] = true
-		err := m.Validate()
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

@@ -1,6 +1,10 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/apigear-io/cli/pkg/spec/rkw"
+)
 
 type Signal struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -48,6 +52,7 @@ func NewOperation(name string) *Operation {
 }
 
 func (m *Operation) Validate(mod *Module) error {
+	rkw.CheckName(m.Name, "operation")
 	if m.Return == nil {
 		m.Return = NewTypedNode("", KindReturn)
 	}
@@ -124,35 +129,36 @@ func (i Interface) LookupSignal(name string) *Signal {
 }
 
 func (i *Interface) Validate(mod *Module) error {
+	rkw.CheckName(i.Name, "interface")
 	// check if any names are duplicated
 	names := make(map[string]bool)
 	for _, p := range i.Properties {
-		if names[p.Name] {
-			return fmt.Errorf("%s: duplicate name: %s", i.Name, p.Name)
-		}
-		names[p.Name] = true
 		err := p.Validate(mod)
 		if err != nil {
 			return err
 		}
+		if names[p.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", i.Name, p.Name)
+		}
+		names[p.Name] = true
 	}
 	for _, op := range i.Operations {
+		if err := op.Validate(mod); err != nil {
+			return err
+		}
 		if names[op.Name] {
 			return fmt.Errorf("%s: duplicate name: %s", i.Name, op.Name)
 		}
 		names[op.Name] = true
-		if err := op.Validate(mod); err != nil {
-			return err
-		}
 	}
 	for _, s := range i.Signals {
+		if err := s.Validate(mod); err != nil {
+			return err
+		}
 		if names[s.Name] {
 			return fmt.Errorf("%s: duplicate name: %s", i.Name, s.Name)
 		}
 		names[s.Name] = true
-		if err := s.Validate(mod); err != nil {
-			return err
-		}
 	}
 	return nil
 }

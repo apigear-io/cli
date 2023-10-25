@@ -6,17 +6,40 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// Lang represents a programming language
 type Lang string
 
 const (
-	CPP Lang = "cpp"
-	PY  Lang = "py"
-	TS  Lang = "ts"
-	JS  Lang = "js"
-	GO  Lang = "go"
-	UE  Lang = "ue"
-	QT  Lang = "qt"
+	CPP Lang = "cpp" // C++
+	PY  Lang = "py"  // Python
+	TS  Lang = "ts"  // TypeScript
+	JS  Lang = "js"  // JavaScript
+	GO  Lang = "go"  // Go
+	UE  Lang = "ue"  // Unreal Engine C++
+	QT  Lang = "qt"  // Qt C++
 )
+
+// DisplayName returns the display name of the language
+func (l Lang) DisplayName() string {
+	switch l {
+	case CPP:
+		return "C++"
+	case PY:
+		return "Python"
+	case TS:
+		return "TypeScript"
+	case JS:
+		return "JavaScript"
+	case GO:
+		return "Go"
+	case UE:
+		return "Unreal Engine C++"
+	case QT:
+		return "Qt C++"
+	default:
+		return string(l)
+	}
+}
 
 func cppReservedKeywords() []string {
 	return []string{
@@ -181,4 +204,29 @@ func IsKeywordReserved(word string) ([]Lang, bool) {
 		return nil, false
 	}
 	return langs, true
+}
+
+// EscapeKeyword returns the escaped version of the given word
+func EscapeKeyword(word string) string {
+	return word + "_"
+}
+
+// CheckName checks if the given name is a reserved keyword in any language
+// and logs a warning if it is
+func CheckName(name string, scope string) {
+	langs, ok := IsKeywordReserved(name)
+	if ok {
+		log.Warn().Msgf("%s: name %s is a reserved keyword in %s", scope, name, langs)
+	}
+}
+
+// CheckAndEscapeName checks if the given name is a reserved keyword in any language
+// and returns the escaped version of the name if it is.
+func CheckAndEscapeName(name string, scope string) string {
+	langs, ok := IsKeywordReserved(name)
+	if ok {
+		log.Warn().Msgf("%s: name %s is a reserved keyword in %s", scope, name, langs)
+		return EscapeKeyword(name)
+	}
+	return name
 }

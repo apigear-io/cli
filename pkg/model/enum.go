@@ -1,6 +1,10 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/apigear-io/cli/pkg/spec/rkw"
+)
 
 // Enum is an enumeration.
 type Enum struct {
@@ -20,17 +24,18 @@ func NewEnum(name string) *Enum {
 
 // Validate resolves all references in the enum.
 func (e *Enum) Validate(mod *Module) error {
+	rkw.CheckName(e.Name, "enum")
 	names := make(map[string]bool)
 	autoValue := true
 	for _, mem := range e.Members {
-		if names[mem.Name] {
-			return fmt.Errorf("%s: duplicate name: %s", e.Name, mem.Name)
-		}
-		names[mem.Name] = true
 		err := mem.Validate(mod)
 		if err != nil {
 			return err
 		}
+		if names[mem.Name] {
+			return fmt.Errorf("%s: duplicate name: %s", e.Name, mem.Name)
+		}
+		names[mem.Name] = true
 		if mem.Value != 0 {
 			autoValue = false
 		}
@@ -85,5 +90,6 @@ func NewEnumMember(name string, value int) *EnumMember {
 
 // Validate resolves all references in the enum member.
 func (e *EnumMember) Validate(m *Module) error {
+	rkw.CheckName(e.Name, "enum member")
 	return nil
 }
