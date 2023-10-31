@@ -1,14 +1,19 @@
 package model
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/spec/rkw"
 )
 
 type System struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Modules   []*Module `json:"modules" yaml:"modules"`
+	Checksum  string    `json:"checksum" yaml:"checksum"`
 }
 
 func NewSystem(name string) *System {
@@ -95,5 +100,66 @@ func (s *System) Validate() error {
 		}
 		names[m.Name] = true
 	}
+	s.computeIdentifier()
+	err := s.computeChecksum()
+	if err != nil {
+		return err
+	}
+	log.Info().Msgf("system %s resolved: %s", s.Name, s.Checksum)
+	return nil
+}
+
+// TODO: clean up this code
+func (s *System) computeIdentifier() {
+	var idx uint = 1
+	for _, m := range s.Modules {
+		m.Id = idx
+		idx++
+		for _, i := range m.Interfaces {
+			i.Id = idx
+			idx++
+			for _, o := range i.Operations {
+				o.Id = idx
+				idx++
+			}
+			for _, p := range i.Properties {
+				p.Id = idx
+				idx++
+			}
+			for _, s := range i.Signals {
+				s.Id = idx
+				idx++
+			}
+		}
+		for _, s := range m.Structs {
+			s.Id = idx
+			idx++
+			for _, p := range s.Fields {
+				p.Id = idx
+				idx++
+			}
+		}
+		for _, e := range m.Enums {
+			e.Id = idx
+			idx++
+			for _, p := range e.Members {
+				p.Id = idx
+				idx++
+			}
+		}
+	}
+}
+
+// TODO: clean up this code
+func (s *System) computeChecksum() error {
+	var buffer bytes.Buffer
+	for _, m := range s.Modules {
+		if len(m.Checksum) == 0 {
+			return fmt.Errorf("module %s checksum not computed", m.Name)
+		}
+		buffer.WriteString(m.Checksum)
+	}
+	sum := md5.Sum(buffer.Bytes())
+	s.Checksum = hex.EncodeToString(sum[:])
 	return nil
 }

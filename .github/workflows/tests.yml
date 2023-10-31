@@ -6,7 +6,6 @@ on:
     branches:
       - main
 
-
 name: tests
 # tests for all push and pull requests
 # tests only on linux, for release we test on linux and macos, windows
@@ -20,7 +19,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: "1.19.x"
+          go-version: "1.21.x"
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:

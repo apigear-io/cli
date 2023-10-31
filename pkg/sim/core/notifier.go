@@ -2,21 +2,30 @@ package core
 
 import "time"
 
+// OnEventFunc is the type of the event handler function.
 type OnEventFunc func(event *SimuEvent)
 
+// INotifier is the interface for the event notifier.
 type INotifier interface {
 	OnEvent(f OnEventFunc)
 	EmitEvent(e *SimuEvent)
 }
 
+// EventNotifier implements INotifier interface.
 type EventNotifier struct {
 	handlers []OnEventFunc
 }
 
+// ensures that EventNotifier implements INotifier interface.
+var _ INotifier = (*EventNotifier)(nil)
+
+// OnEvent registers the event handler function.
 func (n *EventNotifier) OnEvent(f OnEventFunc) {
 	n.handlers = append(n.handlers, f)
 }
 
+// EmitEvent emits the event to all registered handlers.
+// The event timestamp is set to the current time.
 func (n *EventNotifier) EmitEvent(e *SimuEvent) {
 	e.Timestamp = time.Now()
 	for _, f := range n.handlers {
@@ -24,6 +33,7 @@ func (n *EventNotifier) EmitEvent(e *SimuEvent) {
 	}
 }
 
+// EmitCall emits the call event.
 func (n *EventNotifier) EmitCall(ifaceId string, opName string, args []any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventCall,
@@ -33,6 +43,7 @@ func (n *EventNotifier) EmitCall(ifaceId string, opName string, args []any) {
 	})
 }
 
+// EmitReply emits the reply event.
 func (n *EventNotifier) EmitReply(ifaceId string, opName string, value any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventReply,
@@ -42,6 +53,7 @@ func (n *EventNotifier) EmitReply(ifaceId string, opName string, value any) {
 	})
 }
 
+// EmitSignal emits the signal event.
 func (n *EventNotifier) EmitSignal(ifaceId string, signName string, args []any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventSignal,
@@ -51,6 +63,7 @@ func (n *EventNotifier) EmitSignal(ifaceId string, signName string, args []any) 
 	})
 }
 
+// EmitPropertySet emits the property set event.
 func (n *EventNotifier) EmitPropertySet(ifaceId string, kwargs map[string]any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertySet,
@@ -59,6 +72,7 @@ func (n *EventNotifier) EmitPropertySet(ifaceId string, kwargs map[string]any) {
 	})
 }
 
+// EmitPropertyChanged emits the property changed event.
 func (n *EventNotifier) EmitPropertyChanged(ifaceId string, propName string, value any) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventPropertyChanged,
@@ -67,6 +81,7 @@ func (n *EventNotifier) EmitPropertyChanged(ifaceId string, propName string, val
 	})
 }
 
+// EmitSimuStart emits the simulation start event.
 func (n *EventNotifier) EmitSimuStart(name string) {
 	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStart,
@@ -74,6 +89,7 @@ func (n *EventNotifier) EmitSimuStart(name string) {
 	})
 }
 
+// EmitSimuStop emits the simulation stop event.
 func (n *EventNotifier) EmitSimuStop(name string) {
 	n.EmitEvent(&SimuEvent{
 		Type: EventSimuStop,
@@ -81,6 +97,7 @@ func (n *EventNotifier) EmitSimuStop(name string) {
 	})
 }
 
+// EmitCallError emits the call error event.
 func (n *EventNotifier) EmitCallError(symbol string, name string, err error) {
 	n.EmitEvent(&SimuEvent{
 		Type:   EventError,
@@ -90,6 +107,7 @@ func (n *EventNotifier) EmitCallError(symbol string, name string, err error) {
 	})
 }
 
+// EmitError emits the error event.
 func (n *EventNotifier) EmitError(err error) {
 	n.EmitEvent(&SimuEvent{
 		Type:  EventError,
