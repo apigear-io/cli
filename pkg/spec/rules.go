@@ -24,6 +24,15 @@ const (
 	ScopeEnum      ScopeType = "enum"
 )
 
+func containsString(list []string, value string) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
 type RulesDoc struct {
 	Name     string         `json:"name" yaml:"name"`
 	Features []*FeatureRule `json:"features" yaml:"features"`
@@ -59,41 +68,94 @@ func (r *RulesDoc) ComputeFeatures(wanted []string) error {
 	for _, f := range r.Features {
 		f.Skip = true
 	}
-	for _, f := range wanted {
+	for _, name := range wanted {
 		// return all features if the wanted feature is "all"
-		if f == "all" {
+		if name == "all" {
 			for _, f := range r.Features {
 				f.Skip = false
 			}
+			// we are done
 			return nil
 		}
 	}
-	return r.walkWantedFeatures(wanted)
-}
-
-// walkWantedFeatures walks the dependency graph of the given features.
-func (r *RulesDoc) walkWantedFeatures(features []string) error {
-	// make a set of wanted features
-	if len(features) == 0 {
-		return nil
-	}
-	// if no features are given, then no features are wanted
-	for _, name := range features {
-		// resolve feature by name
+	// check that all wanted features exist
+	for _, name := range wanted {
+		// check if the wanted feature exists at all
 		f := r.FeatureByName(name)
 		if f == nil {
+			return fmt.Errorf("unknown wanted feature %s", name)
+		}
+	}
+	// walk the dependency graph of the wanted features
+	// avoid circular dependencies
+	features := map[string]bool{}
+	for _, f := range r.Features {
+		if !containsString(wanted, f.Name) {
+			// skip features that are not wanted
+			continue
+		}
+		features[f.Name] = true
+		err := r.walkRequired(f.Requires, features)
+		if err != nil {
+			return err
+		}
+	}
+	// enable all features that are required
+	for name := range features {
+		f := r.FeatureByName(name)
+		if f == nil {
+			// required feature does not exist, should not happen
 			return fmt.Errorf("feature %s not found", name)
 		}
-		// mark feature as wanted
 		f.Skip = false
-		// recursively walk the dependency graph
-		err := r.walkWantedFeatures(f.Requires)
+	}
+	return nil
+}
+
+func (r *RulesDoc) walkRequired(required []string, features map[string]bool) error {
+	for _, name := range required {
+		if features[name] {
+			// feature is already enabled
+			// this avoids circular dependencies
+			continue
+		}
+		features[name] = true
+		f := r.FeatureByName(name)
+		if f == nil {
+			// required feature does not exist
+			return fmt.Errorf("feature %s not found", name)
+		}
+		err := r.walkRequired(f.Requires, features)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
 }
+
+// // walkWantedFeatures walks the dependency graph of the given features.
+// func (r *RulesDoc) walkWantedFeatures(features []string) error {
+// 	// make a set of wanted features
+// 	if len(features) == 0 {
+// 		return nil
+// 	}
+// 	// if no features are given, then no features are wanted
+// 	for _, name := range features {
+// 		// resolve feature by name
+// 		f := r.FeatureByName(name)
+// 		if f == nil {
+// 			return fmt.Errorf("feature %s not found", name)
+// 		}
+// 		// mark feature as wanted
+// 		f.Skip = false
+// 		// recursively walk the dependency graph
+// 		err := r.walkWantedFeatures(f.Requires)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }
 
 func (r *RulesDoc) FeatureNamesMap() map[string]bool {
 	m := make(map[string]bool, len(r.Features))
