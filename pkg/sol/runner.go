@@ -142,7 +142,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if doc.Meta == nil {
 			doc.Meta = make(map[string]interface{})
 		}
-		doc.Meta["Layer"] = layer
+		doc.Meta["Layer"] = target
 		doc.Meta["App"] = struct {
 			Version string
 			Date    string

@@ -28,7 +28,7 @@ func TestChecksum(t *testing.T) {
 	var module Module
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, err)
-	err = module.compute()
+	err = module.Validate()
 	assert.NoError(t, err)
 	module.computeChecksum()
 	assert.Equal(t, "aacb40d122fb8a126754d15e1c78e2ad", module.Checksum)
