@@ -2,8 +2,6 @@ package rkw
 
 import (
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 // Lang represents a programming language
@@ -192,7 +190,12 @@ func IsKeywordReservedInLang(lang Lang, word string) bool {
 	if !ok {
 		return false
 	}
-	return slices.Contains(keywords, word)
+	for _, keyword := range keywords {
+		if keyword == word {
+			return true
+		}
+	}
+	return false
 }
 
 // IsKeywordReserved returns true if the word is a reserved keyword in any language
