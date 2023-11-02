@@ -1,5 +1,5 @@
 schema: apigear.solution/1.0
-layers:
+targets:
   - name: demo
     output: ../tmp
     inputs:

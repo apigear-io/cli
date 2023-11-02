@@ -15,8 +15,10 @@ interfaces:
           - $set: { count: 0 }
 sequences:
   - name: counting
-    loop: true
+    loops: 10
+    forever: false
     interval: 1000
+    interface: demo.Counter
     steps:
       - name: count up
         actions:
