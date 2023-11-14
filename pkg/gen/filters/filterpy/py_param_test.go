@@ -7,6 +7,7 @@ import (
 )
 
 func TestParam(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string
@@ -48,6 +49,7 @@ func TestParam(t *testing.T) {
 }
 
 func TestParamSymbols(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string

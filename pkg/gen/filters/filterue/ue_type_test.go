@@ -9,6 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestType(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
@@ -48,6 +49,7 @@ func TestType(t *testing.T) {
 }
 
 func TestTypeSymbols(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string

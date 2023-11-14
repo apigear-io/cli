@@ -9,6 +9,7 @@ import (
 // test with all the types
 // properties, operations params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
@@ -48,6 +49,7 @@ func TestDefaultFromIdl(t *testing.T) {
 }
 
 func TestDefaultSymbolsFromIdl(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string

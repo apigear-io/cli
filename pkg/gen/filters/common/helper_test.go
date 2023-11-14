@@ -7,6 +7,7 @@ import (
 )
 
 func TestIntToWordLower(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in   int
 		pre  string
@@ -32,6 +33,7 @@ func TestIntToWordLower(t *testing.T) {
 }
 
 func TestIntToWordCamel(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in   int
 		pre  string
@@ -57,6 +59,7 @@ func TestIntToWordCamel(t *testing.T) {
 }
 
 func TestIntToWordUpper(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in   int
 		pre  string
@@ -81,6 +84,7 @@ func TestIntToWordUpper(t *testing.T) {
 }
 
 func TestPluralize(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in  string
 		n   int
@@ -104,6 +108,7 @@ func TestPluralize(t *testing.T) {
 }
 
 func TestAbbreviate(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in  string
 		out string

@@ -7,6 +7,7 @@ import (
 )
 
 func TestParam(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string

@@ -3,6 +3,7 @@ package common
 import "testing"
 
 func TestSnakeCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in    string
 		lower string
@@ -36,6 +37,7 @@ func TestSnakeCase(t *testing.T) {
 }
 
 func TestCamelCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in    string
 		lower string
@@ -69,6 +71,7 @@ func TestCamelCase(t *testing.T) {
 }
 
 func TestDotCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in    string
 		lower string
@@ -102,6 +105,7 @@ func TestDotCase(t *testing.T) {
 }
 
 func TestKebabCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in    string
 		lower string
@@ -135,6 +139,7 @@ func TestKebabCase(t *testing.T) {
 }
 
 func TestPathCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in    string
 		lower string
@@ -168,6 +173,7 @@ func TestPathCase(t *testing.T) {
 }
 
 func TestUpperCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		up string
@@ -189,6 +195,7 @@ func TestUpperCase(t *testing.T) {
 }
 
 func TestLowerCase(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		lw string

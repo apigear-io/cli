@@ -10,6 +10,7 @@ import (
 )
 
 func TestNSOpen(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		in  string
 		out string
@@ -46,6 +47,7 @@ func TestNSClose(t *testing.T) {
 }
 
 func TestNS(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		in  string
 		out string

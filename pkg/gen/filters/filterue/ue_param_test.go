@@ -7,6 +7,7 @@ import (
 )
 
 func TestParam(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string
@@ -48,6 +49,7 @@ func TestParam(t *testing.T) {
 }
 
 func TestParamSymbols(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string
@@ -76,6 +78,7 @@ func TestParamSymbols(t *testing.T) {
 }
 
 func TestParamWithErrors(t *testing.T) {
+	t.Parallel()
 	s, err := ueParam("", nil)
 	assert.Error(t, err)
 	assert.Equal(t, "xxx", s)

@@ -7,6 +7,7 @@ import (
 )
 
 func TestTypeRef(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string
@@ -45,6 +46,7 @@ func TestTypeRef(t *testing.T) {
 }
 
 func TestTypeRefSymbols(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		mn string
 		in string

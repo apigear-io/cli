@@ -3,6 +3,7 @@ package common
 import "testing"
 
 func TestUpperFirst(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		up string
@@ -24,6 +25,7 @@ func TestUpperFirst(t *testing.T) {
 }
 
 func TestLowerFirst(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		lw string
@@ -45,6 +47,7 @@ func TestLowerFirst(t *testing.T) {
 }
 
 func TestFirstChar(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		ch string
@@ -66,6 +69,7 @@ func TestFirstChar(t *testing.T) {
 }
 
 func TestFirstCharUpperAndLower(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in string
 		u  string
@@ -93,6 +97,7 @@ func TestFirstCharUpperAndLower(t *testing.T) {
 }
 
 func TestJoin(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in  []string
 		sep string
@@ -117,6 +122,7 @@ func TestJoin(t *testing.T) {
 }
 
 func TestTrimPrefix(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in     string
 		prefix string
@@ -141,6 +147,7 @@ func TestTrimPrefix(t *testing.T) {
 }
 
 func TestTrimSuffix(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in     string
 		suffix string
@@ -165,6 +172,7 @@ func TestTrimSuffix(t *testing.T) {
 }
 
 func TestReplace(t *testing.T) {
+	t.Parallel()
 	var tests = []struct {
 		in  string
 		old string

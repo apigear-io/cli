@@ -9,6 +9,7 @@ import (
 // test with all the types
 // properties, operation params, operation return, signal params, struct fields
 func TestDefaultFromIdl(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
@@ -47,6 +48,7 @@ func TestDefaultFromIdl(t *testing.T) {
 }
 
 func TestDefaultSymbolsFromIdl(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn  string
@@ -76,6 +78,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 }
 
 func TestDefaultWithErrors(t *testing.T) {
+	t.Parallel()
 	s, err := ueDefault("", nil)
 	assert.Error(t, err)
 	assert.Equal(t, "xxx", s)

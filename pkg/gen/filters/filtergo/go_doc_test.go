@@ -8,6 +8,7 @@ import (
 )
 
 func TestDoc(t *testing.T) {
+	t.Parallel()
 	table := []struct {
 		in string
 		rt string
