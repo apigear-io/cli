@@ -4,6 +4,8 @@ features:
       - match: system
         documents:
           - { source: "system.name.tpl", target: "system-force.txt", force: true }
+          - { source: "system.name.tpl", target: "system-not-force.txt", force: false }
       - match: module
         documents:
           - { source: "module.name.tpl", target: "module-force.txt", force: true }
+          - { source: "module.name.tpl", target: "module-not-force.txt", force: false }

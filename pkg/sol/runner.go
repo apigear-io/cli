@@ -111,8 +111,8 @@ func RunSolutionSource(ctx context.Context, source string, force bool) error {
 		return err
 	}
 	if force {
-		for _, layer := range doc.Targets {
-			layer.Force = true
+		for _, target := range doc.Targets {
+			target.Force = true
 		}
 	}
 	return runSolution(doc)
@@ -153,12 +153,12 @@ func runSolution(doc *spec.SolutionDoc) error {
 			Commit:  cfg.BuildCommit(),
 		}
 		opts := gen.GeneratorOptions{
-			OutputDir:    outDir,
-			TemplatesDir: target.TemplatesDir,
-			System:       system,
-			UserFeatures: target.Features,
-			UserForce:    target.Force,
-			Meta:         doc.Meta,
+			OutputDir:      outDir,
+			TemplatesDir:   target.TemplatesDir,
+			System:         system,
+			TargetFeatures: target.Features,
+			TargetForce:    target.Force,
+			Meta:           doc.Meta,
 		}
 		g, err := gen.New(opts)
 		if err != nil {

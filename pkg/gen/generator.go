@@ -49,10 +49,10 @@ type GeneratorOptions struct {
 	TemplatesDir string
 	// System is the root system model
 	System *model.System
-	// UserFeatures is a list of features defined by user
-	UserFeatures []string
-	// UserForce forces overwrite of existing files
-	UserForce bool
+	// TargetFeatures is a list of features defined by user
+	TargetFeatures []string
+	// TargetForce forces overwrite of existing files
+	TargetForce bool
 	// Output is the output writer
 	Output OutputWriter
 	// DryRun does not write files
@@ -65,9 +65,9 @@ type GeneratorOptions struct {
 type generator struct {
 	Template         *template.Template
 	System           *model.System
-	UserFeatures     []string // features defined by user
+	TargetFeatures   []string // features defined by user
 	ComputedFeatures map[string]bool
-	UserForce        bool // force overwrite
+	TargetForce      bool // force overwrite
 	TemplatesDir     string
 	OutputDir        string
 	DryRun           bool
@@ -83,19 +83,19 @@ func New(o GeneratorOptions) (*generator, error) {
 	if o.System == nil {
 		return nil, fmt.Errorf("system is required")
 	}
-	if len(o.UserFeatures) == 0 {
-		o.UserFeatures = []string{"all"}
+	if len(o.TargetFeatures) == 0 {
+		o.TargetFeatures = []string{"all"}
 	}
 	g := &generator{
-		OutputDir:    o.OutputDir,
-		Template:     template.New(""),
-		UserForce:    o.UserForce,
-		System:       o.System,
-		TemplatesDir: o.TemplatesDir,
-		UserFeatures: o.UserFeatures,
-		DryRun:       o.DryRun,
-		Output:       o.Output,
-		Meta:         o.Meta,
+		OutputDir:      o.OutputDir,
+		Template:       template.New(""),
+		TargetForce:    o.TargetForce,
+		TargetFeatures: o.TargetFeatures,
+		System:         o.System,
+		TemplatesDir:   o.TemplatesDir,
+		DryRun:         o.DryRun,
+		Output:         o.Output,
+		Meta:           o.Meta,
 		Stats: GeneratorStats{
 			RunStart:     time.Now(),
 			FilesTouched: []string{},
@@ -158,7 +158,7 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	if g.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	err := doc.ComputeFeatures(g.UserFeatures)
+	err := doc.ComputeFeatures(g.TargetFeatures)
 	if err != nil {
 		return err
 	}
@@ -296,7 +296,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	}
 	if doc.Raw {
 		// copy the source to the target
-		err := g.CopyFile(source, target, g.UserForce)
+		err := g.CopyFile(source, target, g.TargetForce)
 		if err != nil {
 			log.Warn().Msgf("copy file %s to %s: %s", source, target, err)
 			return err
@@ -363,6 +363,16 @@ func (g *generator) RenderFile(source, target string, ctx any, docForce bool) er
 }
 
 func (g *generator) WriteFile(input []byte, target string, docForce bool) error {
+	// docForce | targetForce | fileExits | action
+	// ------------------------------------------------
+	// false    | false       | true      | skip
+	// false    | false       | false     | write
+	// false    | true        | true      | write
+	// false    | true        | false     | write
+	// true     | false       | true      | skip
+	// true     | false       | false     | write
+	// true     | true        | true      | write
+	// true     | true        | false     | write
 	target = helper.Join(g.OutputDir, target)
 	// whatever happens, an existing user editable file is never overwritten
 	if !docForce && helper.IsFile(target) {
@@ -370,8 +380,7 @@ func (g *generator) WriteFile(input []byte, target string, docForce bool) error 
 		log.Debug().Msgf("skipping user editable file %s", target)
 		return nil
 	}
-	userForce := g.UserForce
-	if !userForce {
+	if docForce && !g.TargetForce {
 		same, err := g.Output.Compare(input, target)
 		if err != nil {
 			return err
