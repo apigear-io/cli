@@ -71,6 +71,7 @@ func TestHelloRules(t *testing.T) {
 }
 
 func TestHelloForcedRules(t *testing.T) {
+	t.Parallel()
 	g := createGenerator(t)
 	g.TargetForce = true
 	r := readRules(t, "testdata/test-force.rules.yaml")
@@ -82,6 +83,7 @@ func TestHelloForcedRules(t *testing.T) {
 }
 
 func TestForce(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		Name         string
 		TargetForce  bool
