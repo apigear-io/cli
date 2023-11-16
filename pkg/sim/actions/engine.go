@@ -87,6 +87,14 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 	return nil
 }
 
+func (e *Engine) ActiveScenarios() []string {
+	result := make([]string, 0)
+	for _, entry := range e.entries {
+		result = append(result, entry.Source)
+	}
+	return result
+}
+
 func (a *Engine) UnloadScenario(source string) error {
 	// make sure all players are stopped
 	a.StopAllSequences()
@@ -164,7 +172,7 @@ func (e *Engine) PlayAllSequences(ctx context.Context) error {
 	log.Debug().Msgf("actions engine play all sequences")
 	for _, entry := range e.entries {
 		for _, p := range entry.Players {
-			e.EmitSimuStart(p.SequenceName())
+			e.EmitSeqStart(p.SequenceName())
 			err := p.Play(ctx)
 			if err != nil {
 				log.Error().Err(err).Msgf("play sequence %s", p.SequenceName())
@@ -178,7 +186,7 @@ func (e *Engine) StopAllSequences() {
 	log.Debug().Msgf("actions engine stop all sequence players")
 	for _, entry := range e.entries {
 		for _, p := range entry.Players {
-			e.EmitSimuStop(p.SequenceName())
+			e.EmitSeqStop(p.SequenceName())
 			err := p.Stop()
 			if err != nil {
 				log.Warn().Msgf("stop sequence player %s: %v", p.SequenceName(), err)
@@ -192,7 +200,7 @@ func (e *Engine) PlaySequence(ctx context.Context, name string) error {
 	if p == nil {
 		return fmt.Errorf("sequence player %s not found", name)
 	}
-	e.EmitSimuStart(name)
+	e.EmitSeqStart(name)
 	return p.Play(ctx)
 }
 
@@ -201,6 +209,6 @@ func (e *Engine) StopSequence(name string) error {
 	if p != nil {
 		return fmt.Errorf("sequence player %s not found", name)
 	}
-	e.EmitSimuStop(name)
+	e.EmitSeqStop(name)
 	return p.Stop()
 }

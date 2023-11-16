@@ -81,18 +81,18 @@ func (n *EventNotifier) EmitPropertyChanged(ifaceId string, propName string, val
 	})
 }
 
-// EmitSimuStart emits the simulation start event.
-func (n *EventNotifier) EmitSimuStart(name string) {
+// EmitSeqStart emits the simulation start event.
+func (n *EventNotifier) EmitSeqStart(name string) {
 	n.EmitEvent(&SimuEvent{
-		Type: EventSimuStart,
+		Type: EventSeqStart,
 		Name: name,
 	})
 }
 
-// EmitSimuStop emits the simulation stop event.
-func (n *EventNotifier) EmitSimuStop(name string) {
+// EmitSeqStop emits the simulation stop event.
+func (n *EventNotifier) EmitSeqStop(name string) {
 	n.EmitEvent(&SimuEvent{
-		Type: EventSimuStop,
+		Type: EventSeqStop,
 		Name: name,
 	})
 }

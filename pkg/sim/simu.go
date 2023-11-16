@@ -61,6 +61,10 @@ func (s *Simulation) UnloadScenario(source string) error {
 	return s.aEng.UnloadScenario(source)
 }
 
+func (s *Simulation) ActiveScenarios() []string {
+	return s.aEng.ActiveScenarios()
+}
+
 func (s *Simulation) LoadScript(source string, script string) error {
 	_, err := s.sEng.LoadScript(source, script)
 	if err != nil {

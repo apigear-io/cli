@@ -9,16 +9,16 @@ import (
 var _ IEngine = (*MultiEngine)(nil)
 
 type MultiEngine struct {
-	entries []IEngine
+	engines []IEngine
 	EventNotifier
 }
 
-func NewMultiEngine(entries ...IEngine) *MultiEngine {
+func NewMultiEngine(engines ...IEngine) *MultiEngine {
 	e := &MultiEngine{
-		entries: entries,
+		engines: engines,
 	}
-	for _, entry := range entries {
-		e.registerNotifier(entry)
+	for _, engine := range engines {
+		e.registerNotifier(engine)
 	}
 	return e
 }
@@ -31,8 +31,8 @@ func (e *MultiEngine) registerNotifier(engine IEngine) {
 
 // HasInterface returns true if the interface is served by the simulation.
 func (e *MultiEngine) HasInterface(ifaceId string) bool {
-	for _, entry := range e.entries {
-		if entry.HasInterface(ifaceId) {
+	for _, engine := range e.engines {
+		if engine.HasInterface(ifaceId) {
 			return true
 		}
 	}
@@ -53,9 +53,9 @@ func (e *MultiEngine) InvokeOperation(ifaceId string, name string, args []any) (
 }
 
 func (e *MultiEngine) invokeOperation(ifaceId string, name string, args []any) (any, error) {
-	for _, entry := range e.entries {
-		if entry.HasInterface(ifaceId) {
-			return entry.InvokeOperation(ifaceId, name, args)
+	for _, engine := range e.engines {
+		if engine.HasInterface(ifaceId) {
+			return engine.InvokeOperation(ifaceId, name, args)
 		}
 	}
 	return nil, fmt.Errorf("operation %s/%s not found", ifaceId, name)
@@ -72,7 +72,7 @@ func (e *MultiEngine) SetProperties(ifaceId string, props map[string]any) error 
 }
 
 func (e *MultiEngine) setProperties(ifaceId string, props map[string]any) error {
-	for _, entry := range e.entries {
+	for _, entry := range e.engines {
 		if entry.HasInterface(ifaceId) {
 			return entry.SetProperties(ifaceId, props)
 		}
@@ -82,17 +82,17 @@ func (e *MultiEngine) setProperties(ifaceId string, props map[string]any) error 
 
 // FetchProperties fetches the properties of the interface.
 func (e *MultiEngine) GetProperties(ifaceId string) (map[string]any, error) {
-	for _, entry := range e.entries {
-		if entry.HasInterface(ifaceId) {
-			return entry.GetProperties(ifaceId)
+	for _, engine := range e.engines {
+		if engine.HasInterface(ifaceId) {
+			return engine.GetProperties(ifaceId)
 		}
 	}
 	return nil, fmt.Errorf("interface %s not found", ifaceId)
 }
 
 func (e *MultiEngine) HasSequence(sequencerId string) bool {
-	for _, entry := range e.entries {
-		if entry.HasSequence(sequencerId) {
+	for _, engine := range e.engines {
+		if engine.HasSequence(sequencerId) {
 			return true
 		}
 	}
@@ -100,9 +100,9 @@ func (e *MultiEngine) HasSequence(sequencerId string) bool {
 }
 
 func (e *MultiEngine) PlaySequence(ctx context.Context, sequenceId string) error {
-	for _, entry := range e.entries {
-		if entry.HasSequence(sequenceId) {
-			return entry.PlaySequence(ctx, sequenceId)
+	for _, engine := range e.engines {
+		if engine.HasSequence(sequenceId) {
+			return engine.PlaySequence(ctx, sequenceId)
 		}
 	}
 	return fmt.Errorf("sequence %s not found", sequenceId)
@@ -110,9 +110,9 @@ func (e *MultiEngine) PlaySequence(ctx context.Context, sequenceId string) error
 
 func (e *MultiEngine) StopSequence(sequenceId string) error {
 	var lastError error
-	for _, entry := range e.entries {
-		if entry.HasSequence(sequenceId) {
-			lastError = entry.StopSequence(sequenceId)
+	for _, engine := range e.engines {
+		if engine.HasSequence(sequenceId) {
+			lastError = engine.StopSequence(sequenceId)
 		}
 	}
 	return lastError
@@ -120,14 +120,14 @@ func (e *MultiEngine) StopSequence(sequenceId string) error {
 
 func (e *MultiEngine) PlayAllSequences(ctx context.Context) error {
 	var lastError error
-	for _, entry := range e.entries {
-		lastError = entry.PlayAllSequences(ctx)
+	for _, engine := range e.engines {
+		lastError = engine.PlayAllSequences(ctx)
 	}
 	return lastError
 }
 
 func (e *MultiEngine) StopAllSequences() {
-	for _, entry := range e.entries {
-		entry.StopAllSequences()
+	for _, engine := range e.engines {
+		engine.StopAllSequences()
 	}
 }
