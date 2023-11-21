@@ -61,7 +61,7 @@ func (e *MultiEngine) invokeOperation(ifaceId string, name string, args []any) (
 	return nil, fmt.Errorf("operation %s/%s not found", ifaceId, name)
 }
 
-// SetProperties sets the properties of the interface.
+// SetProperties updates the properties of the interface.
 func (e *MultiEngine) SetProperties(ifaceId string, props map[string]any) error {
 	err := e.setProperties(ifaceId, props)
 	e.EmitPropertySet(ifaceId, props)

@@ -12,7 +12,7 @@ import (
 
 type Method func(args core.Args) (core.Any, error)
 
-// SimuSource is a generic source for simulation.
+// SimuSource is a generic object-link source for simulation.
 type SimuSource struct {
 	Id       string
 	Registry *remote.Registry
@@ -48,6 +48,9 @@ func (s *SimuSource) Invoke(name string, args core.Args) (core.Any, error) {
 		signal := strings.TrimPrefix(name, "$signal.")
 		s.NotifySignal(signal, args)
 		return nil, nil
+	}
+	if name == "$get" {
+		return s.CollectProperties()
 	}
 	return s.Simu.InvokeOperation(s.Id, name, args)
 }

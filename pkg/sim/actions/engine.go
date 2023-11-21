@@ -131,6 +131,7 @@ func (e *Engine) InvokeOperation(ifaceId string, opName string, args []any) (any
 	}
 	result, err := e.eval.EvalActions(ifaceId, op.Actions)
 	if err != nil {
+		log.Error().Err(err).Msgf("%s/%s error", ifaceId, opName)
 		e.EmitCallError(ifaceId, opName, err)
 		return nil, err
 	}
@@ -141,9 +142,9 @@ func (e *Engine) InvokeOperation(ifaceId string, opName string, args []any) (any
 	return result, nil
 }
 
-// SetProperties sets the properties of the interface.
+// SetProperties updates the properties of the interface.
 func (e *Engine) SetProperties(symbol string, props map[string]any) error {
-	e.store.Set(symbol, props)
+	e.store.Update(symbol, props)
 	return nil
 }
 

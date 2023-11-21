@@ -21,26 +21,26 @@ func (m *MemoryStore) Set(key string, kwargs map[string]any) {
 	m.objects[key] = kwargs
 	// notify watchers
 	m.notify(StoreEvent{
-		Type:  EventTypeCreate,
-		Id:    key,
-		Value: m.objects[key],
+		Type:   EventTypeSet,
+		Id:     key,
+		KWArgs: m.objects[key],
 	})
 }
 
-// Update an object in the store by id and partial properties
-func (m *MemoryStore) Update(id string, kwargs map[string]any) {
-	if !m.Has(id) {
-		m.Set(id, kwargs)
+// Update an object in the store by key and partial properties
+func (m *MemoryStore) Update(key string, kwargs map[string]any) {
+	if !m.Has(key) {
+		m.Set(key, kwargs)
 		return
 	}
 	for k, v := range kwargs {
-		m.objects[id][k] = v
+		m.objects[key][k] = v
 	}
 	// notify watchers
 	m.notify(StoreEvent{
-		Type:  EventTypeUpdate,
-		Id:    id,
-		Value: m.objects[id],
+		Type:   EventTypeUpdate,
+		Id:     key,
+		KWArgs: m.objects[key],
 	})
 }
 
@@ -49,9 +49,9 @@ func (m *MemoryStore) Delete(key string) {
 	delete(m.objects, key)
 	// notify watchers
 	m.notify(StoreEvent{
-		Type:  EventTypeDelete,
-		Id:    key,
-		Value: nil,
+		Type:   EventTypeDelete,
+		Id:     key,
+		KWArgs: nil,
 	})
 }
 

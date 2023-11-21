@@ -85,9 +85,6 @@ func (e *eval) actionSet(ifaceId string, kwargs map[string]any) (any, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.store.Update(ifaceId, kwargs)
-	for k := range kwargs {
-		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
-	}
 	return nil, nil
 }
 

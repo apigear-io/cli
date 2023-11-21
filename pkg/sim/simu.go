@@ -38,8 +38,8 @@ func NewSimulation() *Simulation {
 func (s *Simulation) init() {
 	s.store.OnEvent(func(evt ostore.StoreEvent) {
 		switch evt.Type {
-		case ostore.EventTypeCreate, ostore.EventTypeUpdate:
-			for prop, val := range evt.Value {
+		case ostore.EventTypeSet, ostore.EventTypeUpdate:
+			for prop, val := range evt.KWArgs {
 				s.EmitPropertyChanged(evt.Id, prop, val)
 			}
 		}
