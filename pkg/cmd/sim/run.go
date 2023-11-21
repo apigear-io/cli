@@ -75,7 +75,7 @@ Using a scenario you can define additional static and scripted data and behavior
 					"scenario": source,
 				}
 				tm.Register(source, meta, run)
-				tm.Run(ctx, source)
+				// watch will initiate the task and run it in a goroutine
 				err := tm.Watch(ctx, source, source)
 				if err != nil {
 					log.Error().Err(err).Str("scenario", source).Msg("run scenario")
