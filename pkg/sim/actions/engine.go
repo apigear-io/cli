@@ -48,6 +48,7 @@ func (e *Engine) ScenarioBySource(source string) *ScenarioEntry {
 }
 
 func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
+	log.Info().Msgf("loading scenario %s", source)
 
 	entry := e.ScenarioBySource(source)
 	if entry != nil {
@@ -70,7 +71,9 @@ func (e *Engine) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 		if iface.Name == "" {
 			return fmt.Errorf("interface %v has no name", iface)
 		}
-		log.Debug().Msgf("registering interface %s", iface.Name)
+		log.Info().Msgf("registering interface %s", iface.Name)
+		log.Info().Msgf("set initial properties for interface %s", iface.Name)
+		e.store.Set(iface.Name, iface.Properties)
 	}
 	for _, seq := range entry.Doc.Sequences {
 		log.Debug().Msgf("registering sequence %s", seq.Name)
