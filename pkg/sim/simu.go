@@ -38,8 +38,8 @@ func NewSimulation() *Simulation {
 func (s *Simulation) init() {
 	s.store.OnEvent(func(evt ostore.StoreEvent) {
 		switch evt.Type {
-		case ostore.EventTypeCreate, ostore.EventTypeUpdate:
-			for prop, val := range evt.Value {
+		case ostore.EventTypeSet, ostore.EventTypeUpdate:
+			for prop, val := range evt.KWArgs {
 				s.EmitPropertyChanged(evt.Id, prop, val)
 			}
 		}
@@ -59,6 +59,10 @@ func (s *Simulation) LoadScenario(source string, doc *spec.ScenarioDoc) error {
 func (s *Simulation) UnloadScenario(source string) error {
 	log.Debug().Msgf("simulation unload scenario: %s", source)
 	return s.aEng.UnloadScenario(source)
+}
+
+func (s *Simulation) ActiveScenarios() []string {
+	return s.aEng.ActiveScenarios()
 }
 
 func (s *Simulation) LoadScript(source string, script string) error {

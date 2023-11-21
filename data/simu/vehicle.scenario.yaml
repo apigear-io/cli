@@ -1,0 +1,50 @@
+schema: apigear.scenario/1.0
+
+name: car
+version: "1.0"
+
+interfaces:
+  - name: car.Vehicle
+    properties:
+      doorFrontLeft: false
+      speed: 0
+      gear: 0
+      engine: false
+    operations:
+      - name: openDoorFrontLeft
+        actions:
+          - $set: { doorFrontLeft: true }
+      - name: switchEngineOn
+        actions:
+          - $set: { engine: true }
+      - name: switchEngineOff
+        actions:
+          - $set: { engine: false }      
+sequences:
+  - name: drive
+    interface: car.Vehicle
+    loops: 10
+    interval: 1000
+    steps:
+      - name: close all doors
+        actions:
+          - $set: { doorFrontLeft: false }
+      - name: switch engine on and set gear
+        actions:
+          - $set: { engine: true }
+          - $set: { gear: 1 }
+      - name: accelerate
+        actions:
+          - $set: { speed: 200 }
+      - name: decelerate
+        actions:
+          - $set: { speed: 0 }
+      - name: set gear to 0
+        actions:
+          - $set: { gear: 0 }
+      - name: switch engine off
+        actions:
+          - $set: { engine: false }
+      - name: open door
+        actions:
+          - $set: { doorFrontLeft: true }

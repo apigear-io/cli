@@ -8,7 +8,7 @@ func (e EventType) String() string {
 	switch e {
 	case EventTypeNone:
 		return "none"
-	case EventTypeCreate:
+	case EventTypeSet:
 		return "create"
 	case EventTypeUpdate:
 		return "update"
@@ -21,7 +21,7 @@ func (e EventType) String() string {
 
 const (
 	EventTypeNone EventType = iota
-	EventTypeCreate
+	EventTypeSet
 	EventTypeUpdate
 	EventTypeDelete
 )
@@ -32,7 +32,7 @@ type StoreEvent struct {
 	// The id of the object
 	Id string
 	// The properties of the object
-	Value map[string]any
+	KWArgs map[string]any
 }
 
 func (e StoreEvent) IsNone() bool {

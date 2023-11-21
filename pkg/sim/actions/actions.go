@@ -28,7 +28,6 @@ func NewActionsEvaluator(engine core.IEngine, store ostore.IObjectStore) *eval {
 		actions: map[string]ActionHandler{},
 	}
 	e.register("$set", e.actionSet)
-	e.register("$update", e.actionUpdate)
 	e.register("$return", e.actionReturn)
 	e.register("$signal", e.actionSignal)
 	e.register("$change", e.actionChange)
@@ -85,23 +84,7 @@ func (e *eval) actionSet(ifaceId string, kwargs map[string]any) (any, error) {
 	log.Debug().Fields(kwargs).Msg("$set")
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.store.Set(ifaceId, kwargs)
-	for k := range kwargs {
-		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
-	}
-	return nil, nil
-}
-
-// actionUpdate updates partial properties of the interface and notifies the change.
-// Otherwise it is the same as $set.
-func (e *eval) actionUpdate(ifaceId string, kwargs map[string]any) (any, error) {
-	log.Debug().Msgf("$update: %v", kwargs)
-	e.mu.Lock()
-	defer e.mu.Unlock()
 	e.store.Update(ifaceId, kwargs)
-	for k := range kwargs {
-		e.EmitPropertyChanged(ifaceId, k, kwargs[k])
-	}
 	return nil, nil
 }
 

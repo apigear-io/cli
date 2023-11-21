@@ -6,27 +6,30 @@ version: "1.0"
 interfaces:
   - name: demo.Counter
     properties:
-      count: 0
+      count: 101
+      actions: 102
     operations:
       - name: increment
         actions:
-          - $set: { count: 1 }
-          - $change: { count: 1 }
-          - $signal: { shutdown: [1] }
+          - $set: { count: 111 }
       - name: decrement
         actions:
-          - $set: { count: 0 }
-          - $change: { count: 0 }
+          - $set: { count: 121 }
+      - name: error
+        actions:
+          - $xset: { count: 111 }
 sequences:
   - name: counter
     interface: demo.Counter
     loops: 10
-    interval: 1000
+    interval: 2000
     steps:
-      - name: inc
+      - name: set count
         actions:
-          - $set: { count: 1 }
-          - $change: { count: 1 }
-      - name: dec
+          - $set: { count: 211 }
+      - name: change count
         actions:
-          - $set: { count: 0 }
+          - $change: { count: 212 }
+      - name: set actions
+        actions:
+          - $set: { actions: 213 }

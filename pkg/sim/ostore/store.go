@@ -13,9 +13,9 @@ var (
 
 type IObjectStore interface {
 	// Set properties by key
-	Set(key string, value map[string]any)
+	Set(key string, kwargs map[string]any)
 	// Update properties by key
-	Update(key string, value map[string]any)
+	Update(key string, kwargs map[string]any)
 	// Get properties by key
 	Get(key string) map[string]any
 	// Delete properties by key

@@ -57,9 +57,9 @@ func TestWatch(t *testing.T) {
 	})
 	store.Set("foo", map[string]any{"bar": "baz"})
 
-	assert.Equal(t, EventTypeCreate, event.Type)
+	assert.Equal(t, EventTypeSet, event.Type)
 	assert.Equal(t, "foo", event.Id)
-	assert.Equal(t, "baz", event.Value["bar"])
+	assert.Equal(t, "baz", event.KWArgs["bar"])
 }
 
 // TestWatchStop tests the WatchStop method
@@ -70,15 +70,15 @@ func TestWatchStop(t *testing.T) {
 		event = evt
 	})
 	store.Set("foo", map[string]any{"bar": "baz"})
-	assert.Equal(t, EventTypeCreate, event.Type)
+	assert.Equal(t, EventTypeSet, event.Type)
 	assert.Equal(t, "foo", event.Id)
-	assert.Equal(t, "baz", event.Value["bar"])
+	assert.Equal(t, "baz", event.KWArgs["bar"])
 	event = StoreEvent{}
 	unWatch()
 	store.Update("foo", map[string]any{"bar": "qux"})
 	assert.Equal(t, EventTypeNone, event.Type)
 	assert.Equal(t, "", event.Id)
-	assert.Nil(t, event.Value)
+	assert.Nil(t, event.KWArgs)
 }
 
 // TestWatchUpdate tests the WatchUpdate method
@@ -92,7 +92,7 @@ func TestWatchUpdate(t *testing.T) {
 	store.Update("foo", map[string]any{"bar": "qux"})
 	assert.Equal(t, EventTypeUpdate, event.Type)
 	assert.Equal(t, "foo", event.Id)
-	assert.Equal(t, "qux", event.Value["bar"])
+	assert.Equal(t, "qux", event.KWArgs["bar"])
 }
 
 // TestWatchDelete tests the WatchDelete method
@@ -106,7 +106,7 @@ func TestWatchDelete(t *testing.T) {
 	store.Delete("foo")
 	assert.Equal(t, EventTypeDelete, event.Type)
 	assert.Equal(t, "foo", event.Id)
-	assert.Nil(t, event.Value)
+	assert.Nil(t, event.KWArgs)
 }
 
 // TestWatchCreate tests the WatchCreate method
@@ -117,7 +117,7 @@ func TestWatchCreate(t *testing.T) {
 		event = evt
 	})
 	store.Set("foo", map[string]any{"bar": "baz"})
-	assert.Equal(t, EventTypeCreate, event.Type)
+	assert.Equal(t, EventTypeSet, event.Type)
 	assert.Equal(t, "foo", event.Id)
-	assert.Equal(t, "baz", event.Value["bar"])
+	assert.Equal(t, "baz", event.KWArgs["bar"])
 }

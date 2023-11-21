@@ -5,8 +5,8 @@ import "time"
 type SimuEventType string
 
 const (
-	EventSimuStart       SimuEventType = "start"
-	EventSimuStop        SimuEventType = "stop"
+	EventSeqStart        SimuEventType = "start"
+	EventSeqStop         SimuEventType = "stop"
 	EventCall            SimuEventType = "call"
 	EventReply           SimuEventType = "response"
 	EventSignal          SimuEventType = "signal"

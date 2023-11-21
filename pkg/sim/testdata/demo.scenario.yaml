@@ -24,3 +24,17 @@ interfaces:
       - name: bad2
         actions:
           - $set: {}
+
+sequences:
+  - name: counting
+    interface: demo.Counter
+    loops: 10
+    forever: true
+    interval: 1000
+    steps:
+      - name: count up
+        actions:
+          - $set: { count: 1 }
+      - name: count down
+        actions:
+          - $set: { count: 0 }

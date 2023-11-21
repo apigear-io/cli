@@ -1,0 +1,10 @@
+schema: apigear.scenario/1.0
+
+name: demo
+version: "1.0"
+
+interfaces:
+  - name: demo.Counter
+    properties:
+      count: 10
+      actions: 11
