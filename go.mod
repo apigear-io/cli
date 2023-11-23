@@ -19,7 +19,6 @@ require (
 	github.com/ettle/strcase v0.1.1
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gertd/go-pluralize v0.2.1
-	github.com/getsentry/sentry-go v0.24.1
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-git/go-git/v5 v5.9.0
 	github.com/gocarina/gocsv v0.0.0-20230616125104-99d496ca653d

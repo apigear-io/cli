@@ -17,20 +17,10 @@ var (
 
 // main entry point for apigear cli tool
 func main() {
-	err := log.SentryInit(log.CLI_DSN)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to initialize sentry")
-	}
-	log.SentryCaptureArgs()
 	cfg.SetBuildInfo(version, commit, date)
 	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
-	defer func() {
-		log.SentryRecover()
-		log.SentryFlush()
-	}()
-	err = cmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		log.Debug().Err(err).Msg("run command")
-		log.SentryCaptureError(err)
 	}
 }
