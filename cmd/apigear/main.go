@@ -17,7 +17,12 @@ var (
 
 // main entry point for apigear cli tool
 func main() {
-	cfg.SetBuildInfo(version, commit, date)
+	cfg.SetBuildInfo("cli", cfg.BuildInfo{
+		Version: version,
+		Commit:  commit,
+		Date:    date,
+	})
+
 	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
 	err := cmd.Run()
 	if err != nil {
