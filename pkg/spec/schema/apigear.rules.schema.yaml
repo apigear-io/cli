@@ -8,6 +8,8 @@ description: |
   ```
   schema: apigear.rules/1.0
   name: simple cpp template
+  engines:
+    cli: ">= v0.1.0 < v1.0.0"
   features:
     - name: api
       path: {{dot .Module.Name}}/
@@ -55,6 +57,14 @@ properties:
     description: "The version of the rules document. Should be a major and minor and an optional patch version, separated by a dot (e.g. 0.1 or 0.1.0)."
     pattern: "^[0-9]+[.][0-9]+([.][0-9]+)*$"
     default: "0.1.0"
+  engines:
+    type: object
+    description: Engines defines a list engine versions which are supported by this rules engine.
+    additionalProperties: false
+    properties:
+      cli:
+        type: string
+        description: SemVer version constraint for the cli engine (e.g. ">= v0.1.0 < v1.0.0")
   features:
     description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
     type: array

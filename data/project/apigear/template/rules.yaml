@@ -1,5 +1,7 @@
 schema: apigear.rules/1.0
 name: template rules
+engines:
+  cli: ">=v0.35"
 features:
   - name: core
     scopes:

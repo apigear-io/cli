@@ -13,10 +13,8 @@ func NewVersionCommand() *cobra.Command {
 		Short: "display version information",
 		Long:  `display version, commit and build-date information`,
 		Run: func(cmd *cobra.Command, args []string) {
-			version := cfg.BuildVersion()
-			commit := cfg.BuildCommit()
-			date := cfg.BuildDate()
-			fmt.Printf("%s-%s-%s\n", version, commit, date)
+			bi := cfg.GetBuildInfo("cli")
+			fmt.Printf("cli: %s-%s-%s\n", bi.Version, bi.Commit, bi.Date)
 		},
 	}
 	return cmd

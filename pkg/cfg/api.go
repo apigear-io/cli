@@ -5,6 +5,15 @@ import (
 	"path/filepath"
 )
 
+// BuildInfo contains information about the build
+// it is stored under a key named "build" in the config file
+// with the name (e.g. cli, studio) as sub-key
+type BuildInfo struct {
+	Version string `yaml:"version"`
+	Commit  string `yaml:"commit"`
+	Date    string `yaml:"date"`
+}
+
 func ConfigDir() string {
 	rw.RLock()
 	file := v.ConfigFileUsed()
@@ -73,16 +82,22 @@ func RecentEntries() []string {
 	return items
 }
 
-func SetBuildInfo(version, commit, date string) {
+func SetBuildInfo(name string, info BuildInfo) {
 	rw.Lock()
-	v.Set(KeyVersion, version)
-	v.Set(KeyCommit, commit)
-	v.Set(KeyDate, date)
+	v.Set("build."+name, info)
 	err := v.WriteConfig()
 	rw.Unlock()
 	if err != nil {
 		log.Printf("error writing config: %v", err)
 	}
+}
+
+func GetBuildInfo(name string) BuildInfo {
+	rw.RLock()
+	defer rw.RUnlock()
+	var info BuildInfo
+	v.UnmarshalKey("build."+name, &info)
+	return info
 }
 
 func IsSet(key string) bool {
@@ -182,16 +197,4 @@ func CacheDir() string {
 
 func RegistryUrl() string {
 	return GetString(KeyRegistryUrl)
-}
-
-func BuildVersion() string {
-	return GetString(KeyVersion)
-}
-
-func BuildDate() string {
-	return GetString(KeyDate)
-}
-
-func BuildCommit() string {
-	return GetString(KeyCommit)
 }

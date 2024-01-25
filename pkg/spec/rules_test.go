@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -92,4 +93,49 @@ func TestSkippedDependencies(t *testing.T) {
 	assert.False(t, doc.Features[0].Skip)
 	assert.False(t, doc.Features[1].Skip)
 	assert.True(t, doc.Features[2].Skip)
+}
+
+func TestCheckEngines(t *testing.T) {
+	doc := RulesDoc{
+		Name: "rules",
+		Engines: Engines{
+			Cli: ">= 1.0.0",
+		},
+	}
+	type row struct {
+		constraint string
+		version    string
+		check      bool
+		errorsLen  int
+	}
+	tests := []row{
+		{constraint: "1.0.0", version: "1.0.0", check: true, errorsLen: 0},
+		{constraint: "1.0.0", version: "1.0.1", check: false, errorsLen: 1},
+		{constraint: ">=1.0.0", version: "1.1.0", check: true, errorsLen: 0},
+		{constraint: ">=1.0.0", version: "0.1.0", check: false, errorsLen: 1},
+		{constraint: ">=1.0.0", version: "1.0.0", check: true, errorsLen: 0},
+		{constraint: "<=1.0.0", version: "0.9.0", check: true, errorsLen: 0},
+		{constraint: "<=1.0.0", version: "1.0.0", check: true, errorsLen: 0},
+		{constraint: "<=1.0.0", version: "1.1.0", check: false, errorsLen: 1},
+		{constraint: "", version: "1.0.0", check: true, errorsLen: 0},
+		{constraint: ">=1.0.0", version: "", check: true, errorsLen: 0},
+		{constraint: ">=1.0.0", version: "1.0.0-beta", check: false, errorsLen: 1},
+		{constraint: ">=1.0.0", version: "(devel)", check: true, errorsLen: 0},
+		{constraint: ">=1.0.0", version: "v0.9", check: false, errorsLen: 1},
+		{constraint: ">=1.0.0", version: "v1.0", check: true, errorsLen: 0},
+		{constraint: ">=1.0.0", version: "v1.1", check: true, errorsLen: 0},
+	}
+
+	for _, test := range tests {
+		doc = RulesDoc{
+			Name: "rules",
+			Engines: Engines{
+				Cli: test.constraint,
+			},
+		}
+		check, errs := doc.CheckEngines(test.version)
+		label := fmt.Sprintf("%s vs. version %s", test.constraint, test.version)
+		assert.Len(t, errs, test.errorsLen, label)
+		assert.Equal(t, test.check, check, label)
+	}
 }

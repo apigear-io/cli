@@ -3,6 +3,8 @@ package spec
 import (
 	"fmt"
 	"sort"
+
+	"github.com/Masterminds/semver/v3"
 )
 
 // A rules document defines a set of rules how to apply transformations
@@ -33,8 +35,15 @@ func containsString(list []string, value string) bool {
 	return false
 }
 
+// Engines defines version constraints for the engines.
+type Engines struct {
+	// Cli is the version constraint for the cli engine.
+	Cli string `json:"cli" yaml:"cli"`
+}
+
 type RulesDoc struct {
 	Name     string         `json:"name" yaml:"name"`
+	Engines  Engines        `json:"engines" yaml:"engines"`
 	Features []*FeatureRule `json:"features" yaml:"features"`
 }
 
@@ -252,4 +261,37 @@ func FeatureRulesToStringMap(features []*FeatureRule) map[string]bool {
 		result[f.Name] = true
 	}
 	return result
+}
+
+// CheckCliVersion checks if the given engines are compatible with the rules.
+func (r *RulesDoc) CheckEngines(version string) (bool, []error) {
+	if r.Engines.Cli != "" {
+		check, errs := checkVersion(r.Engines.Cli, version)
+		if len(errs) > 0 {
+			return false, errs
+		}
+		if !check {
+			return false, []error{}
+		}
+	}
+	return true, []error{}
+}
+
+// checkVersion checks if the given version is compatible with the given constraint.
+func checkVersion(constraint, version string) (bool, []error) {
+	if version == "(devel)" {
+		version = ""
+	}
+	if version == "" {
+		return true, []error{}
+	}
+	c, err := semver.NewConstraint(constraint)
+	if err != nil {
+		return false, []error{err}
+	}
+	v, err := semver.NewVersion(version)
+	if err != nil {
+		return false, []error{err}
+	}
+	return c.Validate(v)
 }

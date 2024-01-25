@@ -36,26 +36,26 @@ func (r *Runner) OnTask(fn func(*tasks.TaskEvent)) {
 }
 
 func (r *Runner) RunSource(ctx context.Context, source string, force bool) error {
-	run := func(ctx context.Context) error {
-		return RunSolutionSource(ctx, source, force)
+	task := func(ctx context.Context) error {
+		return r.runSolutionFromSource(ctx, source, force)
 	}
 	meta := map[string]interface{}{
 		"solution": source,
 	}
-	r.tm.Register(source, meta, run)
+	r.tm.Register(source, meta, task)
 	return r.tm.Run(ctx, source)
 }
 
 // RunDoc runs the given file task once.
 // It should not act on a cached value.
 func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
-	run := func(ctx context.Context) error {
+	task := func(ctx context.Context) error {
 		return runSolution(doc)
 	}
 	meta := map[string]interface{}{
 		"solution": file,
 	}
-	r.tm.Register(file, meta, run)
+	r.tm.Register(file, meta, task)
 	return r.tm.Run(ctx, file)
 }
 
@@ -66,13 +66,13 @@ func (r *Runner) WatchSource(ctx context.Context, source string, force bool) err
 	}
 	deps := doc.AggregateDependencies()
 	deps = append(deps, source)
-	run := func(ctx context.Context) error {
-		return RunSolutionSource(ctx, source, force)
+	task := func(ctx context.Context) error {
+		return r.runSolutionFromSource(ctx, source, force)
 	}
 	meta := map[string]interface{}{
 		"solution": source,
 	}
-	r.tm.Register(source, meta, run)
+	r.tm.Register(source, meta, task)
 	return r.tm.Watch(ctx, source, deps...)
 }
 
@@ -83,13 +83,13 @@ func (r *Runner) WatchDoc(ctx context.Context, file string, doc *spec.SolutionDo
 	}
 	deps := doc.AggregateDependencies()
 	deps = append(deps, file)
-	run := func(ctx context.Context) error {
+	task := func(ctx context.Context) error {
 		return runSolution(doc)
 	}
 	meta := map[string]interface{}{
 		"solution": file,
 	}
-	r.tm.Register(file, meta, run)
+	r.tm.Register(file, meta, task)
 	return r.tm.Watch(ctx, file, deps...)
 }
 
@@ -105,7 +105,7 @@ func (r *Runner) Clear() {
 	r.tm.CancelAll()
 }
 
-func RunSolutionSource(ctx context.Context, source string, force bool) error {
+func (r *Runner) runSolutionFromSource(ctx context.Context, source string, force bool) error {
 	doc, err := ReadSolutionDoc(source)
 	if err != nil {
 		return err
@@ -143,15 +143,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 			doc.Meta = make(map[string]interface{})
 		}
 		doc.Meta["Layer"] = target
-		doc.Meta["App"] = struct {
-			Version string
-			Date    string
-			Commit  string
-		}{
-			Version: cfg.BuildVersion(),
-			Date:    cfg.BuildDate(),
-			Commit:  cfg.BuildCommit(),
-		}
+		doc.Meta["App"] = cfg.GetBuildInfo("cli")
 		opts := gen.GeneratorOptions{
 			OutputDir:      outDir,
 			TemplatesDir:   target.TemplatesDir,
@@ -167,6 +159,15 @@ func runSolution(doc *spec.SolutionDoc) error {
 		doc, err := gen.ReadRulesDoc(target.RulesFile)
 		if err != nil {
 			return err
+		}
+		bi := cfg.GetBuildInfo("cli")
+		ok, errs := doc.CheckEngines(bi.Version)
+		if !ok {
+			log.Warn().Msgf("template requires cli version %s. Only found %s", doc.Engines.Cli, bi.Version)
+			for _, err := range errs {
+				log.Warn().Err(err).Msg("cli version check error")
+			}
+			return nil
 		}
 		err = g.ProcessRules(doc)
 		if err != nil {
