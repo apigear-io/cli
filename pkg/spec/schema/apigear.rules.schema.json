@@ -93,8 +93,19 @@
       "type": "object"
     }
   },
-  "description": "Rules engine to drive the object api generator\nA typical setup looks like this:\n```\nschema: apigear.rules/1.0\nname: simple cpp template\nfeatures:\n  - name: api\n    path: {{dot .Module.Name}}/\n    scopes:\n      - match: module\n        documents:\n          - source: api.h\n            target: api.h\n\n  - name: core\n    requires: [api]\n    path: {{dot .Module.Name}}/\n    scopes:\n      - match: module\n        documents:\n          - source: core.h\n          - target: core.h\n          - source: core.cpp\n            target: core.cpp\n  - name: init\n    requires: [core]\n    path: {{dot .Module.Name}}/\n    scopes:\n      - name: module\n        documents:\n          - source: Makefile\n          - source: service.h\n            target: {{snake .Interface.Name}}.h\n          - source: service.cpp\n            target: {{snake .Interface.Name}}.cpp\n```\n",
+  "description": "Rules engine to drive the object api generator\nA typical setup looks like this:\n```\nschema: apigear.rules/1.0\nname: simple cpp template\nengines:\n  cli: \"\u003e= v0.1.0 \u003c v1.0.0\"\nfeatures:\n  - name: api\n    path: {{dot .Module.Name}}/\n    scopes:\n      - match: module\n        documents:\n          - source: api.h\n            target: api.h\n\n  - name: core\n    requires: [api]\n    path: {{dot .Module.Name}}/\n    scopes:\n      - match: module\n        documents:\n          - source: core.h\n          - target: core.h\n          - source: core.cpp\n            target: core.cpp\n  - name: init\n    requires: [core]\n    path: {{dot .Module.Name}}/\n    scopes:\n      - name: module\n        documents:\n          - source: Makefile\n          - source: service.h\n            target: {{snake .Interface.Name}}.h\n          - source: service.cpp\n            target: {{snake .Interface.Name}}.cpp\n```\n",
   "properties": {
+    "engines": {
+      "additionalProperties": false,
+      "description": "Engines defines a list engine versions which are supported by this rules engine.",
+      "properties": {
+        "cli": {
+          "description": "SemVer version constraint for the cli engine (e.g. \"\u003e= v0.1.0 \u003c v1.0.0\")",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "features": {
       "description": "Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.",
       "items": {
