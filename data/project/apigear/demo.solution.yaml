@@ -1,5 +1,5 @@
 schema: apigear.solution/1.0
-layers:
+targets:
   - template: ./template
     inputs:
       - sample.module.yaml

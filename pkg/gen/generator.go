@@ -42,17 +42,17 @@ func (s *GeneratorStats) TotalFiles() int {
 	return s.FilesWritten + s.FilesSkipped + s.FilesCopied
 }
 
-type GeneratorOptions struct {
+type Options struct {
 	// OutputDir is the directory where files are written
 	OutputDir string
 	// TemplatesDir is the directory where templates are located
 	TemplatesDir string
 	// System is the root system model
 	System *model.System
-	// TargetFeatures is a list of features defined by user
-	TargetFeatures []string
-	// TargetForce forces overwrite of existing files
-	TargetForce bool
+	// Features is a list of features defined by user
+	Features []string
+	// Force forces overwrite of existing files
+	Force bool
 	// Output is the output writer
 	Output OutputWriter
 	// DryRun does not write files
@@ -64,45 +64,31 @@ type GeneratorOptions struct {
 // generator applies template transformation on a set of files define in rules
 type generator struct {
 	Template         *template.Template
-	System           *model.System
-	TargetFeatures   []string // features defined by user
+	opts             Options
 	ComputedFeatures map[string]bool
-	TargetForce      bool // force overwrite
-	TemplatesDir     string
-	OutputDir        string
-	DryRun           bool
 	Stats            GeneratorStats
-	Output           OutputWriter
-	Meta             map[string]any
 }
 
-func New(o GeneratorOptions) (*generator, error) {
-	if o.Output == nil {
-		o.Output = &FileOutput{}
+func New(opts Options) (*generator, error) {
+	if opts.Output == nil {
+		opts.Output = &fsWriter{}
 	}
-	if o.System == nil {
+	if opts.System == nil {
 		return nil, fmt.Errorf("system is required")
 	}
-	if len(o.TargetFeatures) == 0 {
-		o.TargetFeatures = []string{"all"}
+	if len(opts.Features) == 0 {
+		opts.Features = []string{"all"}
 	}
 	g := &generator{
-		OutputDir:      o.OutputDir,
-		Template:       template.New(""),
-		TargetForce:    o.TargetForce,
-		TargetFeatures: o.TargetFeatures,
-		System:         o.System,
-		TemplatesDir:   o.TemplatesDir,
-		DryRun:         o.DryRun,
-		Output:         o.Output,
-		Meta:           o.Meta,
+		Template: template.New(""),
+		opts:     opts,
 		Stats: GeneratorStats{
 			RunStart:     time.Now(),
 			FilesTouched: []string{},
 		},
 	}
 	g.Template.Funcs(filters.PopulateFuncMap())
-	err := g.ParseTemplatesDir(o.TemplatesDir)
+	err := g.ParseTemplatesDir(opts.TemplatesDir)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +100,7 @@ func (g *generator) ParseTemplate(path string) error {
 	if err != nil {
 		return err
 	}
-	tplName, err := filepath.Rel(g.TemplatesDir, path)
+	tplName, err := filepath.Rel(g.opts.TemplatesDir, path)
 	if err != nil {
 		return err
 	}
@@ -150,15 +136,18 @@ func (g *generator) ParseTemplatesDir(dir string) error {
 // ProcessRules processes a set of rules from a rules document
 func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 	log.Debug().Msgf("processing rules: %s", doc.Name)
+	if err := doc.Validate(); err != nil {
+		return err
+	}
 	g.Stats = GeneratorStats{}
 	g.Stats.Start()
 	defer func() {
 		g.Stats.Stop()
 	}()
-	if g.System == nil {
+	if g.opts.System == nil {
 		return fmt.Errorf("system is nil")
 	}
-	err := doc.ComputeFeatures(g.TargetFeatures)
+	err := doc.ComputeFeatures(g.opts.Features)
 	if err != nil {
 		return err
 	}
@@ -180,9 +169,9 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 	log.Debug().Msgf("processing feature %s", f.Name)
 	// process system
 	ctx := model.SystemScope{
-		System:   g.System,
+		System:   g.opts.System,
 		Features: g.ComputedFeatures,
-		Meta:     g.Meta,
+		Meta:     g.opts.Meta,
 	}
 	scopes := f.FindScopesByMatch(spec.ScopeSystem)
 	for _, scope := range scopes {
@@ -191,14 +180,14 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			return err
 		}
 	}
-	for _, module := range g.System.Modules {
+	for _, module := range g.opts.System.Modules {
 		// process module
 		scopes := f.FindScopesByMatch(spec.ScopeModule)
 		ctx := model.ModuleScope{
-			System:   g.System,
+			System:   g.opts.System,
 			Module:   module,
 			Features: g.ComputedFeatures,
-			Meta:     g.Meta,
+			Meta:     g.opts.Meta,
 		}
 		for _, scope := range scopes {
 			err := g.processScope(scope, ctx)
@@ -209,11 +198,11 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		for _, iface := range module.Interfaces {
 			// process interface
 			ctx := model.InterfaceScope{
-				System:    g.System,
+				System:    g.opts.System,
 				Module:    module,
 				Interface: iface,
 				Features:  g.ComputedFeatures,
-				Meta:      g.Meta,
+				Meta:      g.opts.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeInterface)
 			for _, scope := range scopes {
@@ -226,11 +215,11 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		for _, struct_ := range module.Structs {
 			// process struct
 			ctx := model.StructScope{
-				System:   g.System,
+				System:   g.opts.System,
 				Module:   module,
 				Struct:   struct_,
 				Features: g.ComputedFeatures,
-				Meta:     g.Meta,
+				Meta:     g.opts.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeStruct)
 			for _, scope := range scopes {
@@ -243,11 +232,11 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		for _, enum := range module.Enums {
 			// process enum
 			ctx := model.EnumScope{
-				System:   g.System,
+				System:   g.opts.System,
 				Module:   module,
 				Enum:     enum,
 				Features: g.ComputedFeatures,
-				Meta:     g.Meta,
+				Meta:     g.opts.Meta,
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeEnum)
 			for _, scope := range scopes {
@@ -296,14 +285,14 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	}
 	if doc.Raw {
 		// copy the source to the target
-		err := g.CopyFile(source, target, g.TargetForce)
+		err := g.CopyFile(source, target)
 		if err != nil {
 			log.Warn().Msgf("copy file %s to %s: %s", source, target, err)
 			return err
 		}
 	} else {
 		// render the source file to the target
-		err := g.RenderFile(source, target, ctx, doc.Force)
+		err := g.RenderFile(source, target, ctx, doc.Preserve)
 		if err != nil {
 			return err
 		}
@@ -329,19 +318,19 @@ func (g *generator) RenderString(s string, ctx any) (string, error) {
 	return buf.String(), nil
 }
 
-func (g *generator) CopyFile(source, target string, force bool) error {
+func (g *generator) CopyFile(source, target string) error {
 	g.Stats.FilesCopied++
-	if g.DryRun {
+	if g.opts.DryRun {
 		log.Info().Msgf("dry run: copying file %s to %s", source, target)
 		g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 		return nil
 	}
-	source = helper.Join(g.TemplatesDir, source)
-	target = helper.Join(g.OutputDir, target)
-	return g.Output.Copy(source, target, force)
+	source = helper.Join(g.opts.TemplatesDir, source)
+	target = helper.Join(g.opts.OutputDir, target)
+	return g.opts.Output.Copy(source, target)
 }
 
-func (g *generator) RenderFile(source, target string, ctx any, docForce bool) error {
+func (g *generator) RenderFile(source, target string, ctx any, preserve bool) error {
 	// var force = doc.Force
 	// var transform = doc.Transform
 	log.Debug().Msgf("render %s -> %s", source, target)
@@ -354,7 +343,7 @@ func (g *generator) RenderFile(source, target string, ctx any, docForce bool) er
 	}
 	// write the file
 	log.Debug().Msgf("write %s", target)
-	err = g.WriteFile(buf.Bytes(), target, docForce)
+	err = g.WriteFile(buf.Bytes(), target, preserve)
 	if err != nil {
 		log.Warn().Msgf("write file %s: %s", target, err)
 		return fmt.Errorf("write file %s: %w", target, err)
@@ -362,43 +351,41 @@ func (g *generator) RenderFile(source, target string, ctx any, docForce bool) er
 	return nil
 }
 
-func (g *generator) WriteFile(input []byte, target string, docForce bool) error {
-	// docForce | targetForce | fileExits | action
-	// ------------------------------------------------
-	// false    | false       | true      | skip
-	// false    | false       | false     | write
-	// false    | true        | true      | write
-	// false    | true        | false     | write
-	// true     | false       | true      | skip
-	// true     | false       | false     | write
-	// true     | true        | true      | write
-	// true     | true        | false     | write
-	target = helper.Join(g.OutputDir, target)
-	// whatever happens, an existing user editable file is never overwritten
-	if !docForce && helper.IsFile(target) {
-		g.Stats.FilesSkipped++
-		log.Debug().Msgf("skipping user editable file %s", target)
-		return nil
+func (g *generator) WriteFile(input []byte, target string, preserve bool) error {
+	target = helper.Join(g.opts.OutputDir, target)
+	if g.opts.Force {
+		return g.WriteToOutput(input, target)
 	}
-	if docForce && !g.TargetForce {
-		same, err := g.Output.Compare(input, target)
+
+	if helper.IsFile(target) {
+		if preserve {
+			g.SkipFile(target, "preserve")
+			return nil
+		}
+		isSame, err := g.opts.Output.Compare(input, target)
 		if err != nil {
 			return err
 		}
-		// don't overwrite if same and we are not force to overwrite
-		if same {
-			g.Stats.FilesSkipped++
-			log.Debug().Msgf("skipping same file %s", target)
+		if isSame {
+			g.SkipFile(target, "same content")
 			return nil
 		}
 	}
-	// we either are force to overwrite or the file is different
+	return g.WriteToOutput(input, target)
+}
+
+func (g *generator) SkipFile(target string, reason string) {
+	log.Debug().Msgf("skip %s: %s", target, reason)
+	g.Stats.FilesSkipped++
+}
+
+func (g *generator) WriteToOutput(input []byte, target string) error {
 	log.Debug().Msgf("write file %s", target)
 	g.Stats.FilesTouched = append(g.Stats.FilesTouched, target)
 	g.Stats.FilesWritten++
-	if g.DryRun {
+	if g.opts.DryRun {
 		log.Info().Msgf("dry run: writing file %s", target)
 		return nil
 	}
-	return g.Output.Write(input, target, docForce)
+	return g.opts.Output.Write(input, target)
 }

@@ -144,13 +144,13 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 		doc.Meta["Layer"] = target
 		doc.Meta["App"] = cfg.GetBuildInfo("cli")
-		opts := gen.GeneratorOptions{
-			OutputDir:      outDir,
-			TemplatesDir:   target.TemplatesDir,
-			System:         system,
-			TargetFeatures: target.Features,
-			TargetForce:    target.Force,
-			Meta:           doc.Meta,
+		opts := gen.Options{
+			OutputDir:    outDir,
+			TemplatesDir: target.TemplatesDir,
+			System:       system,
+			Features:     target.Features,
+			Force:        target.Force,
+			Meta:         doc.Meta,
 		}
 		g, err := gen.New(opts)
 		if err != nil {

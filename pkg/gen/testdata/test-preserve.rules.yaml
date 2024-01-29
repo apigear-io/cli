@@ -1,0 +1,11 @@
+features:
+  - name: core
+    scopes:
+      - match: system
+        documents:
+          - { source: "system.name.tpl", target: "system-preserve.txt", preserve: true}
+          - { source: "system.name.tpl", target: "system.txt" }
+      - match: module
+        documents:
+          - { source: "module.name.tpl", target: "module-preserve.txt", preserve: true }
+          - { source: "module.name.tpl", target: "module.txt" }

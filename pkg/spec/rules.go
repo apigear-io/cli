@@ -240,9 +240,19 @@ type DocumentRule struct {
 	Raw bool `json:"raw" yaml:"raw"`
 	// Force is true if the target file should be overwritten.
 	Force bool `json:"force" yaml:"force"`
+	// Preserve is true if the target file should be preserved.
+	Preserve bool `json:"preserve" yaml:"preserve"`
 }
 
 func (r *DocumentRule) Validate() error {
+	if r.Force {
+		if r.Preserve {
+			log.Warn().Msgf("force and preserve are mutually exclusive")
+			return fmt.Errorf("force and preserve are mutually exclusive")
+		}
+		r.Preserve = false
+		log.Warn().Msgf("force is deprecated in rules document entries, use preserve instead")
+	}
 	return nil
 }
 

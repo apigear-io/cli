@@ -22,12 +22,13 @@ func readRules(t *testing.T, filename string) *spec.RulesDoc {
 }
 
 func createGenerator(t *testing.T) *generator {
-	opts := GeneratorOptions{
-		System:         model.NewSystem("test"),
-		TargetForce:    true,
-		TemplatesDir:   "testdata/templates",
-		OutputDir:      "testdata/output",
-		TargetFeatures: []string{"all"},
+	outDir := t.TempDir()
+	opts := Options{
+		System:       model.NewSystem("test"),
+		Force:        false,
+		TemplatesDir: "testdata/templates",
+		OutputDir:    outDir,
+		Features:     []string{"all"},
 	}
 	g, err := New(opts)
 	require.NoError(t, err)
@@ -38,13 +39,13 @@ func createGenerator(t *testing.T) *generator {
 
 func createMockGenerator(t *testing.T, tplDir string, features []string) (*generator, *MockOutput) {
 	out := NewMockOutput()
-	opts := GeneratorOptions{
-		System:         model.NewSystem("test"),
-		TargetForce:    true,
-		TemplatesDir:   helper.Join(tplDir, "templates"),
-		OutputDir:      "testdata/output",
-		TargetFeatures: features,
-		Output:         out,
+	opts := Options{
+		System:       model.NewSystem("test"),
+		Force:        true,
+		TemplatesDir: helper.Join(tplDir, "templates"),
+		OutputDir:    "testdata/output",
+		Features:     features,
+		Output:       out,
 	}
 	g, err := New(opts)
 	require.NoError(t, err)
@@ -63,47 +64,51 @@ func TestEmptyRules(t *testing.T) {
 
 func TestHelloRules(t *testing.T) {
 	g := createGenerator(t)
-	g.TargetForce = true
+	g.opts.Force = true
 	r := readRules(t, "testdata/test.rules.yaml")
 	err := g.ProcessRules(r)
 	require.NoError(t, err)
-	require.Len(t, g.Stats.FilesTouched, 0)
-}
-
-func TestHelloForcedRules(t *testing.T) {
-	t.Parallel()
-	g := createGenerator(t)
-	g.TargetForce = true
-	r := readRules(t, "testdata/test-force.rules.yaml")
-	err := g.ProcessRules(r)
-	require.NoError(t, err)
-	length := len(g.Stats.FilesTouched)
-	require.Equal(t, 1, length)
-	require.Contains(t, g.Stats.FilesTouched[0], "system-force.txt")
+	require.Len(t, g.Stats.FilesTouched, 1)
 }
 
 func TestForce(t *testing.T) {
-	t.Parallel()
+	g := createGenerator(t)
+	g.opts.Force = true
+	r := readRules(t, "testdata/test-preserve.rules.yaml")
+	err := g.ProcessRules(r)
+	require.NoError(t, err)
+	length := len(g.Stats.FilesTouched)
+	require.Equal(t, 2, length)
+}
+
+func TestDocumentPreserve(t *testing.T) {
 	tt := []struct {
-		Name         string
-		TargetForce  bool
-		FilesTouched []string
+		Name           string
+		FilesFirstRun  []string
+		FilesSecondRun []string
 	}{
-		{"force", true, []string{"testdata/output/system-force.txt"}},
-		{"no-force", false, []string{}},
+		{"preserve", []string{"system-preserve.txt", "system.txt"}, []string{}},
 	}
 
 	for _, tr := range tt {
 		t.Run(tr.Name, func(t *testing.T) {
 			g := createGenerator(t)
-			g.TargetForce = tr.TargetForce
-			r := readRules(t, "testdata/test-force.rules.yaml")
+			r := readRules(t, "testdata/test-preserve.rules.yaml")
+			// first run
 			err := g.ProcessRules(r)
 			require.NoError(t, err)
-			length := len(g.Stats.FilesTouched)
-			require.Len(t, tr.FilesTouched, length)
-			for _, file := range tr.FilesTouched {
-				require.Contains(t, g.Stats.FilesTouched, file)
+			require.Len(t, g.Stats.FilesTouched, len(tr.FilesFirstRun))
+			for _, file := range tr.FilesFirstRun {
+				target := helper.Join(g.opts.OutputDir, file)
+				require.Contains(t, g.Stats.FilesTouched, target)
+			}
+			// second run
+			err = g.ProcessRules(r)
+			require.NoError(t, err)
+			require.Len(t, g.Stats.FilesTouched, len(tr.FilesSecondRun))
+			for _, file := range tr.FilesSecondRun {
+				target := helper.Join(g.opts.OutputDir, file)
+				require.Contains(t, g.Stats.FilesTouched, target)
 			}
 		})
 	}
