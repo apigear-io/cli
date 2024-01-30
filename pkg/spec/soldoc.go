@@ -21,8 +21,8 @@ func (s *SolutionDoc) Validate() error {
 	if err := s.compute(); err != nil {
 		return err
 	}
-	for _, l := range s.Targets {
-		err := l.Validate(s)
+	for _, t := range s.Targets {
+		err := t.Validate(s)
 		if err != nil {
 			return err
 		}

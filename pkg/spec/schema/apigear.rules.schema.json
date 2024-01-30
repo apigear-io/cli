@@ -12,6 +12,11 @@
           "description": "Force defines whether the document should be overwritten if it already exists.",
           "type": "boolean"
         },
+        "preserve": {
+          "default": false,
+          "description": "Preserve defines whether the document should be preserved if it already exists.",
+          "type": "boolean"
+        },
         "raw": {
           "default": false,
           "description": "Defines whether the document should be processed by the template engine or not.",

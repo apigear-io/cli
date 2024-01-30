@@ -20,7 +20,7 @@ tasks:
   build:
     desc: Build the project
     cmds:
-      - go build -o ./bin/apigear -ldflags="-X main.version={{.GIT_TAG}} -X main.commit={{.GIT_COMMIT}} -X main.date={{.BUILD_DATA}}" ./cmd/apigear ./cmd/apigear
+      - go build -o ./bin/apigear -ldflags="-X main.version={{.GIT_TAG}} -X main.commit={{.GIT_COMMIT}} -X main.date={{.BUILD_DATA}}" ./cmd/apigear
     sources:
       - "**/*.go"
   install:
