@@ -2,7 +2,7 @@ package filterqt
 
 import (
 	"fmt"
-
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -31,7 +31,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 		e := schema.Module.LookupEnum(t)
 		if e != nil {
-			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, e.Members[0].Name)
+			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, common.UpperFirst(e.Members[0].Name))
 		}
 		s := schema.Module.LookupStruct(t)
 		if s != nil {

@@ -311,11 +311,17 @@ interfaces:
           type: Interface1
           array: true
   - name: Interface1
+  - name: InterfaceNamesCheck
+    properties:
+      - { name: lowerEnumProp, type: EnumLowerNames }
 
 enums:
   - name: Enum1
     members:
       - name: Default
+  - name: EnumLowerNames
+    members:
+      - name: firstValue
 
 structs:
   - name: Struct1

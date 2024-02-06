@@ -99,8 +99,17 @@ interface Test6 {
 
 interface Interface1 { }
 
+interface InterfaceNamesCheck {
+    lowerEnumProp: EnumLowerNames
+}
+
 enum Enum1 { 
     Default = 0,
+}
+
+enum EnumLowerNames
+{
+    firstValue = 0,
 }
 
 struct Struct1 {}
