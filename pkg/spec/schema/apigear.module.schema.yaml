@@ -41,6 +41,24 @@ properties:
     type: string
     description: module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
     pattern: "^[a-zA-Z][0-9A-Za-z_.]*$"
+  imports:
+    type: array
+    description: a list of imported modules
+    items:
+      type: object
+      required: [name]
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          description: module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
+          pattern: "^[a-zA-Z][0-9A-Za-z_.]*$"
+        description:
+          type: string
+          description: import description. Should be a short description for the import
+        meta:
+          type: object
+          description: meta information for the import. Read the template manual which meta tags are supported.
   version:
     type: string
     description: module version, should be a major and minor and an optional patch version, separated by a dot.
