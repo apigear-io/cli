@@ -50,7 +50,6 @@ func (v Version) Patch() int {
 
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`
-	Version   string `json:"version" yaml:"version"`
 }
 
 func NewImport(name string, version string) *Import {
@@ -59,7 +58,6 @@ func NewImport(name string, version string) *Import {
 			Name: name,
 			Kind: KindImport,
 		},
-		Version: version,
 	}
 }
 
