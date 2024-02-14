@@ -240,6 +240,32 @@
       },
       "type": "array"
     },
+    "imports": {
+      "description": "a list of imported modules",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "description": "import description. Should be a short description for the import",
+            "type": "string"
+          },
+          "meta": {
+            "description": "meta information for the import. Read the template manual which meta tags are supported.",
+            "type": "object"
+          },
+          "name": {
+            "description": "module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
+            "pattern": "^[a-zA-Z][0-9A-Za-z_.]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
     "interfaces": {
       "description": "a list of interfaces, exported by this module",
       "items": {
