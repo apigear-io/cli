@@ -22,8 +22,8 @@
           "type": "object"
         },
         "name": {
-          "description": "The name of the enum, starting with a letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         }
       },
@@ -45,8 +45,8 @@
           "type": "object"
         },
         "name": {
-          "description": "The name of the enum member, starting with a letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         },
         "value": {
@@ -73,8 +73,8 @@
           "type": "object"
         },
         "name": {
-          "description": "The name of the interface, starting with an letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         },
         "operations": {
@@ -121,8 +121,8 @@
           "type": "object"
         },
         "name": {
-          "description": "A name, must be an identifier, starting with a letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         },
         "readonly": {
@@ -153,8 +153,8 @@
           "type": "object"
         },
         "name": {
-          "description": "A name, starting with a letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         },
         "params": {
@@ -190,8 +190,8 @@
           "type": "object"
         },
         "name": {
-          "description": "The name of the struct, starting with an letter, followed by letters, numbers and underscores.",
-          "pattern": "^[a-zA-Z][0-9A-Za-z_]+$",
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         }
       },
@@ -252,8 +252,8 @@
       "type": "object"
     },
     "name": {
-      "description": "module name, should be a valid module identifier, starting with a letter, followed by letters, numbers and dot (e.g. 0.1 or 0.1.0).",
-      "pattern": "^[a-zA-Z][0-9A-Za-z_]+([.][0-9A-Za-z_]+)*$",
+      "description": "module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
+      "pattern": "^[a-zA-Z][0-9A-Za-z_.]*$",
       "type": "string"
     },
     "schema": {

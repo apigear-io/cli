@@ -1,0 +1,21 @@
+name: M.M
+version: "1.0.0"
+interfaces:
+  - name: A
+  - name: A_A
+  - name: a
+  - name: a_a
+  - name: a1
+  - name: a_1
+  - name: Demo
+    properties:
+      - name: a
+        type: bool
+      - name: a_a
+        type: bool
+      - name: A_a
+        type: bool
+      - name: A_A
+        type: bool
+
+
