@@ -85,6 +85,7 @@ func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 	name := c.GetName().GetText()
 	version := c.GetVersion().GetText()
 	o.module = model.NewModule(name, version)
+	o.module.System = o.System
 }
 
 // EnterImportRule is called when entering the importRule production.
