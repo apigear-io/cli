@@ -163,11 +163,11 @@ func runSolution(doc *spec.SolutionDoc) error {
 		bi := cfg.GetBuildInfo("cli")
 		ok, errs := doc.CheckEngines(bi.Version)
 		if !ok {
+			// a warning should be enough
 			log.Warn().Msgf("template requires cli version %s. Only found %s", doc.Engines.Cli, bi.Version)
 			for _, err := range errs {
 				log.Warn().Err(err).Msg("cli version check error")
 			}
-			return nil
 		}
 		err = g.ProcessRules(doc)
 		if err != nil {
