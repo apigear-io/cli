@@ -69,6 +69,7 @@ type Module struct {
 	Structs    []*Struct    `json:"structs" yaml:"structs"`
 	Enums      []*Enum      `json:"enums" yaml:"enums"`
 	Checksum   string       `json:"checksum" yaml:"checksum"`
+	System     *System      `json:"-"` // reference to the parent system
 }
 
 func NewModule(n string, v string) *Module {
