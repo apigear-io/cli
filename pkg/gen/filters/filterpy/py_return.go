@@ -12,18 +12,10 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	switch schema.KindType {
 	case model.TypeString:
 		text = "str"
-	case model.TypeInt:
+	case model.TypeInt, model.TypeInt32, model.TypeInt64:
 		text = "int"
-	case model.TypeInt32:
-		text = "int32"
-	case model.TypeInt64:
-		text = "int64"
-	case model.TypeFloat:
+	case model.TypeFloat, model.TypeFloat32, model.TypeFloat64:
 		text = "float"
-	case model.TypeFloat32:
-		text = "float32"
-	case model.TypeFloat64:
-		text = "float64"
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeEnum:
@@ -49,8 +41,6 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeVoid:
 		text = "None"
-	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("list[%s]", text)
