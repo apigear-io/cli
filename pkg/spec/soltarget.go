@@ -8,13 +8,14 @@ import (
 )
 
 type SolutionTarget struct {
-	Name        string   `json:"name" yaml:"name"`
-	Description string   `json:"description" yaml:"description"`
-	Inputs      []string `json:"inputs" yaml:"inputs"`
-	Output      string   `json:"output" yaml:"output"`
-	Template    string   `json:"template" yaml:"template"`
-	Features    []string `json:"features" yaml:"features"`
-	Force       bool     `json:"force" yaml:"force"`
+	Name        string                 `json:"name" yaml:"name"`
+	Description string                 `json:"description" yaml:"description"`
+	Inputs      []string               `json:"inputs" yaml:"inputs"`
+	Output      string                 `json:"output" yaml:"output"`
+	Template    string                 `json:"template" yaml:"template"`
+	Features    []string               `json:"features" yaml:"features"`
+	Force       bool                   `json:"force" yaml:"force"`
+	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
 	// computed fields
 	computed bool `json:"-" yaml:"-"`
 	// expandedInputs is the inputs with the variables expanded
@@ -36,6 +37,9 @@ func (l *SolutionTarget) GetOutputDir(rootDir string) string {
 }
 
 func (l *SolutionTarget) Validate(doc *SolutionDoc) error {
+	if l.Meta == nil {
+		l.Meta = make(map[string]interface{})
+	}
 	// basic validation
 	if l.Output == "" {
 		return fmt.Errorf("target %s: output is required", l.Name)

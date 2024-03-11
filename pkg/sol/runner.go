@@ -132,25 +132,22 @@ func runSolution(doc *spec.SolutionDoc) error {
 			name = helper.BaseName(outDir)
 		}
 		system := model.NewSystem(name)
+		doc.Meta["Layer"] = target
+		doc.Meta["App"] = cfg.GetBuildInfo("cli")
+		system.Meta = helper.JoinMaps(doc.Meta, target.Meta)
 		if err := parseInputs(system, target.ExpandedInputs()); err != nil {
 			return err
 		}
 		if err := helper.MakeDir(outDir); err != nil {
 			return err
 		}
-		// TODO: clean up this code
-		if doc.Meta == nil {
-			doc.Meta = make(map[string]interface{})
-		}
-		doc.Meta["Layer"] = target
-		doc.Meta["App"] = cfg.GetBuildInfo("cli")
 		opts := gen.Options{
 			OutputDir:    outDir,
 			TemplatesDir: target.TemplatesDir,
 			System:       system,
 			Features:     target.Features,
 			Force:        target.Force,
-			Meta:         doc.Meta,
+			Meta:         helper.JoinMaps(doc.Meta, target.Meta),
 		}
 		g, err := gen.New(opts)
 		if err != nil {

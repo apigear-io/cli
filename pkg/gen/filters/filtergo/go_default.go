@@ -11,6 +11,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
 	}
+	if schema.IsImported() {
+		prefix = fmt.Sprintf("%s.", schema.ShortImportName())
+	}
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {

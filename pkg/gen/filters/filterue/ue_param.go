@@ -15,8 +15,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	moduleId := strcase.ToPascal(schema.Module.Name)
 	t := schema.Type
 	if schema.IsArray {
-		inner := *schema
-		inner.IsArray = false
+		inner := schema.InnerSchema()
 		innerValue, err := ToReturnString("", &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
@@ -42,11 +41,16 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		return fmt.Sprintf("bool b%s%s", prefix, name), nil
 	}
 
-	if e := schema.Module.LookupEnum(t); e != nil {
+	e := schema.Module.LookupEnum(schema.Import, schema.Type)
+	if e != nil {
 		return fmt.Sprintf("E%s%s %s%s", moduleId, e.Name, prefix, name), nil
-	} else if s := schema.Module.LookupStruct(t); s != nil {
+	}
+	s := schema.Module.LookupStruct(schema.Import, schema.Type)
+	if s != nil {
 		return fmt.Sprintf("const F%s%s& %s%s", moduleId, s.Name, prefix, name), nil
-	} else if i := schema.Module.LookupInterface(t); i != nil {
+	}
+	i := schema.Module.LookupInterface(schema.Import, schema.Type)
+	if i != nil {
 		return fmt.Sprintf("F%s%s* %s%s", moduleId, i.Name, prefix, name), nil
 	}
 	return "xxx", fmt.Errorf("unknown type %s", t)
@@ -56,5 +60,5 @@ func ueParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("goParam called with nil node")
 	}
-	return ToParamString(&node.Schema, node.GetName(), prefix)
+	return ToParamString(&node.Schema, node.Name, prefix)
 }
