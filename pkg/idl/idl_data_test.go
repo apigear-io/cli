@@ -140,7 +140,7 @@ func TestStructs(t *testing.T) {
 		t.Run(tr.sName+"."+tr.fName, func(t *testing.T) {
 			m := s.LookupModule("tb.data")
 			assert.NotNil(t, m)
-			s := m.LookupStruct(tr.sName)
+			s := m.LookupLocalStruct(tr.sName)
 			assert.NotNil(t, s)
 			f := s.LookupField(tr.fName)
 			assert.NotNil(t, f)
