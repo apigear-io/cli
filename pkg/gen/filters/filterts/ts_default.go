@@ -28,19 +28,19 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeBool:
 			text = "false"
 		case model.TypeEnum:
-			e := schema.Module.LookupEnum(schema.Type)
+			e := schema.Module.LookupEnum(schema.Import, schema.Type)
 			if e == nil {
 				return "xxx", fmt.Errorf("ToDefaultString enum %s not found", schema.Type)
 			}
 			text = fmt.Sprintf("%s%s.%s", prefix, e.Name, e.Members[0].Name)
 		case model.TypeStruct:
-			s := schema.Module.LookupStruct(schema.Type)
+			s := schema.Module.LookupStruct(schema.Import, schema.Type)
 			if s == nil {
 				return "xxx", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
 			}
 			text = "{}"
 		case model.TypeInterface:
-			i := schema.Module.LookupInterface(schema.Type)
+			i := schema.Module.LookupInterface(schema.Import, schema.Type)
 			if i == nil {
 				return "xxx", fmt.Errorf("ToDefaultString interface %s not found", schema.Type)
 			}

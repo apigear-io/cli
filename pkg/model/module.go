@@ -86,56 +86,118 @@ func NewModule(n string, v string) *Module {
 	}
 }
 
-func (m Module) LookupNode(name string) *NamedNode {
-	for _, i := range m.Interfaces {
-		if i.Name == name {
-			return &i.NamedNode
+// ShortName returns the last part of the name, i.e. the module name
+func (m *Module) ShortName() string {
+	parts := strings.Split(m.Name, ".")
+	return parts[len(parts)-1]
+}
+
+func (m *Module) CheckImport(mName string) bool {
+	for _, i := range m.Imports {
+		if i.Name == mName {
+			return true
 		}
 	}
-	for _, s := range m.Structs {
-		if s.Name == name {
-			return &s.NamedNode
-		}
+	log.Warn().Msgf("module %s does not have import %s. Make sure to import all your dependencies.", m.Name, mName)
+	return false
+}
+
+// LookupNode looks up a named node by name
+func (m Module) LookupNode(mName, nName string) *NamedNode {
+	i := m.LookupInterface(mName, nName)
+	if i != nil {
+		return &i.NamedNode
 	}
-	for _, e := range m.Enums {
-		if e.Name == name {
-			return &e.NamedNode
-		}
+	s := m.LookupStruct(mName, nName)
+	if s != nil {
+		return &s.NamedNode
+	}
+	e := m.LookupEnum(mName, nName)
+	if e != nil {
+		return &e.NamedNode
 	}
 	return nil
 }
 
-func (m Module) LookupInterface(name string) *Interface {
+// LookupLocalInterface looks up an interface by name
+func (m Module) LookupLocalInterface(iName string) *Interface {
 	for _, i := range m.Interfaces {
-		if i.Name == name {
+		if i.Name == iName {
 			return i
 		}
 	}
 	return nil
 }
 
-func (m Module) LookupStruct(name string) *Struct {
+// LookupInterface looks up an interface by name
+func (m Module) LookupInterface(mName, iName string) *Interface {
+	if mName == "" || mName == m.Name {
+		return m.LookupLocalInterface(iName)
+	}
+	if m.System != nil {
+		m.CheckImport(mName)
+		return m.System.LookupInterface(mName, iName)
+	}
+	return nil
+}
+
+// LookupLocalStruct looks up a struct by name
+func (m Module) LookupLocalStruct(sName string) *Struct {
 	for _, s := range m.Structs {
-		if s.Name == name {
+		if s.Name == sName {
 			return s
 		}
 	}
 	return nil
 }
 
-func (m Module) LookupEnum(name string) *Enum {
+// LookupStruct looks up a struct by name
+func (m Module) LookupStruct(mName, sName string) *Struct {
+	if mName == "" || mName == m.Name {
+		return m.LookupLocalStruct(sName)
+	}
+	if m.System != nil {
+		m.CheckImport(mName)
+		return m.System.LookupStruct(mName, sName)
+	}
+	return nil
+}
+
+func (m Module) LookupLocalEnum(eName string) *Enum {
 	for _, e := range m.Enums {
-		if e.Name == name {
+		if e.Name == eName {
 			return e
 		}
 	}
 	return nil
 }
 
-func (m Module) LookupDefaultEnumMember(name string) *EnumMember {
-	e := m.LookupEnum(name)
+// LookupEnum looks up an enum by name
+func (m Module) LookupEnum(mName, eName string) *Enum {
+	if mName == "" || mName == m.Name {
+		return m.LookupLocalEnum(eName)
+	}
+	if m.System != nil {
+		m.CheckImport(mName)
+		return m.System.LookupEnum(mName, eName)
+	}
+	return nil
+}
+
+// LookupLocalDefaultEnumMember looks up the enum by name and returns the default member
+func (m Module) LookupLocalDefaultEnumMember(eName string) *EnumMember {
+	e := m.LookupLocalEnum(eName)
 	if e != nil {
-		return e.Members[0]
+		return e.Default()
+	}
+	return nil
+}
+
+// LookupDefaultEnumMember looks up the enum by name and returns the default member
+func (m Module) LookupDefaultEnumMember(mName, eName string) *EnumMember {
+	e := m.LookupEnum(mName, eName)
+	if e != nil {
+		return e.Default()
 	}
 	return nil
 }

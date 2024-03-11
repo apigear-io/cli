@@ -6,4 +6,5 @@ interfaces:
   - name: B
     properties:
       - name: value
-        type: a.A
+        type: A
+        import: a

@@ -8,6 +8,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func readSystem(t *testing.T) *System {
+	var system System
+	var aModule Module
+	err := helper.ReadDocument("./testdata/a.module.yaml", &aModule)
+	assert.NoError(t, err)
+	system.AddModule(&aModule)
+
+	var bModule Module
+	err = helper.ReadDocument("./testdata/b.module.yaml", &bModule)
+	assert.NoError(t, err)
+	system.AddModule(&bModule)
+	return &system
+}
+
 func TestModuleYaml(t *testing.T) {
 	var module Module
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
@@ -36,9 +50,11 @@ func TestChecksum(t *testing.T) {
 }
 
 func TestModuleImport(t *testing.T) {
-	var module Module
-	err := helper.ReadDocument("./testdata/b.module.yaml", &module)
-	assert.NoError(t, err)
+	system := readSystem(t)
+	assert.NotNil(t, system)
+	assert.Equal(t, 2, len(system.Modules))
+	module := system.LookupModule("b")
+	assert.NotNil(t, module)
 	assert.Equal(t, 1, len(module.Imports))
 	assert.Equal(t, "a", module.Imports[0].Name)
 
@@ -46,7 +62,14 @@ func TestModuleImport(t *testing.T) {
 	assert.Equal(t, "value", prop.Name)
 	assert.Equal(t, "a.A", prop.Type)
 
-	s := module.LookupStruct("a.A")
+	s := module.LookupStruct("a", "A")
 	assert.NotNil(t, s)
+	s2 := module.LookupStruct("a", "B")
+	assert.Nil(t, s2)
+
+	s3 := system.LookupStruct("a", "A")
+	assert.NotNil(t, s3)
+
+	assert.Equal(t, s, s3)
 
 }

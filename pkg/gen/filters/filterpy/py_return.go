@@ -19,21 +19,21 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeEnum:
-		e := schema.Module.LookupEnum(schema.Type)
+		e := schema.Module.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
 			return "xxx", fmt.Errorf("enum %s not found", schema.Type)
 		}
 		ident := common.CamelTitleCase(e.Name)
 		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeStruct:
-		s := schema.Module.LookupStruct(schema.Type)
+		s := schema.Module.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
 			return "xxx", fmt.Errorf("ToReturnString struct %s not found", schema.Type)
 		}
 		ident := common.CamelTitleCase(s.Name)
 		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeInterface:
-		i := schema.Module.LookupInterface(schema.Type)
+		i := schema.Module.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("ToReturnString interface %s not found", schema.Type)
 		}

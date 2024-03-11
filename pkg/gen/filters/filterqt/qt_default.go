@@ -2,15 +2,15 @@ package filterqt
 
 import (
 	"fmt"
+
 	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
 // ToDefaultString returns the default value for a type
 func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
-	t := schema.Type
 	text := ""
-	switch t {
+	switch schema.Type {
 	case "void":
 		text = "void"
 	case "string":
@@ -29,21 +29,25 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		if schema.Module == nil {
 			return "xxx", fmt.Errorf("schema.Module is nil")
 		}
-		e := schema.Module.LookupEnum(t)
+		e := schema.Module.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, common.UpperFirst(e.Members[0].Name))
 		}
-		s := schema.Module.LookupStruct(t)
+		s := schema.Module.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s%s()", prefix, s.Name)
 		}
-		i := schema.Module.LookupInterface(t)
+		i := schema.Module.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = "nullptr"
 		}
 	}
 	if schema.IsArray {
-		inner := model.Schema{Type: t, Module: schema.Module}
+		inner := model.Schema{
+			Import: schema.Import,
+			Type:   schema.Type,
+			Module: schema.Module,
+		}
 		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)

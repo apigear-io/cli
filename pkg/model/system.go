@@ -5,8 +5,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
-	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/spec/rkw"
 )
 
@@ -16,6 +16,7 @@ type System struct {
 	Checksum  string    `json:"checksum" yaml:"checksum"`
 }
 
+// NewSystem creates a new system
 func NewSystem(name string) *System {
 	return &System{
 		NamedNode: NamedNode{
@@ -24,6 +25,11 @@ func NewSystem(name string) *System {
 		},
 		Modules: make([]*Module, 0),
 	}
+}
+
+func (s *System) AddModule(m *Module) {
+	s.Modules = append(s.Modules, m)
+	m.System = s
 }
 
 // LookupModule looks up a module by name
@@ -36,52 +42,64 @@ func (s System) LookupModule(name string) *Module {
 	return nil
 }
 
-func (s System) LookupInterface(moduleName string, ifaceName string) *Interface {
-	m := s.LookupModule(moduleName)
+// LookupInterface looks up an interface by module and interface name
+func (s System) LookupInterface(mName string, iName string) *Interface {
+	m := s.LookupModule(mName)
 	if m == nil {
 		return nil
 	}
-	return m.LookupInterface(ifaceName)
+	return m.LookupInterface(mName, iName)
 }
 
-func (s System) LookupStruct(moduleName string, structName string) *Struct {
-	m := s.LookupModule(moduleName)
+// LookupNode looks up a node by module and node name
+func (s System) LookupNode(mName string, nName string) *NamedNode {
+	m := s.LookupModule(mName)
 	if m == nil {
 		return nil
 	}
-	return m.LookupStruct(structName)
+	return m.LookupNode(mName, nName)
 }
 
-func (s System) LookupEnum(moduleName string, enumName string) *Enum {
-	m := s.LookupModule(moduleName)
+// LookupStruct looks up a struct by module and struct name
+func (s System) LookupStruct(mName, sName string) *Struct {
+	m := s.LookupModule(mName)
 	if m == nil {
 		return nil
 	}
-	return m.LookupEnum(enumName)
+	return m.LookupStruct(mName, sName)
 }
 
-func (s System) LookupProperty(moduleName string, ifaceName string, propName string) *TypedNode {
-	i := s.LookupInterface(moduleName, ifaceName)
+// LookupEnum looks up an enum by module and enum name
+func (s System) LookupEnum(mName, eName string) *Enum {
+	m := s.LookupModule(mName)
+	if m == nil {
+		return nil
+	}
+	return m.LookupEnum(mName, eName)
+}
+
+func (s System) LookupProperty(mName, iName, pName string) *TypedNode {
+	i := s.LookupInterface(mName, iName)
 	if i == nil {
 		return nil
 	}
-	return i.LookupProperty(propName)
+	return i.LookupProperty(pName)
 }
 
-func (s System) LookupOperation(moduleName string, ifaceName string, operationName string) *Operation {
-	i := s.LookupInterface(moduleName, ifaceName)
+func (s System) LookupOperation(mName, iName, oName string) *Operation {
+	i := s.LookupInterface(mName, iName)
 	if i == nil {
 		return nil
 	}
-	return i.LookupOperation(operationName)
+	return i.LookupOperation(oName)
 }
 
-func (s System) LookupSignal(moduleName string, ifaceName string, eventName string) *Signal {
-	i := s.LookupInterface(moduleName, ifaceName)
+func (s System) LookupSignal(mName, iName, sName string) *Signal {
+	i := s.LookupInterface(mName, iName)
 	if i == nil {
 		return nil
 	}
-	return i.LookupSignal(eventName)
+	return i.LookupSignal(sName)
 }
 
 func (s *System) Validate() error {
@@ -105,7 +123,7 @@ func (s *System) Validate() error {
 	if err != nil {
 		return err
 	}
-	log.Info().Msgf("system %s resolved: %s", s.Name, s.Checksum)
+	log.Debug().Msgf("system %s: resolved %s", s.Name, s.Checksum)
 	return nil
 }
 
@@ -162,4 +180,31 @@ func (s *System) computeChecksum() error {
 	sum := md5.Sum(buffer.Bytes())
 	s.Checksum = hex.EncodeToString(sum[:])
 	return nil
+}
+
+func FQNSplit2(fqn string) (string, string) {
+	parts := strings.Split(fqn, ".")
+	if len(parts) < 2 {
+		return "", ""
+	}
+	// module name is all parts except the last
+	return strings.Join(parts[:len(parts)-1], "."), parts[len(parts)-1]
+}
+
+// a.b.C.d
+// a.c is the module name
+// C is the element name
+// d is the member name
+func FQNSplit3(fqn string) (string, string, string) {
+	parts := strings.Split(fqn, ".")
+	if len(parts) < 3 {
+		return "", "", ""
+	}
+	// member name is the last part
+	memberName := parts[len(parts)-1]
+	// element name is the second to last part
+	elementName := parts[len(parts)-2]
+	// module name is all parts except the last two
+	moduleName := strings.Join(parts[:len(parts)-2], ".")
+	return moduleName, elementName, memberName
 }

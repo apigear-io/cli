@@ -7,21 +7,19 @@ import (
 )
 
 func ToParamString(prefixVarName string, prefixComplexType string, schema *model.Schema, node *model.TypedNode) (string, error) {
-	t := schema.Type
 	name, err := ToVarString(prefixVarName, node)
 	if err != nil {
 		return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 	}
 	if schema.IsArray {
-		inner := *schema
-		inner.IsArray = false
+		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefixComplexType, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
 		}
 		return fmt.Sprintf("%s: &[%s]", name, ret), nil
 	}
-	switch t {
+	switch schema.Type {
 	case "string":
 		return fmt.Sprintf("%s: &str", name), nil
 	case "int":
@@ -39,19 +37,19 @@ func ToParamString(prefixVarName string, prefixComplexType string, schema *model
 	case "bool":
 		return fmt.Sprintf("%s: bool", name), nil
 	}
-	e := schema.Module.LookupEnum(t)
+	e := schema.Module.LookupEnum(schema.Import, schema.Type)
 	if e != nil {
 		return fmt.Sprintf("%s: %sEnum", name, e.Name), nil
 	}
-	s := schema.Module.LookupStruct(t)
+	s := schema.Module.LookupStruct(schema.Import, schema.Type)
 	if s != nil {
 		return fmt.Sprintf("%s: &%s", name, s.Name), nil
 	}
-	i := schema.Module.LookupInterface(t)
+	i := schema.Module.LookupInterface(schema.Import, schema.Type)
 	if i != nil {
 		return fmt.Sprintf("%s: &%s", name, i.Name), nil
 	}
-	return "xxx", fmt.Errorf("ToParamString: unknown type %s", t)
+	return "xxx", fmt.Errorf("ToParamString: unknown type %s", schema.Type)
 }
 
 func rsParam(prefixVarName string, prefixComplexType string, node *model.TypedNode) (string, error) {

@@ -14,6 +14,9 @@ type SolutionDoc struct {
 }
 
 func (s *SolutionDoc) Validate() error {
+	if s.Meta == nil {
+		s.Meta = make(map[string]any)
+	}
 	// basic validation
 	if s.Targets == nil {
 		s.Targets = make([]*SolutionTarget, 0)

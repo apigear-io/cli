@@ -356,6 +356,7 @@ func (g *generator) WriteFile(input []byte, target string, preserve bool) error 
 	if g.opts.Force {
 		return g.WriteToOutput(input, target)
 	}
+	log.Info().Msgf("write file %s", target)
 
 	if helper.IsFile(target) {
 		if preserve {

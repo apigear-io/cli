@@ -92,7 +92,10 @@ func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 	IsNotNil(o.module)
 	name := c.GetName().GetText()
-	version := c.GetVersion().GetText()
+	version := "1.0"
+	if c.GetVersion() != nil {
+		version = c.GetVersion().GetText()
+	}
 	import_ := model.NewImport(name, version)
 	o.module.Imports = append(o.module.Imports, import_)
 }
@@ -343,7 +346,16 @@ func (o *ObjectApiListener) EnterPrimitiveSchema(c *parser.PrimitiveSchemaContex
 func (o *ObjectApiListener) EnterSymbolSchema(c *parser.SymbolSchemaContext) {
 	IsNotNil(o.schema)
 	name := c.GetName().GetText()
-	o.schema.Type = name
+	parts := strings.Split(name, ".")
+	// if there is a dot, then the first part is the import and the last part is the type
+	if len(parts) > 1 {
+		o.schema.Import = strings.Join(parts[:len(parts)-1], ".")
+		o.schema.Type = parts[len(parts)-1]
+	} else {
+		o.schema.Import = ""
+		o.schema.Type = name
+
+	}
 	o.schema.IsSymbol = true
 }
 
