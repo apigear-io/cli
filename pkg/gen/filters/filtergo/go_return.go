@@ -37,7 +37,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeStruct:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeInterface:
-		text = fmt.Sprintf("*%s%s", prefix, schema.Type)
+		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeVoid:
 		text = ""
 	default:
