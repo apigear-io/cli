@@ -132,25 +132,23 @@ func runSolution(doc *spec.SolutionDoc) error {
 			name = helper.BaseName(outDir)
 		}
 		system := model.NewSystem(name)
+		doc.Meta["Layer"] = target
+		doc.Meta["App"] = cfg.GetBuildInfo("cli")
+		system.Meta = helper.JoinMaps(doc.Meta, target.Meta)
 		if err := parseInputs(system, target.ExpandedInputs()); err != nil {
 			return err
 		}
+		applyMetaDocument(target, system)
 		if err := helper.MakeDir(outDir); err != nil {
 			return err
 		}
-		// TODO: clean up this code
-		if doc.Meta == nil {
-			doc.Meta = make(map[string]interface{})
-		}
-		doc.Meta["Layer"] = target
-		doc.Meta["App"] = cfg.GetBuildInfo("cli")
 		opts := gen.Options{
 			OutputDir:    outDir,
 			TemplatesDir: target.TemplatesDir,
 			System:       system,
 			Features:     target.Features,
 			Force:        target.Force,
-			Meta:         doc.Meta,
+			Meta:         helper.JoinMaps(doc.Meta, target.Meta),
 		}
 		g, err := gen.New(opts)
 		if err != nil {
@@ -169,10 +167,30 @@ func runSolution(doc *spec.SolutionDoc) error {
 				log.Warn().Err(err).Msg("cli version check error")
 			}
 		}
+		// check keywords according to the rules languages
+		system.CheckReservedWords(doc.Languages)
 		err = g.ProcessRules(doc)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func applyMetaDocument(t *spec.SolutionTarget, s *model.System) {
+	for k, v := range t.MetaImports {
+		log.Warn().Msgf("import %s %v", k, v)
+		node := s.LookupNode(k)
+		if node == nil {
+			log.Warn().Msgf("node %s not found", k)
+			continue
+		}
+		meta, ok := v.(map[string]interface{})
+		if !ok {
+			log.Warn().Msgf("meta for %s is not a map", k)
+			continue
+		}
+		log.Info().Msgf("apply meta to node %s", k)
+		node.Meta = helper.JoinMaps(node.Meta, meta)
+	}
 }

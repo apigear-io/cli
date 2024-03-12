@@ -62,6 +62,12 @@ definitions:
       output:
         type: string
         description: "the output directory of the target."
+      imports:
+        type: array
+        items:
+          type: string
+        description: "list of imports which are used to enhance the meta information."
+        default: []
       meta:
         type: object
         description: "meta data about the target which will be passed on to the template."

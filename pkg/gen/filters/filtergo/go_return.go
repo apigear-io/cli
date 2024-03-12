@@ -11,6 +11,9 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
+	if schema.IsImported() {
+		prefix = fmt.Sprintf("%s.", schema.ShortImportName())
+	}
 	var text string
 	switch schema.KindType {
 	case model.TypeString:
@@ -34,7 +37,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeStruct:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeInterface:
-		text = fmt.Sprintf("*%s%s", prefix, schema.Type)
+		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeVoid:
 		text = ""
 	default:

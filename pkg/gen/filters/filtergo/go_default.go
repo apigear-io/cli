@@ -11,6 +11,9 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
 	}
+	if schema.IsImported() {
+		prefix = fmt.Sprintf("%s.", schema.ShortImportName())
+	}
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {
@@ -35,7 +38,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeStruct:
 			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		case model.TypeInterface:
-			text = fmt.Sprintf("[]*%s%s{}", prefix, schema.Type)
+			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		default:
 			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
 		}

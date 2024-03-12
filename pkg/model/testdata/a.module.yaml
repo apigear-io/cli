@@ -1,0 +1,9 @@
+name: a
+version: 1.0.0
+
+structs:
+  - name: A
+    fields:
+      - name: value
+        type: int
+

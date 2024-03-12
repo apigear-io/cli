@@ -85,13 +85,17 @@ func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 	name := c.GetName().GetText()
 	version := c.GetVersion().GetText()
 	o.module = model.NewModule(name, version)
+	o.module.System = o.System
 }
 
 // EnterImportRule is called when entering the importRule production.
 func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 	IsNotNil(o.module)
 	name := c.GetName().GetText()
-	version := c.GetVersion().GetText()
+	version := "1.0"
+	if c.GetVersion() != nil {
+		version = c.GetVersion().GetText()
+	}
 	import_ := model.NewImport(name, version)
 	o.module.Imports = append(o.module.Imports, import_)
 }
@@ -107,7 +111,24 @@ func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
 	IsNil(o.iface)
 	o.kind = model.KindInterface
 	name := c.GetName().GetText()
+
 	o.iface = model.NewInterface(name)
+
+	// check if the interface extends another interface
+	if c.GetExtends() != nil {
+		extends := c.GetExtends().GetText()
+
+		parts := strings.Split(extends, ".")
+		// if there is a dot, then the first part is the import and the last part is the type
+		if len(parts) > 1 {
+			o.iface.Extends.Import = strings.Join(parts[:len(parts)-1], ".")
+			o.iface.Extends.Name = parts[len(parts)-1]
+		} else {
+			o.iface.Extends.Import = ""
+			o.iface.Extends.Name = extends
+		}
+	}
+
 }
 
 // ExitInterfaceRule is called when exiting the interfaceRule production.
@@ -342,7 +363,16 @@ func (o *ObjectApiListener) EnterPrimitiveSchema(c *parser.PrimitiveSchemaContex
 func (o *ObjectApiListener) EnterSymbolSchema(c *parser.SymbolSchemaContext) {
 	IsNotNil(o.schema)
 	name := c.GetName().GetText()
-	o.schema.Type = name
+	parts := strings.Split(name, ".")
+	// if there is a dot, then the first part is the import and the last part is the type
+	if len(parts) > 1 {
+		o.schema.Import = strings.Join(parts[:len(parts)-1], ".")
+		o.schema.Type = parts[len(parts)-1]
+	} else {
+		o.schema.Import = ""
+		o.schema.Type = name
+
+	}
 	o.schema.IsSymbol = true
 }
 

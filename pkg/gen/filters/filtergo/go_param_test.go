@@ -51,10 +51,10 @@ func TestParamSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "propEnum Enum1"},
 		{"test", "Test2", "propStruct", "propStruct Struct1"},
-		{"test", "Test2", "propInterface", "propInterface *Interface1"},
+		{"test", "Test2", "propInterface", "propInterface Interface1"},
 		{"test", "Test2", "propEnumArray", "propEnumArray []Enum1"},
 		{"test", "Test2", "propStructArray", "propStructArray []Struct1"},
-		{"test", "Test2", "propInterfaceArray", "propInterfaceArray []*Interface1"},
+		{"test", "Test2", "propInterfaceArray", "propInterfaceArray []Interface1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

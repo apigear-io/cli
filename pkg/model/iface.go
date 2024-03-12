@@ -34,6 +34,13 @@ func (s *Signal) Validate(m *Module) error {
 	return nil
 }
 
+func (s *Signal) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, s.Name, "signal")
+	for _, p := range s.Params {
+		p.CheckReservedWords(langs)
+	}
+}
+
 type Operation struct {
 	NamedNode `json:",inline" yaml:",inline"`
 	Params    []*TypedNode `json:"params" yaml:"params"`
@@ -52,7 +59,6 @@ func NewOperation(name string) *Operation {
 }
 
 func (m *Operation) Validate(mod *Module) error {
-	rkw.CheckName(m.Name, "operation")
 	if m.Return == nil {
 		m.Return = NewTypedNode("", KindReturn)
 	}
@@ -82,8 +88,25 @@ func (m *Operation) ParamNames() []string {
 	return names
 }
 
+func (m *Operation) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, m.Name, "operation")
+	for _, p := range m.Params {
+		p.CheckReservedWords(langs)
+	}
+	if m.Return != nil {
+		m.Return.CheckReservedWords(langs)
+	}
+}
+
+type Extends struct {
+	Name   string `json:"name" yaml:"name"`
+	Import string `json:"import" yaml:"import"`
+}
+
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
+	Module     *Module      `json:"-" yaml:"-"`
+	Extends    Extends      `json:"extends" yaml:"extends"`
 	Properties []*TypedNode `json:"properties" yaml:"properties"`
 	Operations []*Operation `json:"operations" yaml:"operations"`
 	Signals    []*Signal    `json:"signals" yaml:"signals"`
@@ -95,10 +118,34 @@ func NewInterface(name string) *Interface {
 			Name: name,
 			Kind: KindInterface,
 		},
+		Extends:    Extends{},
 		Properties: make([]*TypedNode, 0),
 		Operations: make([]*Operation, 0),
 		Signals:    make([]*Signal, 0),
 	}
+}
+
+func (i *Interface) HasExtends() bool {
+	return i.Extends.Name != ""
+}
+
+func (i Interface) LookupMember(name string) *NamedNode {
+	for _, p := range i.Properties {
+		if p.Name == name {
+			return &p.NamedNode
+		}
+	}
+	for _, m := range i.Operations {
+		if m.Name == name {
+			return &m.NamedNode
+		}
+	}
+	for _, s := range i.Signals {
+		if s.Name == name {
+			return &s.NamedNode
+		}
+	}
+	return nil
 }
 
 func (i Interface) LookupOperation(name string) *Operation {
@@ -129,9 +176,16 @@ func (i Interface) LookupSignal(name string) *Signal {
 }
 
 func (i *Interface) Validate(mod *Module) error {
-	rkw.CheckName(i.Name, "interface")
 	// check if any names are duplicated
 	names := make(map[string]bool)
+	if i.HasExtends() {
+		if i.Extends.Name == i.Name && i.Extends.Import == "" {
+			log.Warn().Msgf("%s: interface extends itself", i.Name)
+		}
+		if i.Module.LookupInterface(i.Extends.Import, i.Extends.Name) == nil {
+			log.Warn().Msgf("%s: interface extends unknown interface: %s", i.Name, i.Extends.Name)
+		}
+	}
 	for _, p := range i.Properties {
 		err := p.Validate(mod)
 		if err != nil {
@@ -177,4 +231,17 @@ func (i Interface) NoSignals() bool {
 
 func (i Interface) NoMembers() bool {
 	return i.NoProperties() && i.NoOperations() && i.NoSignals()
+}
+
+func (i *Interface) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, i.Name, "interface")
+	for _, p := range i.Properties {
+		p.CheckReservedWords(langs)
+	}
+	for _, o := range i.Operations {
+		o.CheckReservedWords(langs)
+	}
+	for _, s := range i.Signals {
+		s.CheckReservedWords(langs)
+	}
 }

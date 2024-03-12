@@ -17,18 +17,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
-          go-version: "1.21.x"
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+          go-version: "1.22.x"
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
-      - run: git config --global url."https://${{secrets.APIGEAR_REPOS}}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}
       - run: go test ./...
-        env:
-          GITHUB_TOKEN: ${{ secrets.APIGEAR_REPOS }}

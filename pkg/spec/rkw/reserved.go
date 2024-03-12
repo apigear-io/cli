@@ -198,6 +198,16 @@ func IsKeywordReservedInLang(lang Lang, word string) bool {
 	return false
 }
 
+func IsKeywordInLangs(langs []Lang, word string) (Lang, bool) {
+	word = strings.ToLower(word)
+	for _, lang := range langs {
+		if IsKeywordReservedInLang(lang, word) {
+			return lang, true
+		}
+	}
+	return "", false
+}
+
 // IsKeywordReserved returns true if the word is a reserved keyword in any language
 // and returns the list of languages in which the word is a reserved keyword
 func IsKeywordReserved(word string) ([]Lang, bool) {
@@ -214,12 +224,12 @@ func EscapeKeyword(word string) string {
 	return word + "_"
 }
 
-// CheckName checks if the given name is a reserved keyword in any language
+// CheckIsReserved checks if the given name is a reserved keyword in any language
 // and logs a warning if it is
-func CheckName(name string, scope string) {
-	langs, ok := IsKeywordReserved(name)
+func CheckIsReserved(langs []Lang, name string, scope string) {
+	lang, ok := IsKeywordInLangs(langs, name)
 	if ok {
-		log.Warn().Msgf("%s: name %s is a reserved keyword in %s", scope, name, langs)
+		log.Warn().Msgf("%s name \"%s\" is a reserved keyword in %s", scope, name, lang)
 	}
 }
 
@@ -228,7 +238,7 @@ func CheckName(name string, scope string) {
 func CheckAndEscapeName(name string, scope string) string {
 	langs, ok := IsKeywordReserved(name)
 	if ok {
-		log.Warn().Msgf("%s: name %s is a reserved keyword in %s", scope, name, langs)
+		log.Warn().Msgf("%s name \"%s\" is a reserved keyword in %s", scope, name, langs)
 		return EscapeKeyword(name)
 	}
 	return name

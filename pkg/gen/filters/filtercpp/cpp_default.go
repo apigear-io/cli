@@ -8,9 +8,8 @@ import (
 
 // ToDefaultString returns the default value for a type
 func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
-	t := schema.Type
 	text := ""
-	switch t {
+	switch schema.Type {
 	case "void":
 		text = "void"
 	case "string":
@@ -26,24 +25,21 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "false"
 	default:
-		if schema.Module == nil {
-			return "xxx", fmt.Errorf("schema.Module is nil")
-		}
-		e := schema.Module.LookupEnum(t)
+		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%sEnum::%s", e.Name, e.Members[0].Name)
 		}
-		s := schema.Module.LookupStruct(t)
+		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s()", s.Name)
 		}
-		i := schema.Module.LookupInterface(t)
+		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = "nullptr"
 		}
 	}
 	if schema.IsArray {
-		inner := model.Schema{Type: t, Module: schema.Module}
+		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
 			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)

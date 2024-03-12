@@ -7,9 +7,8 @@ import (
 )
 
 func ToReturnString(prefix string, schema *model.Schema) (string, error) {
-	t := schema.Type
 	text := ""
-	switch t {
+	switch schema.Type {
 	case "void":
 		text = "void"
 	case "string":
@@ -32,15 +31,15 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		if schema.Module == nil {
 			return "xxx", fmt.Errorf("schema.Module is nil")
 		}
-		e := schema.Module.LookupEnum(t)
+		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%sEnum", prefix, e.Name, e.Name)
 		}
-		s := schema.Module.LookupStruct(t)
+		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s%s", prefix, s.Name)
 		}
-		i := schema.Module.LookupInterface(t)
+		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = fmt.Sprintf("%s%s*", prefix, i.Name)
 		}

@@ -7,12 +7,14 @@ headerRule: moduleRule importRule*;
 moduleRule:
 	metaRule* 'module' name = IDENTIFIER version = VERSION;
 
-importRule: 'import' name = IDENTIFIER version = VERSION;
+importRule: 'import' name = IDENTIFIER version = VERSION?;
 
 declarationsRule: interfaceRule | structRule | enumRule;
 
 interfaceRule:
-	metaRule* 'interface' name = IDENTIFIER '{' interfaceMembersRule* '}';
+	metaRule* 'interface' name = IDENTIFIER (
+		'extends' extends = IDENTIFIER
+	)? '{' interfaceMembersRule* '}';
 
 interfaceMembersRule: propertyRule | operationRule | signalRule;
 
@@ -36,13 +38,13 @@ structFieldRule:
 
 // enums
 enumRule:
-	metaRule* 'enum' name = IDENTIFIER '{' enumMemberRule* '}';
+	metaRule* 'enum' name = IDENTIFIER '{' (enumMemberRule)* '}';
 
 enumMemberRule:
 	metaRule* name = IDENTIFIER ('=' value = INTEGER)? ','?;
 
 // a schame can be followed by "[]" to indicate an array
-schemaRule: (primitiveSchema | symbolSchema) arrayRule?;
+schemaRule: (primitiveSchema | symbolSchema) (arrayRule)?;
 
 arrayRule: '[' ']';
 
@@ -60,12 +62,12 @@ symbolSchema: name = IDENTIFIER;
 
 metaRule: tagLine = TAGLINE | docLine = DOCLINE;
 
-WHITESPACE: [ \t\r\n]+ -> skip;
-INTEGER: ('+' | '-')? '0' ..'9'+;
+WHITESPACE: ([ \t\r\n])+ -> skip;
+INTEGER: ('+' | '-')? ('0' ..'9')+;
 HEX: '0x' ('0' ..'9' | 'a' ..'f' | 'A' ..'F')+;
-TYPE_IDENTIFIER: [A-Z_] [A-Z0-9_]* '[]'?;
-IDENTIFIER: [_A-Za-z] [_0-9A-Za-z.]*;
+TYPE_IDENTIFIER: [A-Z_] ([A-Z0-9_])* ('[]')?;
+IDENTIFIER: [_A-Za-z] ([_0-9A-Za-z.])*;
 VERSION: [0-9]'.' [0-9];
-DOCLINE: '//' ~[\r\n]*;
-TAGLINE: '@' ~[\r\n]*;
-COMMENT: '#' ~[\r\n]* -> skip;
+DOCLINE: '//' (~[\r\n])*;
+TAGLINE: '@' (~[\r\n])*;
+COMMENT: '#' (~[\r\n])* -> skip;
