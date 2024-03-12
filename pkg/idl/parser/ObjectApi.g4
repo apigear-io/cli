@@ -12,7 +12,9 @@ importRule: 'import' name = IDENTIFIER version = VERSION?;
 declarationsRule: interfaceRule | structRule | enumRule;
 
 interfaceRule:
-	metaRule* 'interface' name = IDENTIFIER '{' interfaceMembersRule* '}';
+	metaRule* 'interface' name = IDENTIFIER (
+		'extends' extends = IDENTIFIER
+	)? '{' interfaceMembersRule* '}';
 
 interfaceMembersRule: propertyRule | operationRule | signalRule;
 

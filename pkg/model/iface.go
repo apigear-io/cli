@@ -82,8 +82,15 @@ func (m *Operation) ParamNames() []string {
 	return names
 }
 
+type Extends struct {
+	Name   string `json:"name" yaml:"name"`
+	Import string `json:"import" yaml:"import"`
+}
+
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
+	Module     *Module      `json:"-" yaml:"-"`
+	Extends    Extends      `json:"extends" yaml:"extends"`
 	Properties []*TypedNode `json:"properties" yaml:"properties"`
 	Operations []*Operation `json:"operations" yaml:"operations"`
 	Signals    []*Signal    `json:"signals" yaml:"signals"`
@@ -95,10 +102,15 @@ func NewInterface(name string) *Interface {
 			Name: name,
 			Kind: KindInterface,
 		},
+		Extends:    Extends{},
 		Properties: make([]*TypedNode, 0),
 		Operations: make([]*Operation, 0),
 		Signals:    make([]*Signal, 0),
 	}
+}
+
+func (i *Interface) HasExtends() bool {
+	return i.Extends.Name != ""
 }
 
 func (i Interface) LookupMember(name string) *NamedNode {
@@ -151,6 +163,14 @@ func (i *Interface) Validate(mod *Module) error {
 	rkw.CheckName(i.Name, "interface")
 	// check if any names are duplicated
 	names := make(map[string]bool)
+	if i.HasExtends() {
+		if i.Extends.Name == i.Name && i.Extends.Import == "" {
+			log.Warn().Msgf("%s: interface extends itself", i.Name)
+		}
+		if i.Module.LookupInterface(i.Extends.Import, i.Extends.Name) == nil {
+			log.Warn().Msgf("%s: interface extends unknown interface: %s", i.Name, i.Extends.Name)
+		}
+	}
 	for _, p := range i.Properties {
 		err := p.Validate(mod)
 		if err != nil {

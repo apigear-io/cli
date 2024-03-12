@@ -106,6 +106,9 @@ definitions:
       type:
         type: string
         description: "A type either a primitive type or a declared type name."
+      import:
+        type: string
+        description: "The name of the module where the type is defined."
       array: 
         type: boolean
         description: "If true, the type is an array of the given type."
@@ -127,6 +130,9 @@ definitions:
       type: 
         type: string
         description: "A primitive type or a declared type name."
+      import: 
+        type: string
+        description: "The name of the module where the type is defined."
       array: 
         type: boolean
         description: "If true, the type is an array of the given type."
@@ -144,6 +150,19 @@ definitions:
       description: 
         type: string
         description: "A description of the interface."
+      extends: 
+        type: object
+        description: "The interface extends another interface."
+        required: [name]
+        additionalProperties: false
+        properties:
+          name: 
+            type: string
+            description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
+            pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
+          import: 
+            type: string
+            description: "The name of the module where the interface is defined."      
       meta: 
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."

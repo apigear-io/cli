@@ -111,7 +111,24 @@ func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
 	IsNil(o.iface)
 	o.kind = model.KindInterface
 	name := c.GetName().GetText()
+
 	o.iface = model.NewInterface(name)
+
+	// check if the interface extends another interface
+	if c.GetExtends() != nil {
+		extends := c.GetExtends().GetText()
+
+		parts := strings.Split(extends, ".")
+		// if there is a dot, then the first part is the import and the last part is the type
+		if len(parts) > 1 {
+			o.iface.Extends.Import = strings.Join(parts[:len(parts)-1], ".")
+			o.iface.Extends.Name = parts[len(parts)-1]
+		} else {
+			o.iface.Extends.Import = ""
+			o.iface.Extends.Name = extends
+		}
+	}
+
 }
 
 // ExitInterfaceRule is called when exiting the interfaceRule production.
