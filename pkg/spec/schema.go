@@ -36,9 +36,6 @@ const (
 func CheckJson(t DocumentType, jsonDoc []byte) (*Result, error) {
 	schemaLoader, err := LoadSchema(t)
 	if err != nil {
-		return nil, err
-	}
-	if err != nil {
 		return nil, fmt.Errorf("error marshalling document: %w", err)
 	}
 	// load the go structure to json

@@ -57,7 +57,7 @@ func NewClientCommand() *cobra.Command {
 			sender := helper.NewHTTPSender(options.url)
 			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
 			ids := helper.MakeIdGenerator("M")
-			ctrl.Run(events, func(event mon.Event) error {
+			err = ctrl.Run(events, func(event mon.Event) error {
 				if event.Timestamp.IsZero() {
 					event.Timestamp = time.Now()
 				}
@@ -74,6 +74,9 @@ func NewClientCommand() *cobra.Command {
 
 				return sender.SendValue(payload)
 			})
+			if err != nil {
+				log.Warn().Msgf("error sending events: %s", err)
+			}
 			return nil
 		},
 	}

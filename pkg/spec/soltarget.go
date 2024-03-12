@@ -140,7 +140,10 @@ func (l *SolutionTarget) compute(doc *SolutionDoc) error {
 		l.expandedInputs = append(l.expandedInputs, expanded...)
 	}
 	l.dependencies = append(l.dependencies, l.expandedInputs...)
-	l.computeImports()
+	err := l.computeImports()
+	if err != nil {
+		return err
+	}
 	l.computed = true
 	return nil
 }
