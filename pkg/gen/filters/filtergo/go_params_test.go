@@ -57,10 +57,10 @@ func TestParamsSymbols(t *testing.T) {
 	}{
 		{"test", "Test4", "opEnum", "param1 Enum1"},
 		{"test", "Test4", "opStruct", "param1 Struct1"},
-		{"test", "Test4", "opInterface", "param1 *Interface1"},
+		{"test", "Test4", "opInterface", "param1 Interface1"},
 		{"test", "Test4", "opEnumArray", "param1 []Enum1"},
 		{"test", "Test4", "opStructArray", "param1 []Struct1"},
-		{"test", "Test4", "opInterfaceArray", "param1 []*Interface1"},
+		{"test", "Test4", "opInterfaceArray", "param1 []Interface1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -89,7 +89,7 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opStringString", "param1 string, param2 string"},
 		{"test", "Test5", "opEnumEnum", "param1 Enum1, param2 Enum1"},
 		{"test", "Test5", "opStructStruct", "param1 Struct1, param2 Struct1"},
-		{"test", "Test5", "opInterfaceInterface", "param1 *Interface1, param2 *Interface1"},
+		{"test", "Test5", "opInterfaceInterface", "param1 Interface1, param2 Interface1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

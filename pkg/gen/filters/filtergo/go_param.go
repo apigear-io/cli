@@ -49,7 +49,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	}
 	i := schema.LookupInterface(schema.Import, schema.Type)
 	if i != nil {
-		return fmt.Sprintf("%s *%s%s", name, prefix, i.Name), nil
+		return fmt.Sprintf("%s %s%s", name, prefix, i.Name), nil
 	}
 	return "xxx", fmt.Errorf("unknown type %s", schema.Type)
 }
