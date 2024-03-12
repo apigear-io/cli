@@ -9,6 +9,7 @@ import (
 // Enum is an enumeration.
 type Enum struct {
 	NamedNode `json:",inline" yaml:",inline"`
+	Module    *Module       `json:"-" yaml:"-"`
 	Members   []*EnumMember `json:"members" yaml:"members"`
 }
 

@@ -8,6 +8,7 @@ import (
 
 type Struct struct {
 	NamedNode `json:",inline" yaml:",inline"`
+	Module    *Module      `json:"-" yaml:"-"`
 	Fields    []*TypedNode `json:"fields" yaml:"fields"`
 }
 
