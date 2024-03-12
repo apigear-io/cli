@@ -11,7 +11,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("qtParam inner value error: %s", err)
 		}
 		return fmt.Sprintf("const QList<%s>& %s", ret, name), nil
 	}
@@ -45,12 +45,12 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	if i != nil {
 		return fmt.Sprintf("%s%s *%s", prefix, i.Name, name), nil
 	}
-	return "xxx", fmt.Errorf("ToParamString: unknown type %s", schema.Type)
+	return "xxx", fmt.Errorf("qtParam unknown schema %s", schema.Dump())
 }
 
 func qtParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("cppParam node is nil")
+		return "xxx", fmt.Errorf("qtParam node is nil")
 	}
 	return ToParamString(prefix, &node.Schema, node.Name)
 }

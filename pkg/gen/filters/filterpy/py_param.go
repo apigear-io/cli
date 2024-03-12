@@ -9,14 +9,14 @@ import (
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToParamString schema is nil")
+		return "xxx", fmt.Errorf("pyParam schema is nil")
 	}
 	name = common.SnakeCaseLower(name)
 	if schema.IsArray {
 		inner := schema.InnerSchema()
 		innerValue, err := ToReturnString(&inner, prefix)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("pyParam inner value error: %s", err)
 		}
 		return fmt.Sprintf("%s: list[%s]", name, innerValue), nil
 	}
@@ -40,32 +40,32 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
-			return "xxx", fmt.Errorf("ToParamString enum %s not found", schema.Type)
+			return "xxx", fmt.Errorf("pyParam enum not found: %s", schema.Dump())
 		}
 		ident := common.CamelTitleCase(e.Name)
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
-			return "xxx", fmt.Errorf("ToParamString struct %s not found", schema.Type)
+			return "xxx", fmt.Errorf("pyParam struct not found: %s", schema.Dump())
 		}
 		ident := common.CamelTitleCase(s.Name)
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
-			return "xxx", fmt.Errorf("ToParamString interface %s not found", schema.Type)
+			return "xxx", fmt.Errorf("pyParam interface not found: %s", schema.Dump())
 		}
 		ident := common.CamelTitleCase(i.Name)
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("pyParam unknown schema %s", schema.Dump())
 	}
 }
 
 func pyParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("called with nil node")
+		return "xxx", fmt.Errorf("pyParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.Name, prefix)
 }

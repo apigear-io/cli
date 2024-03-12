@@ -9,7 +9,7 @@ import (
 
 func qtParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "xxx", fmt.Errorf("cppParams called with nil nodes")
+		return "xxx", fmt.Errorf("qtParams called with nil nodes")
 	}
 	var params []string
 	for _, p := range nodes {

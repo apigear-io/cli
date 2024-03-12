@@ -9,10 +9,10 @@ import (
 // ToDefaultString returns the default value for a type
 func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
+		return "xxx", fmt.Errorf("tsDefault called with nil schema")
 	}
 	if schema.Module == nil {
-		return "xxx", fmt.Errorf("ToDefaultString schema module is nil")
+		return "xxx", fmt.Errorf("tsDefault called with nil schema module")
 	}
 	var text string
 	if schema.IsArray {
@@ -30,25 +30,25 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeEnum:
 			e := schema.LookupEnum(schema.Import, schema.Type)
 			if e == nil {
-				return "xxx", fmt.Errorf("ToDefaultString enum %s not found", schema.Type)
+				return "xxx", fmt.Errorf("tsDefault enum not found: %s", schema.Dump())
 			}
 			text = fmt.Sprintf("%s%s.%s", prefix, e.Name, e.Members[0].Name)
 		case model.TypeStruct:
 			s := schema.LookupStruct(schema.Import, schema.Type)
 			if s == nil {
-				return "xxx", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
+				return "xxx", fmt.Errorf("tsDefault struct not found: %s", schema.Dump())
 			}
 			text = "{}"
 		case model.TypeInterface:
 			i := schema.LookupInterface(schema.Import, schema.Type)
 			if i == nil {
-				return "xxx", fmt.Errorf("ToDefaultString interface %s not found", schema.Type)
+				return "xxx", fmt.Errorf("tsDefault interface not found: %s", schema.Dump())
 			}
 			text = "null"
 		case model.TypeVoid:
 			text = "void"
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("tsDefault unknown schema %s", schema.Dump())
 		}
 	}
 	return text, nil

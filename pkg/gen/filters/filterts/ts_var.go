@@ -8,7 +8,7 @@ import (
 
 func ToVarString(node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("ToVarString node is nil")
+		return "xxx", fmt.Errorf("tsVar node is nil")
 	}
 	return node.Name, nil
 }

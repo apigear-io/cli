@@ -8,7 +8,7 @@ import (
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToParamString schema is nil")
+		return "xxx", fmt.Errorf("jsParam schema is nil")
 	}
 	if schema.IsArray {
 		return name, nil
@@ -25,23 +25,23 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
-			return "xxx", fmt.Errorf("ToParamString enum %s not found", schema.Type)
+			return "xxx", fmt.Errorf("jsParam enum not found: %s", schema.Dump())
 		}
 		return name, nil
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
-			return "xxx", fmt.Errorf("ToParamString struct %s not found", schema.Type)
+			return "xxx", fmt.Errorf("jsParam struct not found: %s", schema.Dump())
 		}
 		return name, nil
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
-			return "xxx", fmt.Errorf("ToParamString interface %s not found", schema.Type)
+			return "xxx", fmt.Errorf("jsParam interface not found: %s", schema.Dump())
 		}
 		return name, nil
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("jsParam unknown schema %s", schema.Dump())
 	}
 }
 

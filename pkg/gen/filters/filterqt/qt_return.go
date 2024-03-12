@@ -28,9 +28,6 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
-		if schema.Module == nil {
-			return "xxx", fmt.Errorf("schema.Module is nil")
-		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%sEnum", prefix, e.Name, e.Name)
@@ -53,7 +50,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 // cast value to TypedNode and deduct the cpp return type
 func qtReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("cppReturn node is nil")
+		return "xxx", fmt.Errorf("qtReturn node is nil")
 	}
 	return ToReturnString(prefix, &node.Schema)
 }

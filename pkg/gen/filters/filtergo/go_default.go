@@ -40,7 +40,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("goDefault: unknown schema %s", schema.Dump())
 		}
 	} else {
 		switch schema.KindType {
@@ -74,7 +74,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeVoid:
 			text = ""
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("goDefault: unknown schema %s", schema.Dump())
 		}
 	}
 	return text, nil
