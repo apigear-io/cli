@@ -26,9 +26,5 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ matrix.go-version }}-
-      - run: git config --global url."https://${{secrets.APIGEAR_REPOS}}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}
       - run: go test ./...
-        env:
-          GITHUB_TOKEN: ${{ secrets.APIGEAR_REPOS }}
