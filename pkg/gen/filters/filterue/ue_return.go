@@ -41,7 +41,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("ueReturn unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("TArray<%s>", text)
@@ -51,7 +51,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 
 func ueReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("goReturn node is nil")
+		return "xxx", fmt.Errorf("ueReturn called with nil node")
 	}
 	return ToReturnString(prefix, &node.Schema)
 }

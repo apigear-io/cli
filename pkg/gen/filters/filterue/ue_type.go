@@ -9,7 +9,7 @@ import (
 
 func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToReturnString schema is nil")
+		return "xxx", fmt.Errorf("ueType schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
 	var text string
@@ -39,7 +39,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("ueType unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
 		switch schema.KindType {
@@ -66,7 +66,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("TArray<%sF%s%s*>", prefix, moduleId, schema.Type)
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("ueType unknown array schema %s", schema.Dump())
 		}
 	}
 	return text, nil

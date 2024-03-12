@@ -8,13 +8,13 @@ import (
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToParamString schema is nil")
+		return "xxx", fmt.Errorf("tsParam schema is nil")
 	}
 	if schema.IsArray {
 		inner := schema.InnerSchema()
 		innerValue, err := ToReturnString(&inner, prefix)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("tsParam inner value error: %s", err)
 		}
 		return fmt.Sprintf("%s: %s[]", name, innerValue), nil
 	}
@@ -30,23 +30,23 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
-			return "xxx", fmt.Errorf("ToParamString enum %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsParam enum not found: %s", schema.Dump())
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, e.Name), nil
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
-			return "xxx", fmt.Errorf("ToParamString struct %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsParam struct not found: %s", schema.Dump())
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, s.Name), nil
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
-			return "xxx", fmt.Errorf("ToParamString interface %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsParam interface not found: %s", schema.Dump())
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, i.Name), nil
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("tsParam unknown schema %s", schema.Dump())
 	}
 }
 

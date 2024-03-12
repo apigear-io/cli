@@ -9,7 +9,7 @@ import (
 
 func qtVars(nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "xxx", fmt.Errorf("goNames called with nil nodes")
+		return "xxx", fmt.Errorf("qtVars called with nil nodes")
 	}
 	names := make([]string, len(nodes))
 	for idx, p := range nodes {

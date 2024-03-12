@@ -9,7 +9,7 @@ import (
 
 func ToVarString(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("ToVarString node is nil")
+		return "xxx", fmt.Errorf("rsVar node is nil")
 	}
 	return fmt.Sprintf("%s%s", prefix, common.SnakeCaseLower(node.Name)), nil
 }

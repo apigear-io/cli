@@ -9,7 +9,7 @@ import (
 
 func tsVars(nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "xxx", fmt.Errorf("goNames called with nil nodes")
+		return "xxx", fmt.Errorf("tsVars called with nil nodes")
 	}
 	names := make([]string, len(nodes))
 	for idx, p := range nodes {

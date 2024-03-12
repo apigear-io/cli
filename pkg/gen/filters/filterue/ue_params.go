@@ -9,7 +9,7 @@ import (
 
 func ueParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	if nodes == nil {
-		return "", fmt.Errorf("goParams called with nil nodes")
+		return "", fmt.Errorf("useParams called with nil nodes")
 	}
 	var params []string
 	for _, p := range nodes {

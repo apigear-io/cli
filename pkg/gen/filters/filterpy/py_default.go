@@ -10,10 +10,10 @@ import (
 // ToDefaultString returns the default value for a type
 func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
+		return "xxx", fmt.Errorf("pyDefault schema is nil")
 	}
 	if schema.Module == nil {
-		return "xxx", fmt.Errorf("ToDefaultString schema module is nil")
+		return "xxx", fmt.Errorf("pyDefault schema module is nil")
 	}
 	var text string
 	if schema.IsArray {
@@ -31,7 +31,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeEnum:
 			e := schema.LookupEnum(schema.Import, schema.Type)
 			if e == nil {
-				return "xxx", fmt.Errorf("ToDefaultString enum %s not found", schema.Type)
+				return "xxx", fmt.Errorf("pyDefault enum not found: %s", schema.Dump())
 			}
 			name := common.CamelTitleCase(e.Name)
 			member := common.SnakeUpperCase(e.Members[0].Name)
@@ -39,24 +39,24 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeStruct:
 			s := schema.LookupStruct(schema.Import, schema.Type)
 			if s == nil {
-				return "xxx", fmt.Errorf("ToDefaultString struct %s not found", schema.Type)
+				return "xxx", fmt.Errorf("pyDefault struct not found: %s", schema.Dump())
 			}
 			ident := common.CamelTitleCase(s.Name)
 			text = fmt.Sprintf("%s%s()", prefix, ident)
 		case model.TypeInterface:
 			i := schema.LookupInterface(schema.Import, schema.Type)
 			if i == nil {
-				return "xxx", fmt.Errorf("ToDefaultString interface %s not found", schema.Type)
+				return "xxx", fmt.Errorf("pyDefault interface not found: %s", schema.Dump())
 			}
 			text = "None"
 		case model.TypeVoid:
 			text = "None"
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("pyDefault unknown schema %s", schema.Dump())
 		}
 	}
 	if text == "" {
-		return "xxx", fmt.Errorf("unknown type %s", schema.Type)
+		return "xxx", fmt.Errorf("pyDefault text is empty: %s", schema.Dump())
 	}
 	return text, nil
 }
@@ -64,7 +64,7 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 // cppDefault returns the default value for a type
 func pyDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("called with nil node")
+		return "xxx", fmt.Errorf("pyDefault called with nil node")
 	}
 	return ToDefaultString(&node.Schema, prefix)
 }

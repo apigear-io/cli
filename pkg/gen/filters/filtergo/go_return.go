@@ -41,7 +41,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeVoid:
 		text = ""
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("goReturn: unknown schema: %s", schema.Dump())
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("[]%s", text)

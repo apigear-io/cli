@@ -9,7 +9,7 @@ import (
 
 func ToParamString(schema *model.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
-		return "xxx", fmt.Errorf("ToParamString schema is nil")
+		return "xxx", fmt.Errorf("ueParam schema is nil")
 	}
 	name = strcase.ToPascal(name)
 	moduleId := strcase.ToPascal(schema.Module.Name)
@@ -18,7 +18,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		inner := schema.InnerSchema()
 		innerValue, err := ToReturnString("", &inner)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("ueParam inner value error: %s", err)
 		}
 		return fmt.Sprintf("const TArray<%s>& %s%s", innerValue, prefix, name), nil
 	}
@@ -53,12 +53,12 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	if i != nil {
 		return fmt.Sprintf("F%s%s* %s%s", moduleId, i.Name, prefix, name), nil
 	}
-	return "xxx", fmt.Errorf("unknown type %s", t)
+	return "xxx", fmt.Errorf("ueParam: unknown schema %s", schema.Dump())
 }
 
 func ueParam(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("goParam called with nil node")
+		return "xxx", fmt.Errorf("ueParam called with nil node")
 	}
 	return ToParamString(&node.Schema, node.Name, prefix)
 }
