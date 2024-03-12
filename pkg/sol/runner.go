@@ -167,6 +167,8 @@ func runSolution(doc *spec.SolutionDoc) error {
 				log.Warn().Err(err).Msg("cli version check error")
 			}
 		}
+		// check keywords according to the rules languages
+		system.CheckReservedWords(doc.Languages)
 		err = g.ProcessRules(doc)
 		if err != nil {
 			return err

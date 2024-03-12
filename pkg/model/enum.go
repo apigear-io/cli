@@ -25,7 +25,6 @@ func NewEnum(name string) *Enum {
 
 // Validate resolves all references in the enum.
 func (e *Enum) Validate(mod *Module) error {
-	rkw.CheckName(e.Name, "enum")
 	names := make(map[string]bool)
 	autoValue := true
 	for _, mem := range e.Members {
@@ -72,6 +71,14 @@ func (e *Enum) NoMembers() bool {
 	return len(e.Members) == 0
 }
 
+// CheckReservedWords checks the names of the enum.
+func (e *Enum) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, e.Name, "enum")
+	for _, mem := range e.Members {
+		mem.CheckReservedWords(langs)
+	}
+}
+
 // EnumMember is a member of an enumeration.
 type EnumMember struct {
 	NamedNode `json:",inline" yaml:",inline"`
@@ -91,6 +98,10 @@ func NewEnumMember(name string, value int) *EnumMember {
 
 // Validate resolves all references in the enum member.
 func (e *EnumMember) Validate(m *Module) error {
-	rkw.CheckName(e.Name, "enum member")
 	return nil
+}
+
+// CheckReservedWords checks the names of the enum member.
+func (e *EnumMember) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, e.Name, "enum member")
 }
