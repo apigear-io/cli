@@ -203,6 +203,7 @@ func (m Module) LookupDefaultEnumMember(mName, eName string) *EnumMember {
 }
 
 func (m *Module) Validate() error {
+	m.compute()
 	rkw.CheckName(m.Name, "module")
 	// check for duplicate names
 	names := make(map[string]bool)
@@ -238,6 +239,18 @@ func (m *Module) Validate() error {
 	}
 	m.computeChecksum()
 	return nil
+}
+
+func (m *Module) compute() {
+	for _, i := range m.Interfaces {
+		i.Module = m
+	}
+	for _, s := range m.Structs {
+		s.Module = m
+	}
+	for _, e := range m.Enums {
+		e.Module = m
+	}
 }
 
 // TODO: clean up this code

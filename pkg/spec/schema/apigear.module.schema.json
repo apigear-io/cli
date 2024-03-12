@@ -68,6 +68,25 @@
           "description": "A description of the interface.",
           "type": "string"
         },
+        "extends": {
+          "additionalProperties": false,
+          "description": "The interface extends another interface.",
+          "properties": {
+            "import": {
+              "description": "The name of the module where the interface is defined.",
+              "type": "string"
+            },
+            "name": {
+              "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+              "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "type": "object"
+        },
         "meta": {
           "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
@@ -114,6 +133,10 @@
         },
         "description": {
           "description": "A description of the type.",
+          "type": "string"
+        },
+        "import": {
+          "description": "The name of the module where the type is defined.",
           "type": "string"
         },
         "meta": {
@@ -210,6 +233,10 @@
         },
         "description": {
           "description": "A description of the type.",
+          "type": "string"
+        },
+        "import": {
+          "description": "The name of the module where the type is defined.",
           "type": "string"
         },
         "meta": {
