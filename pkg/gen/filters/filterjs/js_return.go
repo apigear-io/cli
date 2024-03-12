@@ -18,19 +18,19 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	case model.TypeBool:
 		text = ""
 	case model.TypeEnum:
-		e := schema.Module.LookupEnum(schema.Import, schema.Type)
+		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
 			return "xxx", fmt.Errorf("ToReturnString enum %s not found", schema.Type)
 		}
 		text = ""
 	case model.TypeStruct:
-		s := schema.Module.LookupStruct(schema.Import, schema.Type)
+		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
 			return "xxx", fmt.Errorf("ToReturnString struct %s not found", schema.Type)
 		}
 		text = ""
 	case model.TypeInterface:
-		i := schema.Module.LookupInterface(schema.Import, schema.Type)
+		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("ToReturnString interface %s not found", schema.Type)
 		}

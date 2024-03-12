@@ -101,6 +101,25 @@ func NewInterface(name string) *Interface {
 	}
 }
 
+func (i Interface) LookupMember(name string) *NamedNode {
+	for _, p := range i.Properties {
+		if p.Name == name {
+			return &p.NamedNode
+		}
+	}
+	for _, m := range i.Operations {
+		if m.Name == name {
+			return &m.NamedNode
+		}
+	}
+	for _, s := range i.Signals {
+		if s.Name == name {
+			return &s.NamedNode
+		}
+	}
+	return nil
+}
+
 func (i Interface) LookupOperation(name string) *Operation {
 	for _, m := range i.Operations {
 		if m.Name == name {

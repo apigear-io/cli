@@ -145,3 +145,24 @@ func (s Schema) System() *System {
 	}
 	return s.Module.System
 }
+
+func (s Schema) LookupEnum(mName, eName string) *Enum {
+	if s.Module == nil {
+		return nil
+	}
+	return s.Module.LookupEnum(mName, eName)
+}
+
+func (s Schema) LookupStruct(mName, sName string) *Struct {
+	if s.Module == nil {
+		return nil
+	}
+	return s.Module.LookupStruct(mName, sName)
+}
+
+func (s Schema) LookupInterface(mName, iName string) *Interface {
+	if s.Module == nil {
+		return nil
+	}
+	return s.Module.LookupInterface(mName, iName)
+}

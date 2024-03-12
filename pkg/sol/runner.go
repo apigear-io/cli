@@ -138,6 +138,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if err := parseInputs(system, target.ExpandedInputs()); err != nil {
 			return err
 		}
+		applyMetaDocument(target, system)
 		if err := helper.MakeDir(outDir); err != nil {
 			return err
 		}
@@ -172,4 +173,22 @@ func runSolution(doc *spec.SolutionDoc) error {
 		}
 	}
 	return nil
+}
+
+func applyMetaDocument(t *spec.SolutionTarget, s *model.System) {
+	for k, v := range t.MetaImports {
+		log.Warn().Msgf("import %s %v", k, v)
+		node := s.LookupNode(k)
+		if node == nil {
+			log.Warn().Msgf("node %s not found", k)
+			continue
+		}
+		meta, ok := v.(map[string]interface{})
+		if !ok {
+			log.Warn().Msgf("meta for %s is not a map", k)
+			continue
+		}
+		log.Info().Msgf("apply meta to node %s", k)
+		node.Meta = helper.JoinMaps(node.Meta, meta)
+	}
 }

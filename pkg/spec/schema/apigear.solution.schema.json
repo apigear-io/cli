@@ -26,6 +26,14 @@
           "description": "if true the target will be generated even if it already exists.",
           "type": "boolean"
         },
+        "imports": {
+          "default": [],
+          "description": "list of imports which are used to enhance the meta information.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "inputs": {
           "default": [],
           "description": "list of input files which are used to generate the target.",
