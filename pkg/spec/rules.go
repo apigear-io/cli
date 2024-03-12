@@ -42,9 +42,10 @@ type Engines struct {
 }
 
 type RulesDoc struct {
-	Name     string         `json:"name" yaml:"name"`
-	Engines  Engines        `json:"engines" yaml:"engines"`
-	Features []*FeatureRule `json:"features" yaml:"features"`
+	Name      string         `json:"name" yaml:"name"`
+	Engines   Engines        `json:"engines" yaml:"engines"`
+	Languages []string       `json:"languages" yaml:"languages"`
+	Features  []*FeatureRule `json:"features" yaml:"features"`
 }
 
 // FeatureByName returns the feature with the given name.

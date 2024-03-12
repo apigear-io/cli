@@ -98,7 +98,6 @@ func NewTypedNode(n string, k Kind) *TypedNode {
 
 // Validate resolves all the types in the schema
 func (t *TypedNode) Validate(m *Module) error {
-	rkw.CheckName(t.Name, "type")
 	return t.Schema.Validate(m)
 }
 
@@ -137,4 +136,8 @@ func (t TypedNode) TypeName() string {
 		s += "Array"
 	}
 	return s
+}
+
+func (t *TypedNode) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, t.Name, "type")
 }
