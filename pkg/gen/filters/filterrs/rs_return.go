@@ -31,15 +31,15 @@ func ToReturnString(prefixComplexType string, schema *model.Schema) (string, err
 		if schema.Module == nil {
 			return "xxx", fmt.Errorf("schema.Module is nil")
 		}
-		e := schema.Module.LookupEnum(schema.Import, schema.Type)
+		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefixComplexType, e.Name)
 		}
-		s := schema.Module.LookupStruct(schema.Import, schema.Type)
+		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s%s", prefixComplexType, s.Name)
 		}
-		i := schema.Module.LookupInterface(schema.Import, schema.Type)
+		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = fmt.Sprintf("&%s%s", prefixComplexType, i.Name)
 		}

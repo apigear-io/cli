@@ -52,12 +52,32 @@ func (s System) LookupInterface(mName string, iName string) *Interface {
 }
 
 // LookupNode looks up a node by module and node name
-func (s System) LookupNode(mName string, nName string) *NamedNode {
-	m := s.LookupModule(mName)
-	if m == nil {
-		return nil
+func (s System) LookupNode(fqn string) *NamedNode {
+	parts := strings.Split(fqn, "#")
+	if len(parts) == 2 {
+		// we have an interface member
+		memberName := parts[1]
+		parts = strings.Split(parts[0], ".")
+		if len(parts) >= 2 {
+			ifaceName := parts[len(parts)-1]
+			moduleName := strings.Join(parts[:len(parts)-1], ".")
+			i := s.LookupInterface(moduleName, ifaceName)
+			if i != nil {
+				return i.LookupMember(memberName)
+			}
+		}
+	} else if len(parts) == 1 {
+		parts = strings.Split(fqn, ".")
+		if len(parts) >= 2 {
+			nodeName := parts[len(parts)-1]
+			moduleName := strings.Join(parts[:len(parts)-1], ".")
+			m := s.LookupModule(moduleName)
+			if m != nil {
+				return m.LookupNode(moduleName, nodeName)
+			}
+		}
 	}
-	return m.LookupNode(mName, nName)
+	return nil
 }
 
 // LookupStruct looks up a struct by module and struct name

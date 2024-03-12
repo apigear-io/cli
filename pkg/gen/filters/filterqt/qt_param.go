@@ -33,15 +33,15 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}
-	e := schema.Module.LookupEnum(schema.Import, schema.Type)
+	e := schema.LookupEnum(schema.Import, schema.Type)
 	if e != nil {
 		return fmt.Sprintf("%s%s::%sEnum %s", prefix, e.Name, e.Name, name), nil
 	}
-	s := schema.Module.LookupStruct(schema.Import, schema.Type)
+	s := schema.LookupStruct(schema.Import, schema.Type)
 	if s != nil {
 		return fmt.Sprintf("const %s%s& %s", prefix, s.Name, name), nil
 	}
-	i := schema.Module.LookupInterface(schema.Import, schema.Type)
+	i := schema.LookupInterface(schema.Import, schema.Type)
 	if i != nil {
 		return fmt.Sprintf("%s%s *%s", prefix, i.Name, name), nil
 	}

@@ -15,7 +15,9 @@ type SolutionTarget struct {
 	Template    string                 `json:"template" yaml:"template"`
 	Features    []string               `json:"features" yaml:"features"`
 	Force       bool                   `json:"force" yaml:"force"`
+	Imports     []string               `json:"imports" yaml:"imports"`
 	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
+	MetaImports map[string]interface{} `json:"-" yaml:"-"` // meta imports
 	// computed fields
 	computed bool `json:"-" yaml:"-"`
 	// expandedInputs is the inputs with the variables expanded
@@ -138,6 +140,7 @@ func (l *SolutionTarget) compute(doc *SolutionDoc) error {
 		l.expandedInputs = append(l.expandedInputs, expanded...)
 	}
 	l.dependencies = append(l.dependencies, l.expandedInputs...)
+	l.computeImports()
 	l.computed = true
 	return nil
 }
@@ -154,4 +157,19 @@ func (l *SolutionTarget) ExpandedInputs() []string {
 		log.Error().Msg("target not computed, expanded inputs not available")
 	}
 	return l.expandedInputs
+}
+
+func (l *SolutionTarget) computeImports() error {
+	if l.Imports == nil {
+		l.Imports = make([]string, 0)
+		l.MetaImports = make(map[string]interface{})
+		return nil
+	}
+	for _, imp := range l.Imports {
+		err := helper.ReadDocument(imp, &l.MetaImports)
+		if err != nil {
+			log.Warn().Msgf("import %s not found", imp)
+		}
+	}
+	return nil
 }

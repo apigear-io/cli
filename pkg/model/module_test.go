@@ -60,7 +60,8 @@ func TestModuleImport(t *testing.T) {
 
 	prop := module.Interfaces[0].Properties[0]
 	assert.Equal(t, "value", prop.Name)
-	assert.Equal(t, "a.A", prop.Type)
+	assert.Equal(t, "A", prop.Type)
+	assert.Equal(t, "a", prop.Import)
 
 	s := module.LookupStruct("a", "A")
 	assert.NotNil(t, s)
