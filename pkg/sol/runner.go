@@ -105,7 +105,7 @@ func (r *Runner) Clear() {
 	r.tm.CancelAll()
 }
 
-func (r *Runner) runSolutionFromSource(ctx context.Context, source string, force bool) error {
+func (r *Runner) runSolutionFromSource(_ context.Context, source string, force bool) error {
 	doc, err := ReadSolutionDoc(source)
 	if err != nil {
 		return err
