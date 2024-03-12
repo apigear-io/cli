@@ -9,13 +9,13 @@ import (
 func ToParamString(prefixVarName string, prefixComplexType string, schema *model.Schema, node *model.TypedNode) (string, error) {
 	name, err := ToVarString(prefixVarName, node)
 	if err != nil {
-		return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+		return "xxx", fmt.Errorf("rsParam inner value error: %s", err)
 	}
 	if schema.IsArray {
 		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefixComplexType, &inner)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToParamString inner value error: %s", err)
+			return "xxx", fmt.Errorf("rsParam inner value error: %s", err)
 		}
 		return fmt.Sprintf("%s: &[%s]", name, ret), nil
 	}
@@ -49,7 +49,7 @@ func ToParamString(prefixVarName string, prefixComplexType string, schema *model
 	if i != nil {
 		return fmt.Sprintf("%s: &%s", name, i.Name), nil
 	}
-	return "xxx", fmt.Errorf("ToParamString: unknown type %s", schema.Type)
+	return "xxx", fmt.Errorf("rsParam unknown schema %s", schema.Dump())
 }
 
 func rsParam(prefixVarName string, prefixComplexType string, node *model.TypedNode) (string, error) {

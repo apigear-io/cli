@@ -26,9 +26,6 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "false"
 	default:
-		if schema.Module == nil {
-			return "xxx", fmt.Errorf("schema.Module is nil")
-		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, common.UpperFirst(e.Members[0].Name))
@@ -50,7 +47,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 		ret, err := ToReturnString(prefix, &inner)
 		if err != nil {
-			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)
+			return "xxx", fmt.Errorf("qtDefault inner value error: %s", err)
 		}
 		text = fmt.Sprintf("QList<%s>()", ret)
 	}
@@ -60,7 +57,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 // qtDefault returns the default value for a type
 func qtDefault(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("cppDefault node is nil")
+		return "xxx", fmt.Errorf("qtDefault node is nil")
 	}
 	return ToDefaultString(prefix, &node.Schema)
 }

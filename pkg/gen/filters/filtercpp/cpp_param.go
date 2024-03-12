@@ -45,7 +45,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	if i != nil {
 		return fmt.Sprintf("%s* %s", i.Name, name), nil
 	}
-	return "xxx", fmt.Errorf("ToParamString: unknown type %s", schema.Type)
+	return "xxx", fmt.Errorf("cppParam: unknown schema %s", schema.Dump())
 }
 
 func cppParam(prefix string, node *model.TypedNode) (string, error) {

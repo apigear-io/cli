@@ -39,7 +39,7 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("ueConstType unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
 		switch schema.KindType {
@@ -68,7 +68,7 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeInterface:
 			text = fmt.Sprintf("const TArray<%sF%s%s*>&", prefix, moduleId, schema.Type)
 		default:
-			return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+			return "xxx", fmt.Errorf("ueConstType unknown schema %s", schema.Dump())
 		}
 	}
 	return text, nil
@@ -76,7 +76,7 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 
 func ueConstType(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
-		return "xxx", fmt.Errorf("goReturn node is nil")
+		return "xxx", fmt.Errorf("ueConstType node is nil")
 	}
 	return ToConstTypeString(prefix, &node.Schema)
 }

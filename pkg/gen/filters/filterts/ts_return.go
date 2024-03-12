@@ -20,25 +20,25 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
-			return "xxx", fmt.Errorf("ToReturnString enum %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsReturn enum not found: %s", schema.Dump())
 		}
 		text = fmt.Sprintf("%s%s", prefix, e.Name)
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
-			return "xxx", fmt.Errorf("ToReturnString struct %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsReturn struct not found: %s", schema.Dump())
 		}
 		text = fmt.Sprintf("%s%s", prefix, s.Name)
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
-			return "xxx", fmt.Errorf("ToReturnString interface %s not found", schema.Type)
+			return "xxx", fmt.Errorf("tsReturn interface not found: %s", schema.Dump())
 		}
 		text = fmt.Sprintf("%s%s", prefix, i.Name)
 	case model.TypeVoid:
 		text = "void"
 	default:
-		return "xxx", fmt.Errorf("unknown schema kind type: %s", schema.KindType)
+		return "xxx", fmt.Errorf("tsReturn unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
 		text = fmt.Sprintf("%s[]", text)

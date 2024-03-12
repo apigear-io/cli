@@ -51,7 +51,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	if i != nil {
 		return fmt.Sprintf("%s %s%s", name, prefix, i.Name), nil
 	}
-	return "xxx", fmt.Errorf("unknown type %s", schema.Type)
+	return "xxx", fmt.Errorf("goParam: unknown schema %s", schema.Dump())
 }
 
 func goParam(prefix string, node *model.TypedNode) (string, error) {

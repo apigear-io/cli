@@ -1,6 +1,9 @@
 package model
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // TypeNode is a node with type information.
 // { type: array, items: { type: string } }
@@ -165,4 +168,8 @@ func (s Schema) LookupInterface(mName, iName string) *Interface {
 		return nil
 	}
 	return s.Module.LookupInterface(mName, iName)
+}
+
+func (s Schema) Dump() string {
+	return fmt.Sprintf("Schema{Type: %s, Import: %s, IsArray: %t, KindType: %s, IsPrimitive: %t, IsSymbol: %t}", s.Type, s.Import, s.IsArray, s.KindType, s.IsPrimitive, s.IsSymbol)
 }

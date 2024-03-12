@@ -36,9 +36,6 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
-		if schema.Module == nil {
-			return "xxx", fmt.Errorf("schema.Module is nil")
-		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
