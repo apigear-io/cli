@@ -24,7 +24,6 @@ func NewStruct(name string) *Struct {
 
 func (s *Struct) Validate(m *Module) error {
 	// check for duplicate fields
-	rkw.CheckName(s.Name, "struct")
 	names := make(map[string]bool)
 	if s.Fields == nil {
 		s.Fields = make([]*TypedNode, 0)
@@ -53,4 +52,11 @@ func (s *Struct) LookupField(name string) *TypedNode {
 
 func (s *Struct) NoFields() bool {
 	return len(s.Fields) == 0
+}
+
+func (s *Struct) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, s.Name, "struct")
+	for _, f := range s.Fields {
+		f.CheckReservedWords(langs)
+	}
 }

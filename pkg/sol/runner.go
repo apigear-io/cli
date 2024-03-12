@@ -167,6 +167,8 @@ func runSolution(doc *spec.SolutionDoc) error {
 			}
 			return nil
 		}
+		// check keywords according to the rules languages
+		system.CheckReservedWords(doc.Languages)
 		err = g.ProcessRules(doc)
 		if err != nil {
 			return err

@@ -118,6 +118,14 @@
       },
       "type": "array"
     },
+    "languages": {
+      "description": "Languages defines a list of languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.",
+      "items": {
+        "description": "Name of the language which is supported by this rules engine.",
+        "type": "string"
+      },
+      "type": "array"
+    },
     "name": {
       "description": "The name of the rules engine.",
       "type": "string"

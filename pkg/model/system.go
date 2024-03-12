@@ -123,7 +123,6 @@ func (s System) LookupSignal(mName, iName, sName string) *Signal {
 }
 
 func (s *System) Validate() error {
-	rkw.CheckName(s.Name, "system")
 	for _, m := range s.Modules {
 		err := m.Validate()
 		if err != nil {
@@ -227,4 +226,15 @@ func FQNSplit3(fqn string) (string, string, string) {
 	// module name is all parts except the last two
 	moduleName := strings.Join(parts[:len(parts)-2], ".")
 	return moduleName, elementName, memberName
+}
+
+func (s *System) CheckReservedWords(langs []string) {
+	ls := make([]rkw.Lang, 0)
+	for _, l := range langs {
+		ls = append(ls, rkw.Lang(l))
+	}
+	rkw.CheckIsReserved(ls, s.Name, "system")
+	for _, m := range s.Modules {
+		m.CheckReservedWords(ls)
+	}
 }

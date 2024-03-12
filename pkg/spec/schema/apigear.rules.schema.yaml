@@ -65,6 +65,12 @@ properties:
       cli:
         type: string
         description: SemVer version constraint for the cli engine (e.g. ">= v0.1.0 < v1.0.0")
+  languages:
+    type: array
+    description: Languages defines a list of languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.
+    items:
+      type: string
+      description: Name of the language which is supported by this rules engine.
   features:
     description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
     type: array

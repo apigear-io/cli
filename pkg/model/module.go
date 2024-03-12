@@ -204,7 +204,6 @@ func (m Module) LookupDefaultEnumMember(mName, eName string) *EnumMember {
 
 func (m *Module) Validate() error {
 	m.compute()
-	rkw.CheckName(m.Name, "module")
 	// check for duplicate names
 	names := make(map[string]bool)
 	for _, i := range m.Interfaces {
@@ -295,4 +294,17 @@ func (m *Module) computeChecksum() {
 	}
 	sum := md5.Sum([]byte(buffer.String()))
 	m.Checksum = hex.EncodeToString(sum[:])
+}
+
+func (m *Module) CheckReservedWords(langs []rkw.Lang) {
+	rkw.CheckIsReserved(langs, m.Name, "module")
+	for _, i := range m.Interfaces {
+		i.CheckReservedWords(langs)
+	}
+	for _, s := range m.Structs {
+		s.CheckReservedWords(langs)
+	}
+	for _, e := range m.Enums {
+		e.CheckReservedWords(langs)
+	}
 }
