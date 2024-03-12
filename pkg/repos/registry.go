@@ -118,7 +118,10 @@ func (c *registry) Get(repoID string) (*git.RepoInfo, error) {
 
 func (r *registry) ensureRegistry() error {
 	if !helper.IsDir(r.RegistryDir) {
-		r.Reset()
+		err := r.Reset()
+		if err != nil {
+			log.Warn().Msgf("failed to reset registry: %s", err)
+		}
 	}
 	if r.Registry == nil {
 		err := r.Load()

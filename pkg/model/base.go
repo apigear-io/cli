@@ -43,10 +43,6 @@ const (
 	TypeInterface KindType = "interface"
 )
 
-type IModuleProvider interface {
-	GetModule() *Module
-}
-
 // NamedNode is a base node with a name and a kind.
 // { "name": "foo", "kind": "interface" }
 type NamedNode struct {

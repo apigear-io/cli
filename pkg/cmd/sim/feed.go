@@ -93,7 +93,7 @@ func NewClientCommand() *cobra.Command {
 					return err
 				}
 				ctrl := helper.NewSenderControl[[]byte](options.repeat, options.sleep)
-				ctrl.Run(items, func(data []byte) error {
+				err = ctrl.Run(items, func(data []byte) error {
 					log.Debug().Msgf("send -> %s", data)
 					err := handleNodeData(node, data)
 					if err != nil {
@@ -101,6 +101,9 @@ func NewClientCommand() *cobra.Command {
 					}
 					return nil
 				})
+				if err != nil {
+					log.Warn().Err(err).Msg("send error")
+				}
 			}
 			<-ctx.Done()
 			log.Info().Msg("done")

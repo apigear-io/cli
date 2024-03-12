@@ -80,16 +80,22 @@ func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
 		}
 		// check if the dependency is a directory
 		if helper.IsDir(dep) {
-			filepath.WalkDir(dep, func(path string, d os.DirEntry, err error) error {
+			err = filepath.WalkDir(dep, func(path string, d os.DirEntry, err error) error {
 				if err != nil {
 					log.Error().Err(err).Msgf("error walking directory %s", dep)
 					return err
 				}
 				if d.IsDir() {
-					watcher.Add(path)
+					err = watcher.Add(path)
+					if err != nil {
+						log.Warn().Err(err).Msgf("error watching directory %s", path)
+					}
 				}
 				return nil
 			})
+			if err != nil {
+				log.Warn().Err(err).Msgf("error walking directory %s", dep)
+			}
 		}
 	}
 

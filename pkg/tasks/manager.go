@@ -29,7 +29,10 @@ func NewTaskManager() *TaskManager {
 // Register creates a new task
 func (tm *TaskManager) Register(name string, meta map[string]interface{}, tf TaskFunc) *TaskItem {
 	if tm.Has(name) {
-		tm.RmTask(name)
+		err := tm.RmTask(name)
+		if err != nil {
+			log.Warn().Err(err).Msg("error removing task")
+		}
 	}
 	task := NewTaskItem(name, meta, tf)
 	tm.AddTask(task)
