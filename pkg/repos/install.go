@@ -3,6 +3,7 @@ package repos
 // InstallTemplateFromFQN tries to install a template
 // from a fully qualified name (e.g. name@version)
 func GetOrInstallTemplateFromRepoID(repoID string) (string, error) {
+	log.Info().Msgf("installing template %s", repoID)
 	fixedRepoId, err := Registry.FixRepoId(repoID)
 	if err != nil {
 		return "", err
