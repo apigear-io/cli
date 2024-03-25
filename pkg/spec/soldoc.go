@@ -1,7 +1,6 @@
 package spec
 
 type SolutionDoc struct {
-	Schema      string            `json:"schema" yaml:"schema"`
 	Version     string            `json:"version" yaml:"version"`
 	Name        string            `json:"name" yaml:"name"`
 	Description string            `json:"description" yaml:"description"`
