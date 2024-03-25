@@ -47,8 +47,9 @@ additionalProperties: false
 properties:
   schema:
     type: string
-    enum: ["apigear.rules/1.0"]
     description: "The ApiGear Blueprint Rules specification version of this document."
+    enum: ["apigear.rules/1.0"]
+    default: "apigear.rules/1.0"
   name:
     type: string
     description: "The name of the rules engine."

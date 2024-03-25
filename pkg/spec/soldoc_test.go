@@ -7,7 +7,6 @@ import (
 )
 
 var docTargets = SolutionDoc{
-	Schema:      "apigear/solution",
 	Version:     "1.0.0",
 	Name:        "solution",
 	Description: "a description",
@@ -27,7 +26,6 @@ var docTargets = SolutionDoc{
 }
 
 var docLayers = SolutionDoc{
-	Schema:      "apigear/solution",
 	Version:     "1.0.0",
 	Name:        "solution",
 	Description: "a description",

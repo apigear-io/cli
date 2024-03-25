@@ -78,7 +78,6 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 		log.Fatal().Err(err).Msg("get current working directory")
 	}
 	return &spec.SolutionDoc{
-		Schema:  "apigear.solution/1.0",
 		RootDir: rootDir,
 		Targets: []*spec.SolutionTarget{
 			{

@@ -7,8 +7,9 @@ required:
 properties:
   schema:
     type: string
-    enum: ["apigear.solution/1.0"]
     description: "The ApiGear solution specification version of this document."
+    enum: ["apigear.solution/1.0"]
+    default: "apigear.solution/1.0"
   name:
     type: string
     description: "The name of the solution."

@@ -6,9 +6,9 @@ required: [schema, name, version]
 properties:
   schema:
     type: string
+    description: "The simulation scenario specification version of this document."
     enum: ["apigear.scenario/1.0"]
     default: "apigear.scenario/1.0"
-    description: "The simulation scenario specification version of this document."
   name:
     type: string
     description: "The name of the scenario."
@@ -80,7 +80,7 @@ definitions:
         type: string
       interface:
         description: "The default interface of the sequence."
-        type: string        
+        type: string
       interval:
         description: "The interval between each step."
         type: integer
