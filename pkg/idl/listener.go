@@ -83,7 +83,10 @@ func (o *ObjectApiListener) EnterHeaderRule(c *parser.HeaderRuleContext) {
 func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 	IsNil(o.module)
 	name := c.GetName().GetText()
-	version := c.GetVersion().GetText()
+	version := "1.0" // default version
+	if c.GetVersion() != nil {
+		version = c.GetVersion().GetText()
+	}
 	o.module = model.NewModule(name, version)
 	o.module.System = o.System
 }

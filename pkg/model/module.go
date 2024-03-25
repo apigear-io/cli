@@ -205,6 +205,10 @@ func (m Module) LookupDefaultEnumMember(mName, eName string) *EnumMember {
 func (m *Module) Validate() error {
 	m.compute()
 	// check for duplicate names
+	if m.Version == "" {
+		// ensure a version is set
+		m.Version = "1.0"
+	}
 	names := make(map[string]bool)
 	for _, i := range m.Interfaces {
 		err := i.Validate(m)

@@ -30,7 +30,7 @@ description: |
 title: "ObjectAPI 1.0 Schema"
 type: object
 additionalProperties: false
-required: [name, version]
+required: [name]
 properties:
   schema:
     type: string
@@ -63,7 +63,7 @@ properties:
     type: string
     description: module version, should be a major and minor and an optional patch version, separated by a dot.
     pattern: "^[0-9]+[.][0-9]+([.][0-9]+)*$"
-    default: "0.1"
+    default: "1.0"
   description:
     type: string
     description: module description. Should be a short description of the module.
@@ -93,14 +93,14 @@ definitions:
     required: [name, type]
     additionalProperties: false
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the type."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       type:
@@ -109,10 +109,10 @@ definitions:
       import:
         type: string
         description: "The name of the module where the type is defined."
-      array: 
+      array:
         type: boolean
         description: "If true, the type is an array of the given type."
-      readonly: 
+      readonly:
         type: boolean
         description: "If true, the type is readonly."
   Type:
@@ -121,19 +121,19 @@ definitions:
     required: [type]
     additionalProperties: false
     properties:
-      description:  
+      description:
         type: string
         description: "A description of the type."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
-      type: 
+      type:
         type: string
         description: "A primitive type or a declared type name."
-      import: 
+      import:
         type: string
         description: "The name of the module where the type is defined."
-      array: 
+      array:
         type: boolean
         description: "If true, the type is an array of the given type."
 
@@ -143,27 +143,27 @@ definitions:
     required: [name]
     additionalProperties: false
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the interface."
-      extends: 
+      extends:
         type: object
         description: "The interface extends another interface."
         required: [name]
         additionalProperties: false
         properties:
-          name: 
+          name:
             type: string
             description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
             pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-          import: 
+          import:
             type: string
-            description: "The name of the module where the interface is defined."      
-      meta: 
+            description: "The name of the module where the interface is defined."
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       properties:
@@ -187,14 +187,14 @@ definitions:
     required: [name]
     additionalProperties: false
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the struct."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       fields:
@@ -208,14 +208,14 @@ definitions:
     required: [name]
     additionalProperties: false
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the enum."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       members:
@@ -228,14 +228,14 @@ definitions:
     description: "An operation is a function with a name, parameters and a return type."
     additionalProperties: false
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the operation."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       return:
@@ -251,19 +251,17 @@ definitions:
     additionalProperties: false
     required: [name]
     properties:
-      name: 
+      name:
         type: string
         description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
-      description: 
+      description:
         type: string
         description: "A description of the enum member."
-      meta: 
+      meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
-      value: 
+      value:
         type: integer
         description: "The value of the enum member. It must be unique within the enum and must be a positive integer."
         minimum: 0
-
-
