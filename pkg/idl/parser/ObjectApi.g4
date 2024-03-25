@@ -5,7 +5,7 @@ documentRule: headerRule declarationsRule*;
 headerRule: moduleRule importRule*;
 
 moduleRule:
-	metaRule* 'module' name = IDENTIFIER version = VERSION;
+	metaRule* 'module' name = IDENTIFIER version = VERSION?;
 
 importRule: 'import' name = IDENTIFIER version = VERSION?;
 
