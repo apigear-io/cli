@@ -131,6 +131,7 @@
       "type": "string"
     },
     "schema": {
+      "default": "apigear.rules/1.0",
       "description": "The ApiGear Blueprint Rules specification version of this document.",
       "enum": [
         "apigear.rules/1.0"

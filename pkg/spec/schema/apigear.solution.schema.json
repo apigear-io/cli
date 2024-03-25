@@ -93,6 +93,7 @@
       "type": "string"
     },
     "schema": {
+      "default": "apigear.solution/1.0",
       "description": "The ApiGear solution specification version of this document.",
       "enum": [
         "apigear.solution/1.0"
