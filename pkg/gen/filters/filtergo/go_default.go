@@ -60,6 +60,12 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			text = "float64(0.0)"
 		case model.TypeBool:
 			text = "false"
+		case model.TypeExtern:
+			xe := parseGoExtern(schema)
+			if xe.Import != "" {
+				prefix = fmt.Sprintf("%s.", xe.Import)
+			}
+			text = fmt.Sprintf("%s%s{}", prefix, xe.Name)
 		case model.TypeEnum:
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]

@@ -23,6 +23,9 @@ type ObjectApiListener interface {
 	// EnterDeclarationsRule is called when entering the declarationsRule production.
 	EnterDeclarationsRule(c *DeclarationsRuleContext)
 
+	// EnterExternRule is called when entering the externRule production.
+	EnterExternRule(c *ExternRuleContext)
+
 	// EnterInterfaceRule is called when entering the interfaceRule production.
 	EnterInterfaceRule(c *InterfaceRuleContext)
 
@@ -85,6 +88,9 @@ type ObjectApiListener interface {
 
 	// ExitDeclarationsRule is called when exiting the declarationsRule production.
 	ExitDeclarationsRule(c *DeclarationsRuleContext)
+
+	// ExitExternRule is called when exiting the externRule production.
+	ExitExternRule(c *ExternRuleContext)
 
 	// ExitInterfaceRule is called when exiting the interfaceRule production.
 	ExitInterfaceRule(c *InterfaceRuleContext)

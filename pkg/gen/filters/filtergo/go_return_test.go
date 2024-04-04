@@ -112,3 +112,53 @@ func TestReturnWithErrors(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "xxx", s)
 }
+
+func TestExternGoReturn(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface1", "prop1", "XType1"},
+		{"demo", "Iface1", "prop2", "x.XType2"},
+		{"demo", "Iface1", "prop3", "x.XType3A"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestImportedExternGoReturn(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "x.XType1"},
+		{"demo", "Iface2", "prop2", "x.XType2"},
+		{"demo", "Iface2", "prop3", "x.XType3A"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := goReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

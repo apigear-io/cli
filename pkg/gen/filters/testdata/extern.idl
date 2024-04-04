@@ -1,0 +1,46 @@
+module demo
+
+import demo.x
+
+// blank external type
+extern XType1
+
+// external type imported from another module
+@go.module: "demo/x"
+@cpp.namespace: "demo::x"
+@cpp.include: "x.h"
+extern XType2
+
+// external type imported from another module with alias
+@go.module: "demo/x"
+@go.name: "XType3A"
+@cpp.namespace: "demo::x"
+@cpp.include: "x.h"
+@cpp.name: "XType3A"
+extern XType3
+
+
+interface Iface1 {
+    prop1: XType1
+    prop2: XType2
+    prop3: XType3
+    func1 (arg1: XType1): XType1
+    func2 (arg1: XType2): XType2
+    func3 (arg1: XType3): XType3
+    signal sig1 (arg1: XType1)
+    signal sig2 (arg1: XType2)
+    signal sig3 (arg1: XType3)
+}
+
+struct Struct1 {
+    field1: XType1
+    field2: XType2
+    field3: XType3
+}
+
+interface Iface2 {
+    prop1: demo.x.XType1
+    prop2: demo.x.XType2
+    prop3: demo.x.XType3
+
+}
