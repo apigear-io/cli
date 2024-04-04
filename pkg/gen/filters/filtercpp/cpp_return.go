@@ -8,34 +8,42 @@ import (
 
 func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	text := ""
-	switch schema.Type {
-	case "void":
+	switch schema.KindType {
+	case model.TypeVoid:
 		text = "void"
-	case "string":
+	case model.TypeString:
 		text = "std::string"
-	case "int":
+	case model.TypeInt:
 		text = "int"
-	case "int32":
+	case model.TypeInt32:
 		text = "int32_t"
-	case "int64":
+	case model.TypeInt64:
 		text = "int64_t"
-	case "float":
+	case model.TypeFloat:
 		text = "float"
-	case "float32":
+	case model.TypeFloat32:
 		text = "float"
-	case "float64":
+	case model.TypeFloat64:
 		text = "double"
-	case "bool":
+	case model.TypeBool:
 		text = "bool"
-	default:
+	case model.TypeExtern:
+		xe := parseCppExtern(schema)
+		if xe.NameSpace != "" {
+			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		}
+		text = fmt.Sprintf("%s%s", prefix, xe.Name)
+	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
 		}
+	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s%s", prefix, s.Name)
 		}
+	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = fmt.Sprintf("%s%s*", prefix, i.Name)

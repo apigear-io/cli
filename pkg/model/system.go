@@ -42,6 +42,15 @@ func (s System) LookupModule(name string) *Module {
 	return nil
 }
 
+// LookupExtern looks up an extern by name
+func (s System) LookupExtern(mName, eName string) *Extern {
+	m := s.LookupModule(mName)
+	if m == nil {
+		return nil
+	}
+	return m.LookupExtern(mName, eName)
+}
+
 // LookupInterface looks up an interface by module and interface name
 func (s System) LookupInterface(mName string, iName string) *Interface {
 	m := s.LookupModule(mName)
@@ -87,6 +96,14 @@ func (s System) LookupStruct(mName, sName string) *Struct {
 		return nil
 	}
 	return m.LookupStruct(mName, sName)
+}
+
+func (s System) LookupField(mName, sName, fName string) *TypedNode {
+	s1 := s.LookupStruct(mName, sName)
+	if s1 == nil {
+		return nil
+	}
+	return s1.LookupField(fName)
 }
 
 // LookupEnum looks up an enum by module and enum name

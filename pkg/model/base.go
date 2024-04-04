@@ -14,6 +14,7 @@ const (
 	KindSystem    Kind = "system"
 	KindModule    Kind = "module"
 	KindImport    Kind = "import"
+	KindExtern    Kind = "extern"
 	KindInterface Kind = "interface"
 	KindProperty  Kind = "property"
 	KindOperation Kind = "operation"
@@ -38,19 +39,63 @@ const (
 	TypeFloat32   KindType = "float32"
 	TypeFloat64   KindType = "float64"
 	TypeString    KindType = "string"
+	TypeExtern    KindType = "extern"
 	TypeEnum      KindType = "enum"
 	TypeStruct    KindType = "struct"
 	TypeInterface KindType = "interface"
 )
 
+type Meta map[string]interface{}
+
+func (m Meta) Has(key string) bool {
+	_, ok := m[key]
+	return ok
+}
+
+func (m Meta) Get(key string) interface{} {
+	return m[key]
+}
+
+func (m Meta) Set(key string, value interface{}) {
+	m[key] = value
+}
+
+func (m Meta) GetString(key string) string {
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
+}
+
+func (m Meta) GetBool(key string) bool {
+	if v, ok := m[key].(bool); ok {
+		return v
+	}
+	return false
+}
+
+func (m Meta) GetInt(key string) int {
+	if v, ok := m[key].(int); ok {
+		return v
+	}
+	return 0
+}
+
+func (m Meta) GetFloat(key string) float64 {
+	if v, ok := m[key].(float64); ok {
+		return v
+	}
+	return 0
+}
+
 // NamedNode is a base node with a name and a kind.
 // { "name": "foo", "kind": "interface" }
 type NamedNode struct {
-	Id          uint                   `json:"-" yaml:"-"` // internal id
-	Name        string                 `json:"name" yaml:"name"`
-	Kind        Kind                   `json:"kind" yaml:"kind"`
-	Description string                 `json:"description" yaml:"description"`
-	Meta        map[string]interface{} `json:"meta" yaml:"meta"`
+	Id          uint   `json:"-" yaml:"-"` // internal id
+	Name        string `json:"name" yaml:"name"`
+	Kind        Kind   `json:"kind" yaml:"kind"`
+	Description string `json:"description" yaml:"description"`
+	Meta        Meta   `json:"meta" yaml:"meta"`
 }
 
 func (n *NamedNode) String() string {

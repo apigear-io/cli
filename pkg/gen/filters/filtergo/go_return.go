@@ -32,6 +32,12 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = "float64"
 	case model.TypeBool:
 		text = "bool"
+	case model.TypeExtern:
+		xe := parseGoExtern(schema)
+		if xe.Import != "" {
+			prefix = fmt.Sprintf("%s.", xe.Import)
+		}
+		text = fmt.Sprintf("%s%s", prefix, xe.Name)
 	case model.TypeEnum:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
 	case model.TypeStruct:

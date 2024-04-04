@@ -9,7 +9,13 @@ moduleRule:
 
 importRule: 'import' name = IDENTIFIER version = VERSION?;
 
-declarationsRule: interfaceRule | structRule | enumRule;
+declarationsRule:
+	externRule
+	| interfaceRule
+	| structRule
+	| enumRule;
+
+externRule: metaRule* 'extern' name = IDENTIFIER;
 
 interfaceRule:
 	metaRule* 'interface' name = IDENTIFIER (

@@ -25,3 +25,18 @@ func loadTestSystems(t *testing.T) []*model.System {
 	assert.NoError(t, err)
 	return []*model.System{sys1}
 }
+
+func loadExternSystems(t *testing.T) []*model.System {
+	t.Helper()
+	sys1 := model.NewSystem("sys1")
+	p := idl.NewParser(sys1)
+	err := p.ParseFile("../testdata/extern.idl")
+	assert.NoError(t, err)
+
+	err = p.ParseFile("../testdata/extern2.idl")
+	assert.NoError(t, err)
+	err = sys1.Validate()
+	assert.NoError(t, err)
+
+	return []*model.System{sys1}
+}

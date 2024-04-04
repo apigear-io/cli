@@ -1,0 +1,19 @@
+module demo.x
+
+// blank external type
+extern XType1
+
+// external type imported from another module
+@go.module: "demo/x"
+@cpp.name: "XType2"
+@cpp.namespace: "demo::x"
+@cpp.include: "x.h"
+extern XType2
+
+// external type imported from another module with alias
+@go.module: "demo/x"
+@go.name: "XType3A"
+@cpp.name: "XType3A"
+@cpp.namespace: "demo::x"
+@cpp.include: "x.h"
+extern XType3

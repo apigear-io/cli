@@ -15,35 +15,44 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		}
 		return fmt.Sprintf("const std::list<%s>& %s", ret, name), nil
 	}
-	switch schema.Type {
-	case "string":
+	switch schema.KindType {
+	case model.TypeString:
 		return fmt.Sprintf("const std::string& %s", name), nil
-	case "int":
+	case model.TypeInt:
 		return fmt.Sprintf("int %s", name), nil
-	case "int32":
+	case model.TypeInt32:
 		return fmt.Sprintf("int32_t %s", name), nil
-	case "int64":
+	case model.TypeInt64:
 		return fmt.Sprintf("int64_t %s", name), nil
-	case "float":
+	case model.TypeFloat:
 		return fmt.Sprintf("float %s", name), nil
-	case "float32":
+	case model.TypeFloat32:
 		return fmt.Sprintf("float %s", name), nil
-	case "float64":
+	case model.TypeFloat64:
 		return fmt.Sprintf("double %s", name), nil
-	case "bool":
+	case model.TypeBool:
 		return fmt.Sprintf("bool %s", name), nil
-	}
-	e := schema.LookupEnum(schema.Import, schema.Type)
-	if e != nil {
-		return fmt.Sprintf("%sEnum %s", e.Name, name), nil
-	}
-	s := schema.LookupStruct(schema.Import, schema.Type)
-	if s != nil {
-		return fmt.Sprintf("const %s& %s", s.Name, name), nil
-	}
-	i := schema.LookupInterface(schema.Import, schema.Type)
-	if i != nil {
-		return fmt.Sprintf("%s* %s", i.Name, name), nil
+	case model.TypeExtern:
+		xe := parseCppExtern(schema)
+		if xe.NameSpace != "" {
+			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		}
+		return fmt.Sprintf("const %s%s& %s", prefix, xe.Name, name), nil
+	case model.TypeEnum:
+		e := schema.LookupEnum(schema.Import, schema.Type)
+		if e != nil {
+			return fmt.Sprintf("%sEnum %s", e.Name, name), nil
+		}
+	case model.TypeStruct:
+		s := schema.LookupStruct(schema.Import, schema.Type)
+		if s != nil {
+			return fmt.Sprintf("const %s& %s", s.Name, name), nil
+		}
+	case model.TypeInterface:
+		i := schema.LookupInterface(schema.Import, schema.Type)
+		if i != nil {
+			return fmt.Sprintf("%s* %s", i.Name, name), nil
+		}
 	}
 	return "xxx", fmt.Errorf("cppParam: unknown schema %s", schema.Dump())
 }
