@@ -21,28 +21,38 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		}
 		return fmt.Sprintf("%s []%s", name, innerValue), nil
 	}
-	switch schema.Type {
-	case "string":
+	switch schema.KindType {
+	case model.TypeString:
 		return fmt.Sprintf("%s string", name), nil
-	case "int":
+	case model.TypeInt:
 		return fmt.Sprintf("%s int32", name), nil
-	case "int32":
+	case model.TypeInt32:
 		return fmt.Sprintf("%s int32", name), nil
-	case "int64":
+	case model.TypeInt64:
 		return fmt.Sprintf("%s int64", name), nil
-	case "float":
+	case model.TypeFloat:
 		return fmt.Sprintf("%s float32", name), nil
-	case "float32":
+	case model.TypeFloat32:
 		return fmt.Sprintf("%s float32", name), nil
-	case "float64":
+	case model.TypeFloat64:
 		return fmt.Sprintf("%s float64", name), nil
-	case "bool":
+	case model.TypeBool:
 		return fmt.Sprintf("%s bool", name), nil
+	}
+	x := schema.LookupExtern(schema.Import, schema.Type)
+	if x != nil {
+		xe := parseGoExtern(schema)
+		prefix = ""
+		if xe.Import != "" {
+			prefix = fmt.Sprintf("%s.", xe.Import)
+		}
+		return fmt.Sprintf("%s %s%s", name, prefix, xe.Name), nil
 	}
 	e := schema.LookupEnum(schema.Import, schema.Type)
 	if e != nil {
 		return fmt.Sprintf("%s %s%s", name, prefix, e.Name), nil
 	}
+
 	s := schema.LookupStruct(schema.Import, schema.Type)
 	if s != nil {
 		return fmt.Sprintf("%s %s%s", name, prefix, s.Name), nil

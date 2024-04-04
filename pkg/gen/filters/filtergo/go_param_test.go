@@ -75,3 +75,28 @@ func TestParamWithErrors(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "xxx", s)
 }
+
+func TestExternParam(t *testing.T) {
+	table := []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface1", "func1", "arg1 XType1"},
+		{"demo", "Iface1", "func2", "arg1 x.XType2"},
+		{"demo", "Iface1", "func3", "arg1 x.XType3A"},
+	}
+	syss := loadExternSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := goParams("", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

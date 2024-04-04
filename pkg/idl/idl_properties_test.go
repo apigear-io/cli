@@ -3,6 +3,7 @@ package idl
 import (
 	"testing"
 
+	"github.com/apigear-io/cli/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +14,7 @@ func TestProperties(t *testing.T) {
 	assert.NotNil(t, iface)
 	table := []struct {
 		name     string
-		meta     map[string]interface{}
+		meta     model.Meta
 		readonly bool
 	}{
 		{"prop01", nil, false},

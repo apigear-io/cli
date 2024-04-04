@@ -65,6 +65,7 @@ type Module struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Version    Version      `json:"version" yaml:"version"`
 	Imports    []*Import    `json:"imports" yaml:"imports"`
+	Externs    []*Extern    `json:"externs" yaml:"externs"`
 	Interfaces []*Interface `json:"interfaces" yaml:"interfaces"`
 	Structs    []*Struct    `json:"structs" yaml:"structs"`
 	Enums      []*Enum      `json:"enums" yaml:"enums"`
@@ -79,6 +80,7 @@ func NewModule(n string, v string) *Module {
 			Kind: KindModule,
 		},
 		Version:    Version(v),
+		Externs:    make([]*Extern, 0),
 		Imports:    make([]*Import, 0),
 		Interfaces: make([]*Interface, 0),
 		Structs:    make([]*Struct, 0),
@@ -100,6 +102,27 @@ func (m *Module) CheckImport(mName string) bool {
 	}
 	log.Warn().Msgf("module %s does not have import %s. Make sure to import all your dependencies.", m.Name, mName)
 	return false
+}
+
+func (m Module) LookupLocalExtern(eName string) *Extern {
+	for _, e := range m.Externs {
+		if e.Name == eName {
+			return e
+		}
+	}
+	return nil
+}
+
+func (m Module) LookupExtern(mName, eName string) *Extern {
+	if mName == "" || mName == m.Name {
+		return m.LookupLocalExtern(eName)
+	}
+	if m.System != nil {
+		m.CheckImport(mName)
+		return m.System.LookupExtern(mName, eName)
+	}
+	return nil
+
 }
 
 // LookupNode looks up a named node by name
@@ -210,6 +233,16 @@ func (m *Module) Validate() error {
 		m.Version = "1.0"
 	}
 	names := make(map[string]bool)
+	for _, x := range m.Externs {
+		err := x.Validate(m)
+		if err != nil {
+			return err
+		}
+		if names[x.Name] {
+			return fmt.Errorf("%s: duplicate name %s", m.Name, x.Name)
+		}
+		names[x.Name] = true
+	}
 	for _, i := range m.Interfaces {
 		err := i.Validate(m)
 		if err != nil {

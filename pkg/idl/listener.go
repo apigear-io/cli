@@ -20,6 +20,7 @@ type ObjectApiListener struct {
 	kind         model.Kind
 	module       *model.Module
 	iface        *model.Interface
+	extern       *model.Extern
 	struct_      *model.Struct
 	enum         *model.Enum
 	enumMember   *model.EnumMember
@@ -106,6 +107,23 @@ func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 // EnterDeclarationsRule is called when entering the declarationsRule production.
 func (o *ObjectApiListener) EnterDeclarationsRule(c *parser.DeclarationsRuleContext) {
 	// nothing todo
+}
+
+func (o *ObjectApiListener) EnterExternRule(c *parser.ExternRuleContext) {
+	IsNotNil(o.module)
+	IsNil(o.extern)
+	name := c.GetName().GetText()
+	o.extern = model.NewExtern(name)
+
+}
+
+func (o *ObjectApiListener) ExitExternRule(c *parser.ExternRuleContext) {
+	o.parseMeta(&o.extern.NamedNode, c.AllMetaRule())
+	o.module.Externs = append(o.module.Externs, o.extern)
+	o.extern = nil
+	IsNil(o.extern)
+	IsNotNil(o.module)
+
 }
 
 // EnterInterfaceRule is called when entering the InterfaceRule production.

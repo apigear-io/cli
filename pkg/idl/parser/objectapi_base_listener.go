@@ -51,6 +51,12 @@ func (s *BaseObjectApiListener) EnterDeclarationsRule(ctx *DeclarationsRuleConte
 // ExitDeclarationsRule is called when production declarationsRule is exited.
 func (s *BaseObjectApiListener) ExitDeclarationsRule(ctx *DeclarationsRuleContext) {}
 
+// EnterExternRule is called when production externRule is entered.
+func (s *BaseObjectApiListener) EnterExternRule(ctx *ExternRuleContext) {}
+
+// ExitExternRule is called when production externRule is exited.
+func (s *BaseObjectApiListener) ExitExternRule(ctx *ExternRuleContext) {}
+
 // EnterInterfaceRule is called when production interfaceRule is entered.
 func (s *BaseObjectApiListener) EnterInterfaceRule(ctx *InterfaceRuleContext) {}
 

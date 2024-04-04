@@ -87,6 +87,11 @@ func (s *Schema) resolve() {
 	case s.IsPrimitive:
 		s.KindType = KindType(s.Type)
 	case s.IsSymbol:
+		lx := s.Module.LookupExtern(s.Import, s.Type)
+		if lx != nil {
+			s.KindType = TypeExtern
+			break
+		}
 		le := s.Module.LookupEnum(s.Import, s.Type)
 		if le != nil {
 			s.enum_ = le
@@ -125,6 +130,15 @@ func (s *Schema) GetInterface() *Interface {
 	return s.interface_
 }
 
+func (s *Schema) GetExtern() *Extern {
+	s.resolve()
+	return s.Module.LookupExtern(s.Import, s.Type)
+}
+
+func (s *Schema) IsExtern() bool {
+	return s.GetExtern() != nil
+}
+
 func (s *Schema) IsEnum() bool {
 	return s.GetEnum() != nil
 }
@@ -147,6 +161,13 @@ func (s Schema) System() *System {
 		return nil
 	}
 	return s.Module.System
+}
+
+func (s Schema) LookupExtern(mName, eName string) *Extern {
+	if s.Module == nil {
+		return nil
+	}
+	return s.Module.LookupExtern(mName, eName)
 }
 
 func (s Schema) LookupEnum(mName, eName string) *Enum {
