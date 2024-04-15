@@ -14,9 +14,13 @@ extern XType2
 // external type imported from another module with alias
 @go.module: "demo/x"
 @go.name: "XType3A"
+
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
 @cpp.name: "XType3A"
+
+@py.module: "demo.x"
+@py.name: "XType3A"
 extern XType3
 
 

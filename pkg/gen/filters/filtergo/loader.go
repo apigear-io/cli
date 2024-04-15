@@ -17,12 +17,6 @@ func loadTestSystems(t *testing.T) []*model.System {
 	err = sys1.Validate()
 	assert.NoError(t, err)
 
-	sys2 := model.NewSystem("sys2")
-	dp := model.NewDataParser(sys2)
-	err = dp.ParseFile("../testdata/test.module.yaml")
-	assert.NoError(t, err)
-	err = sys2.Validate()
-	assert.NoError(t, err)
 	return []*model.System{sys1}
 }
 
