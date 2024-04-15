@@ -83,3 +83,28 @@ func TestDefaultWithErrors(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "xxx", s)
 }
+
+func TestExternDefault(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface1", "prop1", "XType1()"},
+		{"demo", "Iface1", "prop2", "XType2()"},
+		{"demo", "Iface1", "prop3", "XType3A()"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := pyDefault("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

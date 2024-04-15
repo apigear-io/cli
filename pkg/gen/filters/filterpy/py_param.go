@@ -37,6 +37,16 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		return fmt.Sprintf("%s: float64", name), nil
 	case model.TypeBool:
 		return fmt.Sprintf("%s: bool", name), nil
+	case model.TypeExtern:
+		x := schema.LookupExtern(schema.Import, schema.Type)
+		if x == nil {
+			return "xxx", fmt.Errorf("pyParam extern not found: %s", schema.Dump())
+		}
+		xe := parsePyExtern(schema)
+		if xe.Import != "" {
+			prefix = fmt.Sprintf("%s.", xe.Import)
+		}
+		return fmt.Sprintf("%s: %s%s", name, prefix, xe.Name), nil
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {

@@ -33,6 +33,10 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeBool:
 		text = "bool"
 	case model.TypeExtern:
+		x := schema.LookupExtern(schema.Import, schema.Type)
+		if x == nil {
+			return "xxx", fmt.Errorf("goReturn extern not found: %s", schema.Dump())
+		}
 		xe := parseGoExtern(schema)
 		if xe.Import != "" {
 			prefix = fmt.Sprintf("%s.", xe.Import)

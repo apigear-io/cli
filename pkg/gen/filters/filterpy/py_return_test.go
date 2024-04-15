@@ -116,3 +116,28 @@ func TestReturnSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestImportedExternReturn(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "XType1"},
+		{"demo", "Iface2", "prop2", "XType2"},
+		{"demo", "Iface2", "prop3", "XType3A"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := pyReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

@@ -76,3 +76,28 @@ func TestParamSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestExternParam(t *testing.T) {
+	table := []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface1", "func1", "self, arg1: XType1"},
+		{"demo", "Iface1", "func2", "self, arg1: XType2"},
+		{"demo", "Iface1", "func3", "self, arg1: XType3A"},
+	}
+	syss := loadExternSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := pyParams("", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

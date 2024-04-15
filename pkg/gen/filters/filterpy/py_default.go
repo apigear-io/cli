@@ -28,6 +28,12 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			text = "0.0"
 		case model.TypeBool:
 			text = "False"
+		case model.TypeExtern:
+			xe := parsePyExtern(schema)
+			if xe.Import != "" {
+				prefix = fmt.Sprintf("%s.", xe.Import)
+			}
+			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		case model.TypeEnum:
 			e := schema.LookupEnum(schema.Import, schema.Type)
 			if e == nil {
