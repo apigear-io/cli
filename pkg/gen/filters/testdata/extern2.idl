@@ -8,6 +8,7 @@ extern XType1
 @cpp.name: "XType2"
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
+@py.module: "demo.x"
 extern XType2
 
 // external type imported from another module with alias
@@ -16,4 +17,6 @@ extern XType2
 @cpp.name: "XType3A"
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
+@py.module: "demo.x"
+@py.name: "XType3A"
 extern XType3

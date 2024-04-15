@@ -18,6 +18,16 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 		text = "float"
 	case model.TypeBool:
 		text = "bool"
+	case model.TypeExtern:
+		x := schema.LookupExtern(schema.Import, schema.Type)
+		if x == nil {
+			return "xxx", fmt.Errorf("pyReturn extern not found: %s", schema.Dump())
+		}
+		xe := parsePyExtern(schema)
+		if xe.Import != "" {
+			prefix = fmt.Sprintf("%s.", xe.Import)
+		}
+		text = fmt.Sprintf("%s%s", prefix, xe.Name)
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {

@@ -38,27 +38,34 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		return fmt.Sprintf("%s float64", name), nil
 	case model.TypeBool:
 		return fmt.Sprintf("%s bool", name), nil
-	}
-	x := schema.LookupExtern(schema.Import, schema.Type)
-	if x != nil {
+	case model.TypeExtern:
+		x := schema.LookupExtern(schema.Import, schema.Type)
+		if x == nil {
+			return "xxx", fmt.Errorf("goParam extern not found: %s", schema.Dump())
+		}
 		xe := parseGoExtern(schema)
 		prefix = ""
 		if xe.Import != "" {
 			prefix = fmt.Sprintf("%s.", xe.Import)
 		}
 		return fmt.Sprintf("%s %s%s", name, prefix, xe.Name), nil
-	}
-	e := schema.LookupEnum(schema.Import, schema.Type)
-	if e != nil {
+	case model.TypeEnum:
+		e := schema.LookupEnum(schema.Import, schema.Type)
+		if e == nil {
+			return "xxx", fmt.Errorf("goParam enum not found: %s", schema.Dump())
+		}
 		return fmt.Sprintf("%s %s%s", name, prefix, e.Name), nil
-	}
-
-	s := schema.LookupStruct(schema.Import, schema.Type)
-	if s != nil {
+	case model.TypeStruct:
+		s := schema.LookupStruct(schema.Import, schema.Type)
+		if s == nil {
+			return "xxx", fmt.Errorf("goParam struct not found: %s", schema.Dump())
+		}
 		return fmt.Sprintf("%s %s%s", name, prefix, s.Name), nil
-	}
-	i := schema.LookupInterface(schema.Import, schema.Type)
-	if i != nil {
+	case model.TypeInterface:
+		i := schema.LookupInterface(schema.Import, schema.Type)
+		if i == nil {
+			return "xxx", fmt.Errorf("goParam interface not found: %s", schema.Dump())
+		}
 		return fmt.Sprintf("%s %s%s", name, prefix, i.Name), nil
 	}
 	return "xxx", fmt.Errorf("goParam: unknown schema %s", schema.Dump())
