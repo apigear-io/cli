@@ -163,7 +163,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if !ok {
 			log.Warn().Msgf("template requires cli version %s. Only found %s", doc.Engines.Cli, bi.Version)
 			for _, err := range errs {
-				log.Warn().Err(err).Msg("cli version check error")
+				log.Warn().Err(err).Msg("cli version mismatch")
 			}
 			return nil
 		}
