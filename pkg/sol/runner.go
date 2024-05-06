@@ -164,7 +164,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 			// a warning should be enough
 			log.Warn().Msgf("template requires cli version %s. Only found %s", doc.Engines.Cli, bi.Version)
 			for _, err := range errs {
-				log.Warn().Err(err).Msg("cli version check error")
+				log.Warn().Err(err).Msg("cli version mismatch")
 			}
 		}
 		// check keywords according to the rules languages

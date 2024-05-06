@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/spec/rkw"
@@ -45,21 +46,27 @@ const (
 	TypeInterface KindType = "interface"
 )
 
+// Meta is a map of string to interface
+// It is used to store additional information in a node
 type Meta map[string]interface{}
 
+// Has returns true if the key exists in the meta
 func (m Meta) Has(key string) bool {
 	_, ok := m[key]
 	return ok
 }
 
+// Get returns a value from the meta
 func (m Meta) Get(key string) interface{} {
 	return m[key]
 }
 
+// Set sets a key value in the meta
 func (m Meta) Set(key string, value interface{}) {
 	m[key] = value
 }
 
+// GetString returns a string value from the meta
 func (m Meta) GetString(key string) string {
 	if v, ok := m[key].(string); ok {
 		return v
@@ -67,6 +74,7 @@ func (m Meta) GetString(key string) string {
 	return ""
 }
 
+// GetBool returns a bool value from the meta
 func (m Meta) GetBool(key string) bool {
 	if v, ok := m[key].(bool); ok {
 		return v
@@ -74,6 +82,7 @@ func (m Meta) GetBool(key string) bool {
 	return false
 }
 
+// GetInt returns an int value from the meta
 func (m Meta) GetInt(key string) int {
 	if v, ok := m[key].(int); ok {
 		return v
@@ -81,11 +90,21 @@ func (m Meta) GetInt(key string) int {
 	return 0
 }
 
+// GetFloat returns a float value from the meta
 func (m Meta) GetFloat(key string) float64 {
 	if v, ok := m[key].(float64); ok {
 		return v
 	}
 	return 0
+}
+
+// AssertKey asserts that a key exists in the meta
+func (m Meta) AssertKey(key string) (string, error) {
+	if !m.Has(key) {
+		return "", fmt.Errorf("missing key %s in meta", key)
+
+	}
+	return "", nil
 }
 
 // NamedNode is a base node with a name and a kind.
