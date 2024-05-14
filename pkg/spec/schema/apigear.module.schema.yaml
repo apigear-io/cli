@@ -70,6 +70,11 @@ properties:
   meta:
     type: object
     description: meta information are read by the individual template. Read the template manual which meta tags are supported.
+  externs:
+    type: array
+    description: a list of externs, exported by this module
+    items:
+      $ref: "#/definitions/Extern"
   interfaces:
     type: array
     description: a list of interfaces, exported by this module
@@ -136,7 +141,22 @@ definitions:
       array:
         type: boolean
         description: "If true, the type is an array of the given type."
-
+  Extern:
+    type: object
+    description: "An extern is a reference to a type defined outside of ApiGear."
+    required: [name]
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+        description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
+      description:
+        type: string
+        description: "A description of the extern."
+      meta:
+        type: object
+        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
   Interface:
     type: object
     description: "An interface is a collection of properties, operations and signals."
