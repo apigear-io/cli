@@ -165,7 +165,6 @@ func runSolution(doc *spec.SolutionDoc) error {
 			for _, err := range errs {
 				log.Warn().Err(err).Msg("cli version mismatch")
 			}
-			return nil
 		}
 		// check keywords according to the rules languages
 		system.CheckReservedWords(doc.Languages)
