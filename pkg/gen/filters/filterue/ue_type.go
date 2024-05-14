@@ -12,6 +12,9 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		return "xxx", fmt.Errorf("ueType schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	var text string
 	switch schema.KindType {
 	case model.TypeString:

@@ -13,6 +13,9 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	}
 	name = strcase.ToPascal(name)
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	t := schema.Type
 	if schema.IsArray {
 		inner := schema.InnerSchema()

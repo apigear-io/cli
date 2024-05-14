@@ -13,6 +13,9 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {
