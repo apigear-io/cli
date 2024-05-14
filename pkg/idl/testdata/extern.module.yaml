@@ -1,0 +1,82 @@
+name: demo
+
+externs:
+  - name: XType1
+  - name: XType2
+    meta:
+      go.module: "demo/x"
+      cpp.namespace: "demo::x"
+      cpp.include: "x.h"
+  - name: XType3
+    meta:
+      go.module: "demo/x"
+      go.name: "XType3A"
+      cpp.namespace: "demo::x"
+      cpp.include: "x.h"
+      cpp.name: "XType3A"
+      py.module: "demo.x"
+      py.name: "XType3A"
+
+interfaces:
+  - name: Iface1
+    properties:
+      - name: prop1
+        type: XType1
+      - name: prop2
+        type: XType2
+      - name: prop3
+        type: XType3
+    operations:
+      - name: func1
+        params:
+          - name: arg1
+            type: XType1
+        return:
+          type: XType1
+      - name: func2
+        params:
+          - name: arg1
+            type: XType2
+        return:
+          type: XType2
+      - name: func3
+        params:
+          - name: arg1
+            type: XType3
+        return:
+          type: XType3
+    signals:
+      - name: sig1
+        params:
+          - name: arg1
+            type: XType1
+      - name: sig2
+        params:
+          - name: arg1
+            type: XType2
+      - name: sig3
+        params:
+          - name: arg1
+            type: XType3
+  - name: Iface2
+    properties:
+      - name: prop1
+        type: XType1
+        import: "demo.x"
+      - name: prop2
+        type: XType2
+        import: "demo.x"
+      - name: prop3
+        type: XType3
+        import: "demo.x"
+
+structs:
+  - name: Struct1
+    fields:
+      - name: field1
+        type: XType1
+      - name: field2
+        type: XType2
+      - name: field3
+        type: XType3
+

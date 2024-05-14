@@ -60,6 +60,29 @@
       ],
       "type": "object"
     },
+    "Extern": {
+      "additionalProperties": false,
+      "description": "An extern is a reference to a type defined outside of ApiGear.",
+      "properties": {
+        "description": {
+          "description": "A description of the extern.",
+          "type": "string"
+        },
+        "meta": {
+          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "type": "object"
+        },
+        "name": {
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
     "Interface": {
       "additionalProperties": false,
       "description": "An interface is a collection of properties, operations and signals.",
@@ -264,6 +287,13 @@
       "description": "a list of enumerations, exported by this module",
       "items": {
         "$ref": "#/definitions/Enum"
+      },
+      "type": "array"
+    },
+    "externs": {
+      "description": "a list of externs, exported by this module",
+      "items": {
+        "$ref": "#/definitions/Extern"
       },
       "type": "array"
     },
