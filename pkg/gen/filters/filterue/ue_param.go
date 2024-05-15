@@ -52,6 +52,10 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	if s != nil {
 		return fmt.Sprintf("const F%s%s& %s%s", moduleId, s.Name, prefix, name), nil
 	}
+	ex := schema.LookupExtern(schema.Import, schema.Type)
+	if ex != nil {
+		return fmt.Sprintf("const %s& %s%s", ueExtern(schema.GetExtern()).Name, prefix, name), nil
+	}
 	i := schema.LookupInterface(schema.Import, schema.Type)
 	if i != nil {
 		return fmt.Sprintf("F%s%s* %s%s", moduleId, i.Name, prefix, name), nil

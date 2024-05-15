@@ -41,6 +41,8 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("%sF%s%s", prefix, moduleId, schema.Type)
+	case model.TypeExtern:
+		text = ueExtern(schema.GetExtern()).Name
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:

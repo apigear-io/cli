@@ -4,9 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/model"
-
 )
-
 
 func CheckIsSimpleType(schema *model.Schema) (bool, error) {
 	if schema == nil {
@@ -34,6 +32,8 @@ func CheckIsSimpleType(schema *model.Schema) (bool, error) {
 	case model.TypeEnum:
 		result = true
 	case model.TypeStruct:
+		result = false
+	case model.TypeExtern:
 		result = false
 	case model.TypeInterface:
 		result = false
