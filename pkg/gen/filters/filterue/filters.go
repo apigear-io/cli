@@ -14,5 +14,6 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["ueType"] = ueType
 	fm["ueVar"] = ueVar
 	fm["ueVars"] = ueVars
-    fm["ueIsStdSimpleType"] = ueIsStdSimpleType
+	fm["ueIsStdSimpleType"] = ueIsStdSimpleType
+	fm["ueExtern"] = ueExtern
 }
