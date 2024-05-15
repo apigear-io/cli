@@ -39,6 +39,8 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("const %sF%s%s&", prefix, moduleId, schema.Type)
+	case model.TypeExtern:
+		text = fmt.Sprintf("const %s&", ueExtern(schema.GetExtern()).Name)
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
@@ -68,6 +70,8 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 			text = fmt.Sprintf("const TArray<%sE%s%s>&", prefix, moduleId, schema.Type)
 		case model.TypeStruct:
 			text = fmt.Sprintf("const TArray<%sF%s%s>&", prefix, moduleId, schema.Type)
+		case model.TypeExtern:
+			text = fmt.Sprintf("const TArray<%s>&", ueExtern(schema.GetExtern()).Name)
 		case model.TypeInterface:
 			text = fmt.Sprintf("const TArray<%sF%s%s*>&", prefix, moduleId, schema.Type)
 		default:

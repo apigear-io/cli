@@ -71,6 +71,9 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeStruct:
 			symbol := schema.GetStruct()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
+		case model.TypeExtern:
+			symbol := schema.GetExtern()
+			text = fmt.Sprintf("%s()", ueExtern(symbol).Name)
 		case model.TypeInterface:
 			symbol := schema.GetInterface()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
