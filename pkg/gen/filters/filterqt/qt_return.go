@@ -28,6 +28,14 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
+		if schema.KindType == model.TypeExtern {
+			xe := qtExtern(schema.GetExtern())
+			namespace_prefix := ""
+			if xe.NameSpace != "" {
+				namespace_prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("%s%s", namespace_prefix, xe.Name)
+		}
 		e := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
@@ -35,7 +43,6 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		} else if e_imported != nil {
 			text = fmt.Sprintf("%s::%s::%sEnum", qtNamespace(e_imported.Module.Name), e.Name, e.Name)
 		}
-		
 		s := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
