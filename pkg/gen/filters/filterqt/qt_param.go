@@ -33,6 +33,15 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}
+	ex := schema.LookupExtern(schema.Import, schema.Type)
+	if ex != nil {
+		exQt := qtExtern(schema.GetExtern())
+		namespace :=""
+		if exQt.NameSpace != "" {
+			namespace = fmt.Sprintf("%s::", exQt.NameSpace)
+		}
+		return fmt.Sprintf("const %s%s& %s", namespace, exQt.Name, name), nil
+	}
 	e := schema.LookupEnum("", schema.Type)
 	if e != nil {
 		return fmt.Sprintf("%s%s::%sEnum %s", prefix, e.Name, e.Name, name), nil
