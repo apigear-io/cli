@@ -28,14 +28,22 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
+		externGeneral := schema.LookupExtern(schema.Import, schema.Type)
+		if externGeneral != nil {
+			xe := qtExtern(externGeneral)
+			namespace_prefix := ""
+			if xe.NameSpace != "" {
+				namespace_prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("%s%s", namespace_prefix, xe.Name)
+		}
 		e := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%sEnum", prefix, e.Name, e.Name)
 		} else if e_imported != nil {
-			text = fmt.Sprintf("%s::%s::%sEnum", qtNamespace(e_imported.Module.Name), e.Name, e.Name)
+			text = fmt.Sprintf("%s::%s::%sEnum", qtNamespace(e_imported.Module.Name), e_imported.Name, e_imported.Name)
 		}
-		
 		s := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
@@ -43,7 +51,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		} else if s_imported != nil {
 			text = fmt.Sprintf("%s::%s", qtNamespace(s_imported.Module.Name), s_imported.Name)
 		}
-		
+
 		i := schema.LookupInterface("", schema.Type)
 		i_imported := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
