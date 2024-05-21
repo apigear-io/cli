@@ -2,6 +2,8 @@ package common
 
 import (
 	"fmt"
+	"slices"
+	"reflect"
 
 	"github.com/ettle/strcase"
 	"github.com/gertd/go-pluralize"
@@ -44,4 +46,25 @@ func Pluralize(s string, i int) string {
 		return s
 	}
 	return plural.Plural(s)
+}
+
+func MakeListOfFields[T any](inputList []T, fieldName string) ([]string, error) {
+	list := []string {}
+	for _, element := range inputList {
+	    r := reflect.ValueOf(element)
+		reflectValue := reflect.Indirect(r).FieldByName(fieldName)
+		if !reflectValue.IsValid() {
+			return list, fmt.Errorf("given struct %T has no field %s ",  element, fieldName)
+		}
+		value := reflectValue.String()
+		list = append(list, value)
+	}
+	return list, nil
+}
+
+func RemoveDuplicates (inputList []string) []string {
+	list := inputList
+    slices.Sort(list) 
+    list = slices.Compact(list)
+	return list
 }
