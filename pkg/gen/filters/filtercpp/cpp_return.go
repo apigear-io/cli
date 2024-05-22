@@ -3,6 +3,7 @@ package filtercpp
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -35,16 +36,25 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
+		if schema.Import != "" {
+			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
 		}
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
+		if schema.Import != "" {
+			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if s != nil {
 			text = fmt.Sprintf("%s%s", prefix, s.Name)
 		}
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
+		if schema.Import != "" {
+			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if i != nil {
 			text = fmt.Sprintf("%s%s*", prefix, i.Name)
 		}
