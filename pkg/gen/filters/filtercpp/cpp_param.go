@@ -3,6 +3,7 @@ package filtercpp
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -40,18 +41,30 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		return fmt.Sprintf("const %s%s& %s", prefix, xe.Name, name), nil
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
+		NameSpace := ""
+		if schema.Import != "" {
+			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if e != nil {
-			return fmt.Sprintf("%sEnum %s", e.Name, name), nil
+			return fmt.Sprintf("%s%sEnum %s", NameSpace, e.Name, name), nil
 		}
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
+		NameSpace := ""
+		if schema.Import != "" {
+			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if s != nil {
-			return fmt.Sprintf("const %s& %s", s.Name, name), nil
+			return fmt.Sprintf("const %s%s& %s", NameSpace, s.Name, name), nil
 		}
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
+		NameSpace := ""
+		if schema.Import != "" {
+			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if i != nil {
-			return fmt.Sprintf("%s* %s", i.Name, name), nil
+			return fmt.Sprintf("%s%s* %s", NameSpace, i.Name, name), nil
 		}
 	}
 	return "xxx", fmt.Errorf("cppParam: unknown schema %s", schema.Dump())
