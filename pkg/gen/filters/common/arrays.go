@@ -1,12 +1,16 @@
 package common
 
-func Contains(a []any, s string) bool {
+func Contains(a []string, s string) bool {
 	for _, v := range a {
 		if v == s {
 			return true
 		}
 	}
 	return false
+}
+
+func GetEmptyStringList() []string {
+	return []string {}
 }
 
 func AppendList(list []string, s string) []string {

@@ -51,5 +51,6 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["toJson"] = ToJson
 	fm["unique"] = Unique
 	fm["appendList"] = AppendList
+	fm["getEmptyStringList"] = GetEmptyStringList
 	fm["collectFields"] = CollectFields
 }
