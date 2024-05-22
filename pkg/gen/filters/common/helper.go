@@ -48,13 +48,23 @@ func Pluralize(s string, i int) string {
 	return plural.Plural(s)
 }
 
-func MakeListOfFields[T any](inputList []T, fieldName string) ([]string, error) {
+func unpackArray(s any) []any {
+    v := reflect.ValueOf(s)
+    r := make([]any, v.Len())
+    for i := 0; i < v.Len(); i++ {
+        r[i] = v.Index(i).Interface()
+    }
+    return r
+}
+
+func CollectFields(items any, fieldName string) ([]string, error) {
 	list := []string {}
-	for _, element := range inputList {
-	    r := reflect.ValueOf(element)
+	unpacked := unpackArray(items)
+	for _, item := range unpacked {
+	    r := reflect.ValueOf(item)
 		reflectValue := reflect.Indirect(r).FieldByName(fieldName)
 		if !reflectValue.IsValid() {
-			return list, fmt.Errorf("given struct %T has no field %s ",  element, fieldName)
+			return list, fmt.Errorf("given struct %T has no field %s ",  item, fieldName)
 		}
 		value := reflectValue.String()
 		list = append(list, value)
@@ -62,9 +72,8 @@ func MakeListOfFields[T any](inputList []T, fieldName string) ([]string, error) 
 	return list, nil
 }
 
-func RemoveDuplicates (inputList []string) []string {
-	list := inputList
-    slices.Sort(list) 
-    list = slices.Compact(list)
-	return list
+func Unique (inList []string) []string {
+	list := slices.Clone(inList)
+	slices.Sort(list)
+    return  slices.Compact(list)
 }

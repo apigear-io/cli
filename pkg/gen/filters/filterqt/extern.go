@@ -1,7 +1,6 @@
 package filterqt
 
 import (
-	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -39,14 +38,10 @@ func qtExtern(xe *model.Extern) QtExtern {
 	}
 }
 
-func qtExterns(ex_list []*model.Extern) []QtExtern {
-	var qtExternsList = []QtExtern {}
-	for _, element := range ex_list { 
-		qtExternsList = append(qtExternsList, qtExtern(element))
+func qtExterns(externs []*model.Extern) []QtExtern {
+	var items = []QtExtern {}
+	for _, ex := range externs { 
+		items = append(items, qtExtern(ex))
 	}
-	return qtExternsList
-}
-
-func qtMakeListOfFields_extern(inputList []QtExtern, fieldName string) ([]string, error){
-	return common.MakeListOfFields(inputList, fieldName)
+	return items
 }

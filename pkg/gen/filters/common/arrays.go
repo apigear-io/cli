@@ -9,9 +9,8 @@ func Contains(a []any, s string) bool {
 	return false
 }
 
-func AppendStringList(list []string, s string) []string {
-	list = append(list, s)
-	return list
+func AppendList(list []string, s string) []string {
+	return append(list, s)
 }
 
 func IndexOf(a []any, s string) int {

@@ -140,7 +140,7 @@ func TestAbbreviate(t *testing.T) {
 	}
 }
 
-func TestMakeListOfFields(t *testing.T) {
+func TestCollectFields(t *testing.T) {
 	t.Parallel()
 	var listOfStructs = []struct {
 		a  string
@@ -153,16 +153,16 @@ func TestMakeListOfFields(t *testing.T) {
 	var listA = []string{"foo1" , "foo2", "foo3"}
 	var listB = []string{"goo1" , "goo2", "goo3"}
 	t.Run("getListOfFields", func(t *testing.T) {
-			resultA, err :=  makeListOfFields(listOfStructs, "a")
+			resultA, err :=  CollectFields(listOfStructs, "a")
 			assert.Equal(t, listA, resultA)
 			assert.NoError(t, err)
-			resultB, err :=  makeListOfFields(listOfStructs, "b")
+			resultB, err :=  CollectFields(listOfStructs, "b")
 			assert.Equal(t, listB, resultB)
 			assert.NoError(t, err)
 		})
 }
 
-func TestNoFieldMakeListOfFields(t *testing.T) {
+func TestNoFieldCollectFields(t *testing.T) {
 	t.Parallel()
 	var listOfStructs = []struct {
 		a  string
@@ -172,19 +172,19 @@ func TestNoFieldMakeListOfFields(t *testing.T) {
 	}
 	var emptyList = []string{}
 	t.Run("getListOfFields", func(t *testing.T) {
-			result, err :=  makeListOfFields(listOfStructs, "c")
+			result, err :=  CollectFields(listOfStructs, "c")
 			assert.Equal(t, emptyList, result)
 			assert.Error(t, err)
 		})
 }
 
-func TestRemoveDuplicates(t *testing.T) {
+func TestUnique(t *testing.T) {
 	t.Parallel()
 
 	var inputList = []string{"abc" , "<def>", "<ghi>", "ab::c", "abc", "ghi", "<ghi>" }
 	var noDuplicatesList = []string{"<def>" , "<ghi>", "ab::c", "abc", "ghi"}
 
 	t.Run("getListOfFields", func(t *testing.T) {
-			assert.Equal(t, noDuplicatesList, RemoveDuplicates(inputList))
+			assert.Equal(t, noDuplicatesList, Unique(inputList))
 		})
 }
