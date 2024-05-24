@@ -37,6 +37,13 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
+		if schema.GetExtern() != nil {
+			xe := parseCppExtern(schema)
+			if xe.NameSpace != "" {
+				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("const %s%s&", prefix, xe.Name)
+		}
 		if schema.Import != "" {
 			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}

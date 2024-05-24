@@ -27,10 +27,14 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		text = "false"
 	case model.TypeExtern:
 		xe := parseCppExtern(schema)
-		if xe.NameSpace != "" {
-			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		if xe.Default != "" {
+			text = xe.Default
+		} else {
+			if xe.NameSpace != "" {
+				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
-		text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		NameSpace := ""
