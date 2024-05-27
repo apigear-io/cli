@@ -8,7 +8,6 @@ type QtExtern struct {
 	NameSpace string
 	Include   string
 	Name      string
-	Library   string
 	Package   string
 	Component string
 }
@@ -21,7 +20,6 @@ func parseQtExtern(schema *model.Schema) QtExtern {
 func qtExtern(xe *model.Extern) QtExtern {
 	ns := xe.Meta.GetString("qt.namespace")
 	inc := xe.Meta.GetString("qt.include")
-	lib := xe.Meta.GetString("qt.library")
 	name := xe.Meta.GetString("qt.type")
 	pck := xe.Meta.GetString("qt.package")
 	component := xe.Meta.GetString("qt.component")
@@ -29,18 +27,17 @@ func qtExtern(xe *model.Extern) QtExtern {
 		name = xe.Name
 	}
 	return QtExtern{
-	  NameSpace: ns,
-	  Include:   inc,
-	  Name:      name,
-	  Library:   lib,
-	  Package:   pck,
-	  Component: component,
+		NameSpace: ns,
+		Include:   inc,
+		Name:      name,
+		Package:   pck,
+		Component: component,
 	}
 }
 
 func qtExterns(externs []*model.Extern) []QtExtern {
-	var items = []QtExtern {}
-	for _, ex := range externs { 
+	var items = []QtExtern{}
+	for _, ex := range externs {
 		items = append(items, qtExtern(ex))
 	}
 	return items
