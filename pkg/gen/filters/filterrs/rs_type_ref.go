@@ -36,6 +36,10 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
+		ex := schema.LookupExtern(schema.Import, schema.Type)
+		if ex != nil {
+			return fmt.Sprintf("&%s%s", prefix, rsExtern(schema.GetExtern()).Name), nil
+		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
