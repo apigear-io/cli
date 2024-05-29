@@ -17,4 +17,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["rsVars"] = rsVars
 	fm["rsType"] = rsType
 	fm["rsTypeRef"] = rsTypeRef
+	fm["rsExtern"] = rsExtern
 }
