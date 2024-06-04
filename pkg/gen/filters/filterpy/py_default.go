@@ -35,19 +35,29 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			}
 			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		case model.TypeEnum:
-			e := schema.LookupEnum(schema.Import, schema.Type)
-			if e == nil {
+			e_local := schema.LookupEnum("", schema.Type)
+			e_imported := schema.LookupEnum(schema.Import, schema.Type)
+			if e_local == nil && e_imported == nil {
 				return "xxx", fmt.Errorf("pyDefault enum not found: %s", schema.Dump())
 			}
-			name := common.CamelTitleCase(e.Name)
-			member := common.SnakeUpperCase(e.Members[0].Name)
+			// if enum is local it is found both as e_local and e_imported
+			name := common.CamelTitleCase(e_imported.Name)
+			member := common.SnakeUpperCase(e_imported.Members[0].Name)
+			if e_local == nil {
+				prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
+			}
 			text = fmt.Sprintf("%s%s.%s", prefix, name, member)
 		case model.TypeStruct:
-			s := schema.LookupStruct(schema.Import, schema.Type)
-			if s == nil {
+			s_local := schema.LookupStruct("", schema.Type)
+			s_imported := schema.LookupStruct(schema.Import, schema.Type)
+			if s_local == nil && s_imported == nil {
 				return "xxx", fmt.Errorf("pyDefault struct not found: %s", schema.Dump())
 			}
-			ident := common.CamelTitleCase(s.Name)
+			// if struct is local it is found both as s_local and s_imported
+			ident := common.CamelTitleCase(s_imported.Name)
+			if s_local == nil {
+				prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
+			}
 			text = fmt.Sprintf("%s%s()", prefix, ident)
 		case model.TypeInterface:
 			i := schema.LookupInterface(schema.Import, schema.Type)
