@@ -29,18 +29,28 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 		}
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
 	case model.TypeEnum:
-		e := schema.LookupEnum(schema.Import, schema.Type)
-		if e == nil {
+		e := schema.LookupEnum("", schema.Type)
+		e_imported := schema.LookupEnum(schema.Import, schema.Type)
+		if e == nil && e_imported == nil {
 			return "xxx", fmt.Errorf("pyReturn enum not found: %s", schema.Dump())
 		}
-		ident := common.CamelTitleCase(e.Name)
+		// if enum is local it is found both as e and e_imported
+		ident := common.CamelTitleCase(e_imported.Name)
+		if e == nil {
+			prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
+		}
 		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeStruct:
-		s := schema.LookupStruct(schema.Import, schema.Type)
-		if s == nil {
+		s := schema.LookupStruct("", schema.Type)
+		s_imported := schema.LookupStruct(schema.Import, schema.Type)
+		if s == nil && s_imported == nil {
 			return "xxx", fmt.Errorf("pyReturn struct not found: %s", schema.Dump())
 		}
-		ident := common.CamelTitleCase(s.Name)
+		// if struct is local it is found both as s and s_imported
+		ident := common.CamelTitleCase(s_imported.Name)
+		if s == nil {
+			prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
+		}
 		text = fmt.Sprintf("%s%s", prefix, ident)
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
@@ -60,7 +70,7 @@ func ToReturnString(schema *model.Schema, prefix string) (string, error) {
 	return text, nil
 }
 
-// cast value to TypedNode and deduct the cpp return type
+// cast value to TypedNode and deduct the py return type
 func pyReturn(prefix string, node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("pyReturn called with nil node")
