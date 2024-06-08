@@ -30,10 +30,11 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			text = "False"
 		case model.TypeExtern:
 			xe := parsePyExtern(schema)
+			py_module := ""
 			if xe.Import != "" {
-				prefix = fmt.Sprintf("%s.", xe.Import)
+				py_module = fmt.Sprintf("%s.", xe.Import)
 			}
-			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
+			text = fmt.Sprintf("%s%s()", py_module, xe.Name)
 		case model.TypeEnum:
 			e_local := schema.LookupEnum("", schema.Type)
 			e_imported := schema.LookupEnum(schema.Import, schema.Type)
