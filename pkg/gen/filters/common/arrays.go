@@ -9,6 +9,14 @@ func Contains(a []any, s string) bool {
 	return false
 }
 
+func GetEmptyStringList() []string {
+	return []string{}
+}
+
+func AppendList(list []string, s string) []string {
+	return append(list, s)
+}
+
 func IndexOf(a []any, s string) int {
 	for i, v := range a {
 		if v == s {
