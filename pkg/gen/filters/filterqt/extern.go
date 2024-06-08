@@ -34,3 +34,11 @@ func qtExtern(xe *model.Extern) QtExtern {
 		Component: component,
 	}
 }
+
+func qtExterns(externs []*model.Extern) []QtExtern {
+	var items = []QtExtern {}
+	for _, ex := range externs { 
+		items = append(items, qtExtern(ex))
+	}
+	return items
+}
