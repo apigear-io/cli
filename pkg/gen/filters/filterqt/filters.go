@@ -15,4 +15,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["qtType"] = qtType
 	fm["qtNamespace"] = qtNamespace
 	fm["qtExtern"] = qtExtern
+	fm["qtExterns"] = qtExterns
 }
