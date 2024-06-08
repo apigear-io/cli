@@ -33,17 +33,29 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	case "bool":
 		return fmt.Sprintf("bool %s", name), nil
 	}
-	e := schema.LookupEnum(schema.Import, schema.Type)
+	e := schema.LookupEnum("", schema.Type)
 	if e != nil {
 		return fmt.Sprintf("%s%s::%sEnum %s", prefix, e.Name, e.Name, name), nil
 	}
-	s := schema.LookupStruct(schema.Import, schema.Type)
+	e_imported := schema.LookupEnum(schema.Import, schema.Type)
+	if e_imported != nil {
+		return fmt.Sprintf("%s::%s::%sEnum %s", qtNamespace(e_imported.Module.Name), e_imported.Name, e_imported.Name, name), nil
+	}
+	s := schema.LookupStruct("", schema.Type)
 	if s != nil {
 		return fmt.Sprintf("const %s%s& %s", prefix, s.Name, name), nil
 	}
-	i := schema.LookupInterface(schema.Import, schema.Type)
+	s_imported := schema.LookupStruct(schema.Import, schema.Type)
+	if s_imported != nil {
+		return fmt.Sprintf("const %s::%s& %s", qtNamespace(s_imported.Module.Name), s_imported.Name, name), nil
+	}
+	i := schema.LookupInterface("", schema.Type)
 	if i != nil {
 		return fmt.Sprintf("%s%s *%s", prefix, i.Name, name), nil
+	}
+	i_imported := schema.LookupInterface(schema.Import, schema.Type)
+	if i_imported != nil {
+		return fmt.Sprintf("%s::%s *%s", qtNamespace(i_imported.Module.Name), i_imported.Name, name), nil
 	}
 	return "xxx", fmt.Errorf("qtParam unknown schema %s", schema.Dump())
 }

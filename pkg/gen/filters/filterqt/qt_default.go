@@ -26,18 +26,27 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "false"
 	default:
-		e := schema.LookupEnum(schema.Import, schema.Type)
+		e := schema.LookupEnum("", schema.Type)
+		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%s::%s", prefix, e.Name, common.UpperFirst(e.Members[0].Name))
+		} else if e_imported != nil {
+			text = fmt.Sprintf("%s::%s::%s", qtNamespace(e_imported.Module.Name), e_imported.Name, common.UpperFirst(e_imported.Members[0].Name))
 		}
-		s := schema.LookupStruct(schema.Import, schema.Type)
+		
+		s := schema.LookupStruct("", schema.Type)
+		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
 			text = fmt.Sprintf("%s%s()", prefix, s.Name)
+		} else if s_imported != nil {
+			text = fmt.Sprintf("%s::%s()", qtNamespace(s_imported.Module.Name), s_imported.Name)
 		}
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
-			text = "nullptr"
+			text =  "nullptr"
 		}
+
+
 	}
 	if schema.IsArray {
 		inner := model.Schema{
