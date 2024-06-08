@@ -16,7 +16,7 @@ externs:
       cpp.name: "XType2"
       cpp.namespace: "demo::x"
       cpp.include: "x.h"
-      py.module: "demo.x"
+      py.import: "demo.x"
   - name: XType3
     meta:
       qt.type: XType3A
@@ -30,5 +30,5 @@ externs:
       cpp.name: "XType3A"
       cpp.namespace: "demo::x"
       cpp.include: "x.h"
-      py.module: "demo.x"
+      py.import: "demo.x"
       py.name: "XType3A"

@@ -108,3 +108,32 @@ func TestExternDefault(t *testing.T) {
 		}
 	}
 }
+
+func TestDefaultExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "prop1", "XType1()"},
+		{"test_apigear_next", "Iface1", "prop3", "demo.x.XType3A()"},
+		{"test_apigear_next", "Iface1", "propList", "[]"},
+		{"test_apigear_next", "Iface1", "propImportedEnum", "test.api.Enum1.DEFAULT"},
+		{"test_apigear_next", "Iface1", "propImportedStruct", "test.api.Struct1()"},
+	}
+	syss := loadExternSystemsYAML(t)
+	prefix := "my_prefix::"
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, prop)
+				r, err := pyDefault(prefix, prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
