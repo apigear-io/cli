@@ -6,12 +6,11 @@ externs:
   - name: XType1
   - name: XType2
     meta:
-      qt.type: XType3A
-      qt.include: <XType3A>
+      qt.type: XType2A
+      qt.include: <XType2A>
       qt.namespace: demoXA
       qt.package: demo
       qt.component: A
-      qt.library: demo::A
       go.module: "demo/x"
       cpp.name: "XType2"
       cpp.namespace: "demo::x"
@@ -24,11 +23,13 @@ externs:
       qt.namespace: demoXA
       qt.package: demo
       qt.component: A
-      qt.library: demo::A
+      qt.default: "demoXA::XTypeFactory::create()"
       go.module: "demo/x"
       go.name: "XType3A"
       cpp.name: "XType3A"
       cpp.namespace: "demo::x"
+      cpp.default: "demo::x::XtypeFactory::create()"
       cpp.include: "x.h"
       py.import: "demo.x"
       py.name: "XType3A"
+      py.default: "demo.x.createXType3A()"
