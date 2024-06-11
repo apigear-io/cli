@@ -158,7 +158,8 @@ func TestDefaultExterns(t *testing.T) {
 		result         string
 	}{
 		{"test_apigear_next", "Iface1", "prop1", "XType1()"},
-		{"test_apigear_next", "Iface1", "prop3", "demoXA::XType3A()"},
+		{"test_apigear_next", "Iface1", "prop2", "demoXA::XType2A()"},
+		{"test_apigear_next", "Iface1", "prop3", "demoXA::XTypeFactory::create()"},
 		{"test_apigear_next", "Iface1", "propList", "QList<demoXA::XType3A>()"},
 		{"test_apigear_next", "Iface1", "propImportedEnum", "test::Enum1::Default"},
 		{"test_apigear_next", "Iface1", "propImportedStruct", "test::Struct1()"},

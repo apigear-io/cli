@@ -10,6 +10,7 @@ type QtExtern struct {
 	Name      string
 	Package   string
 	Component string
+	Default   string
 }
 
 func parseQtExtern(schema *model.Schema) QtExtern {
@@ -23,6 +24,7 @@ func qtExtern(xe *model.Extern) QtExtern {
 	name := xe.Meta.GetString("qt.type")
 	pck := xe.Meta.GetString("qt.package")
 	component := xe.Meta.GetString("qt.component")
+	dft := xe.Meta.GetString("qt.default")
 	if name == "" {
 		name = xe.Name
 	}
@@ -32,12 +34,13 @@ func qtExtern(xe *model.Extern) QtExtern {
 		Name:      name,
 		Package:   pck,
 		Component: component,
+		Default:   dft,
 	}
 }
 
 func qtExterns(externs []*model.Extern) []QtExtern {
-	var items = []QtExtern {}
-	for _, ex := range externs { 
+	var items = []QtExtern{}
+	for _, ex := range externs {
 		items = append(items, qtExtern(ex))
 	}
 	return items
