@@ -28,11 +28,15 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 	default:
 		if schema.KindType == model.TypeExtern {
 			xe := qtExtern(schema.GetExtern())
-			namespace_prefix := ""
-			if xe.NameSpace != "" {
-				namespace_prefix = fmt.Sprintf("%s::", xe.NameSpace)
-		}
-		text = fmt.Sprintf("%s%s()", namespace_prefix, xe.Name)
+			if xe.Default != "" {
+				text = xe.Default
+			} else {
+				namespace_prefix := ""
+				if xe.NameSpace != "" {
+					namespace_prefix = fmt.Sprintf("%s::", xe.NameSpace)
+				}
+				text = fmt.Sprintf("%s%s()", namespace_prefix, xe.Name)
+			}
 		}
 		e := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
@@ -41,7 +45,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		} else if e_imported != nil {
 			text = fmt.Sprintf("%s::%s::%s", qtNamespace(e_imported.Module.Name), e_imported.Name, common.UpperFirst(e_imported.Members[0].Name))
 		}
-		
+
 		s := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s != nil {
@@ -51,9 +55,8 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
-			text =  "nullptr"
+			text = "nullptr"
 		}
-
 
 	}
 	if schema.IsArray {
