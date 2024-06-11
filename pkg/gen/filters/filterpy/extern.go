@@ -5,8 +5,9 @@ import (
 )
 
 type PyExtern struct {
-	Import string
-	Name   string
+	Import  string
+	Name    string
+	Default string
 }
 
 func parsePyExtern(schema *model.Schema) PyExtern {
@@ -17,11 +18,13 @@ func parsePyExtern(schema *model.Schema) PyExtern {
 func pyExtern(xe *model.Extern) PyExtern {
 	imp := xe.Meta.GetString("py.import")
 	name := xe.Meta.GetString("py.name")
+	dft := xe.Meta.GetString("py.default")
 	if name == "" {
 		name = xe.Name
 	}
 	return PyExtern{
-		Import: imp,
-		Name:   name,
+		Import:  imp,
+		Name:    name,
+		Default: dft,
 	}
 }

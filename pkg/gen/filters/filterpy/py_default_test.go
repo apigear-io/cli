@@ -118,7 +118,8 @@ func TestDefaultExterns(t *testing.T) {
 		result         string
 	}{
 		{"test_apigear_next", "Iface1", "prop1", "XType1()"},
-		{"test_apigear_next", "Iface1", "prop3", "demo.x.XType3A()"},
+		{"test_apigear_next", "Iface1", "prop2", "demo.x.XType2()"},
+		{"test_apigear_next", "Iface1", "prop3", "demo.x.createXType3A()"},
 		{"test_apigear_next", "Iface1", "propList", "[]"},
 		{"test_apigear_next", "Iface1", "propImportedEnum", "test.api.Enum1.DEFAULT"},
 		{"test_apigear_next", "Iface1", "propImportedStruct", "test.api.Struct1()"},
