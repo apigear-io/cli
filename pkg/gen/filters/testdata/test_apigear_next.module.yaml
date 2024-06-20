@@ -1,0 +1,82 @@
+schema: apigear-io.module/1.0
+name: test_apigear_next
+version: 1.0
+
+imports:
+  - name: test
+  - name: extern_types
+  
+
+interfaces:
+  - name: Iface1
+    properties:
+      - { name: prop1, type: XType1, import: extern_types }
+      - { name: prop2, type: XType2, import: extern_types }
+      - { name: prop3, type: XType3, import: extern_types }
+      - { name: propList, type: XType3, import: extern_types, array: true}
+      - { name: propImportedStruct, type: Struct1, import: test }
+      - { name: propImportedEnum, type: Enum1, import: test }
+    operations:
+      - name: func1
+        params:
+          - { name: arg1, type: XType1, import: extern_types}
+        return:
+          type: XType1
+          import: extern_types
+      - name: func2
+        params:
+          - { name: arg1, type: XType2, import: extern_types}
+        return:
+          type: XType2
+          import: extern_types
+      - name: func3
+        params:
+          - { name: arg1, type: XType3, import: extern_types}
+        return:
+          type: XType3
+          import: extern_types
+      - name: funcList
+        params:
+          - { name: arg1, type: XType3, import: extern_types, array: true }
+        return:
+          type: XType3
+          import: extern_types
+          array: true
+      - name: funcImportedEnum
+        params:
+          - { name: arg1, type: Enum1, import: test}
+        return:
+          type: Enum1
+          import: test
+      - name: funcImportedStruct
+        params:
+          - { name: arg1, type: Struct1, import: test}
+        return:
+          type: Struct1
+          import: test
+    signals:
+      - name: sig1
+        params:
+          - { name: arg1, type: XType1, import: extern_types }
+      - name: sig2
+        params:
+          - { name: arg1, type: XType2, import: extern_types }
+      - name: sig3
+        params:
+          - { name: arg1, type: XType3, import: extern_types }
+  - name: Iface2
+    properties:
+      - { name: prop1, type: XType1, import: extern_types }
+      - { name: prop2, type: XType2, import: extern_types }
+      - { name: prop3, type: XType3, import: extern_types }
+
+
+structs:
+  - name: Struct2
+    fields:
+      - { name: field1, type: XType1, import: extern_types }
+      - { name: field2, type: XType2, import: extern_types }
+      - { name: field3, type: XType3, import: extern_types }
+      - { name: field4, type: Struct1, import: test }
+      - { name: field5, type: Enum1, import: test }
+
