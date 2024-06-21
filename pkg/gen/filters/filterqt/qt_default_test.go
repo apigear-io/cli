@@ -148,3 +148,32 @@ func TestDefaultSymbolsFromIdlWithPrefix(t *testing.T) {
 		}
 	}
 }
+
+func TestDefaultExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "prop1", "XType1()"},
+		{"test_apigear_next", "Iface1", "prop3", "demoXA::XType3A()"},
+		{"test_apigear_next", "Iface1", "propList", "QList<demoXA::XType3A>()"},
+		{"test_apigear_next", "Iface1", "propImportedEnum", "test::Enum1::Default"},
+		{"test_apigear_next", "Iface1", "propImportedStruct", "test::Struct1()"},
+	}
+	syss := loadExternSystems(t)
+	prefix := "my_prefix::"
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, prop)
+				r, err := qtDefault(prefix, prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
