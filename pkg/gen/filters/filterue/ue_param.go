@@ -13,6 +13,9 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	}
 	name = strcase.ToPascal(name)
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	t := schema.Type
 	if schema.IsArray {
 		inner := schema.InnerSchema()
@@ -48,6 +51,10 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	s := schema.LookupStruct(schema.Import, schema.Type)
 	if s != nil {
 		return fmt.Sprintf("const F%s%s& %s%s", moduleId, s.Name, prefix, name), nil
+	}
+	ex := schema.LookupExtern(schema.Import, schema.Type)
+	if ex != nil {
+		return fmt.Sprintf("const %s& %s%s", ueExtern(schema.GetExtern()).Name, prefix, name), nil
 	}
 	i := schema.LookupInterface(schema.Import, schema.Type)
 	if i != nil {

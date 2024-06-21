@@ -28,6 +28,10 @@ func ToReturnString(prefixComplexType string, schema *model.Schema) (string, err
 	case "bool":
 		text = "bool"
 	default:
+		xe := schema.LookupExtern(schema.Import, schema.Type)
+		if xe != nil {
+			text = rsExtern(schema.GetExtern()).Name
+		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefixComplexType, e.Name)

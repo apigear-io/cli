@@ -3,6 +3,7 @@ package filtercpp
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -36,6 +37,16 @@ func ToTypeRefString(prefix string, schema *model.Schema) (string, error) {
 	case "bool":
 		text = "bool"
 	default:
+		if schema.GetExtern() != nil {
+			xe := parseCppExtern(schema)
+			if xe.NameSpace != "" {
+				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("const %s%s&", prefix, xe.Name)
+		}
+		if schema.Import != "" {
+			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)

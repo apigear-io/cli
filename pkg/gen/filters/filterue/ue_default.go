@@ -13,6 +13,9 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {
@@ -68,6 +71,9 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeStruct:
 			symbol := schema.GetStruct()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
+		case model.TypeExtern:
+			symbol := schema.GetExtern()
+			text = fmt.Sprintf("%s()", ueExtern(symbol).Name)
 		case model.TypeInterface:
 			symbol := schema.GetInterface()
 			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)

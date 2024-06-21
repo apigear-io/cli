@@ -12,6 +12,9 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		return "xxx", fmt.Errorf("ueType schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	var text string
 	switch schema.KindType {
 	case model.TypeString:
@@ -36,6 +39,8 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("%sF%s%s", prefix, moduleId, schema.Type)
+	case model.TypeExtern:
+		text = ueExtern(schema.GetExtern()).Name
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
@@ -63,6 +68,8 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 			text = fmt.Sprintf("TArray<%sE%s%s>", prefix, moduleId, schema.Type)
 		case model.TypeStruct:
 			text = fmt.Sprintf("TArray<%sF%s%s>", prefix, moduleId, schema.Type)
+		case model.TypeExtern:
+			text = fmt.Sprintf("TArray<%s>", ueExtern(schema.GetExtern()).Name)
 		case model.TypeInterface:
 			text = fmt.Sprintf("TArray<%sF%s%s*>", prefix, moduleId, schema.Type)
 		default:

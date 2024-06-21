@@ -12,6 +12,9 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		return "", fmt.Errorf("ToReturnString schema is nil")
 	}
 	moduleId := strcase.ToPascal(schema.Module.Name)
+	if schema.Import != "" {
+		moduleId = strcase.ToPascal(schema.Import)
+	}
 	var text string
 	switch schema.KindType {
 	case model.TypeString:
@@ -36,6 +39,8 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 		text = fmt.Sprintf("%sE%s%s", prefix, moduleId, schema.Type)
 	case model.TypeStruct:
 		text = fmt.Sprintf("const %sF%s%s&", prefix, moduleId, schema.Type)
+	case model.TypeExtern:
+		text = fmt.Sprintf("const %s&", ueExtern(schema.GetExtern()).Name)
 	case model.TypeInterface:
 		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
 	default:
@@ -65,6 +70,8 @@ func ToConstTypeString(prefix string, schema *model.Schema) (string, error) {
 			text = fmt.Sprintf("const TArray<%sE%s%s>&", prefix, moduleId, schema.Type)
 		case model.TypeStruct:
 			text = fmt.Sprintf("const TArray<%sF%s%s>&", prefix, moduleId, schema.Type)
+		case model.TypeExtern:
+			text = fmt.Sprintf("const TArray<%s>&", ueExtern(schema.GetExtern()).Name)
 		case model.TypeInterface:
 			text = fmt.Sprintf("const TArray<%sF%s%s*>&", prefix, moduleId, schema.Type)
 		default:

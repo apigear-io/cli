@@ -3,6 +3,7 @@ package filtercpp
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -26,19 +27,31 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		text = "false"
 	case model.TypeExtern:
 		xe := parseCppExtern(schema)
-		if xe.NameSpace != "" {
-			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		if xe.Default != "" {
+			text = xe.Default
+		} else {
+			if xe.NameSpace != "" {
+				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
-		text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
+		NameSpace := ""
+		if schema.Import != "" {
+			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if e != nil {
-			text = fmt.Sprintf("%sEnum::%s", e.Name, e.Members[0].Name)
+			text = fmt.Sprintf("%s%sEnum::%s", NameSpace, e.Name, e.Members[0].Name)
 		}
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
+		NameSpace := ""
+		if schema.Import != "" {
+			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
+		}
 		if s != nil {
-			text = fmt.Sprintf("%s()", s.Name)
+			text = fmt.Sprintf("%s%s()", NameSpace, s.Name)
 		}
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
