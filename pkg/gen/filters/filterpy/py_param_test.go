@@ -101,3 +101,31 @@ func TestExternParam(t *testing.T) {
 		}
 	}
 }
+
+func TestParamsExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "self, arg1: XType1"},
+		{"test_apigear_next", "Iface1", "func3", "self, arg1: demo.x.XType3A"},
+		{"test_apigear_next", "Iface1", "funcList", "self, arg1: list[demo.x.XType3A]"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "self, arg1: test.api.Enum1"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "self, arg1: test.api.Struct1"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := pyParams("", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}

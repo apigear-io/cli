@@ -116,3 +116,31 @@ func TestReturnSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestReturnExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "XType1"},
+		{"test_apigear_next", "Iface1", "func3", "demoXA::XType3A"},
+		{"test_apigear_next", "Iface1", "funcList", "QList<demoXA::XType3A>"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "test::Enum1::Enum1Enum"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "test::Struct1"},
+	}
+	syss := loadExternSystems(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := qtReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}

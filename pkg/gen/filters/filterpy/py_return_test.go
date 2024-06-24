@@ -141,3 +141,30 @@ func TestImportedExternReturn(t *testing.T) {
 		}
 	}
 }
+func TestReturnExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "XType1"},
+		{"test_apigear_next", "Iface1", "func3", "demo.x.XType3A"},
+		{"test_apigear_next", "Iface1", "funcList", "list[demo.x.XType3A]"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "test.api.Enum1"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "test.api.Struct1"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := pyReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}

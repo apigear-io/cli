@@ -40,18 +40,28 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, xe.Name), nil
 	case model.TypeEnum:
-		e := schema.LookupEnum(schema.Import, schema.Type)
-		if e == nil {
+		e := schema.LookupEnum("", schema.Type)
+		e_imported := schema.LookupEnum(schema.Import, schema.Type)
+		if e == nil && e_imported == nil {
 			return "xxx", fmt.Errorf("pyParam enum not found: %s", schema.Dump())
 		}
-		ident := common.CamelTitleCase(e.Name)
+		// if enum is local it is found both as e and e_imported
+		ident := common.CamelTitleCase(e_imported.Name)
+		if e == nil {
+			prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
+		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeStruct:
-		s := schema.LookupStruct(schema.Import, schema.Type)
-		if s == nil {
+		s := schema.LookupStruct("", schema.Type)
+		s_imported := schema.LookupStruct(schema.Import, schema.Type)
+		if s == nil && s_imported == nil {
 			return "xxx", fmt.Errorf("pyParam struct not found: %s", schema.Dump())
 		}
-		ident := common.CamelTitleCase(s.Name)
+		// if struct is local it is found both as s and s_imported
+		ident := common.CamelTitleCase(s_imported.Name)
+		if s == nil {
+			prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
+		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)

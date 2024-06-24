@@ -49,4 +49,8 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["abbreviate"] = helper.Abbreviate
 	fm["nl"] = NewLine
 	fm["toJson"] = ToJson
+	fm["unique"] = Unique
+	fm["appendList"] = AppendList
+	fm["getEmptyStringList"] = GetEmptyStringList
+	fm["collectFields"] = CollectFields
 }
