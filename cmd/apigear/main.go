@@ -4,6 +4,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/cmd"
 	"github.com/apigear-io/cli/pkg/log"
@@ -26,6 +28,6 @@ func main() {
 	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
 	err := cmd.Run()
 	if err != nil {
-		log.Debug().Err(err).Msg("run command")
+		os.Exit(1)
 	}
 }
