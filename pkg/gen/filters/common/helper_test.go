@@ -120,16 +120,18 @@ func TestAbbreviate(t *testing.T) {
 		{"hEllo.worLd", "HEWL"},
 		{"HEllo.worLd", "HEWL"},
 		{"HEllo.worLD", "HEWL"},
+		{"HEllo.worLD2", "HEWL2"},
 		{"HELlo.worLD", "HLWL"},
 		{"hello_world", "HW"},
 		{"heLlo_wOrld", "HLWO"},
 		{"hello world", "HW"},
 		{"hello worlD", "HWD"},
-		{"hello.2world", "H"},
+		{"hello.2world", "H2"},
 		{"1hello.world", "W"},
 		{"1hello.2world", ""},
-		{"1hELlo.2world", "EL"},
-		{"1hELLlo.2world", "EL"},
+		{"1hELlo.2world", "EL2"},
+		{"1hELLlo.2world", "EL2"},
+		{"1hELLlo.2woRld", "EL2R"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
