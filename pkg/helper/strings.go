@@ -29,12 +29,16 @@ func ArrayToMap[T any](m map[string]T, e []T, f func(T) string) map[string]T {
 	return m
 }
 
-// Used by templates to generate abbreviation inside the code
+// Used by templates to generate abbreviation including numbers inside the code
 func Abbreviate(s string) string {
 	abbreviation := ""
 	for _, rune := range strcase.ToCase(s, strcase.TitleCase, '-') {
 		if unicode.IsUpper(rune) {
 			abbreviation += string(rune)
+		} else if unicode.IsNumber(rune) {
+			if len(abbreviation) > 0 {
+				abbreviation += string(rune)
+			}
 		}
 	}
 	return abbreviation
