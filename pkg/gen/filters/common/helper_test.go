@@ -143,48 +143,48 @@ func TestAbbreviate(t *testing.T) {
 func TestCollectFields(t *testing.T) {
 	t.Parallel()
 	var listOfStructs = []struct {
-		a  string
-		b  string
+		a string
+		b string
 	}{
 		{"foo1", "goo1"},
 		{"foo2", "goo2"},
 		{"foo3", "goo3"},
 	}
-	var listA = []string{"foo1" , "foo2", "foo3"}
-	var listB = []string{"goo1" , "goo2", "goo3"}
+	var listA = []string{"foo1", "foo2", "foo3"}
+	var listB = []string{"goo1", "goo2", "goo3"}
 	t.Run("getListOfFields", func(t *testing.T) {
-			resultA, err :=  CollectFields(listOfStructs, "a")
-			assert.Equal(t, listA, resultA)
-			assert.NoError(t, err)
-			resultB, err :=  CollectFields(listOfStructs, "b")
-			assert.Equal(t, listB, resultB)
-			assert.NoError(t, err)
-		})
+		resultA, err := CollectFields(listOfStructs, "a")
+		assert.Equal(t, listA, resultA)
+		assert.NoError(t, err)
+		resultB, err := CollectFields(listOfStructs, "b")
+		assert.Equal(t, listB, resultB)
+		assert.NoError(t, err)
+	})
 }
 
 func TestNoFieldCollectFields(t *testing.T) {
 	t.Parallel()
 	var listOfStructs = []struct {
-		a  string
-		b  string
+		a string
+		b string
 	}{
 		{"foo1", "goo1"},
 	}
 	var emptyList = []string{}
 	t.Run("getListOfFields", func(t *testing.T) {
-			result, err :=  CollectFields(listOfStructs, "c")
-			assert.Equal(t, emptyList, result)
-			assert.Error(t, err)
-		})
+		result, err := CollectFields(listOfStructs, "c")
+		assert.Equal(t, emptyList, result)
+		assert.Error(t, err)
+	})
 }
 
 func TestUnique(t *testing.T) {
 	t.Parallel()
 
-	var inputList = []string{"abc" , "<def>", "<ghi>", "ab::c", "abc", "ghi", "<ghi>" }
-	var noDuplicatesList = []string{"<def>" , "<ghi>", "ab::c", "abc", "ghi"}
+	var inputList = []string{"abc", "<def>", "<ghi>", "ab::c", "abc", "ghi", "<ghi>"}
+	var noDuplicatesList = []string{"<def>", "<ghi>", "ab::c", "abc", "ghi"}
 
 	t.Run("getListOfFields", func(t *testing.T) {
-			assert.Equal(t, noDuplicatesList, Unique(inputList))
-		})
+		assert.Equal(t, noDuplicatesList, Unique(inputList))
+	})
 }
