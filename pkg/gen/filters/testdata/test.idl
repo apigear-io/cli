@@ -105,11 +105,13 @@ interface InterfaceNamesCheck {
 
 enum Enum1 { 
     Default = 0,
+    NotDefault = 1,
 }
 
 enum EnumLowerNames
 {
     firstValue = 0,
+    secondValue = 1,
 }
 
 struct Struct1 {}

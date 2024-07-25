@@ -10,6 +10,7 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["ueParams"] = ueParams
 	fm["ueReturn"] = ueReturn
 	fm["ueDefault"] = ueDefault
+	fm["ueTestValue"] = ueTestValue
 	fm["ueConstType"] = ueConstType
 	fm["ueType"] = ueType
 	fm["ueVar"] = ueVar
