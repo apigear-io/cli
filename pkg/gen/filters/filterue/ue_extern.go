@@ -9,6 +9,7 @@ type UeExtern struct {
 	Include   string
 	Name      string
 	Library   string
+	Plugin    string
 }
 
 func parseUeExtern(schema *model.Schema) UeExtern {
@@ -21,6 +22,7 @@ func ueExtern(xe *model.Extern) UeExtern {
 	inc := xe.Meta.GetString("ue.include")
 	lib := xe.Meta.GetString("ue.module")
 	name := xe.Meta.GetString("ue.type")
+	plugin := xe.Meta.GetString("ue.plugin")
 	if name == "" {
 		name = xe.Name
 	}
@@ -29,5 +31,6 @@ func ueExtern(xe *model.Extern) UeExtern {
 		Include:   inc,
 		Name:      name,
 		Library:   lib,
+		Plugin:    plugin,
 	}
 }
