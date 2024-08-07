@@ -279,7 +279,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 	var docTarget = filepath.Clean(doc.Target)
 	// either user can force an overwrite or the target or the rules document
 	// transform the target name using the context
-	target, err := g.RenderString(docTarget, ctx)
+	target, err := RenderString(docTarget, ctx)
 	if err != nil {
 		return fmt.Errorf("render rules target %s: %s", docTarget, err)
 	}
@@ -301,7 +301,7 @@ func (g *generator) processDocument(doc spec.DocumentRule, ctx any) error {
 }
 
 // Renders a string using the given context
-func (g *generator) RenderString(s string, ctx any) (string, error) {
+func RenderString(s string, ctx any) (string, error) {
 	var buf = bytes.NewBuffer(nil)
 	t := template.New("target")
 	t.Funcs(filters.PopulateFuncMap())
