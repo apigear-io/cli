@@ -14,6 +14,7 @@ interfaces:
       - { name: propFloat32, type: float32 }
       - { name: propFloat64, type: float64 }
       - { name: propString, type: string }
+      - { name: propBytes, type: bytes }
       - { name: propBoolArray, type: bool, array: true }
       - { name: propIntArray, type: int, array: true }
       - { name: propFloatArray, type: float, array: true }
@@ -80,6 +81,12 @@ interfaces:
             type: string
         return:
           type: string
+      - name: opBytes
+        params:
+          - name: param1
+            type: bytes
+        return:
+          type: bytes
       - name: opBoolArray
         params:
           - name: param1
@@ -143,6 +150,14 @@ interfaces:
             array: true
         return:
           type: string
+          array: true
+      - name: opBytesArray
+        params:
+          - name: param1
+            type: bytes
+            array: true
+        return:
+          type: bytes
           array: true
       - name: op_Bool
         params:
@@ -234,6 +249,14 @@ interfaces:
             type: string
         return:
           type: string
+      - name: opBytesBytes
+        params:
+          - name: param1
+            type: bytes
+          - name: param2
+            type: bytes
+        return:
+          type: bytes
       - name: opEnumEnum
         params:
           - name: param1
@@ -272,6 +295,9 @@ interfaces:
       - name: opString
         return:
           type: string
+      - name: opBytes
+        return:
+          type: bytes
       - name: opVoid
       - name: opEnum
         return:

@@ -48,6 +48,7 @@ struct Struct0 {
 	field1: int
 	field2: float
 	field3: string
+	field4: bytes
 }
 `
 
@@ -64,6 +65,8 @@ func TestParseStruct(t *testing.T) {
 	assert.Equal(t, "float", struct_.Fields[2].Schema.Type)
 	assert.Equal(t, "field3", struct_.Fields[3].Name)
 	assert.Equal(t, "string", struct_.Fields[3].Schema.Type)
+	assert.Equal(t, "field4", struct_.Fields[4].Name)
+	assert.Equal(t, "bytes", struct_.Fields[4].Schema.Type)
 }
 
 var docIface = `
@@ -73,6 +76,7 @@ interface Interface0 {
 	prop1: int
 	prop2: float
 	prop3: string
+	prop4: bytes
 }
 
 interface Interface1 {
@@ -100,6 +104,8 @@ func TestParseInterfaceProperties(t *testing.T) {
 	assert.Equal(t, "float", interface_.Properties[2].Schema.Type)
 	assert.Equal(t, "prop3", interface_.Properties[3].Name)
 	assert.Equal(t, "string", interface_.Properties[3].Schema.Type)
+	assert.Equal(t, "prop4", interface_.Properties[4].Name)
+	assert.Equal(t, "bytes", interface_.Properties[4].Schema.Type)
 }
 
 func TestParseInterfaceOperation(t *testing.T) {
@@ -225,14 +231,17 @@ interface Interface1 {
 	prop1: int[]
 	prop2: float[]
 	prop3: string[]
+	prop4: bytes[]
 	operation0(param0: bool[]): bool[]
 	operation1(param0: int[]): int[]
 	operation2(param0: float[]): float[]
 	operation3(param0: string[]): string[]
+	operation4(param0: bytes[]): bytes[]
 	signal signal0(param0: bool[])
 	signal signal1(param0: int[])
 	signal signal2(param0: float[])
 	signal signal3(param0: string[])
+	signal signal4(param0: bytes[])
 }
 `
 
@@ -256,6 +265,9 @@ func TestPrimitiveArrayProperties(t *testing.T) {
 	assert.Equal(t, "prop3", iface1.Properties[3].Name)
 	assert.Equal(t, "string", iface1.Properties[3].Schema.Type)
 	assert.True(t, iface1.Properties[3].Schema.IsArray)
+	assert.Equal(t, "prop4", iface1.Properties[4].Name)
+	assert.Equal(t, "bytes", iface1.Properties[4].Schema.Type)
+	assert.True(t, iface1.Properties[4].Schema.IsArray)
 }
 
 func TestPrimitiveArrayOperations(t *testing.T) {
@@ -282,6 +294,10 @@ func TestPrimitiveArrayOperations(t *testing.T) {
 	assert.Equal(t, "param0", iface1.Operations[3].Params[0].Name)
 	assert.Equal(t, "string", iface1.Operations[3].Params[0].Schema.Type)
 	assert.True(t, iface1.Operations[3].Params[0].Schema.IsArray)
+	assert.Equal(t, "operation4", iface1.Operations[4].Name)
+	assert.Equal(t, "param0", iface1.Operations[4].Params[0].Name)
+	assert.Equal(t, "bytes", iface1.Operations[4].Params[0].Schema.Type)
+	assert.True(t, iface1.Operations[4].Params[0].Schema.IsArray)
 }
 
 func TestPrimitiveArraySignals(t *testing.T) {
@@ -315,6 +331,12 @@ func TestPrimitiveArraySignals(t *testing.T) {
 	assert.Equal(t, "signal3", signal.Name)
 	assert.Equal(t, "param0", input.Name)
 	assert.Equal(t, "string", input.Schema.Type)
+	assert.True(t, input.Schema.IsArray)
+	signal = iface1.Signals[4]
+	input = signal.Params[0]
+	assert.Equal(t, "signal4", signal.Name)
+	assert.Equal(t, "param0", input.Name)
+	assert.Equal(t, "bytes", input.Schema.Type)
 	assert.True(t, input.Schema.IsArray)
 }
 

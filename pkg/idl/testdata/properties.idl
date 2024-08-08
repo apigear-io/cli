@@ -6,3 +6,4 @@ interface Demo {
     readonly prop02: int
     @IsReadOnly: false
     readonly prop03: int
+}
