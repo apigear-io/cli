@@ -57,7 +57,7 @@ func (s *Schema) compute() {
 	case "void":
 		s.IsPrimitive = false
 		s.IsSymbol = false
-	case "bool", "int", "float", "string", "int32", "int64", "float32", "float64":
+	case "bool", "int", "float", "string", "int32", "int64", "float32", "float64", "bytes":
 		s.IsPrimitive = true
 		s.IsSymbol = false
 	default:

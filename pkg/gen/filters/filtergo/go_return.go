@@ -18,6 +18,8 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	switch schema.KindType {
 	case model.TypeString:
 		text = "string"
+	case model.TypeBytes:
+		text = "[]byte"
 	case model.TypeInt:
 		text = "int32"
 	case model.TypeInt32:

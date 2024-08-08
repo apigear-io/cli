@@ -19,6 +19,8 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		switch schema.KindType {
 		case model.TypeString:
 			text = "[]string{}"
+		case model.TypeBytes:
+			text = "[][]byte{}"
 		case model.TypeInt:
 			text = "[]int32{}"
 		case model.TypeInt32:
@@ -52,6 +54,8 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		switch schema.KindType {
 		case model.TypeString:
 			text = "\"\""
+		case model.TypeBytes:
+			text = "[]byte{}"
 		case model.TypeInt:
 			text = "int32(0)"
 		case model.TypeInt32:

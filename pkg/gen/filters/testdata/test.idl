@@ -10,6 +10,7 @@ interface Test1 {
     propFloat32: float32
     propFloat64: float64
     propString: string
+    propBytes: bytes
     propBoolArray: bool[]
     propIntArray: int[]
     propInt32Array: int32[]
@@ -18,6 +19,7 @@ interface Test1 {
     propFloat32Array: float32[]
     propFloat64Array: float64[]
     propStringArray: string[]
+    propBytesArray: bytes[]
     prop_Bool: bool
     prop_bool: bool
     prop_1: bool
@@ -38,10 +40,11 @@ interface Test3 {
     opInt(param1: int): int
     opInt32(param1: int32): int32
     opInt64(param1: int64): int64
-    opFloat(param1: float): float    
+    opFloat(param1: float): float
     opFloat32(param1: float32): float32
     opFloat64(param1: float64): float64
     opString(param1: string): string
+    opBytes(param1: bytes): bytes
     opBoolArray(param1: bool[]): bool[]
     opIntArray(param1: int[]): int[]
     opInt32Array(param1: int32[]): int32[]
@@ -50,6 +53,7 @@ interface Test3 {
     opFloat32Array(param1: float32[]): float32[]
     opFloat64Array(param1: float64[]): float64[]
     opStringArray(param1: string[]): string[]
+    opBytesArray(param1: bytes[]): bytes[]
     op_Bool(param_Bool: bool): bool
     op_bool(param_bool: bool): bool
     op_1(param_1: bool): bool
@@ -69,7 +73,8 @@ interface Test5 {
     opIntInt(param1: int, param2: int): int
     opFloatFloat(param1: float, param2: float): float
     opStringString(param1: string, param2: string): string
-    opEnumEnum(param1: Enum1, param2: Enum1): Enum1    
+    opBytesBytes(param1: bytes, param2: bytes): bytes
+    opEnumEnum(param1: Enum1, param2: Enum1): Enum1
     opStructStruct(param1: Struct1, param2: Struct1): Struct1
     opInterfaceInterface(param1: Interface1, param2: Interface1): Interface1
 }
@@ -83,6 +88,7 @@ interface Test6 {
     opFloat32(): float32
     opFloat64(): float64
     opString(): string
+    opBytes(): bytes
     opVoid()
     opEnum(): Enum1
     opStruct(): Struct1
@@ -103,7 +109,7 @@ interface InterfaceNamesCheck {
     lowerEnumProp: EnumLowerNames
 }
 
-enum Enum1 { 
+enum Enum1 {
     Default = 0,
     NotDefault = 1,
 }
