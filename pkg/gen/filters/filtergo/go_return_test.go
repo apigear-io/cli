@@ -26,6 +26,7 @@ func TestReturn(t *testing.T) {
 		{"test", "Test1", "propFloat32", "float32"},
 		{"test", "Test1", "propFloat64", "float64"},
 		{"test", "Test1", "propString", "string"},
+		{"test", "Test1", "propBytes", "[]byte"},
 		{"test", "Test1", "propBoolArray", "[]bool"},
 		{"test", "Test1", "propIntArray", "[]int32"},
 		{"test", "Test1", "propInt32Array", "[]int32"},
@@ -34,6 +35,7 @@ func TestReturn(t *testing.T) {
 		{"test", "Test1", "propFloat32Array", "[]float32"},
 		{"test", "Test1", "propFloat64Array", "[]float64"},
 		{"test", "Test1", "propStringArray", "[]string"},
+		{"test", "Test1", "propBytesArray", "[][]byte"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -66,6 +68,7 @@ func TestOperationReturn(t *testing.T) {
 		{"test", "Test3", "opFloat32", "float32"},
 		{"test", "Test3", "opFloat64", "float64"},
 		{"test", "Test3", "opString", "string"},
+		{"test", "Test3", "opBytes", "[]byte"},
 		{"test", "Test3", "opBoolArray", "[]bool"},
 		{"test", "Test3", "opIntArray", "[]int32"},
 		{"test", "Test3", "opInt32Array", "[]int32"},
@@ -74,6 +77,7 @@ func TestOperationReturn(t *testing.T) {
 		{"test", "Test3", "opFloat32Array", "[]float32"},
 		{"test", "Test3", "opFloat64Array", "[]float64"},
 		{"test", "Test3", "opStringArray", "[]string"},
+		{"test", "Test3", "opBytesArray", "[][]byte"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {

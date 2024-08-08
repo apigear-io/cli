@@ -24,6 +24,8 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	switch schema.KindType {
 	case model.TypeString:
 		return fmt.Sprintf("%s string", name), nil
+	case model.TypeBytes:
+		return fmt.Sprintf("%s []byte", name), nil
 	case model.TypeInt:
 		return fmt.Sprintf("%s int32", name), nil
 	case model.TypeInt32:

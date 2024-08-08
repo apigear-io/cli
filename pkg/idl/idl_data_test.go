@@ -19,10 +19,12 @@ func TestDataProps(t *testing.T) {
 		{"StructInterface", "propInt", "StructInt", false},
 		{"StructInterface", "propFloat", "StructFloat", false},
 		{"StructInterface", "propString", "StructString", false},
+		{"StructInterface", "propBytes", "StructBytes", false},
 		{"StructArrayInterface", "propBool", "StructBool", true},
 		{"StructArrayInterface", "propInt", "StructInt", true},
 		{"StructArrayInterface", "propFloat", "StructFloat", true},
 		{"StructArrayInterface", "propString", "StructString", true},
+		{"StructArrayInterface", "propBytes", "StructBytes", true},
 	}
 	for _, tr := range table {
 		t.Run(tr.iName+"."+tr.pName, func(t *testing.T) {
@@ -57,10 +59,12 @@ func TestDataFuncs(t *testing.T) {
 		{"StructInterface", "funcInt", "paramInt", "StructInt", false},
 		{"StructInterface", "funcFloat", "paramFloat", "StructFloat", false},
 		{"StructInterface", "funcString", "paramString", "StructString", false},
+		{"StructInterface", "funcBytes", "paramBytes", "StructBytes", false},
 		{"StructArrayInterface", "funcBool", "paramBool", "StructBool", true},
 		{"StructArrayInterface", "funcInt", "paramInt", "StructInt", true},
 		{"StructArrayInterface", "funcFloat", "paramFloat", "StructFloat", true},
 		{"StructArrayInterface", "funcString", "paramString", "StructString", true},
+		{"StructArrayInterface", "funcBytes", "paramBytes", "StructBytes", true},
 	}
 	for _, tr := range table {
 		t.Run(tr.iName+"."+tr.fName, func(t *testing.T) {
@@ -101,6 +105,7 @@ func TestDataSignals(t *testing.T) {
 		{"StructArrayInterface", "sigInt", "paramInt", "StructInt", true},
 		{"StructArrayInterface", "sigFloat", "paramFloat", "StructFloat", true},
 		{"StructArrayInterface", "sigString", "paramString", "StructString", true},
+		{"StructArrayInterface", "sigBytes", "paramBytes", "StructBytes", true},
 	}
 	for _, tr := range table {
 		t.Run(tr.iName+"."+tr.sName, func(t *testing.T) {
@@ -135,6 +140,7 @@ func TestStructs(t *testing.T) {
 		{"StructInt", "fieldInt", "int"},
 		{"StructFloat", "fieldFloat", "float"},
 		{"StructString", "fieldString", "string"},
+		{"StructBytes", "fieldBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(tr.sName+"."+tr.fName, func(t *testing.T) {

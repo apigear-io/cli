@@ -9,6 +9,7 @@ interface SimpleInterface {
     propFloat32: float32
     propFloat64: float64
     propString: string
+    propBytes: bytes
     funcBool(paramBool: bool): bool
     funcInt(paramInt: int): int
     funcInt32(paramInt32: int32): int32
@@ -17,6 +18,7 @@ interface SimpleInterface {
     funcFloat32(paramFloat32: float32): float32
     funcFloat64(paramFloat64: float64): float64
     funcString(paramString: string): string
+    funcBytes(paramBytes: bytes): bytes
     signal sigBool(paramBool: bool)
     signal sigInt(paramInt: int)
     signal sigInt32(paramInt32: int32)
@@ -25,6 +27,7 @@ interface SimpleInterface {
     signal sigFloat32(paramFloat32: float32)
     signal sigFloat64(paramFloat64: float64)
     signal sigString(paramString: string)
+    signal sigBytes(paramBytes: bytes)
 }
 
 interface SimpleArrayInterface {
@@ -36,6 +39,7 @@ interface SimpleArrayInterface {
     propFloat32: float32[]
     propFloat64: float64[]
     propString: string[]
+    propBytes: bytes[]
     funcBool(paramBool: bool[]): bool[]
     funcInt(paramInt: int[]): int[]
     funcInt32(paramInt32: int32[]): int32[]
@@ -44,6 +48,7 @@ interface SimpleArrayInterface {
     funcFloat32(paramFloat32: float32[]): float32[]
     funcFloat64(paramFloat64: float64[]): float64[]
     funcString(paramString: string[]): string[]
+    funcBytes(paramBytes: bytes[]): bytes[]
     signal sigBool(paramBool: bool[])
     signal sigInt(paramInt: int[])
     signal sigInt32(paramInt32: int32[])
@@ -52,4 +57,5 @@ interface SimpleArrayInterface {
     signal sigFloat32(paramFloat32: float32[])
     signal sigFloat64(paramFloat64: float64[])
     signal sigString(paramString: string[])
+    signal sigBytes(paramBytes: bytes[])
 }
