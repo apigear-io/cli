@@ -16,19 +16,26 @@ struct StructString {
     fieldString: string
 }
 
+struct StructBytes {
+    fieldBytes: bytes
+}
+
 interface StructInterface {
     propBool: StructBool
     propInt: StructInt
     propFloat: StructFloat
     propString: StructString
+    propBytes: StructBytes
     funcBool(paramBool: StructBool): StructBool
     funcInt(paramInt: StructInt): StructInt
     funcFloat(paramFloat: StructFloat): StructFloat
     funcString(paramString: StructString): StructString
+    funcBytes(paramBytes: StructBytes): StructBytes
     signal sigBool(paramBool: StructBool)
     signal sigInt(paramInt: StructInt)
     signal sigFloat(paramFloat: StructFloat)
     signal sigString(paramString: StructString)
+    signal sigBytes(paramBytes: StructBytes)
 }
 
 interface StructArrayInterface {
@@ -36,12 +43,15 @@ interface StructArrayInterface {
     propInt: StructInt[]
     propFloat: StructFloat[]
     propString: StructString[]
+    propBytes: StructBytes[]
     funcBool(paramBool: StructBool[]): StructBool[]
     funcInt(paramInt: StructInt[]): StructInt[]
     funcFloat(paramFloat: StructFloat[]): StructFloat[]
     funcString(paramString: StructString[]): StructString[]
+    funcBytes(paramBytes: StructBytes[]): StructBytes[]
     signal sigBool(paramBool: StructBool[])
     signal sigInt(paramInt: StructInt[])
     signal sigFloat(paramFloat: StructFloat[])
     signal sigString(paramString: StructString[])
+    signal sigBytes(paramBytes: StructBytes[])
 }

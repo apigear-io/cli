@@ -23,6 +23,7 @@ func TestSimpleProps(t *testing.T) {
 		{"SimpleInterface", "propFloat32", "float32"},
 		{"SimpleInterface", "propFloat64", "float64"},
 		{"SimpleInterface", "propString", "string"},
+		{"SimpleInterface", "propBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.pName), func(t *testing.T) {
@@ -55,6 +56,7 @@ func TestSimpleFuncs(t *testing.T) {
 		{"SimpleInterface", "funcFloat32", "paramFloat32", "float32"},
 		{"SimpleInterface", "funcFloat64", "paramFloat64", "float64"},
 		{"SimpleInterface", "funcString", "paramString", "string"},
+		{"SimpleInterface", "funcBytes", "paramBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.fName), func(t *testing.T) {
@@ -91,6 +93,7 @@ func TestSimpleSignals(t *testing.T) {
 		{"SimpleInterface", "sigFloat32", "paramFloat32", "float32"},
 		{"SimpleInterface", "sigFloat64", "paramFloat64", "float64"},
 		{"SimpleInterface", "sigString", "paramString", "string"},
+		{"SimpleInterface", "sigBytes", "paramBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.sName), func(t *testing.T) {
@@ -125,6 +128,7 @@ func TestSimpleArrayProps(t *testing.T) {
 		{"SimpleArrayInterface", "propFloat32", "float32"},
 		{"SimpleArrayInterface", "propFloat64", "float64"},
 		{"SimpleArrayInterface", "propString", "string"},
+		{"SimpleArrayInterface", "propBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.pName), func(t *testing.T) {
@@ -158,6 +162,7 @@ func TestSimpleArrayFuncs(t *testing.T) {
 		{"SimpleArrayInterface", "funcFloat32", "paramFloat32", "float32"},
 		{"SimpleArrayInterface", "funcFloat64", "paramFloat64", "float64"},
 		{"SimpleArrayInterface", "funcString", "paramString", "string"},
+		{"SimpleArrayInterface", "funcBytes", "paramBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.fName), func(t *testing.T) {
@@ -195,6 +200,7 @@ func TestSimpleArraySignals(t *testing.T) {
 		{"SimpleArrayInterface", "sigFloat32", "paramFloat32", "float32"},
 		{"SimpleArrayInterface", "sigFloat64", "paramFloat64", "float64"},
 		{"SimpleArrayInterface", "sigString", "paramString", "string"},
+		{"SimpleArrayInterface", "sigBytes", "paramBytes", "bytes"},
 	}
 	for _, tr := range table {
 		t.Run(fmt.Sprintf("%s.%s", tr.iName, tr.sName), func(t *testing.T) {

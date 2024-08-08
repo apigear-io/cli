@@ -40,6 +40,7 @@ const (
 	TypeFloat32   KindType = "float32"
 	TypeFloat64   KindType = "float64"
 	TypeString    KindType = "string"
+	TypeBytes     KindType = "bytes"
 	TypeExtern    KindType = "extern"
 	TypeEnum      KindType = "enum"
 	TypeStruct    KindType = "struct"

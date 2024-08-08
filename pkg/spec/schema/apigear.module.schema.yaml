@@ -1,6 +1,6 @@
 $schema: "http://json-schema.org/draft-07/schema#"
 description: |
-  This is the schema for the ObjectAPI 1.0 specification. 
+  This is the schema for the ObjectAPI 1.0 specification.
   It is used to validate the ObjectAPI 1.0 specification.
 
   An example of a valid ObjectAPI 1.0 specification is:
