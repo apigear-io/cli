@@ -35,7 +35,7 @@ func (s *Signal) Validate(m *Module) error {
 }
 
 func (s *Signal) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, s.Name, "signal")
+	s.Name = rkw.CheckAndEscapeName(s.Name, "signal")
 	for _, p := range s.Params {
 		p.CheckReservedWords(langs)
 	}
@@ -89,7 +89,7 @@ func (m *Operation) ParamNames() []string {
 }
 
 func (m *Operation) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, m.Name, "operation")
+	m.Name = rkw.CheckAndEscapeName(m.Name, "operation")
 	for _, p := range m.Params {
 		p.CheckReservedWords(langs)
 	}
@@ -234,7 +234,7 @@ func (i Interface) NoMembers() bool {
 }
 
 func (i *Interface) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, i.Name, "interface")
+	i.Name = rkw.CheckAndEscapeName(i.Name, "interface")
 	for _, p := range i.Properties {
 		p.CheckReservedWords(langs)
 	}

@@ -335,7 +335,7 @@ func (m *Module) computeChecksum() {
 }
 
 func (m *Module) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, m.Name, "module")
+	m.Name = rkw.CheckAndEscapeName(m.Name, "module")
 	for _, i := range m.Interfaces {
 		i.CheckReservedWords(langs)
 	}

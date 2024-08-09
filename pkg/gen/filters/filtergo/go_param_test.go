@@ -24,9 +24,9 @@ func TestParam(t *testing.T) {
 		{"test", "Test1", "propIntArray", "propIntArray []int32"},
 		{"test", "Test1", "propFloatArray", "propFloatArray []float32"},
 		{"test", "Test1", "propStringArray", "propStringArray []string"},
-		{"test", "Test1", "prop_Bool", "prop_Bool bool"},
-		{"test", "Test1", "prop_bool", "prop_bool bool"},
-		{"test", "Test1", "prop_1", "prop_1 bool"},
+		{"test", "Test1", "prop_Bool", "propBool bool"},
+		{"test", "Test1", "prop_bool", "propBool bool"},
+		{"test", "Test1", "prop_1", "prop1 bool"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

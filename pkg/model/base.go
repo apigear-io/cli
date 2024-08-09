@@ -199,5 +199,5 @@ func (t TypedNode) TypeName() string {
 }
 
 func (t *TypedNode) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, t.Name, "type")
+	t.NamedNode.Name = rkw.CheckAndEscapeName(t.Name, "type")
 }

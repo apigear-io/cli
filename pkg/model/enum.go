@@ -73,7 +73,7 @@ func (e *Enum) NoMembers() bool {
 
 // CheckReservedWords checks the names of the enum.
 func (e *Enum) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, e.Name, "enum")
+	e.Name = rkw.CheckAndEscapeName(e.Name, "enum")
 	for _, mem := range e.Members {
 		mem.CheckReservedWords(langs)
 	}
@@ -103,5 +103,5 @@ func (e *EnumMember) Validate(m *Module) error {
 
 // CheckReservedWords checks the names of the enum member.
 func (e *EnumMember) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, e.Name, "enum member")
+	e.Name = rkw.CheckAndEscapeName(e.Name, "enum member")
 }
