@@ -55,7 +55,7 @@ func (s *Struct) NoFields() bool {
 }
 
 func (s *Struct) CheckReservedWords(langs []rkw.Lang) {
-	rkw.CheckIsReserved(langs, s.Name, "struct")
+	s.Name = rkw.CheckAndEscapeName(s.Name, "struct")
 	for _, f := range s.Fields {
 		f.CheckReservedWords(langs)
 	}
