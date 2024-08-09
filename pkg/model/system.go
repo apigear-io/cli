@@ -246,11 +246,12 @@ func FQNSplit3(fqn string) (string, string, string) {
 }
 
 func (s *System) CheckReservedWords(langs []string) {
+	log.Info().Msgf("check system %s for reserved words", s.Name)
 	ls := make([]rkw.Lang, 0)
 	for _, l := range langs {
 		ls = append(ls, rkw.Lang(l))
 	}
-	rkw.CheckIsReserved(ls, s.Name, "system")
+	s.Name = rkw.CheckAndEscapeName(s.Name, "system")
 	for _, m := range s.Modules {
 		m.CheckReservedWords(ls)
 	}

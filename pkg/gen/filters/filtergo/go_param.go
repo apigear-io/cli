@@ -3,6 +3,7 @@ package filtergo
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -10,6 +11,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToParamString schema is nil")
 	}
+	name = common.CamelLowerCase(name)
 	if schema.IsImported() {
 		prefix = fmt.Sprintf("%s.", schema.ShortImportName())
 	}

@@ -238,8 +238,9 @@ func CheckIsReserved(langs []Lang, name string, scope string) {
 func CheckAndEscapeName(name string, scope string) string {
 	langs, ok := IsKeywordReserved(name)
 	if ok {
-		log.Warn().Msgf("%s name \"%s\" is a reserved keyword in %s", scope, name, langs)
-		return EscapeKeyword(name)
+		word := EscapeKeyword(name)
+		log.Warn().Msgf("\"%s\" is a reserved keyword in %s. Escaped to \"%s\"", name, langs, word)
+		return word
 	}
 	return name
 }
