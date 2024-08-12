@@ -17,69 +17,55 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		moduleId = strcase.ToPascal(schema.Import)
 	}
 	var text string
+	switch schema.KindType {
+	case model.TypeString:
+		text = "FString()"
+	case model.TypeInt, model.TypeInt32:
+		text = "0"
+	case model.TypeInt64:
+		text = "0LL"
+	case model.TypeFloat, model.TypeFloat32:
+		text = "0.0f"
+	case model.TypeFloat64:
+		text = "0.0"
+	case model.TypeBool:
+		text = "false"
+	case model.TypeVoid:
+		return "xxx", fmt.Errorf("void type not allowed as default value")
+	case model.TypeEnum:
+		symbol := schema.GetEnum()
+		member := symbol.Members[0]
+		typename := fmt.Sprintf("%s%s", moduleId, symbol.Name)
+		abbreviation := helper.Abbreviate(typename)
+		// upper case first letter
+		// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
+		text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, strcase.ToCase(member.Name, strcase.UpperCase, '\x00'))
+	case model.TypeStruct:
+		symbol := schema.GetStruct()
+		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
+	case model.TypeExtern:
+		xe := parseUeExtern(schema)
+		if xe.Default != "" {
+			text = xe.Default
+		} else {
+			if xe.NameSpace != "" {
+				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			}
+			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
+		}
+	case model.TypeInterface:
+		symbol := schema.GetInterface()
+		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
+	default:
+		return "xxx", fmt.Errorf("ueDefault unknown schema %s", schema.Dump())
+	}
 	if schema.IsArray {
-		switch schema.KindType {
-		case model.TypeString:
-			text = "TArray<FString>()"
-		case model.TypeInt:
-			text = "TArray<int32>()"
-		case model.TypeInt32:
-			text = "TArray<int32>()"
-		case model.TypeInt64:
-			text = "TArray<int64>()"
-		case model.TypeFloat:
-			text = "TArray<float>()"
-		case model.TypeFloat32:
-			text = "TArray<float>()"
-		case model.TypeFloat64:
-			text = "TArray<double>()"
-		case model.TypeBool:
-			text = "TArray<bool>()"
-		case model.TypeEnum:
-			text = fmt.Sprintf("TArray<%sE%s%s>()", prefix, moduleId, schema.Type)
-		case model.TypeStruct:
-			text = fmt.Sprintf("TArray<%sF%s%s>()", prefix, moduleId, schema.Type)
-		case model.TypeInterface:
-			text = fmt.Sprintf("TArray<%sF%s%s>()", prefix, moduleId, schema.Type)
-		default:
-			return "xxx", fmt.Errorf("ueDefault unknown schema %s", schema.Dump())
+		inner := schema.InnerSchema()
+		ret, err := ToReturnString(prefix, &inner)
+		if err != nil {
+			return "xxx", fmt.Errorf("ToDefaultString inner value error: %s", err)
 		}
-	} else {
-		switch schema.KindType {
-		case model.TypeString:
-			text = "FString()"
-		case model.TypeInt, model.TypeInt32:
-			text = "0"
-		case model.TypeInt64:
-			text = "0LL"
-		case model.TypeFloat, model.TypeFloat32:
-			text = "0.0f"
-		case model.TypeFloat64:
-			text = "0.0"
-		case model.TypeBool:
-			text = "false"
-		case model.TypeVoid:
-			return "xxx", fmt.Errorf("void type not allowed as default value")
-		case model.TypeEnum:
-			symbol := schema.GetEnum()
-			member := symbol.Members[0]
-			typename := fmt.Sprintf("%s%s", moduleId, symbol.Name)
-			abbreviation := helper.Abbreviate(typename)
-			// upper case first letter
-			// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
-			text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, strcase.ToCase(member.Name, strcase.UpperCase, '\x00'))
-		case model.TypeStruct:
-			symbol := schema.GetStruct()
-			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-		case model.TypeExtern:
-			symbol := schema.GetExtern()
-			text = fmt.Sprintf("%s()", ueExtern(symbol).Name)
-		case model.TypeInterface:
-			symbol := schema.GetInterface()
-			text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-		default:
-			return "xxx", fmt.Errorf("ueDefault unknown schema %s", schema.Dump())
-		}
+		text = fmt.Sprintf("TArray<%s>()", ret)
 	}
 	return text, nil
 }

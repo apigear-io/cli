@@ -62,7 +62,7 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		{"test", "Test2", "propInterface", "FTestInterface1()"},
 		{"test", "Test2", "propEnumArray", "TArray<ETestEnum1>()"},
 		{"test", "Test2", "propStructArray", "TArray<FTestStruct1>()"},
-		{"test", "Test2", "propInterfaceArray", "TArray<FTestInterface1>()"},
+		{"test", "Test2", "propInterfaceArray", "TArray<FTestInterface1*>()"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
