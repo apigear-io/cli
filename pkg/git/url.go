@@ -3,8 +3,8 @@ package git
 import (
 	"net/url"
 
+	urls "github.com/chainguard-dev/git-urls"
 	"github.com/gitsight/go-vcsurl"
-	urls "github.com/whilp/git-urls"
 )
 
 func ParseAsUrl(url string) (*url.URL, error) {

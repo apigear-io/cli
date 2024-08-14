@@ -13,6 +13,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/apigear-io/objectlink-core-go v0.5.1
+	github.com/chainguard-dev/git-urls v1.0.2
 	github.com/creativeprojects/go-selfupdate v1.3.0
 	github.com/dop251/goja v0.0.0-20240707163329-b1681fb2a2f5
 	github.com/dop251/goja_nodejs v0.0.0-20240418154818-2aae10d4cbcf
@@ -24,7 +25,6 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/google/uuid v1.6.0
 	github.com/rs/zerolog v1.33.0
-	github.com/whilp/git-urls v1.0.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
