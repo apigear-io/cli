@@ -6,6 +6,7 @@ import (
 	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/gen/filters/filtercpp"
 	"github.com/apigear-io/cli/pkg/gen/filters/filtergo"
+	"github.com/apigear-io/cli/pkg/gen/filters/filterjava"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterjs"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterpy"
 	"github.com/apigear-io/cli/pkg/gen/filters/filterqt"
@@ -26,6 +27,7 @@ func PopulateFuncMap() template.FuncMap {
 	filterqt.PopulateFuncMap(fm)
 	filterjs.PopulateFuncMap(fm)
 	filterrs.PopulateFuncMap(fm)
+	filterjava.PopulateFuncMap(fm)
 
 	return fm
 }
