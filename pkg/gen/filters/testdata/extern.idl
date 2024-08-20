@@ -9,6 +9,7 @@ extern XType1
 @go.module: "demo/x"
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
+@java.package: "demo.x"
 extern XType2
 
 // external type imported from another module with alias
@@ -21,6 +22,9 @@ extern XType2
 
 @py.module: "demo.x"
 @py.name: "XType3A"
+
+@java.package: "demo.x"
+@java.name: "XType3A"
 extern XType3
 
 

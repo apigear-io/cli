@@ -49,6 +49,7 @@ func TestReturn(t *testing.T) {
 }
 
 func TestOperationReturn(t *testing.T) {
+	t.Parallel()
 	syss := loadTestSystems(t)
 	var propTests = []struct {
 		mn string
@@ -59,11 +60,19 @@ func TestOperationReturn(t *testing.T) {
 		{"test", "Test3", "opVoid", ""},
 		{"test", "Test3", "opBool", "bool"},
 		{"test", "Test3", "opInt", "int32"},
+		{"test", "Test3", "opInt32", "int32"},
+		{"test", "Test3", "opInt64", "int64"},
 		{"test", "Test3", "opFloat", "float32"},
+		{"test", "Test3", "opFloat32", "float32"},
+		{"test", "Test3", "opFloat64", "float64"},
 		{"test", "Test3", "opString", "string"},
 		{"test", "Test3", "opBoolArray", "[]bool"},
 		{"test", "Test3", "opIntArray", "[]int32"},
+		{"test", "Test3", "opInt32Array", "[]int32"},
+		{"test", "Test3", "opInt64Array", "[]int64"},
 		{"test", "Test3", "opFloatArray", "[]float32"},
+		{"test", "Test3", "opFloat32Array", "[]float32"},
+		{"test", "Test3", "opFloat64Array", "[]float64"},
 		{"test", "Test3", "opStringArray", "[]string"},
 	}
 	for _, sys := range syss {

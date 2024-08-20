@@ -33,3 +33,6 @@ externs:
       py.import: "demo.x"
       py.name: "XType3A"
       py.default: "demo.x.createXType3A()"
+      java.package: "demo.x"
+      java.name: "XType3A"
+      java.default: "new XType3A()"
