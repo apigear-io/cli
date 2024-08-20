@@ -9,6 +9,7 @@ extern XType1
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
 @py.module: "demo.x"
+@java.package: "demo.x"
 extern XType2
 
 // external type imported from another module with alias
@@ -19,4 +20,6 @@ extern XType2
 @cpp.include: "x.h"
 @py.module: "demo.x"
 @py.name: "XType3A"
+@java.package: "demo.x"
+@java.name: "XType3A"
 extern XType3
