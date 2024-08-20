@@ -11,6 +11,7 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/registry"
 	"github.com/apigear-io/cli/pkg/cmd/sim"
 	"github.com/apigear-io/cli/pkg/cmd/spec"
+	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/cmd/x"
 
 	"github.com/spf13/cobra"
@@ -26,7 +27,7 @@ func NewRootCommand() *cobra.Command {
 		Long:  `ApiGear allows you to describe interfaces and generate instrumented SDKs out of the descriptions.`,
 	}
 	cmd.SilenceErrors = false
-	cmd.SilenceUsage = true
+	cmd.SilenceUsage = false
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
@@ -38,5 +39,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(x.NewRootCommand())
 	cmd.AddCommand(NewUpdateCommand())
 	cmd.AddCommand(NewVersionCommand())
+	cmd.AddCommand(tpl.NewRootCommand())
 	return cmd
 }

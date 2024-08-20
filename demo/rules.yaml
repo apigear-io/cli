@@ -1,0 +1,8 @@
+features:
+  - name: api
+    scopes:
+      - match: module
+        documents:
+          - source: api.go.tpl
+            target: "{{snake .Module.Name}}.go"
+
