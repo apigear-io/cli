@@ -30,8 +30,8 @@ github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFI
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
-github.com/apigear-io/apigear-by-example v0.0.0-20240828150958-53e1b3108216 h1:GgIHOvfTSPwnn39+hyG5kSVVEG/xeo8WmJ5Ez6WnlDc=
-github.com/apigear-io/apigear-by-example v0.0.0-20240828150958-53e1b3108216/go.mod h1:ZEajQ+s0yhj2bLzOYnCj/ngDsnV+u0bDqY57Nf0h7Io=
+github.com/apigear-io/apigear-by-example v0.1.0 h1:DLvoafzSx4R0q+Rw+KZU3aHysuyG5fbSK8neMJJsg9M=
+github.com/apigear-io/apigear-by-example v0.1.0/go.mod h1:ZEajQ+s0yhj2bLzOYnCj/ngDsnV+u0bDqY57Nf0h7Io=
 github.com/apigear-io/objectlink-core-go v0.5.1 h1:o5j3dkAJwtp9NQe6TUWfAj0kiiAyLiWDzGSp2ZW+nEs=
 github.com/apigear-io/objectlink-core-go v0.5.1/go.mod h1:WPdUPqG4fIoku6qhjILu0c39C63eo/Z7LTMXu64XTGQ=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
