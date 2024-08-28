@@ -1,8 +1,9 @@
 module github.com/apigear-io/cli
 
-go 1.22
+go 1.22.2
 
 require (
+	github.com/apigear-io/apigear-by-example v0.0.0-20240828150958-53e1b3108216
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
