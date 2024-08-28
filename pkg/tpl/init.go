@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	tplcpp "github.com/apigear-io/apigear-by-example/tpl-cpp"
-	tplgo "github.com/apigear-io/apigear-by-example/tpl-go"
-	tplpy "github.com/apigear-io/apigear-by-example/tpl-py"
-	tplrs "github.com/apigear-io/apigear-by-example/tpl-rs"
-	tplts "github.com/apigear-io/apigear-by-example/tpl-ts"
-	tplue "github.com/apigear-io/apigear-by-example/tpl-ue"
+	"github.com/apigear-io/apigear-by-example/tplcpp"
+	"github.com/apigear-io/apigear-by-example/tplgo"
+	"github.com/apigear-io/apigear-by-example/tplpy"
+	"github.com/apigear-io/apigear-by-example/tplrs"
+	"github.com/apigear-io/apigear-by-example/tplts"
+	"github.com/apigear-io/apigear-by-example/tplue"
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
