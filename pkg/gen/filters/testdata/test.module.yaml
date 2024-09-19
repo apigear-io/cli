@@ -319,9 +319,11 @@ enums:
   - name: Enum1
     members:
       - name: Default
+      - name: NotDefault
   - name: EnumLowerNames
     members:
       - name: firstValue
+      - name: secondValue
 
 structs:
   - name: Struct1
