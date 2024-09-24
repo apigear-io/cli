@@ -227,11 +227,12 @@ func (m Module) LookupDefaultEnumMember(mName, eName string) *EnumMember {
 
 func (m *Module) Validate() error {
 	m.compute()
-	// check for duplicate names
 	if m.Version == "" {
 		// ensure a version is set
+		log.Info().Msgf("validation: module %s has no version, setting to 1.0", m.Name)
 		m.Version = "1.0"
 	}
+	// check for duplicate names
 	names := make(map[string]bool)
 	for _, x := range m.Externs {
 		err := x.Validate(m)

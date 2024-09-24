@@ -12,7 +12,7 @@ import (
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
 func parseInputs(s *model.System, inputs []string) error {
-	log.Debug().Msgf("parse inputs %v", inputs)
+	log.Info().Msgf("parse inputs %v", inputs)
 	for _, file := range inputs {
 		log.Debug().Msgf("parse input %s", file)
 		switch filepath.Ext(file) {

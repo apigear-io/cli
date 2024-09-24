@@ -23,6 +23,7 @@ func NewParser(s *model.System) *Parser {
 	}
 }
 
+// TODO: ParseFile is called 3 times (e.g. during solution check, run solution and ...)
 // ParseFile parses a file containing idl document
 func (p *Parser) ParseFile(file string) error {
 	if !helper.IsFile(file) {
@@ -45,7 +46,7 @@ func (p *Parser) ParseString(str string) error {
 // parse idl from antlr file stream
 func (p *Parser) parseStream(input antlr.CharStream) error {
 	// create the lexer
-	log.Debug().Msgf("parse idl from %s", input)
+	log.Info().Msgf("parse idl from input stream")
 	lexer := parser.NewObjectApiLexer(input)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
