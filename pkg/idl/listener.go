@@ -84,8 +84,11 @@ func (o *ObjectApiListener) EnterHeaderRule(c *parser.HeaderRuleContext) {
 func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 	IsNil(o.module)
 	name := c.GetName().GetText()
-	version := "1.0" // default version
-	if c.GetVersion() != nil {
+	version := ""
+	if c.GetVersion() == nil {
+		log.Info().Msgf("module %s has no version, setting to 1.0", name)
+		version = "1.0"
+	} else {
 		version = c.GetVersion().GetText()
 	}
 	o.module = model.NewModule(name, version)
@@ -96,8 +99,11 @@ func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 	IsNotNil(o.module)
 	name := c.GetName().GetText()
-	version := "1.0"
-	if c.GetVersion() != nil {
+	version := ""
+	if c.GetVersion() == nil {
+		log.Info().Msgf("import %s has no version, setting to 1.0", name)
+		version = "1.0"
+	} else {
 		version = c.GetVersion().GetText()
 	}
 	import_ := model.NewImport(name, version)
