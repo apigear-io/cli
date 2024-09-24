@@ -16,7 +16,7 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewEditCommand())
 	cmd.AddCommand(NewImportCommand())
 	cmd.AddCommand(NewInfoCommand())
-	cmd.AddCommand(NewInitCommand())
+	cmd.AddCommand(NewProjectCommand())
 	cmd.AddCommand(NewOpenCommand())
 	cmd.AddCommand(NewPackCommand())
 	cmd.AddCommand(NewRecentCommand())
