@@ -13,7 +13,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 )
 
-func InitTemplate(dir string, lang string) error {
+func NewTemplate(dir string, lang string) error {
 	var rules []byte
 	var apiTpl []byte
 	var apiTplName string

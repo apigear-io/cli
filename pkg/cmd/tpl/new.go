@@ -9,12 +9,12 @@ func NewInitCommand() *cobra.Command {
 	var dir string
 	var lang string
 	var cmd = &cobra.Command{
-		Use:   "init",
-		Short: "Initialize a template",
-		Long:  `Initialize a template`,
+		Use:   "new",
+		Short: "Create new template",
+		Long:  `Create new template`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Printf("initializing template %s using language %s\n", dir, lang)
-			return tpl.InitTemplate(dir, lang)
+			cmd.Printf("create new template in %s with language %s support\n", dir, lang)
+			return tpl.NewTemplate(dir, lang)
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory to init")
