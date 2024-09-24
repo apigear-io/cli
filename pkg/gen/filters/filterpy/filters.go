@@ -15,4 +15,5 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["pyVars"] = pyVars
 	fm["pyType"] = pyType
 	fm["pyExtern"] = pyExtern
+	fm["pyTestValue"] = pyTestValue
 }

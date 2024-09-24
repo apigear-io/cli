@@ -5,9 +5,10 @@ documentRule: headerRule declarationsRule*;
 headerRule: moduleRule importRule*;
 
 moduleRule:
-	metaRule* 'module' name = IDENTIFIER version = VERSION?;
+	metaRule* 'module' name = IDENTIFIER version = VERSION? SEMICOLON?;
 
-importRule: 'import' name = IDENTIFIER version = VERSION?;
+importRule:
+	'import' name = IDENTIFIER version = VERSION? SEMICOLON?;
 
 declarationsRule:
 	externRule
@@ -15,7 +16,7 @@ declarationsRule:
 	| structRule
 	| enumRule;
 
-externRule: metaRule* 'extern' name = IDENTIFIER;
+externRule: metaRule* 'extern' name = IDENTIFIER SEMICOLON?;
 
 interfaceRule:
 	metaRule* 'interface' name = IDENTIFIER (
@@ -25,22 +26,23 @@ interfaceRule:
 interfaceMembersRule: propertyRule | operationRule | signalRule;
 
 propertyRule:
-	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule;
+	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule SEMICOLON?;
 operationRule:
-	metaRule* name = IDENTIFIER '(' params = operationParamRule* ')' operationReturnRule?;
+	metaRule* name = IDENTIFIER '(' params = operationParamRule* ')' operationReturnRule? SEMICOLON?
+		;
 
 operationReturnRule: ':' schema = schemaRule;
 operationParamRule:
 	name = IDENTIFIER ':' schema = schemaRule ','?;
 signalRule:
-	metaRule* 'signal' name = IDENTIFIER '(' params = operationParamRule* ')';
+	metaRule* 'signal' name = IDENTIFIER '(' params = operationParamRule* ')' SEMICOLON?;
 
 // structs
 structRule:
 	metaRule* 'struct' name = IDENTIFIER '{' structFieldRule* '}';
 
 structFieldRule:
-	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule;
+	metaRule* readonly = 'readonly'? name = IDENTIFIER ':' schema = schemaRule SEMICOLON?;
 
 // enums
 enumRule:
@@ -69,11 +71,15 @@ symbolSchema: name = IDENTIFIER;
 metaRule: tagLine = TAGLINE | docLine = DOCLINE;
 
 WHITESPACE: ([ \t\r\n])+ -> skip;
-INTEGER: ('+' | '-')? ('0' ..'9')+;
-HEX: '0x' ('0' ..'9' | 'a' ..'f' | 'A' ..'F')+;
-TYPE_IDENTIFIER: [A-Z_] ([A-Z0-9_])* ('[]')?;
-IDENTIFIER: [_A-Za-z] ([_0-9A-Za-z.])*;
-VERSION: [0-9]'.' [0-9];
+INTEGER: ('+' | '-')? DIGIT+;
+HEX: '0x' [a-fA-F0-9]+;
+IDENTIFIER: LETTER ( DIGIT | LETTER | DOT)*;
+VERSION: DIGIT+ DOT DIGIT+;
 DOCLINE: '//' (~[\r\n])*;
 TAGLINE: '@' (~[\r\n])*;
 COMMENT: '#' (~[\r\n])* -> skip;
+DOT: '.';
+LETTER: [a-zA-Z_];
+DIGIT: [0-9];
+UNDERSCORE: '_';
+SEMICOLON: ';';

@@ -119,7 +119,7 @@ func (r *Runner) runSolutionFromSource(_ context.Context, source string, force b
 }
 
 func runSolution(doc *spec.SolutionDoc) error {
-	log.Debug().Msgf("run solution %s", doc.RootDir)
+	log.Info().Msgf("run solution %s", doc.RootDir)
 	if err := doc.Validate(); err != nil {
 		return err
 	}

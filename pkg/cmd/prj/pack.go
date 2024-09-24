@@ -13,28 +13,34 @@ import (
 
 // NewPackCommand returns a new cobra.Command for the "pack" command.
 func NewPackCommand() *cobra.Command {
+	var dir string
 	var cmd = &cobra.Command{
 		Use:   "pack",
 		Short: "Pack a project",
 		Long:  `Pack the project and all files into a archive file`,
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			source := args[0]
-			cmd.Printf("pack project %s\n", source)
+			dir, err := filepath.Abs(dir)
+			if err != nil {
+				return err
+			}
 			cwd, err := os.Getwd()
 			if err != nil {
 				return err
 			}
-			base := filepath.Base(source)
-			target := helper.Join(cwd, fmt.Sprintf("%s.tgz", base))
+			cmd.Printf("pack project %s\n", dir)
+			base := filepath.Base(dir)
+			target := helper.Join(cwd, "..", fmt.Sprintf("%s.tgz", base))
 
-			target, err = prj.PackProject(source, target)
+			target, err = prj.PackProject(dir, target)
 			if err != nil {
 				return err
 			}
-			cmd.Printf("project %s packed to %s\n", source, target)
+			cmd.Printf("project %s packed to %s\n", dir, target)
 			return nil
 		},
 	}
+	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "project directory to pack")
+	cmd.MarkFlagRequired("dir")
 	return cmd
 }

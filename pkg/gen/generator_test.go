@@ -56,6 +56,7 @@ func createMockGenerator(t *testing.T, tplDir string, features []string) (*gener
 }
 
 func TestEmptyRules(t *testing.T) {
+	t.Parallel()
 	g := createGenerator(t)
 	doc, err := ReadRulesDoc("testdata/empty.rules.yaml")
 	require.NoError(t, err)
@@ -63,6 +64,7 @@ func TestEmptyRules(t *testing.T) {
 }
 
 func TestHelloRules(t *testing.T) {
+	t.Parallel()
 	g := createGenerator(t)
 	g.opts.Force = true
 	r := readRules(t, "testdata/test.rules.yaml")
@@ -72,6 +74,7 @@ func TestHelloRules(t *testing.T) {
 }
 
 func TestForce(t *testing.T) {
+	t.Parallel()
 	g := createGenerator(t)
 	g.opts.Force = true
 	r := readRules(t, "testdata/test-preserve.rules.yaml")
@@ -82,6 +85,7 @@ func TestForce(t *testing.T) {
 }
 
 func TestDocumentPreserve(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		Name           string
 		FilesFirstRun  []string
