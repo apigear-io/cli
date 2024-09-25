@@ -1,4 +1,4 @@
-package registry
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -11,8 +11,7 @@ func NewInstallCommand() *cobra.Command {
 	var version string
 	var cmd = &cobra.Command{
 		Use:     "install [name]",
-		Short:   "install template into cache",
-		Long:    `install template from registry using a name`,
+		Short:   "install template into cache by name from registry",
 		Aliases: []string{"i"},
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {

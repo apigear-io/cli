@@ -1,4 +1,4 @@
-package cache
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -6,12 +6,10 @@ import (
 )
 
 func NewSearchCommand() *cobra.Command {
-
 	// cmd represents the pkgSearch command
 	var cmd = &cobra.Command{
 		Use:     "search",
-		Short:   "search templates from cache",
-		Long:    `search templates by name from cache.`,
+		Short:   "search templates in registry",
 		Aliases: []string{"s"},
 		Args:    cobra.MaximumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
@@ -20,7 +18,7 @@ func NewSearchCommand() *cobra.Command {
 			if len(args) > 0 {
 				pattern = args[0]
 			}
-			infos, err := repos.Cache.Search(pattern)
+			infos, err := repos.Registry.Search(pattern)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return

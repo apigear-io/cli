@@ -1,34 +1,24 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/tpl"
+	"github.com/apigear-io/cli/pkg/repos"
 	"github.com/spf13/cobra"
 )
 
 func NewInfoCommand() *cobra.Command {
-	var dir string
 	var cmd = &cobra.Command{
-		Use:   "info",
-		Short: "Display template information",
-		Long:  `Display template information`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			info, err := tpl.Info(dir)
+		Use:   "info [name]",
+		Short: "display template information from registry",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			name := args[0]
+			info, err := repos.Registry.Get(name)
 			if err != nil {
-				return err
+				cmd.PrintErrln(err)
+				return
 			}
-			cmd.Println("# template info")
-			cmd.Println()
-			cmd.Println("## rules document")
-			cmd.Println()
-			cmd.Println(info.Rules)
-			cmd.Println("## template files")
-			cmd.Println()
-			for _, file := range info.Files {
-				cmd.Printf("- %s\n", file)
-			}
-			return nil
+			DisplayTemplateInfo(info)
 		},
 	}
-	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory")
 	return cmd
 }

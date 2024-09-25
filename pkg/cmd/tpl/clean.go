@@ -1,4 +1,4 @@
-package cache
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -9,8 +9,7 @@ import (
 func NewCleanCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "clean",
-		Short: "clean all cached templates",
-		Long:  `clean all cached templates.`,
+		Short: "clean all templates from the local cache",
 		Run: func(cmd *cobra.Command, _ []string) {
 			err := repos.Cache.Clean()
 			if err != nil {

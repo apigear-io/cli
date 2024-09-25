@@ -1,4 +1,4 @@
-package cache
+package tpl
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 func displayRepoInfos(infos []*git.RepoInfo) {
 	cells := make([][]string, len(infos)+1)
-	cells[0] = []string{"name", "url"}
+	cells[0] = []string{"template", "git-url"}
 	for i, info := range infos {
 		cells[i+1] = []string{
 			info.Name,
@@ -26,10 +26,14 @@ func DisplayTemplateInfos(infos []*git.RepoInfo) {
 	cells := make([][]string, len(infos)+1)
 	cells[0] = []string{"source", "url", "installed", "latest"}
 	for i, info := range infos {
+		vers := info.Commit
+		if info.Version.Name != "" {
+			vers = info.Version.Name
+		}
 		cells[i+1] = []string{
 			info.Name,
 			info.Git,
-			info.VersionName(),
+			vers,
 			info.Latest.Name,
 		}
 	}

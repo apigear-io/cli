@@ -1,4 +1,4 @@
-package registry
+package tpl
 
 import (
 	"os"
@@ -13,15 +13,15 @@ func NewListCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"ls"},
-		Short:   "list registry templates",
-		Long:    `list templates from the registry. A template can be installed the install command.`,
+		Short:   "list templates from registry",
+		Long:    `list templates from the registry. A template can be installed using the install command.`,
 		Run: func(cmd *cobra.Command, _ []string) {
 			infos, err := repos.Registry.List()
 			if err != nil {
 				cmd.PrintErrln(err)
 				os.Exit(-1)
 			}
-			cmd.Println("list of templates from registry and cache")
+			cmd.Println("list of templates from registry")
 			displayRepoInfos(infos)
 		},
 	}
