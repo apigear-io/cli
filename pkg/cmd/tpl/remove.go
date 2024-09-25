@@ -1,4 +1,4 @@
-package cache
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -11,8 +11,7 @@ func NewRemoveCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "remove [name@version]",
 		Aliases: []string{"rm"},
-		Short:   "remove installed template",
-		Long:    `remove installed template by name.`,
+		Short:   "remove template from cache",
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fqn := args[0]

@@ -1,4 +1,4 @@
-package registry
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -10,8 +10,7 @@ func NewUpdateCommand() *cobra.Command {
 	// cmd represents the pkgInstall command
 	var cmd = &cobra.Command{
 		Use:   "update",
-		Short: "update template registry",
-		Long:  `update registry from remote source.`,
+		Short: "update the template registry",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := repos.Registry.Update()
 			if err != nil {

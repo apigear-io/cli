@@ -10,8 +10,7 @@ func NewLintCommand() *cobra.Command {
 	var dir string
 	var cmd = &cobra.Command{
 		Use:   "lint",
-		Short: "Lint a template directory",
-		Long:  `Lint a template directory, it will fail if the templates can not be compiled`,
+		Short: "lint a custom template",
 		Run: func(cmd *cobra.Command, args []string) {
 			// trying to create a generator, it will fail
 			// if the templates in the dir are not valid

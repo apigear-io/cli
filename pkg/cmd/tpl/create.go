@@ -5,13 +5,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewInitCommand() *cobra.Command {
+func NewCreateCommand() *cobra.Command {
 	var dir string
 	var lang string
 	var cmd = &cobra.Command{
-		Use:   "new",
-		Short: "Create new template",
-		Long:  `Create new template`,
+		Use:   "create",
+		Short: "create new custom template",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.Printf("create new template in %s with language %s support\n", dir, lang)
 			return tpl.NewTemplate(dir, lang)

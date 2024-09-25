@@ -3,12 +3,10 @@ package cmd
 import (
 	"errors"
 
-	"github.com/apigear-io/cli/pkg/cmd/cache"
 	"github.com/apigear-io/cli/pkg/cmd/cfg"
 	"github.com/apigear-io/cli/pkg/cmd/gen"
 	"github.com/apigear-io/cli/pkg/cmd/mon"
 	"github.com/apigear-io/cli/pkg/cmd/prj"
-	"github.com/apigear-io/cli/pkg/cmd/registry"
 	"github.com/apigear-io/cli/pkg/cmd/sim"
 	"github.com/apigear-io/cli/pkg/cmd/spec"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
@@ -31,8 +29,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
-	cmd.AddCommand(registry.NewRootCommand())
-	cmd.AddCommand(cache.NewRootCommand())
 	cmd.AddCommand(sim.NewRootCommand())
 	cmd.AddCommand(spec.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())

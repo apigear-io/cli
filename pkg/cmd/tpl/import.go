@@ -1,4 +1,4 @@
-package cache
+package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/repos"
@@ -9,8 +9,7 @@ import (
 func NewImportCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "import [git-url] [version]",
-		Short: "import template from git-url and version",
-		Long:  `import template from a git-url`,
+		Short: "import template from git-url with an optional version",
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
 			url := args[0]

@@ -9,10 +9,9 @@ func NewPublishCommand() *cobra.Command {
 	var dir string
 	var cmd = &cobra.Command{
 		Use:   "publish",
-		Short: "Publish a template to a market place",
-		Long:  `Publish a template to a market place. The template needs to be a public github repository.`,
+		Short: "publish a template to a template registry (TBD)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Printf("publishing template %s\n", dir)
+			cmd.Printf("publishing template %s to the registry\n", dir)
 			return tpl.PublishTemplate(dir)
 		},
 	}
