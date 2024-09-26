@@ -13,7 +13,7 @@ func NewCreateCommand() *cobra.Command {
 		Short: "create new custom template",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.Printf("create new template in %s with language %s support\n", dir, lang)
-			return tpl.NewTemplate(dir, lang)
+			return tpl.CreateCustomTemplate(dir, lang)
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory to init")

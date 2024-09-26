@@ -147,8 +147,8 @@ func PackProject(source string, target string) (string, error) {
 	return target, nil
 }
 
-// CreateDocument creates a new document inside the project
-func CreateProjectDocument(prjDir string, docType string, name string) (string, error) {
+// AddDocument creates a new document inside the project
+func AddDocument(prjDir string, docType string, name string) (string, error) {
 	target := helper.Join(prjDir, "apigear", MakeDocumentName(docType, name))
 	var err error
 	switch docType {

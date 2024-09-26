@@ -10,8 +10,8 @@ import (
 func NewEditCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "edit",
-		Short: "Edit a project in the default editor (vscode)",
-		Long:  `Edit a project in the default editor (e.g.Visual Studio Code).`,
+		Short: "open project in editor",
+		Long:  `open project in the default editor (e.g.Visual Studio Code).`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]

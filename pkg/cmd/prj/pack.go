@@ -16,8 +16,8 @@ func NewPackCommand() *cobra.Command {
 	var dir string
 	var cmd = &cobra.Command{
 		Use:   "pack",
-		Short: "Pack a project",
-		Long:  `Pack the project and all files into a archive file`,
+		Short: "pack project",
+		Long:  `pack the project and all files into a archive file for sharing`,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir, err := filepath.Abs(dir)

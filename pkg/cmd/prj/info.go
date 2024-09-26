@@ -10,8 +10,8 @@ import (
 func NewInfoCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "info",
-		Short: "Display project information",
-		Long:  `Display detailed project information`,
+		Short: "display project information",
+		Long:  `display detailed project information`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]

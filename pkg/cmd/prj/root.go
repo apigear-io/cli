@@ -12,11 +12,11 @@ func NewRootCommand() *cobra.Command {
 		Short:   "Manage apigear projects",
 		Long:    `Projects consist of API descriptions, SDK configuration, simulation documents and other files`,
 	}
-	cmd.AddCommand(NewCreateCommand())
+	cmd.AddCommand(NewAddCommand())
 	cmd.AddCommand(NewEditCommand())
 	cmd.AddCommand(NewImportCommand())
 	cmd.AddCommand(NewInfoCommand())
-	cmd.AddCommand(NewProjectCommand())
+	cmd.AddCommand(CreateProjectCommand())
 	cmd.AddCommand(NewOpenCommand())
 	cmd.AddCommand(NewPackCommand())
 	cmd.AddCommand(NewRecentCommand())

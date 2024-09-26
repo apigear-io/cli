@@ -18,8 +18,8 @@ func NewImportCommand() *cobra.Command {
 	var target string
 	var cmd = &cobra.Command{
 		Use:   "import source --target target",
-		Short: "Import a remote project",
-		Long:  `Import a remote project from a repository to the local file system`,
+		Short: "import a project",
+		Long:  `import a remote project from a repository to the local file system`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			source := args[0]
