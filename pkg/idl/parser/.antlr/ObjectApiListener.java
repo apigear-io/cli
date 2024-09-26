@@ -57,6 +57,16 @@ public interface ObjectApiListener extends ParseTreeListener {
 	 */
 	void exitDeclarationsRule(ObjectApiParser.DeclarationsRuleContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ObjectApiParser#externRule}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternRule(ObjectApiParser.ExternRuleContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ObjectApiParser#externRule}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternRule(ObjectApiParser.ExternRuleContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ObjectApiParser#interfaceRule}.
 	 * @param ctx the parse tree
 	 */
