@@ -1,6 +1,10 @@
 package common
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestSnakeCase(t *testing.T) {
 	t.Parallel()
@@ -16,22 +20,17 @@ func TestSnakeCase(t *testing.T) {
 		{"foo_bar", "foo_bar", "Foo_Bar", "FOO_BAR"},
 		{"foo.bar", "foo_bar", "Foo_Bar", "FOO_BAR"},
 		{"foo1bar", "foo1bar", "Foo1bar", "FOO1BAR"},
+		{"fooBar_", "foo_bar_", "Foo_Bar_", "FOO_BAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lower, func(t *testing.T) {
-			if got := SnakeCaseLower(tt.in); got != tt.lower {
-				t.Errorf("SnakeCaseLower(%q) = %q, want %q", tt.in, got, tt.lower)
-			}
+			assert.Equal(t, tt.lower, SnakeCaseLower(tt.in))
 		})
 		t.Run(tt.title, func(t *testing.T) {
-			if got := SnakeTitleCase(tt.in); got != tt.title {
-				t.Errorf("SnakeTitleCase(%q) = %q, want %q", tt.in, got, tt.title)
-			}
+			assert.Equal(t, tt.title, SnakeTitleCase(tt.in))
 		})
 		t.Run(tt.upper, func(t *testing.T) {
-			if got := SnakeUpperCase(tt.in); got != tt.upper {
-				t.Errorf("SnakeUpperCase(%q) = %q, want %q", tt.in, got, tt.upper)
-			}
+			assert.Equal(t, tt.upper, SnakeUpperCase(tt.in))
 		})
 	}
 }
@@ -50,22 +49,17 @@ func TestCamelCase(t *testing.T) {
 		{"foo_bar", "fooBar", "FooBar", "FOOBAR"},
 		{"foo.bar", "fooBar", "FooBar", "FOOBAR"},
 		{"foo1bar", "foo1bar", "Foo1bar", "FOO1BAR"},
+		{"fooBar_", "fooBar_", "FooBar_", "FOOBAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lower, func(t *testing.T) {
-			if got := CamelLowerCase(tt.in); got != tt.lower {
-				t.Errorf("CamelLowerCase(%q) = %q, want %q", tt.in, got, tt.lower)
-			}
+			assert.Equal(t, tt.lower, CamelLowerCase(tt.in))
 		})
 		t.Run(tt.title, func(t *testing.T) {
-			if got := CamelTitleCase(tt.in); got != tt.title {
-				t.Errorf("CamelTitleCase(%q) = %q, want %q", tt.in, got, tt.title)
-			}
+			assert.Equal(t, tt.title, CamelTitleCase(tt.in))
 		})
 		t.Run(tt.upper, func(t *testing.T) {
-			if got := CamelUpperCase(tt.in); got != tt.upper {
-				t.Errorf("CamelUpperCase(%q) = %q, want %q", tt.in, got, tt.upper)
-			}
+			assert.Equal(t, tt.upper, CamelUpperCase(tt.in))
 		})
 	}
 }
@@ -84,22 +78,17 @@ func TestDotCase(t *testing.T) {
 		{"foo_bar", "foo.bar", "Foo.Bar", "FOO.BAR"},
 		{"foo.bar", "foo.bar", "Foo.Bar", "FOO.BAR"},
 		{"foo1bar", "foo1bar", "Foo1bar", "FOO1BAR"},
+		{"fooBar_", "foo.bar_", "Foo.Bar_", "FOO.BAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lower, func(t *testing.T) {
-			if got := DotLowerCase(tt.in); got != tt.lower {
-				t.Errorf("DotLowerCase(%q) = %q, want %q", tt.in, got, tt.lower)
-			}
+			assert.Equal(t, tt.lower, DotLowerCase(tt.in))
 		})
 		t.Run(tt.title, func(t *testing.T) {
-			if got := DotTitleCase(tt.in); got != tt.title {
-				t.Errorf("DotTitleCase(%q) = %q, want %q", tt.in, got, tt.title)
-			}
+			assert.Equal(t, tt.title, DotTitleCase(tt.in))
 		})
 		t.Run(tt.upper, func(t *testing.T) {
-			if got := DotUpperCase(tt.in); got != tt.upper {
-				t.Errorf("DotUpperCase(%q) = %q, want %q", tt.in, got, tt.upper)
-			}
+			assert.Equal(t, tt.upper, DotUpperCase(tt.in))
 		})
 	}
 }
@@ -118,22 +107,17 @@ func TestKebabCase(t *testing.T) {
 		{"foo_bar", "foo-bar", "Foo-Bar", "FOO-BAR"},
 		{"foo.bar", "foo-bar", "Foo-Bar", "FOO-BAR"},
 		{"foo1bar", "foo1bar", "Foo1bar", "FOO1BAR"},
+		{"fooBar_", "foo-bar_", "Foo-Bar_", "FOO-BAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lower, func(t *testing.T) {
-			if got := KebabLowerCase(tt.in); got != tt.lower {
-				t.Errorf("KebabLowerCase(%q) = %q, want %q", tt.in, got, tt.lower)
-			}
+			assert.Equal(t, tt.lower, KebabLowerCase(tt.in))
 		})
 		t.Run(tt.title, func(t *testing.T) {
-			if got := KebabTitleCase(tt.in); got != tt.title {
-				t.Errorf("KebabTitleCase(%q) = %q, want %q", tt.in, got, tt.title)
-			}
+			assert.Equal(t, tt.title, KebabTitleCase(tt.in))
 		})
 		t.Run(tt.upper, func(t *testing.T) {
-			if got := KebabUpperCase(tt.in); got != tt.upper {
-				t.Errorf("KebabUpperCase(%q) = %q, want %q", tt.in, got, tt.upper)
-			}
+			assert.Equal(t, tt.upper, KebabUpperCase(tt.in))
 		})
 	}
 }
@@ -152,22 +136,17 @@ func TestPathCase(t *testing.T) {
 		{"foo_bar", "foo/bar", "Foo/Bar", "FOO/BAR"},
 		{"foo.bar", "foo/bar", "Foo/Bar", "FOO/BAR"},
 		{"foo1bar", "foo1bar", "Foo1bar", "FOO1BAR"},
+		{"fooBar_", "foo/bar_", "Foo/Bar_", "FOO/BAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lower, func(t *testing.T) {
-			if got := PathLowerCase(tt.in); got != tt.lower {
-				t.Errorf("PathLowerCase(%q) = %q, want %q", tt.in, got, tt.lower)
-			}
+			assert.Equal(t, tt.lower, PathLowerCase(tt.in))
 		})
 		t.Run(tt.title, func(t *testing.T) {
-			if got := PathTitleCase(tt.in); got != tt.title {
-				t.Errorf("PathTitleCase(%q) = %q, want %q", tt.in, got, tt.title)
-			}
+			assert.Equal(t, tt.title, PathTitleCase(tt.in))
 		})
 		t.Run(tt.upper, func(t *testing.T) {
-			if got := PathUpperCase(tt.in); got != tt.upper {
-				t.Errorf("PathUpperCase(%q) = %q, want %q", tt.in, got, tt.upper)
-			}
+			assert.Equal(t, tt.upper, PathUpperCase(tt.in))
 		})
 	}
 }
@@ -184,12 +163,11 @@ func TestUpperCase(t *testing.T) {
 		{"foo_bar", "FOO_BAR"},
 		{"foo.bar", "FOO.BAR"},
 		{"foo1bar", "FOO1BAR"},
+		{"fooBar_", "FOOBAR_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.up, func(t *testing.T) {
-			if got := UpperCase(tt.in); got != tt.up {
-				t.Errorf("Upper(%q) = %q, want %q", tt.in, got, tt.up)
-			}
+			assert.Equal(t, tt.up, UpperCase(tt.in))
 		})
 	}
 }
@@ -206,12 +184,11 @@ func TestLowerCase(t *testing.T) {
 		{"foo_bar", "foo_bar"},
 		{"foo.bar", "foo.bar"},
 		{"foo1bar", "foo1bar"},
+		{"fooBar_", "foobar_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lw, func(t *testing.T) {
-			if got := LowerCase(tt.in); got != tt.lw {
-				t.Errorf("Lower(%q) = %q, want %q", tt.in, got, tt.lw)
-			}
+			assert.Equal(t, tt.lw, LowerCase(tt.in))
 		})
 	}
 }

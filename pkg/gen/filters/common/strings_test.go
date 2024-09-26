@@ -1,6 +1,10 @@
 package common
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestUpperFirst(t *testing.T) {
 	t.Parallel()
@@ -14,12 +18,11 @@ func TestUpperFirst(t *testing.T) {
 		{"foo_bar", "Foo_bar"},
 		{"foo.bar", "Foo.bar"},
 		{"foo1bar", "Foo1bar"},
+		{"fooBar_", "FooBar_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.up, func(t *testing.T) {
-			if got := UpperFirst(tt.in); got != tt.up {
-				t.Errorf("UpperFirst(%q) = %q, want %q", tt.in, got, tt.up)
-			}
+			assert.Equal(t, tt.up, UpperFirst(tt.in))
 		})
 	}
 }
@@ -36,12 +39,11 @@ func TestLowerFirst(t *testing.T) {
 		{"foo_bar", "foo_bar"},
 		{"foo.bar", "foo.bar"},
 		{"foo1bar", "foo1bar"},
+		{"fooBar_", "fooBar_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.lw, func(t *testing.T) {
-			if got := LowerFirst(tt.in); got != tt.lw {
-				t.Errorf("LowerFirst(%q) = %q, want %q", tt.in, got, tt.lw)
-			}
+			assert.Equal(t, tt.lw, LowerFirst(tt.in))
 		})
 	}
 }
@@ -58,12 +60,11 @@ func TestFirstChar(t *testing.T) {
 		{"foo_bar", "f"},
 		{"Foo.Bar", "F"},
 		{"Foo1Bar", "F"},
+		{"FooBar_", "F"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.ch, func(t *testing.T) {
-			if got := FirstChar(tt.in); got != tt.ch {
-				t.Errorf("FirstChar(%q) = %q, want %q", tt.in, got, tt.ch)
-			}
+			assert.Equal(t, tt.ch, FirstChar(tt.in))
 		})
 	}
 }
@@ -81,17 +82,14 @@ func TestFirstCharUpperAndLower(t *testing.T) {
 		{"foo_bar", "F", "f"},
 		{"Foo.Bar", "F", "f"},
 		{"Foo1Bar", "F", "f"},
+		{"FooBar_", "F", "f"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.u, func(t *testing.T) {
-			if got := FirstCharUpper(tt.in); got != tt.u {
-				t.Errorf("FirstCharUpper(%q) = %q, want %q", tt.in, got, tt.u)
-			}
+			assert.Equal(t, tt.u, FirstCharUpper(tt.in))
 		})
 		t.Run(tt.l, func(t *testing.T) {
-			if got := FirstCharLower(tt.in); got != tt.l {
-				t.Errorf("FirstCharLower(%q) = %q, want %q", tt.in, got, tt.l)
-			}
+			assert.Equal(t, tt.l, FirstCharLower(tt.in))
 		})
 	}
 }
@@ -111,12 +109,11 @@ func TestJoin(t *testing.T) {
 		{[]string{"foo", "bar"}, "_", "foo_bar"},
 		{[]string{"foo", "bar"}, ".", "foo.bar"},
 		{[]string{"foo", "bar"}, "1", "foo1bar"},
+		{[]string{"foo_", "bar_"}, "", "foo_bar_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
-			if got := Join(tt.sep, tt.in); got != tt.out {
-				t.Errorf("Join(%q, %q) = %q, want %q", tt.in, tt.sep, got, tt.out)
-			}
+			assert.Equal(t, tt.out, Join(tt.sep, tt.in))
 		})
 	}
 }
@@ -136,12 +133,11 @@ func TestTrimPrefix(t *testing.T) {
 		{"foo_bar", "foo", "_bar"},
 		{"foo.bar", "foo", ".bar"},
 		{"foo1bar", "foo", "1bar"},
+		{"fooBar_", "foo", "Bar_"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
-			if got := TrimPrefix(tt.in, tt.prefix); got != tt.out {
-				t.Errorf("TrimPrefix(%q, %q) = %q, want %q", tt.in, tt.prefix, got, tt.out)
-			}
+			assert.Equal(t, tt.out, TrimPrefix(tt.in, tt.prefix))
 		})
 	}
 }
@@ -161,12 +157,11 @@ func TestTrimSuffix(t *testing.T) {
 		{"foo_bar", "_bar", "foo"},
 		{"foo.bar", ".bar", "foo"},
 		{"foo1bar", "1bar", "foo"},
+		{"fooBar_", "Bar_", "foo"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
-			if got := TrimSuffix(tt.in, tt.suffix); got != tt.out {
-				t.Errorf("TrimSuffix(%q, %q) = %q, want %q", tt.in, tt.suffix, got, tt.out)
-			}
+			assert.Equal(t, tt.out, TrimSuffix(tt.in, tt.suffix))
 		})
 	}
 }
@@ -192,9 +187,7 @@ func TestReplace(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.out, func(t *testing.T) {
-			if got := Replace(tt.in, tt.old, tt.new); got != tt.out {
-				t.Errorf("Replace(%q, %q, %q) = %q, want %q", tt.in, tt.old, tt.new, got, tt.out)
-			}
+			assert.Equal(t, tt.out, Replace(tt.in, tt.old, tt.new))
 		})
 	}
 }
