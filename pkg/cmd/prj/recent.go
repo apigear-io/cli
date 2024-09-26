@@ -10,8 +10,8 @@ import (
 func NewRecentCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "recent",
-		Short: "Display recent projects",
-		Long:  `Display recently used projects and their locations`,
+		Short: "display recent projects",
+		Long:  `display recently used projects and their locations`,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			cmd.Println("recent projects:")
