@@ -126,6 +126,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_documentRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterDocumentRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitDocumentRule(this);
+		}
 	}
 
 	public final DocumentRuleContext documentRule() throws RecognitionException {
@@ -179,6 +187,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_headerRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterHeaderRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitHeaderRule(this);
+		}
 	}
 
 	public final HeaderRuleContext headerRule() throws RecognitionException {
@@ -234,6 +250,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_moduleRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterModuleRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitModuleRule(this);
+		}
 	}
 
 	public final ModuleRuleContext moduleRule() throws RecognitionException {
@@ -305,6 +329,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_importRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterImportRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitImportRule(this);
+		}
 	}
 
 	public final ImportRuleContext importRule() throws RecognitionException {
@@ -369,6 +401,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_declarationsRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterDeclarationsRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitDeclarationsRule(this);
+		}
 	}
 
 	public final DeclarationsRuleContext declarationsRule() throws RecognitionException {
@@ -434,6 +474,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_externRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterExternRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitExternRule(this);
+		}
 	}
 
 	public final ExternRuleContext externRule() throws RecognitionException {
@@ -508,6 +556,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_interfaceRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterInterfaceRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitInterfaceRule(this);
+		}
 	}
 
 	public final InterfaceRuleContext interfaceRule() throws RecognitionException {
@@ -593,6 +649,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_interfaceMembersRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterInterfaceMembersRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitInterfaceMembersRule(this);
+		}
 	}
 
 	public final InterfaceMembersRuleContext interfaceMembersRule() throws RecognitionException {
@@ -656,6 +720,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_propertyRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterPropertyRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitPropertyRule(this);
+		}
 	}
 
 	public final PropertyRuleContext propertyRule() throws RecognitionException {
@@ -743,6 +815,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_operationRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterOperationRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitOperationRule(this);
+		}
 	}
 
 	public final OperationRuleContext operationRule() throws RecognitionException {
@@ -829,6 +909,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_operationReturnRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterOperationReturnRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitOperationReturnRule(this);
+		}
 	}
 
 	public final OperationReturnRuleContext operationReturnRule() throws RecognitionException {
@@ -866,6 +954,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_operationParamRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterOperationParamRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitOperationParamRule(this);
+		}
 	}
 
 	public final OperationParamRuleContext operationParamRule() throws RecognitionException {
@@ -926,6 +1022,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_signalRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterSignalRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitSignalRule(this);
+		}
 	}
 
 	public final SignalRuleContext signalRule() throws RecognitionException {
@@ -1014,6 +1118,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_structRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterStructRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitStructRule(this);
+		}
 	}
 
 	public final StructRuleContext structRule() throws RecognitionException {
@@ -1092,6 +1204,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_structFieldRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterStructFieldRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitStructFieldRule(this);
+		}
 	}
 
 	public final StructFieldRuleContext structFieldRule() throws RecognitionException {
@@ -1174,6 +1294,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_enumRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterEnumRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitEnumRule(this);
+		}
 	}
 
 	public final EnumRuleContext enumRule() throws RecognitionException {
@@ -1248,6 +1376,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_enumMemberRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterEnumMemberRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitEnumMemberRule(this);
+		}
 	}
 
 	public final EnumMemberRuleContext enumMemberRule() throws RecognitionException {
@@ -1323,6 +1459,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_schemaRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterSchemaRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitSchemaRule(this);
+		}
 	}
 
 	public final SchemaRuleContext schemaRule() throws RecognitionException {
@@ -1387,6 +1531,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterArrayRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitArrayRule(this);
+		}
 	}
 
 	public final ArrayRuleContext arrayRule() throws RecognitionException {
@@ -1419,6 +1571,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_primitiveSchema; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterPrimitiveSchema(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitPrimitiveSchema(this);
+		}
 	}
 
 	public final PrimitiveSchemaContext primitiveSchema() throws RecognitionException {
@@ -1514,6 +1674,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_symbolSchema; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterSymbolSchema(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitSymbolSchema(this);
+		}
 	}
 
 	public final SymbolSchemaContext symbolSchema() throws RecognitionException {
@@ -1547,6 +1715,14 @@ public class ObjectApiParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_metaRule; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).enterMetaRule(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ObjectApiListener ) ((ObjectApiListener)listener).exitMetaRule(this);
+		}
 	}
 
 	public final MetaRuleContext metaRule() throws RecognitionException {

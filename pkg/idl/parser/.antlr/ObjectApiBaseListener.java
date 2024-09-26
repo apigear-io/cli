@@ -76,6 +76,18 @@ public class ObjectApiBaseListener implements ObjectApiListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExternRule(ObjectApiParser.ExternRuleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExternRule(ObjectApiParser.ExternRuleContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInterfaceRule(ObjectApiParser.InterfaceRuleContext ctx) { }
 	/**
 	 * {@inheritDoc}
