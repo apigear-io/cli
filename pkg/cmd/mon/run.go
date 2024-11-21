@@ -18,7 +18,7 @@ func NewServerCommand() *cobra.Command {
 		Short:   "Run the monitor server",
 		Long:    `The monitor server runs on a HTTP port and listens for API calls.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			mon.Emitter.On(func(event *mon.Event) {
+			mon.Emitter.AddHook(func(event *mon.Event) {
 				data, _ := json.Marshal(event.Data)
 				cmd.Printf("-> %s %s %s %s %s\n", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, data)
 			})

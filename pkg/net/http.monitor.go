@@ -38,6 +38,6 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 			event.Timestamp = time.Now()
 		}
 		log.Debug().Msgf("emit event: %+v", event)
-		mon.Emitter.Emit(event)
+		mon.Emitter.FireHook(event)
 	}
 }

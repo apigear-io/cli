@@ -10,7 +10,7 @@ import (
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )
 
-func NewSimuHub(ctx context.Context, s *sim.Simulation) *ws.Hub {
+func NewSimuWSServer(ctx context.Context, s *sim.Simulation) *ws.Hub {
 	registry := remote.NewRegistry()
 	registry.SetSourceFactory(func(objectId string) remote.IObjectSource {
 		return olnk.NewSimuSource(olnk.SimuSourceOptions{

@@ -41,7 +41,7 @@ func ReadScenario(file string) (*spec.ScenarioDoc, error) {
 	return doc, nil
 }
 
-func NewServerCommand() *cobra.Command {
+func NewRunCommand() *cobra.Command {
 	var addr string
 	var sequences []string
 
@@ -65,7 +65,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			tm := tasks.NewTaskManager()
 			if len(args) == 1 {
 				source := args[0]
-				tm.On(func(evt *tasks.TaskEvent) {
+				tm.AddHook(func(evt *tasks.TaskEvent) {
 					log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
 				})
 				run := func(ctx context.Context) error {
@@ -82,10 +82,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				}
 				// We need to cancel all tasks on exit
 			}
-			hub := net.NewSimuHub(ctx, simu)
-			s := net.NewHTTPServer()
-			s.Router().HandleFunc("/ws", hub.ServeHTTP)
-			log.Info().Msgf("simulation server listens on ws://%s/ws", addr)
+			s := net.RunSimuServer(ctx, simu, addr)
 
 			signalChan := make(chan os.Signal, 1)
 			signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)

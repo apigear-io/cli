@@ -91,4 +91,4 @@ func (f EventFactory) Sanitize(event *Event) *Event {
 	return event
 }
 
-var Emitter = helper.NewEventEmitter[*Event]()
+var Emitter = helper.Hook[*Event]{}
