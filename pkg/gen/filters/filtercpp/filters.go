@@ -19,4 +19,6 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["cppType"] = cppType
 	fm["cppTypeRef"] = cppTypeRef
 	fm["cppExtern"] = cppExtern
+	fm["cppExterns"] = cppExterns
+	fm["cppTestValue"] = cppTestValue
 }

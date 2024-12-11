@@ -43,3 +43,11 @@ func cppExtern(xe *model.Extern) CppExtern {
 		ConanVersion: conanVersion,
 	}
 }
+
+func cppExterns(externs []*model.Extern) []CppExtern {
+	var items = []CppExtern{}
+	for _, ex := range externs {
+		items = append(items, cppExtern(ex))
+	}
+	return items
+}

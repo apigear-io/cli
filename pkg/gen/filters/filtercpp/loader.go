@@ -38,5 +38,21 @@ func loadExternSystems(t *testing.T) []*model.System {
 	err = sys1.Validate()
 	assert.NoError(t, err)
 
+	parser := model.NewDataParser(sys1)
+	err = parser.ParseFile("../testdata/test.module.yaml")
+	assert.NoError(t, err)
+	err = sys1.Validate()
+	assert.NoError(t, err)
+
+	err = parser.ParseFile("../testdata/extern_types.module.yaml")
+	assert.NoError(t, err)
+	err = sys1.Validate()
+	assert.NoError(t, err)
+
+	err = parser.ParseFile("../testdata/test_apigear_next.module.yaml")
+	assert.NoError(t, err)
+	err = sys1.Validate()
+	assert.NoError(t, err)
+
 	return []*model.System{sys1}
 }
