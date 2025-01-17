@@ -18,6 +18,7 @@ extern XType2
 @cpp.name: "XType3A"
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
+@cpp.default: "demo::x::XtypeFactory::create()"
 @py.module: "demo.x"
 @py.name: "XType3A"
 @java.package: "demo.x"

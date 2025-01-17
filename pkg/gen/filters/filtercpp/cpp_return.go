@@ -32,6 +32,8 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		xe := parseCppExtern(schema)
 		if xe.NameSpace != "" {
 			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		} else {
+			prefix = "" // Externs should not be prefixed with any other prefix than given in extern info.
 		}
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
 	case model.TypeEnum:
