@@ -32,12 +32,14 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		} else {
 			if xe.NameSpace != "" {
 				prefix = fmt.Sprintf("%s::", xe.NameSpace)
+			} else {
+				prefix = "" // Externs should not be prefixed with any other prefix than given in extern info.
 			}
 			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
-		NameSpace := ""
+		NameSpace := prefix
 		if schema.Import != "" {
 			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}
@@ -46,7 +48,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		}
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
-		NameSpace := ""
+		NameSpace := prefix
 		if schema.Import != "" {
 			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}

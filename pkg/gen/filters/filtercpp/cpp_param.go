@@ -37,11 +37,13 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		xe := parseCppExtern(schema)
 		if xe.NameSpace != "" {
 			prefix = fmt.Sprintf("%s::", xe.NameSpace)
+		} else {
+			prefix = "" // Externs should not be prefixed with any other prefix than given in extern info.
 		}
 		return fmt.Sprintf("const %s%s& %s", prefix, xe.Name, name), nil
 	case model.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
-		NameSpace := ""
+		NameSpace := prefix
 		if schema.Import != "" {
 			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}
@@ -50,7 +52,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		}
 	case model.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
-		NameSpace := ""
+		NameSpace := prefix
 		if schema.Import != "" {
 			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}
@@ -59,7 +61,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		}
 	case model.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
-		NameSpace := ""
+		NameSpace := prefix
 		if schema.Import != "" {
 			NameSpace = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
 		}
