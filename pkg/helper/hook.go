@@ -108,3 +108,19 @@ func (h *Hook[T]) ConnectHook(other *Hook[T]) func() {
 		h.FireHook(event)
 	})
 }
+
+// Clear clears the list of handlers
+func (h *Hook[T]) Clear() {
+	h.rw.Lock()
+	defer h.rw.Unlock()
+
+	h.handlers = nil
+}
+
+// Len returns the number of handlers
+func (h *Hook[T]) Len() int {
+	h.rw.RLock()
+	defer h.rw.RUnlock()
+
+	return len(h.handlers)
+}

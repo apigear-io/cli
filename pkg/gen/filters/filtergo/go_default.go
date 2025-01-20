@@ -35,6 +35,8 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			text = "[]float64{}"
 		case model.TypeBool:
 			text = "[]bool{}"
+		case model.TypeAny:
+			text = "[]any{}"
 		case model.TypeExtern:
 			xe := parseGoExtern(schema)
 			if xe.Import != "" {
@@ -70,6 +72,8 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 			text = "float64(0.0)"
 		case model.TypeBool:
 			text = "false"
+		case model.TypeAny:
+			text = "nil"
 		case model.TypeExtern:
 			xe := parseGoExtern(schema)
 			if xe.Import != "" {

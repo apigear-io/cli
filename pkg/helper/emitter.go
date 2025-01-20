@@ -7,29 +7,29 @@ import (
 	"github.com/google/uuid"
 )
 
-type EventHandler func(args ...any)
+type EventHandler[T any] func(data T)
 
-type emitterEntry struct {
-	handler EventHandler
+type emitterEntry[T any] struct {
+	handler EventHandler[T]
 	id      string
 }
 
-type Emitter struct {
+type Emitter[T any] struct {
 	sync.RWMutex
-	entries map[string][]emitterEntry
+	entries map[string][]emitterEntry[T]
 }
 
-func NewEmitter() *Emitter {
-	return &Emitter{
-		entries: make(map[string][]emitterEntry),
+func NewEmitter[T any]() *Emitter[T] {
+	return &Emitter[T]{
+		entries: make(map[string][]emitterEntry[T]),
 	}
 }
 
-func (e *Emitter) Add(name string, handler EventHandler) func() {
+func (e *Emitter[T]) Add(name string, handler EventHandler[T]) func() {
 	e.Lock()
 	defer e.Unlock()
 	id := uuid.New().String()
-	e.entries[name] = append(e.entries[name], emitterEntry{
+	e.entries[name] = append(e.entries[name], emitterEntry[T]{
 		handler: handler,
 		id:      id,
 	})
@@ -38,7 +38,7 @@ func (e *Emitter) Add(name string, handler EventHandler) func() {
 	}
 }
 
-func (e *Emitter) Emit(name string, args ...any) {
+func (e *Emitter[T]) Emit(name string, data T) {
 	e.RLock()
 	defer e.RUnlock()
 	entry, ok := e.entries[name]
@@ -46,18 +46,18 @@ func (e *Emitter) Emit(name string, args ...any) {
 		return
 	}
 	for _, entry := range entry {
-		entry.handler(args...)
+		entry.handler(data)
 	}
 }
 
-func (e *Emitter) Remove(name string, id string) {
+func (e *Emitter[T]) Remove(name string, id string) {
 	e.Lock()
 	defer e.Unlock()
 	entry, ok := e.entries[name]
 	if !ok {
 		return
 	}
-	e.entries[name] = slices.DeleteFunc(entry, func(e emitterEntry) bool {
+	e.entries[name] = slices.DeleteFunc(entry, func(e emitterEntry[T]) bool {
 		return e.id == id
 	})
 }

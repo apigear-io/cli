@@ -3,12 +3,17 @@ package net
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
+
+type HttpOptions struct {
+	Addr string `json:"addr"`
+}
 
 type HTTPServer struct {
 	router chi.Router
@@ -29,15 +34,27 @@ func (s *HTTPServer) Router() chi.Router {
 	return s.router
 }
 
-func (s *HTTPServer) Start(addr string) error {
+func (s *HTTPServer) Start(opts *Options) error {
 	if s.server != nil {
 		log.Info().Msgf("http server already started at %s", s.server.Addr)
 		return nil
 	}
-	log.Debug().Msgf("start http server at %s", addr)
-	server := &http.Server{Addr: addr, Handler: s.router}
+	if opts.HttpAddr == "" {
+		opts.HttpAddr = "localhost:8080"
+	}
+	l, err := net.Listen("tcp", opts.HttpAddr)
+	if err != nil {
+		return fmt.Errorf("error creating listener: %s", err)
+	}
+	server := &http.Server{Addr: opts.HttpAddr, Handler: s.router}
 	s.server = server
-	return server.ListenAndServe()
+	go func() {
+		err := s.server.Serve(l)
+		if err != nil {
+			log.Error().Msgf("error starting http server: %s", err)
+		}
+	}()
+	return nil
 }
 
 func (s HTTPServer) Address() string {

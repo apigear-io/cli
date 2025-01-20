@@ -40,6 +40,8 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 		return fmt.Sprintf("%s float64", name), nil
 	case model.TypeBool:
 		return fmt.Sprintf("%s bool", name), nil
+	case model.TypeAny:
+		return fmt.Sprintf("%s any", name), nil
 	case model.TypeExtern:
 		x := schema.LookupExtern(schema.Import, schema.Type)
 		if x == nil {

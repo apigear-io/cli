@@ -3,28 +3,27 @@ package net
 import (
 	"context"
 
-	"github.com/apigear-io/cli/pkg/net/olnk"
-	"github.com/apigear-io/cli/pkg/sim"
-	score "github.com/apigear-io/cli/pkg/sim/core"
+	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )
 
-func NewSimuWSServer(ctx context.Context, s *sim.Simulation) *ws.Hub {
+func NewSimuWSServer(ctx context.Context, provider SimulationProviderFunc) *ws.Hub {
+	simu := provider("")
 	registry := remote.NewRegistry()
 	registry.SetSourceFactory(func(objectId string) remote.IObjectSource {
-		return olnk.NewSimuSource(olnk.SimuSourceOptions{
+		return NewSimuSource(SimuSourceOptions{
 			ObjectId: objectId,
 			Registry: registry,
-			Simu:     s,
+			Simu:     simu,
 		})
 	})
-	s.OnEvent(func(evt *score.SimuEvent) {
+	simu.OnEvent(func(evt *model.SimEvent) {
 		switch evt.Type {
-		case score.EventSignal:
-			registry.NotifySignal(evt.Symbol, evt.Name, evt.Args)
-		case score.EventPropertyChanged:
-			registry.NotifyPropertyChange(evt.Symbol, evt.KWArgs)
+		case model.EventActorSignal:
+			registry.NotifySignal(evt.Actor, evt.Member, evt.Data.([]any))
+		case model.EventActorChanged:
+			registry.NotifyPropertyChange(evt.Actor, evt.Data.(map[string]any))
 		}
 	})
 

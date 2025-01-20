@@ -1,7 +1,6 @@
 package mon
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -56,19 +55,10 @@ func NewClientCommand() *cobra.Command {
 			}
 			sender := helper.NewHTTPSender(options.url)
 			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
-			ids := helper.MakeIdGenerator("M")
 			err = ctrl.Run(events, func(event mon.Event) error {
-				if event.Timestamp.IsZero() {
-					event.Timestamp = time.Now()
-				}
-				if event.Id == "" {
-					event.Id = ids()
-				}
 				if event.Source == "" {
 					event.Source = "123"
 				}
-				data, _ := json.Marshal(event)
-				log.Info().Msgf("-> %s", string(data))
 				// send as an array of events
 				payload := [1]mon.Event{event}
 
@@ -80,7 +70,7 @@ func NewClientCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.url, "url", "http://127.0.0.1:5555/monitor/123", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://localhost:5555/monitor/123", "monitor server address")
 	// repeat is -1 for infinite
 	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
 	// sleep is in milliseconds
