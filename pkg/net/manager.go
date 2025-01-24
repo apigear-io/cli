@@ -31,6 +31,20 @@ type Options struct {
 	Logging            bool                     `json:"logging"`
 }
 
+var DefaultOptions = &Options{
+	NatsHost:          "localhost",
+	NatsPort:          4222,
+	NatsDisabled:      false,
+	NatsInprocessOnly: false,
+	NatsLeafURL:       "",
+	NatsCredentials:   "",
+	HttpAddr:          "localhost:8080",
+	HttpDisabled:      false,
+	MonitorDisabled:   false,
+	ObjectAPIDisabled: false,
+	Logging:           false,
+}
+
 type NetworkManager struct {
 	opts       *Options
 	natsServer *NatsServer
