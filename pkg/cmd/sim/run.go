@@ -38,7 +38,7 @@ Using a scenario you can define additional static and scripted data and behavior
 					log.Error().Err(err).Msg("failed to read simulation file")
 					return err
 				}
-				_, err = client.RunScript("", model.Script{
+				err = client.RunScript("", model.Script{
 					Name:   script,
 					Source: string(source),
 				})

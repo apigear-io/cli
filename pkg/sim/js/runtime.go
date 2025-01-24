@@ -99,6 +99,7 @@ func (rt *Runtime) RunScript(script model.Script) (any, error) {
 func (si *Runtime) Interupt() {
 	si.IsActive = false
 	si.loop.Stop()
+	si.vm.Interrupt(fmt.Errorf("interrupted"))
 }
 
 // RunFunction runs a function by name in the simulation

@@ -10,19 +10,18 @@ import (
 // TestNewSimulation tests the NewSimulation function
 func TestNewSimulation(t *testing.T) {
 	tests := []struct {
-		name    string
-		id      string
-		wantErr bool
+		name string
+		id   string
 	}{
-		{"valid simulation", "test-simulation", false},
-		{"empty id", "", true},
+		{"valid simulation", "test-simulation"},
+		{"empty id", ""},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			si := NewRuntime(tt.id)
-			if tt.wantErr {
-				assert.Nil(t, si)
+			if tt.id == "" {
+				assert.Equal(t, si.world.id, "demo")
 			} else {
 				assert.NotNil(t, si)
 				assert.NotNil(t, si.GetWorld())

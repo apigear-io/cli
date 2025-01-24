@@ -89,7 +89,7 @@ func (m *Manager) DeleteSimulation(id string) {
 	if id == "" {
 		id = "demo"
 	}
-	log.Info().Str("id", id).Msg("manager.DeleteSimulation")
+	log.Info().Str("id", id).Msg("manager delete simulation")
 	delete(m.sims, id)
 	m.fireEvent(model.EventSimDeleted, id)
 }

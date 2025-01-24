@@ -1,3 +1,6 @@
+//go:build nats
+// +build nats
+
 package api_test
 
 import (
@@ -24,12 +27,11 @@ func TestClient(t *testing.T) {
 	defer client.Close()
 
 	t.Run("run script", func(t *testing.T) {
-		value, err := client.RunScript("test", model.Script{
+		err := client.RunScript("test", model.Script{
 			Name:   "script.js",
 			Source: "42",
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, float64(42), value)
 	})
 
 	t.Run("actor operations", func(t *testing.T) {
@@ -38,12 +40,11 @@ func TestClient(t *testing.T) {
 			const actor = $world.createActor("test-actor", { count: 42 });
 			actor.$getProperty("count");
 		`
-		value, err := client.RunScript("test", model.Script{
+		err := client.RunScript("test", model.Script{
 			Name:   "script.js",
 			Source: source,
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, float64(42), value)
 
 		// Get actor state
 		state, err := client.GetActorState("test", "test-actor")
@@ -53,7 +54,7 @@ func TestClient(t *testing.T) {
 		err = client.SetActorValue("test", "test-actor", "count", 84)
 		assert.NoError(t, err)
 
-		value, err = client.GetActorValue("test", "test-actor", "count")
+		value, err := client.GetActorValue("test", "test-actor", "count")
 		assert.NoError(t, err)
 		assert.Equal(t, float64(84), value)
 	})

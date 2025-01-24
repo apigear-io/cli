@@ -79,14 +79,14 @@ func (c *Client) SetTimeout(timeout time.Duration) {
 	c.timeout = timeout
 }
 
-func (c *Client) RunScript(world string, script model.Script) (any, error) {
+func (c *Client) RunScript(world string, script model.Script) error {
 	if world == "" {
 		world = "demo"
 	}
 	log.Info().Str("world", world).Str("script", script.Name).Msg("client request run script")
 	data, err := json.Marshal(script)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal script: %w", err)
+		return fmt.Errorf("failed to marshal script: %w", err)
 	}
 	req := Msg{
 		Type:  MsgRunScript,
@@ -95,15 +95,15 @@ func (c *Client) RunScript(world string, script model.Script) (any, error) {
 	}
 	reply, err := DoRequest(c.nc, &req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	var result any
 	err = json.Unmarshal(reply.Data, &result)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return result, nil
+	return nil
 }
 
 func (c *Client) GetActorState(world, name string) (map[string]any, error) {
@@ -154,7 +154,7 @@ func (c *Client) SetActorValue(world, name, member string, value any) error {
 	if world == "" {
 		world = "demo"
 	}
-	log.Info().Str("world", world).Str("name", name).Str("member", member).Msg("client.SetActorValue")
+	log.Info().Str("world", world).Str("name", name).Str("member", member).Msg("client set actor value")
 	data, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("failed to marshal value: %w", err)
