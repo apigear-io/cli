@@ -19,12 +19,10 @@ func NewServeCommand() *cobra.Command {
 			simman := sim.GetManager()
 			netman := net.GetManager()
 			err := netman.Start(&net.Options{
-				NatsHost: natsHost,
-				NatsPort: natsPort,
-				HttpAddr: httpAddr,
-				SimulationProviderFunc: func(id string) net.ISimulation {
-					return simman.GetSimulation(id)
-				},
+				NatsHost:           natsHost,
+				NatsPort:           natsPort,
+				HttpAddr:           httpAddr,
+				SimulationProvider: simman,
 			})
 			if err != nil {
 				log.Error().Err(err).Msg("failed to start network manager")

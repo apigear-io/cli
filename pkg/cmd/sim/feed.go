@@ -132,19 +132,15 @@ func handleNodeData(node *client.Node, data []byte) error {
 	switch m[0] {
 	case core.MsgLink:
 		objectId := m.AsLink()
-		log.Info().Msgf("-> link %s", objectId)
 		node.LinkRemoteNode(objectId)
 	case core.MsgUnlink:
 		objectId := m.AsLink()
-		log.Info().Msgf("-> unlink %s", objectId)
 		node.UnlinkRemoteNode(objectId)
 	case core.MsgSetProperty:
 		propertyId, value := m.AsSetProperty()
-		log.Info().Msgf("-> set %s = %v", propertyId, value)
 		node.SetRemoteProperty(propertyId, value)
 	case core.MsgInvoke:
 		_, methodId, args := m.AsInvoke()
-		log.Info().Msgf("-> invoke %s(%v)", methodId, args)
 		node.InvokeRemote(methodId, args, func(arg client.InvokeReplyArg) {
 			log.Info().Msgf("<- reply %s : %v", arg.Identifier, arg.Value)
 		})

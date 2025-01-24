@@ -9,25 +9,26 @@ import (
 	"syscall"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 	"github.com/nats-io/nats.go"
-	"github.com/rs/zerolog/log"
 )
 
 type Options struct {
-	NatsHost               string `json:"nats_host"`
-	NatsPort               int    `json:"nats_port"`
-	NatsDisabled           bool   `json:"nats_disabled"`
-	NatsInprocessOnly      bool   `json:"nats_inprocess_only"`
-	NatsLeafURL            string `json:"nats_leaf_url"`
-	NatsCredentials        string `json:"nats_credentials"`
-	HttpAddr               string `json:"http_addr"`
-	HttpDisabled           bool   `json:"http_disabled"`
-	MonitorDisabled        bool   `json:"monitor_disabled"`
-	ObjectAPIDisabled      bool   `json:"object_api_disabled"`
-	SimulationProviderFunc SimulationProviderFunc
-	Logging                bool `json:"logging"`
+	NatsHost           string                   `json:"nats_host"`
+	NatsPort           int                      `json:"nats_port"`
+	NatsDisabled       bool                     `json:"nats_disabled"`
+	NatsInprocessOnly  bool                     `json:"nats_inprocess_only"`
+	NatsLeafURL        string                   `json:"nats_leaf_url"`
+	NatsCredentials    string                   `json:"nats_credentials"`
+	HttpAddr           string                   `json:"http_addr"`
+	HttpDisabled       bool                     `json:"http_disabled"`
+	MonitorDisabled    bool                     `json:"monitor_disabled"`
+	ObjectAPIDisabled  bool                     `json:"object_api_disabled"`
+	SimulationProvider model.SimulationProvider `json:"-" yaml:"-"`
+	Logging            bool                     `json:"logging"`
 }
 
 type NetworkManager struct {
@@ -49,7 +50,7 @@ func GetManager() *NetworkManager {
 	return defaultManager
 }
 func NewManager() *NetworkManager {
-	log.Debug().Msg("create network manager")
+	log.Debug().Msg("net.NewManager")
 	return &NetworkManager{}
 }
 
@@ -72,16 +73,16 @@ func (s *NetworkManager) Start(opts *Options) error {
 		s.EnableMonitor()
 	}
 	if !s.opts.ObjectAPIDisabled {
-		if s.opts.SimulationProviderFunc == nil {
+		if s.opts.SimulationProvider == nil {
 			return fmt.Errorf("object api is enabled, but simulation is not set")
 		}
-		s.EnableSimulation(s.opts.SimulationProviderFunc)
+		s.EnableSimulation(s.opts.SimulationProvider)
 	}
 	return nil
 }
 
 func (s *NetworkManager) Wait(ctx context.Context) error {
-	log.Info().Msg("running...")
+	log.Info().Msg("servces running...")
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	defer s.Stop()
@@ -177,10 +178,11 @@ func (s *NetworkManager) EnableMonitor() {
 		return
 	}
 	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc))
-	log.Info().Msgf("handle monitor request on http://%s/monitor/{source}", s.httpServer.Address())
+	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", s.httpServer.Address())
 }
 
-func (s *NetworkManager) EnableSimulation(provider SimulationProviderFunc) {
+func (s *NetworkManager) EnableSimulation(provider model.SimulationProvider) {
+	log.Debug().Msg("enable simulation")
 	if s.httpServer == nil {
 		log.Error().Msg("http server not started")
 		return
@@ -190,9 +192,10 @@ func (s *NetworkManager) EnableSimulation(provider SimulationProviderFunc) {
 		return
 	}
 	ctx := context.Background()
-	s.wsHUB = NewSimuWSServer(ctx, provider)
+	s.wsHUB = NewSimuWSServer(ctx, provider, "demo")
 	s.httpServer.Router().HandleFunc("/ws", s.wsHUB.ServeHTTP)
-	log.Info().Msg("simulation server listen on ws://localhost:8080/ws")
+	addr := s.httpServer.Address()
+	log.Info().Msgf("start simulation websocket endpoiint on ws://%s/ws", addr)
 }
 
 func (s *NetworkManager) GetMonitorAddress() (string, error) {
@@ -222,7 +225,7 @@ func (s *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
 		log.Error().Msgf("nats connection: %v", err)
 		return
 	}
-	log.Info().Msg("subscribe to monitor events")
+	log.Debug().Msg("subscribe to monitor events")
 	nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
 		var event mon.Event
 		err := json.Unmarshal(msg.Data, &event)

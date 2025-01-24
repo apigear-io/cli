@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/rs/zerolog/log"
+	"github.com/apigear-io/cli/pkg/log"
 )
 
 type ServeOptions struct {

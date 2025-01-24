@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"time"
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/helper"
@@ -30,7 +31,7 @@ func init() {
 		level = zerolog.TraceLevel
 	}
 	logFile := helper.Join(cfg.ConfigDir(), "apigear.log")
-	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: "15:04:05", FieldsExclude: []string{"id"}}
+	console := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen, FieldsExclude: []string{"id"}}
 	multi := zerolog.MultiLevelWriter(
 		console,
 		NewEventLogWriter(),

@@ -4,21 +4,12 @@ import (
 	"os"
 
 	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/nats-io/nats.go"
 
 	"github.com/spf13/cobra"
 )
-
-type Provider struct {
-	simman *sim.Manager
-}
-
-func (p Provider) GetSimulation(name string) net.ISimulation {
-	return p.simman.GetSimulation(name)
-}
 
 func NewRunCommand() *cobra.Command {
 	var natsURL string
@@ -47,21 +38,19 @@ Using a scenario you can define additional static and scripted data and behavior
 					log.Error().Err(err).Msg("failed to read simulation file")
 					return err
 				}
-				value, err := client.RunScript("", model.Script{
+				_, err = client.RunScript("", model.Script{
 					Name:   script,
 					Source: string(source),
 				})
 				if err != nil {
 					log.Error().Err(err).Msg("failed to run script")
 				}
-				log.Info().Msgf("script result: %v", value)
 			}
 			if fn != "" {
-				value, err := client.WorldCallFunction("", fn, []any{})
+				_, err := client.WorldCallFunction("", fn, []any{})
 				if err != nil {
 					log.Error().Err(err).Msg("failed to run function")
 				}
-				log.Info().Msgf("function result: %v", value)
 			}
 			return nil
 		},

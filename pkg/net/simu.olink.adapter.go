@@ -1,19 +1,20 @@
 package net
 
 import (
-	"github.com/apigear-io/objectlink-core-go/log"
+	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 )
 
 // Adapter is a object-link adapter for simulation.
 type Adapter struct {
-	simu     ISimulation
+	provider model.SimulationProvider
 	registry *remote.Registry
 }
 
-func NewAdapter(simu ISimulation, r *remote.Registry) *Adapter {
+func NewAdapter(provider model.SimulationProvider, r *remote.Registry) *Adapter {
 	return &Adapter{
-		simu:     simu,
+		provider: provider,
 		registry: r,
 	}
 }
@@ -23,12 +24,17 @@ func (a *Adapter) Registry() *remote.Registry {
 }
 
 func (a *Adapter) CreateSource(objectId string) *SimSource {
-	s := NewSimuSource(SimuSourceOptions{
-		Simu:     a.simu,
-		ObjectId: objectId,
-		Registry: a.registry,
+	s, err := NewSimuSource(SimuSourceOptions{
+		ObjectId:     objectId,
+		Registry:     a.registry,
+		provider:     a.provider,
+		SimulationId: "demo",
 	})
-	err := a.registry.AddObjectSource(s)
+	if err != nil {
+		log.Error().Err(err).Str("id", objectId).Msg("failed to create simu source")
+		return nil
+	}
+	err = a.registry.AddObjectSource(s)
 	if err != nil {
 		log.Error().Err(err).Str("id", objectId).Msg("failed to add object source")
 		return nil

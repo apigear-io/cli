@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/nats-io/nats.go"
 )
@@ -64,7 +65,7 @@ func NewClient(natsURL string) (*Client, error) {
 
 	return &Client{
 		nc:      nc,
-		timeout: 5 * time.Second,
+		timeout: 30 * time.Second,
 	}, nil
 }
 
@@ -79,6 +80,10 @@ func (c *Client) SetTimeout(timeout time.Duration) {
 }
 
 func (c *Client) RunScript(world string, script model.Script) (any, error) {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("script", script.Name).Msg("client request run script")
 	data, err := json.Marshal(script)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal script: %w", err)
@@ -102,6 +107,10 @@ func (c *Client) RunScript(world string, script model.Script) (any, error) {
 }
 
 func (c *Client) GetActorState(world, name string) (map[string]any, error) {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Msg("client.GetActorState")
 	req := Msg{
 		Type:  MsgGetState,
 		World: world,
@@ -121,6 +130,7 @@ func (c *Client) GetActorState(world, name string) (map[string]any, error) {
 
 // GetActorValue retrieves a specific value from an actor
 func (c *Client) GetActorValue(world, name, member string) (any, error) {
+	log.Info().Str("world", world).Str("name", name).Str("member", member).Msg("client.GetActorValue")
 	req := Msg{
 		Type:   MsgGetValue,
 		World:  world,
@@ -141,6 +151,10 @@ func (c *Client) GetActorValue(world, name, member string) (any, error) {
 
 // SetActorValue sets a specific value on an actor
 func (c *Client) SetActorValue(world, name, member string, value any) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Str("member", member).Msg("client.SetActorValue")
 	data, err := json.Marshal(value)
 	if err != nil {
 		return fmt.Errorf("failed to marshal value: %w", err)
@@ -158,6 +172,10 @@ func (c *Client) SetActorValue(world, name, member string, value any) error {
 
 // WorldListen starts listening for events on a world
 func (c *Client) WorldListen(world string) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Msg("client.WorldListen")
 	req := Msg{
 		Type:  MsgWorldListen,
 		World: world,
@@ -168,6 +186,10 @@ func (c *Client) WorldListen(world string) error {
 
 // ListActors lists the actors in a world
 func (c *Client) ListActors(world string) ([]string, error) {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Msg("client.ListActors")
 	req := Msg{
 		Type:  MsgListActors,
 		World: world,
@@ -186,6 +208,10 @@ func (c *Client) ListActors(world string) ([]string, error) {
 
 // WorldClose closes a world
 func (c *Client) WorldClose(world string) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Msg("client.WorldClose")
 	req := Msg{
 		Type:  MsgWorldClose,
 		World: world,
@@ -195,6 +221,9 @@ func (c *Client) WorldClose(world string) error {
 }
 
 func (c *Client) ActorCall(world, actor, member string, args []any) (any, error) {
+	if world == "" {
+		world = "demo"
+	}
 	data, err := json.Marshal(args)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal arguments: %w", err)
@@ -216,6 +245,10 @@ func (c *Client) ActorCall(world, actor, member string, args []any) (any, error)
 
 // WorldCallFunction calls a function on a world
 func (c *Client) WorldCallFunction(world, name string, args []any) (any, error) {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("function", name).Msg("client request: call world function")
 	data, err := json.Marshal(args)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal arguments: %w", err)
@@ -226,15 +259,19 @@ func (c *Client) WorldCallFunction(world, name string, args []any) (any, error) 
 		Member: name,
 		Data:   data,
 	}
-	res, err := DoRequest(c.nc, &req)
+	_, err = DoRequest(c.nc, &req)
 	if err != nil {
 		return nil, err
 	}
-	return res.Data, nil
+	return nil, nil
 }
 
 // CreateWorld creates a new world
 func (c *Client) CreateWorld(name string) error {
+	if name == "" {
+		name = "demo"
+	}
+	log.Info().Str("name", name).Msg("client.CreateWorld")
 	req := Msg{
 		Type:  MsgWorldCreate,
 		World: name,
@@ -245,6 +282,10 @@ func (c *Client) CreateWorld(name string) error {
 
 // DeleteWorld deletes a world
 func (c *Client) DeleteWorld(world string) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Msg("client.DeleteWorld")
 	req := Msg{
 		Type:  MsgWorldDelete,
 		World: world,
@@ -255,6 +296,10 @@ func (c *Client) DeleteWorld(world string) error {
 
 // WorldStatus gets the status of a world
 func (c *Client) WorldStatus(world string) (model.WorldStatus, error) {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Msg("client.WorldStatus")
 	req := Msg{
 		Type:  MsgWorldStatus,
 		World: world,
@@ -285,6 +330,10 @@ func (c *Client) OnWorldEvents(fn func(evt *model.SimEvent) error) (*nats.Subscr
 }
 
 func (c *Client) CreateActor(world, name string) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Msg("client.CreateActor")
 	req := Msg{
 		Type:  MsgActorCreate,
 		World: world,
@@ -295,6 +344,10 @@ func (c *Client) CreateActor(world, name string) error {
 }
 
 func (c *Client) DeleteActor(world, name string) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Msg("client.DeleteActor")
 	req := Msg{
 		Type:  MsgActorDelete,
 		World: world,
@@ -306,6 +359,10 @@ func (c *Client) DeleteActor(world, name string) error {
 
 // SetActorState sets the state of an actor
 func (c *Client) SetActorState(world, name string, state map[string]any) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Msg("client.SetActorState")
 	data, err := json.Marshal(state)
 	if err != nil {
 		return fmt.Errorf("failed to marshal state: %w", err)
@@ -321,6 +378,10 @@ func (c *Client) SetActorState(world, name string, state map[string]any) error {
 }
 
 func (c *Client) ActorEmitSignal(world, name, signal string, args []any) error {
+	if world == "" {
+		world = "demo"
+	}
+	log.Info().Str("world", world).Str("name", name).Str("signal", signal).Msg("client.ActorEmitSignal")
 	data, err := json.Marshal(args)
 	if err != nil {
 		return fmt.Errorf("failed to marshal arguments: %w", err)

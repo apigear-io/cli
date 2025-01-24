@@ -4,14 +4,16 @@ import (
 	"testing"
 
 	"github.com/apigear-io/cli/pkg/sim"
+	"github.com/apigear-io/cli/pkg/sim/api"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestClient(t *testing.T) {
-	manager := sim.New()
+	manager := sim.GetManager()
 	defer manager.RemoveAll()
+	api.NewService(nats.DefaultURL, manager)
 	_, err := manager.CreateService(nats.DefaultURL)
 	assert.NoError(t, err)
 

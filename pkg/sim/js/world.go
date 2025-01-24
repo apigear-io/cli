@@ -1,10 +1,10 @@
 package js
 
 import (
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/model"
-	"github.com/apigear-io/cli/pkg/sim/tools"
+	"github.com/apigear-io/cli/pkg/tools"
 	"github.com/dop251/goja"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -15,7 +15,7 @@ type World struct {
 	id     string
 	vm     *goja.Runtime
 	actors map[string]*Actor
-	hooks  tools.Hook[model.SimEvent]
+	hooks  *tools.Hook[model.SimEvent]
 }
 
 func NewDemoWorld() *World {
@@ -27,11 +27,12 @@ func NewWorld(id string, vm *goja.Runtime) *World {
 		log.Warn().Msgf("world id is empty, using default world id=%s", DefaultWorldId)
 		id = DefaultWorldId
 	}
+	log.Debug().Str("id", id).Msg("new world")
 	w := &World{
 		id:     id,
 		vm:     vm,
 		actors: map[string]*Actor{},
-		hooks:  tools.Hook[model.SimEvent]{},
+		hooks:  tools.NewHook[model.SimEvent](),
 	}
 	return w
 }
@@ -42,9 +43,13 @@ func (w *World) Id_() string {
 }
 
 func (w *World) CreateActor(id string, state *goja.Object) (*Actor, error) {
+	log.Debug().Str("actor", id).Str("world", w.id).Msg("world create actor")
+	if id == "" {
+		id = "actor"
+	}
 	actor, ok := w.actors[id]
 	if ok {
-		log.Info().Str("actor", id).Msg("actor already exists")
+		log.Debug().Str("actor", id).Msg("actor already exists")
 		return actor, nil
 	}
 	actor, err := NewActor(id, state, w)
@@ -59,15 +64,20 @@ func (w *World) CreateActor(id string, state *goja.Object) (*Actor, error) {
 
 // GetActor returns an actor by name
 func (w *World) GetActor(id string) *Actor {
+	if id == "" {
+		id = "actor"
+	}
+	log.Debug().Str("actor", id).Msg("world get actor")
 	actor, ok := w.actors[id]
-	if !ok {
-		actor, err := w.CreateActor(id, w.vm.NewObject())
-		if err != nil {
-			log.Error().Err(err).Str("actor", id).Msg("actor not found")
-			return nil
-		}
+	if ok {
 		return actor
 	}
+	actor, err := w.CreateActor(id, w.vm.NewObject())
+	if err != nil {
+		log.Error().Err(err).Str("actor", id).Msg("actor not found")
+		return nil
+	}
+	w.actors[id] = actor
 	return actor
 }
 
@@ -87,6 +97,9 @@ func (w *World) ActorCount() int {
 
 // DeleteActor deletes an actor from the simulation
 func (w *World) DeleteActor(id string) {
+	if id == "" {
+		id = "actor"
+	}
 	delete(w.actors, id)
 	w.fireEvent(model.EventActorDeleted, id, "", nil)
 }
@@ -99,4 +112,9 @@ func (w *World) fireEvent(event model.EventType, actorId string, memberId string
 		Member: memberId,
 		Data:   data,
 	})
+}
+
+// Hooks returns the world's hooks
+func (w *World) Hooks() *tools.Hook[model.SimEvent] {
+	return w.hooks
 }

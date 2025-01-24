@@ -3,9 +3,9 @@ package tasks
 import (
 	"context"
 	"errors"
-	"sync"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/sasha-s/go-deadlock"
 )
 
 // ErrTaskNotFound is returned when a task is not found
@@ -13,7 +13,7 @@ var ErrTaskNotFound = errors.New("task not found")
 
 // TaskManager allows you to create tasks and run them
 type TaskManager struct {
-	sync.RWMutex
+	deadlock.RWMutex
 	helper.Hook[*TaskEvent]
 	tasks map[string]*TaskItem
 }

@@ -3,40 +3,42 @@ package sim
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/api"
 	"github.com/apigear-io/cli/pkg/sim/js"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/apigear-io/cli/pkg/tools"
-	"github.com/apigear-io/objectlink-core-go/log"
 )
 
 var (
 	defaultManager *Manager
 )
 
+// GetManager should return the manager API (e.g. model.SimulationManager)
 func GetManager() *Manager {
 	if defaultManager == nil {
-		defaultManager = New()
+		defaultManager = NewManager()
 	}
 	return defaultManager
 }
 
 type Manager struct {
 	sims    map[string]*js.Runtime
-	hooks   tools.Hook[model.SimEvent]
+	hooks   *tools.Hook[model.SimEvent]
 	service *api.Service
 	client  *api.Client
 }
 
-func New() *Manager {
+func NewManager() *Manager {
 	return &Manager{
 		sims:  make(map[string]*js.Runtime),
-		hooks: tools.Hook[model.SimEvent]{},
+		hooks: tools.NewHook[model.SimEvent](),
 	}
 }
 
 // CreateService creates a new simulation service
 func (m *Manager) CreateService(url string) (*api.Service, error) {
+	log.Debug().Str("url", url).Msg("creating service")
 	if m.service == nil {
 		service, err := api.NewService(url, m)
 		if err != nil {
@@ -48,6 +50,7 @@ func (m *Manager) CreateService(url string) (*api.Service, error) {
 }
 
 func (m *Manager) CreateClient(url string) (*api.Client, error) {
+	log.Info().Str("url", url).Msg("creating api client")
 	if m.client == nil {
 		client, err := api.NewClient(url)
 		if err != nil {
@@ -59,6 +62,7 @@ func (m *Manager) CreateClient(url string) (*api.Client, error) {
 }
 
 func (m *Manager) GetObjectAPI(world string) (*api.ObjectAPI, error) {
+	log.Info().Str("world", world).Msg("getting object api")
 	if m.client == nil {
 		return nil, fmt.Errorf("client not created")
 	}
@@ -68,7 +72,13 @@ func (m *Manager) GetObjectAPI(world string) (*api.ObjectAPI, error) {
 
 // CreateSimulation creates a new simulation
 func (m *Manager) CreateSimulation(id string) *js.Runtime {
-	m.DeleteSimulation(id)
+	if id == "" {
+		id = "demo"
+	}
+	if m.sims[id] != nil {
+		log.Info().Str("id", id).Msg("simulation already exists. delete old simulation")
+		m.DeleteSimulation(id)
+	}
 	m.sims[id] = js.NewRuntime(id)
 	m.fireEvent(model.EventSimCreated, id)
 	return m.sims[id]
@@ -76,16 +86,37 @@ func (m *Manager) CreateSimulation(id string) *js.Runtime {
 
 // DeleteSimulation deletes a simulation
 func (m *Manager) DeleteSimulation(id string) {
+	if id == "" {
+		id = "demo"
+	}
+	log.Info().Str("id", id).Msg("manager.DeleteSimulation")
 	delete(m.sims, id)
 	m.fireEvent(model.EventSimDeleted, id)
 }
 
 // GetSimulation returns a simulation
 func (m *Manager) GetSimulation(id string) *js.Runtime {
+	if id == "" {
+		id = "demo"
+	}
+	log.Debug().Str("id", id).Msg("manager get simulation")
 	if m.sims[id] != nil {
 		return m.sims[id]
 	}
 	return m.CreateSimulation(id)
+}
+
+// GetSimulationAPI returns a simulation API
+func (m *Manager) GetSimulationAPI(id string) model.SimulationAPI {
+	return m.GetSimulation(id)
+}
+
+func (m *Manager) OnSimulationChanged(fn func(id string)) {
+	m.hooks.Add(func(evt *model.SimEvent) {
+		if evt.Type == model.EventSimCreated {
+			fn(evt.World)
+		}
+	})
 }
 
 // RunScript runs a script in the simulation
@@ -96,9 +127,14 @@ func (m *Manager) RunScript(worldId string, script model.Script) (any, error) {
 
 // CreateActor creates a new actor in the simulation
 func (m *Manager) CreateActor(worldId string, id string, state map[string]any) (*js.Actor, error) {
+	log.Info().Str("world", worldId).Str("actor", id).Msg("manager.CreateActor")
+	if worldId == "" {
+		worldId = "demo"
+	}
 	si := m.GetSimulation(worldId)
 	_, err := si.GetWorld().CreateActor(id, si.MapToJsObject(state))
 	if err != nil {
+		log.Warn().Err(err).Msg("failed to create actor")
 		return nil, err
 	}
 	return si.GetWorld().GetActor(id), nil
@@ -119,6 +155,7 @@ func (m *Manager) CallActorMethod(worldId string, actorId string, method string,
 	si := m.GetSimulation(worldId)
 	actor := si.GetWorld().GetActor(actorId)
 	if actor == nil {
+		log.Warn().Str("world", worldId).Str("actor", actorId).Msg("actor not found")
 		return nil, fmt.Errorf("actor %s not found", actorId)
 	}
 	return actor.CallMethod(method, si.ArgsToJsArgs(args)...)
@@ -231,6 +268,10 @@ func (m *Manager) SetActorState(worldId string, actorId string, state map[string
 	if err != nil {
 		log.Warn().Str("world", worldId).Str("actor", actorId).Msg("actor not found")
 	}
+}
+
+func (m *Manager) WorldHooks(worldId string) *tools.Hook[model.SimEvent] {
+	return m.GetSimulation(worldId).Hooks()
 }
 
 ///////////////////////////////////////////////////////////////////////////////

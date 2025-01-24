@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/nats-io/nats.go"
-	"github.com/rs/zerolog/log"
 )
 
 // Service represents a NATS-based service that provides access to the simulation system
@@ -163,7 +163,6 @@ func (s *Service) runScript(msg *Msg) (*Msg, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal script: %w", err)
 	}
-	fmt.Printf("running script: %v\n", script.Name)
 	v, err := s.manager.RunScript(msg.World, script)
 	if err != nil {
 		return nil, err
@@ -231,12 +230,7 @@ func (s *Service) ListActors(msg *Msg) (*Msg, error) {
 
 func (s *Service) listenWorld(msg *Msg) (*Msg, error) {
 	log.Info().Str("world", msg.World).Msg("listening to world")
-	sim := s.manager.GetSimulation(msg.World)
-	if sim == nil {
-		log.Warn().Msg("world not found to listen to")
-		return nil, fmt.Errorf("world not found to listen to")
-	}
-	unsub := sim.Hooks().Add(func(evt *model.SimEvent) {
+	unsub := s.manager.WorldHooks(msg.World).Add(func(evt *model.SimEvent) {
 		log.Info().Str("event", string(evt.Type)).Msg("world event")
 		data, err := json.Marshal(evt)
 		if err != nil {
@@ -279,7 +273,7 @@ func (s *Service) createWorld(msg *Msg) (*Msg, error) {
 			Data:  data,
 		}, nil
 	}
-	s.manager.CreateSimulation(msg.World)
+	s.manager.GetSimulation(msg.World)
 	return &Msg{
 		Type:  msg.Type,
 		World: msg.World,

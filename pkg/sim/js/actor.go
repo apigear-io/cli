@@ -3,8 +3,9 @@ package js
 import (
 	"errors"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/model"
-	"github.com/apigear-io/cli/pkg/sim/tools"
+	"github.com/apigear-io/cli/pkg/tools"
 	"github.com/dop251/goja"
 )
 
@@ -24,6 +25,7 @@ func NewActor(id string, state *goja.Object, world *World) (*Actor, error) {
 	if world == nil {
 		return nil, errors.New("actor must have a world")
 	}
+	log.Info().Str("actor", id).Str("world", world.id).Msg("new actor")
 	if state == nil {
 		state = world.vm.NewObject()
 	}
@@ -103,6 +105,7 @@ func (a *Actor) Properties() []string {
 
 // SetMethod sets the method of the actor
 func (a *Actor) SetMethod(method string, fn goja.Callable) {
+	log.Debug().Str("actor", a.id).Str("method", method).Msg("actor set method")
 	a.methods[method] = fn
 }
 
@@ -132,6 +135,7 @@ func (a *Actor) Methods() []string {
 
 // CallMethod calls the method of the actor
 func (a *Actor) CallMethod(method string, args ...goja.Value) (goja.Value, error) {
+	log.Info().Str("actor", a.id).Str("method", method).Interface("args", args).Msg("call method")
 	fn, ok := a.methods[method]
 	if !ok || fn == nil {
 		return goja.Undefined(), errors.New("method not found")

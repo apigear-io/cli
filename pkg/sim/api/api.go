@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/nats-io/nats.go"
-	"github.com/rs/zerolog/log"
 )
 
 var NoData = []byte("")

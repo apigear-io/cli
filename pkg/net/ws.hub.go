@@ -3,29 +3,27 @@ package net
 import (
 	"context"
 
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )
 
-func NewSimuWSServer(ctx context.Context, provider SimulationProviderFunc) *ws.Hub {
-	simu := provider("")
+func NewSimuWSServer(ctx context.Context, provider model.SimulationProvider, simuId string) *ws.Hub {
 	registry := remote.NewRegistry()
 	registry.SetSourceFactory(func(objectId string) remote.IObjectSource {
-		return NewSimuSource(SimuSourceOptions{
-			ObjectId: objectId,
-			Registry: registry,
-			Simu:     simu,
+		log.Info().Msgf("new simu source: %s", objectId)
+		sf, err := NewSimuSource(SimuSourceOptions{
+			ObjectId:     objectId,
+			Registry:     registry,
+			provider:     provider,
+			SimulationId: simuId,
 		})
-	})
-	simu.OnEvent(func(evt *model.SimEvent) {
-		switch evt.Type {
-		case model.EventActorSignal:
-			registry.NotifySignal(evt.Actor, evt.Member, evt.Data.([]any))
-		case model.EventActorChanged:
-			registry.NotifyPropertyChange(evt.Actor, evt.Data.(map[string]any))
+		if err != nil {
+			log.Error().Err(err).Msg("failed to create simu source")
+			return nil
 		}
+		return sf
 	})
-
 	return ws.NewHub(ctx, registry)
 }

@@ -17,10 +17,10 @@ func TestService(t *testing.T) {
 	defer ns.Close()
 
 	// Create manager
-	manager := sim.New()
+	manager := sim.NewManager()
 	defer manager.RemoveAll()
 
-	client, err := sim.New().CreateClient(nats.DefaultURL)
+	client, err := sim.NewManager().CreateClient(nats.DefaultURL)
 	assert.NoError(t, err)
 	defer client.Close()
 

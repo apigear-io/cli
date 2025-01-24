@@ -14,7 +14,7 @@ import (
 // Create an embedded NATS server
 
 const (
-	NatsTimeout = 5 * time.Second
+	NatsTimeout = 30 * time.Second
 )
 
 type NatsServer struct {
@@ -69,7 +69,7 @@ func (ns *NatsServer) Start() error {
 	if !ns.ns.ReadyForConnections(NatsTimeout) {
 		return fmt.Errorf("nats server not ready")
 	}
-	log.Info().Msgf("nats server started at %s", ns.ns.ClientURL())
+	log.Info().Msgf("start nats server at %s", ns.ns.ClientURL())
 	return nil
 }
 
