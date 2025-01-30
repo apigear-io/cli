@@ -13,7 +13,7 @@ actor.onProperty('count', function (value) {
 });
 
 
-const main = function() {
+function main() {
     for (let i = 0; i < 5; i++) {
         actor.callMethod('increment');
     }
@@ -22,11 +22,3 @@ const main = function() {
     }
     return actor.getProperty('count');
 }
-
-for (let i = 0; i < 5; i++) {
-    actor.callMethod('increment');
-}
-for (let i = 0; i < 3; i++) {
-    actor.callMethod('decrement');
-}
-actor.getProperty('count');

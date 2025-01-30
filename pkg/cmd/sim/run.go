@@ -32,7 +32,10 @@ Using a scenario you can define additional static and scripted data and behavior
 				log.Error().Err(err).Msg("failed to create simulation client")
 				return err
 			}
-			if script != "" {
+			if script == "" {
+				log.Info().Msg("running simulation server without a script")
+			} else {
+				log.Info().Str("script", script).Msg("load script file into simulation")
 				source, err := os.ReadFile(script)
 				if err != nil {
 					log.Error().Err(err).Msg("failed to read simulation file")
@@ -47,6 +50,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				}
 			}
 			if fn != "" {
+				log.Info().Str("function", fn).Msg("run world function")
 				_, err := client.WorldCallFunction("", fn, []any{})
 				if err != nil {
 					log.Error().Err(err).Msg("failed to run function")

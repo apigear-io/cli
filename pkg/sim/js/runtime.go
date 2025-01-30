@@ -110,6 +110,7 @@ func (rt *Runtime) RunFunction(name string, args ...any) (any, error) {
 		fn, ok := goja.AssertFunction(vm.Get(name))
 		if !ok {
 			log.Error().Str("function", name).Msg("function not found")
+			return
 		}
 		jsArgs := make([]goja.Value, len(args))
 		for i, arg := range args {
