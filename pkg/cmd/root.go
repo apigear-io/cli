@@ -9,6 +9,7 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/prj"
 	"github.com/apigear-io/cli/pkg/cmd/sim"
 	"github.com/apigear-io/cli/pkg/cmd/spec"
+	"github.com/apigear-io/cli/pkg/cmd/stim"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/cmd/x"
 
@@ -26,6 +27,7 @@ func NewRootCommand() *cobra.Command {
 	}
 	cmd.SilenceErrors = false
 	cmd.SilenceUsage = false
+	cmd.AddCommand(NewServeCommand())
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
@@ -36,5 +38,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewUpdateCommand())
 	cmd.AddCommand(NewVersionCommand())
 	cmd.AddCommand(tpl.NewRootCommand())
+	cmd.AddCommand(stim.NewRootCmd())
 	return cmd
 }

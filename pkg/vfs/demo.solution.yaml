@@ -3,5 +3,5 @@ targets:
   - name: demo
     output: ../tmp
     inputs:
-      - demo.module.yaml
+      - demo.module.idl
     template: apigear-io/template-cpp14

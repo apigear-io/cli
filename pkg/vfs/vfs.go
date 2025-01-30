@@ -3,10 +3,19 @@ package vfs
 import _ "embed"
 
 //go:embed demo.module.yaml
-var DemoModule []byte
+var DemoModuleYaml []byte
 
 //go:embed demo.solution.yaml
-var DemoSolution []byte
+var DemoSolutionYaml []byte
 
 //go:embed demo.scenario.yaml
-var DemoScenario []byte
+var DemoScenarioYaml []byte
+
+//go:embed demo.module.idl
+var DemoModuleIdl []byte
+
+//go:embed demo.service.js
+var DemoServiceJs []byte
+
+//go:embed demo.client.js
+var DemoClientJs []byte

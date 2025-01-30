@@ -1,40 +1,63 @@
 package helper
 
-import "sync"
+import (
+	"slices"
+	"sync"
 
-// EventHandler callback for an event.
-type EventHandler[T any] func(evt T)
+	"github.com/google/uuid"
+)
 
-// EventEmitter is a typed event emitter.
-type EventEmitter[T any] struct {
+type EventHandler[T any] func(data T)
+
+type emitterEntry[T any] struct {
+	handler EventHandler[T]
+	id      string
+}
+
+type Emitter[T any] struct {
 	sync.RWMutex
-	handlers []EventHandler[T]
+	entries map[string][]emitterEntry[T]
 }
 
-// NewEventEmitter creates a new event emitter.
-func NewEventEmitter[T any]() *EventEmitter[T] {
-	return &EventEmitter[T]{}
-}
-
-// Emit emits an event to all handlers.
-func (e *EventEmitter[T]) Emit(evt T) {
-	e.RLock()
-	defer e.RUnlock()
-	for _, handler := range e.handlers {
-		handler(evt)
+func NewEmitter[T any]() *Emitter[T] {
+	return &Emitter[T]{
+		entries: make(map[string][]emitterEntry[T]),
 	}
 }
 
-// On registers a new event handler.
-func (e *EventEmitter[T]) On(handler EventHandler[T]) {
+func (e *Emitter[T]) Add(name string, handler EventHandler[T]) func() {
 	e.Lock()
 	defer e.Unlock()
-	e.handlers = append(e.handlers, handler)
+	id := uuid.New().String()
+	e.entries[name] = append(e.entries[name], emitterEntry[T]{
+		handler: handler,
+		id:      id,
+	})
+	return func() {
+		e.Remove(name, id)
+	}
 }
 
-// Clear removes all handlers.
-func (e *EventEmitter[T]) Clear() {
+func (e *Emitter[T]) Emit(name string, data T) {
+	e.RLock()
+	defer e.RUnlock()
+	entry, ok := e.entries[name]
+	if !ok {
+		return
+	}
+	for _, entry := range entry {
+		entry.handler(data)
+	}
+}
+
+func (e *Emitter[T]) Remove(name string, id string) {
 	e.Lock()
 	defer e.Unlock()
-	e.handlers = nil
+	entry, ok := e.entries[name]
+	if !ok {
+		return
+	}
+	e.entries[name] = slices.DeleteFunc(entry, func(e emitterEntry[T]) bool {
+		return e.id == id
+	})
 }
