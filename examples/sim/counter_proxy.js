@@ -12,9 +12,6 @@ counter.decrement = function () {
     this.count--;
 }
 
-
-
-
 function main() {
     counter.$onProperty("count", function (value) {
         console.log("count changed", value);

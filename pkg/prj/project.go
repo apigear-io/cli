@@ -49,18 +49,26 @@ func InitProject(d string) (*ProjectInfo, error) {
 	}
 	// write demo module
 	target := helper.Join(d, "apigear", "demo.module.yaml")
-	if err := writeDemo(target, vfs.DemoModule); err != nil {
+	if err := writeDemo(target, vfs.DemoModuleYaml); err != nil {
+		log.Debug().Msgf("write demo module: %s", err)
+	}
+	target = helper.Join(d, "apigear", "demo.module.js")
+	if err := writeDemo(target, vfs.DemoModuleIdl); err != nil {
 		log.Debug().Msgf("write demo module: %s", err)
 	}
 	// write demo solution
 	target = helper.Join(d, "apigear", "demo.solution.yaml")
-	if err := writeDemo(target, vfs.DemoSolution); err != nil {
+	if err := writeDemo(target, vfs.DemoSolutionYaml); err != nil {
 		log.Debug().Msgf("write demo solution: %s", err)
 	}
-	// write demo scenario
-	target = helper.Join(d, "apigear", "demo.scenario.yaml")
-	if err := writeDemo(target, vfs.DemoScenario); err != nil {
-		log.Debug().Msgf("write demo scenario: %s", err)
+	// write demo simulation (client/service)
+	target = helper.Join(d, "apigear", "demo.service.js")
+	if err := writeDemo(target, vfs.DemoServiceJs); err != nil {
+		log.Debug().Msgf("write demo service: %s", err)
+	}
+	target = helper.Join(d, "apigear", "demo.client.js")
+	if err := writeDemo(target, vfs.DemoClientJs); err != nil {
+		log.Debug().Msgf("write demo client: %s", err)
 	}
 	return ReadProject(d)
 }
@@ -153,11 +161,11 @@ func AddDocument(prjDir string, docType string, name string) (string, error) {
 	var err error
 	switch docType {
 	case "module":
-		err = writeDemo(target, vfs.DemoModule)
+		err = writeDemo(target, vfs.DemoModuleYaml)
 	case "solution":
-		err = writeDemo(target, vfs.DemoSolution)
+		err = writeDemo(target, vfs.DemoSolutionYaml)
 	case "scenario":
-		err = writeDemo(target, vfs.DemoScenario)
+		err = writeDemo(target, vfs.DemoScenarioYaml)
 	default:
 		err = fmt.Errorf("invalid document type %s", docType)
 	}
