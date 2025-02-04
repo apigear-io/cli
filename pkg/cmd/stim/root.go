@@ -7,8 +7,8 @@ func NewRootCmd() *cobra.Command {
 		Use:   "stim",
 		Short: "api stimulator",
 		Long:  `api stimulator`,
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Help()
 		},
 	}
 	cmd.AddCommand(NewRunCmd())

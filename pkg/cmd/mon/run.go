@@ -24,7 +24,7 @@ func NewServerCommand() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
+				_, err = nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
 					var event mon.Event
 					err := json.Unmarshal(msg.Data, &event)
 					if err != nil {
@@ -33,6 +33,9 @@ func NewServerCommand() *cobra.Command {
 					}
 					log.Info().Msgf("<- %s %s %s %s %s", event.Timestamp.Format("15:04:05"), event.Source, event.Type, event.Symbol, event.Data)
 				})
+				if err != nil {
+					log.Error().Err(err).Msg("failed to subscribe to monitor events")
+				}
 			}
 			return nil
 		},

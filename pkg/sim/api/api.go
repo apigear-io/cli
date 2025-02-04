@@ -95,29 +95,44 @@ func OnRequest(nc *nats.Conn, mt MsgType, fn func(msg *Msg) (*Msg, error)) (*nat
 		var m Msg
 		if len(msg.Data) == 0 {
 			log.Error().Msg("empty message")
-			msg.Respond(NoData)
+			err := msg.Respond(NoData)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to respond to request")
+			}
 			return
 		}
 		err := json.Unmarshal(msg.Data, &m)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to unmarshal message")
-			msg.Respond(NoData)
+			err := msg.Respond(NoData)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to respond to request")
+			}
 			return
 		}
 		res, err := fn(&m)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to handle request")
-			msg.Respond(NoData)
+			err := msg.Respond(NoData)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to respond to request")
+			}
 			return
 		}
 		if res == nil {
-			msg.Respond(NoData)
+			err := msg.Respond(NoData)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to respond to request")
+			}
 			return
 		}
 		data, err := json.Marshal(res)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to marshal response")
-			msg.Respond(NoData)
+			err := msg.Respond(NoData)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to respond to request")
+			}
 			return
 		}
 		err = msg.Respond(data)

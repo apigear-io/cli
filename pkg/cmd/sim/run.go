@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/sim/model"
 	"github.com/nats-io/nats.go"
@@ -15,6 +17,7 @@ func NewRunCommand() *cobra.Command {
 	var natsURL string
 	var script string
 	var fn string
+	var serve bool
 
 	// cmd represents the simSvr command
 	var cmd = &cobra.Command{
@@ -26,6 +29,26 @@ In its simplest form it just answers every call and all properties are set to de
 Using a scenario you can define additional static and scripted data and behavior.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			simman := sim.GetManager()
+			netman := net.GetManager()
+			if serve {
+				err := netman.Start(&net.Options{
+					NatsHost:           "localhost",
+					NatsPort:           4222,
+					HttpAddr:           "localhost:5555",
+					SimulationProvider: simman,
+				})
+				if err != nil {
+					log.Error().Err(err).Msg("failed to start network manager")
+					return err
+				}
+				_, err = simman.CreateService(netman.NatsClientURL())
+				if err != nil {
+					return err
+				}
+				netman.OnMonitorEvent(func(event *mon.Event) {
+					log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
+				})
+			}
 			// run nats server
 			client, err := simman.CreateClient(natsURL)
 			if err != nil {
@@ -56,11 +79,18 @@ Using a scenario you can define additional static and scripted data and behavior
 					log.Error().Err(err).Msg("failed to run function")
 				}
 			}
+			if serve {
+				err := netman.Wait(cmd.Context())
+				if err != nil {
+					log.Error().Err(err).Msg("failed to wait for services")
+				}
+			}
 			return nil
 		},
 	}
 	cmd.Flags().StringVar(&natsURL, "nats-url", nats.DefaultURL, "nats server to connect to")
 	cmd.Flags().StringVar(&script, "script", "", "script to run")
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")
+	cmd.Flags().BoolVar(&serve, "serve", false, "run simulation server in the foreground")
 	return cmd
 }

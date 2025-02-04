@@ -279,11 +279,8 @@ func (m *Manager) WorldHooks(worldId string) *tools.Hook[model.SimEvent] {
 ///////////////////////////////////////////////////////////////////////////////
 
 func (m *Manager) fireEvent(event model.EventType, worldId string) {
-	err := m.hooks.Fire(&model.SimEvent{
+	m.hooks.Fire(&model.SimEvent{
 		Type:  event,
 		World: worldId,
 	})
-	if err != nil {
-		log.Error().Err(err).Msg("error firing event")
-	}
 }

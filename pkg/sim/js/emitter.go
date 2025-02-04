@@ -66,14 +66,20 @@ func (e *Emitter) Emit(event string, args ...goja.Value) {
 	e.mu.RUnlock()
 
 	for _, handler := range handlers {
-		handler.fn(nil, args...)
+		_, err := handler.fn(nil, args...)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to call event handler")
+		}
 	}
 
 	for _, handler := range e.anyHandlers {
 		anyArgs := make([]goja.Value, 0, len(args)+1)
 		anyArgs = append(anyArgs, e.vm.ToValue(event))
 		anyArgs = append(anyArgs, args...)
-		handler.fn(nil, anyArgs...)
+		_, err := handler.fn(nil, anyArgs...)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to call event handler")
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 package tpl
 
 import (
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/tpl"
 	"github.com/spf13/cobra"
 )
@@ -16,6 +17,9 @@ func NewPublishCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory")
-	cmd.MarkFlagRequired("dir")
+	err := cmd.MarkFlagRequired("dir")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	return cmd
 }

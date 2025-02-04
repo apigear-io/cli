@@ -79,7 +79,7 @@ func (h *Hook[T]) RemoveAllHooks() {
 }
 
 // FireHook calls all handlers in the list
-func (h *Hook[T]) FireHook(event T, oneOf ...func(T)) error {
+func (h *Hook[T]) FireHook(event T, oneOf ...func(T)) {
 	h.rw.RLock()
 
 	// make new entries to avoid concurrent modification
@@ -99,7 +99,6 @@ func (h *Hook[T]) FireHook(event T, oneOf ...func(T)) error {
 	for _, entry := range entries {
 		entry.h(event)
 	}
-	return nil
 }
 
 // ConnectHook connects the hook to another hook

@@ -41,8 +41,17 @@ func NewRuntime(id string) *Runtime {
 		log.Debug().Msg("js event loop initial run")
 		world := NewWorld(id, vm)
 		vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
-		vm.Set("$world", world)
-		vm.RunScript("actor.js", actorJS)
+
+		err := vm.Set("$world", world)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to set $world")
+			return
+		}
+		_, err = vm.RunScript("actor.js", actorJS)
+		if err != nil {
+			log.Error().Err(err).Msg("failed to load actor.js")
+			return
+		}
 		outerWorld = world
 		outerVm = vm
 	})
@@ -118,6 +127,7 @@ func (rt *Runtime) RunFunction(name string, args ...any) (any, error) {
 		}
 		v, err := fn(goja.Undefined(), jsArgs...)
 		if err != nil {
+			log.Error().Err(err).Str("function", name).Msg("function call failed")
 			return
 		}
 		rt.world.fireEvent(model.EventWorldCall, name, "", map[string]any{
@@ -149,7 +159,10 @@ func (rt *Runtime) JsObjectToMap(jsObj *goja.Object) map[string]any {
 	var m map[string]any
 	rt.lock.Lock()
 	defer rt.lock.Unlock()
-	rt.vm.ExportTo(jsObj, &m)
+	err := rt.vm.ExportTo(jsObj, &m)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to export js object to map")
+	}
 	return m
 }
 
@@ -206,7 +219,11 @@ func (rt *Runtime) GetProperties(actorId string) (map[string]any, error) {
 	if actor == nil {
 		return nil, fmt.Errorf("actor %s not found", actorId)
 	}
-	rt.vm.ExportTo(actor.GetState(), &state)
+	err := rt.vm.ExportTo(actor.GetState(), &state)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to export actor state")
+		return nil, err
+	}
 	return state, nil
 }
 

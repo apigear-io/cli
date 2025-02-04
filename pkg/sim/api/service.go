@@ -131,7 +131,10 @@ func (s *Service) Close() error {
 	for _, unsub := range s.unsubs {
 		unsub()
 	}
-	s.nc.Drain()
+	err := s.nc.Drain()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -305,7 +308,10 @@ func (s *Service) worldStatus(msg *Msg) (*Msg, error) {
 func (s *Service) createActor(msg *Msg) (*Msg, error) {
 	log.Info().Str("world", msg.World).Str("actor", msg.Actor).Msg("creating actor")
 	state := make(map[string]any)
-	s.manager.CreateActor(msg.World, msg.Actor, state)
+	_, err := s.manager.CreateActor(msg.World, msg.Actor, state)
+	if err != nil {
+		return nil, err
+	}
 	return &Msg{
 		Type:  msg.Type,
 		World: msg.World,

@@ -99,7 +99,13 @@ func (s *NetworkManager) Wait(ctx context.Context) error {
 	log.Info().Msg("servces running...")
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	defer s.Stop()
+	defer func() {
+		err := s.Stop()
+		if err != nil {
+			log.Error().Err(err).Msg("failed to stop services")
+		}
+		log.Info().Msg("services stopped")
+	}()
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -136,7 +142,10 @@ func (s *NetworkManager) StartNATS() error {
 func (s *NetworkManager) StopNATS() error {
 	log.Info().Msg("stop nats server")
 	if s.nc != nil {
-		s.nc.Drain()
+		err := s.nc.Drain()
+		if err != nil {
+			return err
+		}
 	}
 	if s.natsServer != nil {
 		return s.natsServer.Shutdown()
@@ -240,7 +249,7 @@ func (s *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
 		return
 	}
 	log.Debug().Msg("subscribe to monitor events")
-	nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
+	_, err = nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
 		var event mon.Event
 		err := json.Unmarshal(msg.Data, &event)
 		if err != nil {
@@ -249,4 +258,7 @@ func (s *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
 		}
 		fn(&event)
 	})
+	if err != nil {
+		log.Error().Err(err).Msg("failed to subscribe to monitor events")
+	}
 }

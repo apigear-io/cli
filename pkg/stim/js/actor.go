@@ -65,7 +65,11 @@ func NewJsActor(objectId string, node *jsNode) *jsActor {
 	a.sink = &sink{actor: a}
 	// register sink
 	log.Info().Msgf("-> register sink for %s", a.objectId)
-	node.node.Registry().AddObjectSink(a.sink)
+	err := node.node.Registry().AddObjectSink(a.sink)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to register sink")
+		return nil
+	}
 	return a
 }
 
@@ -113,7 +117,10 @@ func (a *jsActor) Unlink() error {
 // SetProperties sets the properties of the actor
 func (a *jsActor) SetProperties(properties core.KWArgs) error {
 	for k, v := range properties {
-		a.node.SetProperty(a.objectId, k, v)
+		err := a.node.SetProperty(a.objectId, k, v)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

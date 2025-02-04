@@ -59,7 +59,11 @@ func (a *Actor) Id() string {
 
 // SetProperty sets the value of a property
 func (a *Actor) SetProperty(key string, value goja.Value) {
-	a.state.Set(key, value)
+	err := a.state.Set(key, value)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to set property")
+		return
+	}
 	a.stateEmitter.Emit(key, value)
 	a.fireEvent(model.EventActorChanged, key, map[string]any{
 		"value": value,
