@@ -32,6 +32,7 @@ type KindType string
 
 const (
 	TypeVoid      KindType = "void"
+	TypeAny       KindType = "any"
 	TypeBool      KindType = "bool"
 	TypeInt       KindType = "int"
 	TypeInt32     KindType = "int32"
@@ -170,6 +171,10 @@ func (t *TypedNode) IsVoid() bool {
 // IsNotVoid returns true if the schema is not void
 func (s Schema) IsNotVoid() bool {
 	return s.Type != "void"
+}
+
+func (t *TypedNode) IsAny() bool {
+	return t.Type == "any"
 }
 
 func (t *TypedNode) IsInt() bool {

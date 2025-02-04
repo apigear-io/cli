@@ -46,15 +46,21 @@ func CreateCustomTemplate(dir string, lang string) error {
 		return fmt.Errorf("unsupported language: %s", lang)
 	}
 	log.Info().Msgf("init template %s", dir)
-	os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return err
+	}
 	target := helper.Join(dir, "rules.yaml")
 	log.Info().Msgf("write %s", target)
-	err := os.WriteFile(target, rules, 0644)
+	err = os.WriteFile(target, rules, 0644)
 	if err != nil {
 		return err
 	}
 	target = helper.Join(dir, "templates")
-	os.MkdirAll(target, 0755)
+	err = os.MkdirAll(target, 0755)
+	if err != nil {
+		return err
+	}
 	target = helper.Join(target, apiTplName)
 	log.Info().Msgf("write %s", target)
 	err = os.WriteFile(target, apiTpl, 0644)

@@ -1,7 +1,6 @@
 package cfg
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 )
@@ -99,7 +98,7 @@ func GetBuildInfo(name string) BuildInfo {
 	var info BuildInfo
 	err := v.UnmarshalKey("build."+name, &info)
 	if err != nil {
-		fmt.Printf("error marshalling build info: %s", err)
+		log.Printf("error marshalling build info: %s", err)
 	}
 	return info
 }

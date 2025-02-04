@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/prj"
 
 	"github.com/spf13/cobra"
@@ -41,6 +42,9 @@ func NewPackCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "project directory to pack")
-	cmd.MarkFlagRequired("dir")
+	err := cmd.MarkFlagRequired("dir")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	return cmd
 }

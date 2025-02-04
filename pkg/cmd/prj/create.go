@@ -26,6 +26,9 @@ func CreateProjectCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "project directory to create")
-	cmd.MarkFlagRequired("dir")
+	err := cmd.MarkFlagRequired("dir")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	return cmd
 }

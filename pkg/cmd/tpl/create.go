@@ -1,6 +1,7 @@
 package tpl
 
 import (
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/tpl"
 	"github.com/spf13/cobra"
 )
@@ -17,8 +18,14 @@ func NewCreateCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory to init")
-	cmd.MarkFlagRequired("dir")
+	err := cmd.MarkFlagRequired("dir")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	cmd.Flags().StringVarP(&lang, "lang", "l", "cpp", "language to init [cpp, go, py, rs, ts, ue]")
-	cmd.MarkFlagRequired("lang")
+	err = cmd.MarkFlagRequired("lang")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	return cmd
 }
