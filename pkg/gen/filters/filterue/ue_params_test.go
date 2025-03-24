@@ -59,10 +59,10 @@ func TestParamsSymbols(t *testing.T) {
 
 		{"test", "Test4", "opEnum", "ETestEnum1 Param1"},
 		{"test", "Test4", "opStruct", "const FTestStruct1& Param1"},
-		{"test", "Test4", "opInterface", "FTestInterface1* Param1"},
+		{"test", "Test4", "opInterface", "const TScriptInterface<ITestInterface1Interface>& Param1"},
 		{"test", "Test4", "opEnumArray", "const TArray<ETestEnum1>& Param1"},
 		{"test", "Test4", "opStructArray", "const TArray<FTestStruct1>& Param1"},
-		{"test", "Test4", "opInterfaceArray", "const TArray<FTestInterface1*>& Param1"},
+		{"test", "Test4", "opInterfaceArray", "const TArray<TScriptInterface<ITestInterface1Interface>>& Param1"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
@@ -92,7 +92,7 @@ func TestParamsMultiple(t *testing.T) {
 		{"test", "Test5", "opStringString", "const FString& Param1, const FString& Param2"},
 		{"test", "Test5", "opEnumEnum", "ETestEnum1 Param1, ETestEnum1 Param2"},
 		{"test", "Test5", "opStructStruct", "const FTestStruct1& Param1, const FTestStruct1& Param2"},
-		{"test", "Test5", "opInterfaceInterface", "FTestInterface1* Param1, FTestInterface1* Param2"},
+		{"test", "Test5", "opInterfaceInterface", "const TScriptInterface<ITestInterface1Interface>& Param1, const TScriptInterface<ITestInterface1Interface>& Param2"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {

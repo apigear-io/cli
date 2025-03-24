@@ -59,10 +59,10 @@ func TestConstTypeSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "ETestEnum1"},
 		{"test", "Test2", "propStruct", "const FTestStruct1&"},
-		{"test", "Test2", "propInterface", "FTestInterface1*"},
+		{"test", "Test2", "propInterface", "const TScriptInterface<ITestInterface1Interface>&"},
 		{"test", "Test2", "propEnumArray", "const TArray<ETestEnum1>&"},
 		{"test", "Test2", "propStructArray", "const TArray<FTestStruct1>&"},
-		{"test", "Test2", "propInterfaceArray", "const TArray<FTestInterface1*>&"},
+		{"test", "Test2", "propInterfaceArray", "const TArray<TScriptInterface<ITestInterface1Interface>>&"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {

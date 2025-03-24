@@ -44,7 +44,7 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeExtern:
 		text = ueExtern(schema.GetExtern()).Name
 	case model.TypeInterface:
-		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
+		text = fmt.Sprintf("TScriptInterface<%sI%s%sInterface>", prefix, moduleId, schema.Type)
 	default:
 		return "xxx", fmt.Errorf("ueReturn unknown schema %s", schema.Dump())
 	}

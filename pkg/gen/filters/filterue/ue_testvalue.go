@@ -61,7 +61,7 @@ func ToTestValueString(prefix string, schema *model.Schema) (string, error) {
 		}
 	case model.TypeInterface:
 		symbol := schema.GetInterface()
-		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
+		text = fmt.Sprintf("TScriptInterface<%sI%s%sInterface>()", prefix, moduleId, symbol.Name)
 	default:
 		return "xxx", fmt.Errorf("ueDefault unknown schema %s", schema.Dump())
 	}
