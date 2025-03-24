@@ -42,7 +42,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeExtern:
 		text = ueExtern(schema.GetExtern()).Name
 	case model.TypeInterface:
-		text = fmt.Sprintf("%sF%s%s*", prefix, moduleId, schema.Type)
+		text = fmt.Sprintf("TScriptInterface<%sI%s%sInterface>", prefix, moduleId, schema.Type)
 	default:
 		return "xxx", fmt.Errorf("ueType unknown schema %s", schema.Dump())
 	}
@@ -71,7 +71,7 @@ func ToTypeString(prefix string, schema *model.Schema) (string, error) {
 		case model.TypeExtern:
 			text = fmt.Sprintf("TArray<%s>", ueExtern(schema.GetExtern()).Name)
 		case model.TypeInterface:
-			text = fmt.Sprintf("TArray<%sF%s%s*>", prefix, moduleId, schema.Type)
+			text = fmt.Sprintf("TArray<TScriptInterface<%sI%s%sInterface>>", prefix, moduleId, schema.Type)
 		default:
 			return "xxx", fmt.Errorf("ueType unknown array schema %s", schema.Dump())
 		}

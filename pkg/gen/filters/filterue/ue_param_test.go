@@ -58,10 +58,10 @@ func TestParamSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "ETestEnum1 PropEnum"},
 		{"test", "Test2", "propStruct", "const FTestStruct1& PropStruct"},
-		{"test", "Test2", "propInterface", "FTestInterface1* PropInterface"},
+		{"test", "Test2", "propInterface", "const TScriptInterface<ITestInterface1Interface>& PropInterface"},
 		{"test", "Test2", "propEnumArray", "const TArray<ETestEnum1>& PropEnumArray"},
 		{"test", "Test2", "propStructArray", "const TArray<FTestStruct1>& PropStructArray"},
-		{"test", "Test2", "propInterfaceArray", "const TArray<FTestInterface1*>& PropInterfaceArray"},
+		{"test", "Test2", "propInterfaceArray", "const TArray<TScriptInterface<ITestInterface1Interface>>& PropInterfaceArray"},
 	}
 	syss := loadTestSystems(t)
 	for _, sys := range syss {
