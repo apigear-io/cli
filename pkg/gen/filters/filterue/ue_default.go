@@ -3,6 +3,7 @@ package filterue
 import (
 	"fmt"
 
+	"github.com/apigear-io/cli/pkg/gen/filters/common"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/ettle/strcase"
@@ -39,7 +40,7 @@ func ToDefaultString(prefix string, schema *model.Schema) (string, error) {
 		abbreviation := helper.Abbreviate(typename)
 		// upper case first letter
 		// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
-		text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, strcase.ToCase(member.Name, strcase.UpperCase, '\x00'))
+		text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, common.CamelTitleCase(member.Name))
 	case model.TypeStruct:
 		symbol := schema.GetStruct()
 		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
