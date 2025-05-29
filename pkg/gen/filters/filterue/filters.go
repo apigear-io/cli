@@ -17,4 +17,20 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["ueVars"] = ueVars
 	fm["ueIsStdSimpleType"] = ueIsStdSimpleType
 	fm["ueExtern"] = ueExtern
+	fm["ueJavaPath"] = ueJavaPath
+	fm["ueJavaPckgName"] = ueJavaPckgName
+	fm["ueGetModuleName"] = ueGetModuleName
+	fm["ueJniJavaParam"] = ueJniJavaParam
+	fm["ueJniJavaParams"] = ueJniJavaParams
+	fm["ueJniClassPathPrefix"] = ueJniClassPathPrefix
+	fm["javaOnSingalStyle"] = javaOnSingalStyle
+	fm["javaOnPropertyChangedStyle"] = javaOnPropertyChangedStyle
+	fm["ueJniToReturnType"] = ueToReturnType
+	fm["jniNameSetProperty"] = jniNameSetProperty
+	fm["jniNameGetProperty"] = jniNameGetProperty
+	fm["jniNameOperation"] = jniNameOperation
+	fm["ueJniSignatureType"] = ueJniSignatureType
+	fm["ueJniJavaSignatureParams"] = ueJniJavaSignatureParams
+	fm["ueToEnvNameType"] = ueToEnvNameType
+	fm["ueJniJavaSignatureParam"] = ueJniJavaSignatureParam
 }
