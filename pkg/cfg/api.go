@@ -2,7 +2,6 @@ package cfg
 
 import (
 	"fmt"
-	"log"
 	"path/filepath"
 )
 
@@ -86,11 +85,7 @@ func RecentEntries() []string {
 func SetBuildInfo(name string, info BuildInfo) {
 	rw.Lock()
 	v.Set("build."+name, info)
-	err := v.WriteConfig()
 	rw.Unlock()
-	if err != nil {
-		log.Printf("error writing config: %v", err)
-	}
 }
 
 func GetBuildInfo(name string) BuildInfo {
