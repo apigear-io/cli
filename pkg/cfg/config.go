@@ -59,7 +59,6 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	nv.AutomaticEnv() // read in environment variables that match
 
 	cacheDir := helper.Join(cfgDir, "cache")
-	nv.Set(KeyCacheDir, cacheDir)
 
 	err := helper.MakeDir(cacheDir)
 	if err != nil {
@@ -67,13 +66,13 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	}
 
 	registryDir := helper.Join(cfgDir, "registry")
-	nv.Set(KeyRegistryDir, registryDir)
 
 	err = helper.MakeDir(registryDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create registry dir: %w", err)
 	}
 
+	nv.SetDefault(KeyCacheDir, cacheDir)
 	nv.SetDefault(KeyRegistryUrl, registryUrl)
 	nv.SetDefault(KeyRegistryDir, registryDir)
 	nv.SetDefault(KeyServerPort, 4333)
