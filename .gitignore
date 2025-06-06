@@ -37,3 +37,6 @@ coverage.txt
 
 // ignore antlr generated files
 .antlr/
+
+
+**/__debug*

@@ -26,6 +26,7 @@ func NewRootCommand() *cobra.Command {
 	}
 	cmd.SilenceErrors = false
 	cmd.SilenceUsage = false
+	cmd.AddCommand(NewServeCommand())
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())

@@ -34,6 +34,8 @@ func ToReturnString(prefix string, schema *model.Schema) (string, error) {
 		text = "float64"
 	case model.TypeBool:
 		text = "bool"
+	case model.TypeAny:
+		text = "any"
 	case model.TypeExtern:
 		x := schema.LookupExtern(schema.Import, schema.Type)
 		if x == nil {

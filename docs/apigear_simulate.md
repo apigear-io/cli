@@ -4,7 +4,7 @@ Simulate API calls
 
 ### Synopsis
 
-Simulate api calls using either a dynamic JS script or a static YAML document
+Simulate api calls using either a dynamic JS script
 
 ### Options
 

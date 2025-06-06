@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+// TODO: there is already a ndjon scanner in helper package
+
 // ReadJsonEvents reads monitor events from a json stream file
 func ReadJsonEvents(fn string) ([]Event, error) {
 	var events []Event

@@ -1,0 +1,32 @@
+module vehicle
+
+struct Vec2D {
+    x: float
+    y: float
+}
+
+interface State {
+    location: Vec2D
+    speed: int
+    rpm: int
+    fuelLevel: float
+    fuelLevelWarning: bool
+    temperature: float
+    overheatWarning: bool
+}
+
+interface Indicators {
+    checkEngine: bool
+    oilPressure: bool
+    battery: bool
+    airbag: bool
+    brake: bool
+    seatbelt: bool
+    tractionControl: bool
+    highBeam: bool
+}
+
+interface Commands {
+    turnOn()
+    turnOff()
+}

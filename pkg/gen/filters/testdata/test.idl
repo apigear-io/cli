@@ -11,6 +11,7 @@ interface Test1 {
     propFloat64: float64
     propString: string
     propBytes: bytes
+    propAny: any
     propBoolArray: bool[]
     propIntArray: int[]
     propInt32Array: int32[]
@@ -20,6 +21,7 @@ interface Test1 {
     propFloat64Array: float64[]
     propStringArray: string[]
     propBytesArray: bytes[]
+    propAnyArray: any[]
     prop_Bool: bool
     prop_bool: bool
     prop_1: bool
@@ -45,6 +47,7 @@ interface Test3 {
     opFloat64(param1: float64): float64
     opString(param1: string): string
     opBytes(param1: bytes): bytes
+    opAny(param1: any): any
     opBoolArray(param1: bool[]): bool[]
     opIntArray(param1: int[]): int[]
     opInt32Array(param1: int32[]): int32[]
@@ -54,6 +57,7 @@ interface Test3 {
     opFloat64Array(param1: float64[]): float64[]
     opStringArray(param1: string[]): string[]
     opBytesArray(param1: bytes[]): bytes[]
+    opAnyArray(param1: any[]): any[]
     op_Bool(param_Bool: bool): bool
     op_bool(param_bool: bool): bool
     op_1(param_1: bool): bool
@@ -74,6 +78,7 @@ interface Test5 {
     opFloatFloat(param1: float, param2: float): float
     opStringString(param1: string, param2: string): string
     opBytesBytes(param1: bytes, param2: bytes): bytes
+    opAnyAny(param1: any, param2: any): any
     opEnumEnum(param1: Enum1, param2: Enum1): Enum1
     opStructStruct(param1: Struct1, param2: Struct1): Struct1
     opInterfaceInterface(param1: Interface1, param2: Interface1): Interface1
@@ -89,6 +94,7 @@ interface Test6 {
     opFloat64(): float64
     opString(): string
     opBytes(): bytes
+    opAny(): any
     opVoid()
     opEnum(): Enum1
     opStruct(): Struct1

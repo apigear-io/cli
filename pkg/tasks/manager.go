@@ -3,9 +3,9 @@ package tasks
 import (
 	"context"
 	"errors"
-	"sync"
 
 	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/sasha-s/go-deadlock"
 )
 
 // ErrTaskNotFound is returned when a task is not found
@@ -13,16 +13,16 @@ var ErrTaskNotFound = errors.New("task not found")
 
 // TaskManager allows you to create tasks and run them
 type TaskManager struct {
-	sync.RWMutex
+	deadlock.RWMutex
+	helper.Hook[TaskEvent]
 	tasks map[string]*TaskItem
-	*helper.EventEmitter[*TaskEvent]
 }
 
 // NewTaskManager creates a new task manager
 func NewTaskManager() *TaskManager {
 	return &TaskManager{
-		tasks:        make(map[string]*TaskItem),
-		EventEmitter: helper.NewEventEmitter[*TaskEvent](),
+		tasks: make(map[string]*TaskItem),
+		Hook:  helper.Hook[TaskEvent]{},
 	}
 }
 
@@ -50,7 +50,7 @@ func (tm *TaskManager) AddTask(task *TaskItem) {
 	tm.Lock()
 	defer tm.Unlock()
 	tm.tasks[task.name] = task
-	tm.Emit(NewTaskEvent(task, TaskStateAdded))
+	tm.FireHook(NewTaskEvent(task, TaskStateAdded))
 }
 
 // RmTask removes a task from the task manager
@@ -63,7 +63,7 @@ func (tm *TaskManager) RmTask(name string) error {
 	tm.Lock()
 	defer tm.Unlock()
 	delete(tm.tasks, name)
-	tm.Emit(NewTaskEvent(task, TaskStateRemoved))
+	tm.Hook.FireHook(NewTaskEvent(task, TaskStateRemoved))
 	return nil
 }
 
@@ -84,14 +84,14 @@ func (tm *TaskManager) Run(ctx context.Context, name string) error {
 	if task == nil {
 		return ErrTaskNotFound
 	}
-	tm.Emit(NewTaskEvent(task, TaskStateRunning))
+	tm.FireHook(NewTaskEvent(task, TaskStateRunning))
 	err := task.Run(ctx)
 	if err != nil {
 		log.Error().Err(err).Str("task", name).Msg("failed to run task")
-		tm.Emit(NewTaskEvent(task, TaskStateFailed))
+		tm.FireHook(NewTaskEvent(task, TaskStateFailed))
 		return err
 	}
-	tm.Emit(NewTaskEvent(task, TaskStateFinished))
+	tm.FireHook(NewTaskEvent(task, TaskStateFinished))
 	return nil
 }
 
@@ -106,7 +106,7 @@ func (tm *TaskManager) Watch(ctx context.Context, name string, dependencies ...s
 		log.Error().Err(err).Str("task", name).Msg("failed to run task")
 	}
 	go task.Watch(ctx, dependencies...)
-	tm.Emit(NewTaskEvent(task, TaskStateWatching))
+	tm.FireHook(NewTaskEvent(task, TaskStateWatching))
 	return nil
 }
 
@@ -137,7 +137,7 @@ func (tm *TaskManager) Cancel(name string) error {
 	}
 	task.CancelWatch()
 	task.Cancel()
-	tm.Emit(NewTaskEvent(task, TaskStateStopped))
+	tm.FireHook(NewTaskEvent(task, TaskStateStopped))
 	return nil
 }
 

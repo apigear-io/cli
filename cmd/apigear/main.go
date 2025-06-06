@@ -25,7 +25,7 @@ func main() {
 		Date:    date,
 	})
 
-	log.Debug().Msgf("version: %s-%s-%s", version, commit, date)
+	log.Info().Msgf("apigear-cli version: %s-%s-%s", version, commit, date)
 	err := cmd.Run()
 	if err != nil {
 		os.Exit(1)

@@ -9,6 +9,8 @@ import (
 	"github.com/apigear-io/cli/pkg/log"
 )
 
+// TODO: there is already a ndjon scanner in helper package
+
 // NDJSONScanner scans a reader line by line and writes to the writer.
 type NDJSONScanner struct {
 	sleep  time.Duration

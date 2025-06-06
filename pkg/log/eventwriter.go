@@ -25,7 +25,7 @@ func (w *EventLogWriter) Write(p []byte) (n int, err error) {
 	if eventEmitter != nil {
 		event := map[string]interface{}{}
 		d := json.NewDecoder(bytes.NewReader(p))
-		d.UseNumber()
+		// d.UseNumber()
 		err = d.Decode(&event)
 		if err != nil {
 			return 0, err

@@ -7,6 +7,10 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	MonitorSubject = "mon"
+)
+
 // EventType is the type of event.
 type EventType string
 
@@ -34,6 +38,10 @@ type Event struct {
 	Timestamp time.Time `json:"timestamp" yaml:"timestamp" csv:"timestamp"`
 	Symbol    string    `json:"symbol" yaml:"symbol" csv:"symbol"`
 	Data      Payload   `json:"data" yaml:"data" csv:"data"`
+}
+
+func (e *Event) Subject() string {
+	return "mon." + e.Source
 }
 
 // EventFactory is used to create events.
@@ -91,4 +99,4 @@ func (f EventFactory) Sanitize(event *Event) *Event {
 	return event
 }
 
-var Emitter = helper.NewEventEmitter[*Event]()
+var Emitter = helper.Hook[Event]{}

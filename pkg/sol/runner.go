@@ -32,7 +32,7 @@ func (r *Runner) TaskFiles() []string {
 }
 
 func (r *Runner) OnTask(fn func(*tasks.TaskEvent)) {
-	r.tm.On(fn)
+	r.tm.AddHook(fn)
 }
 
 func (r *Runner) RunSource(ctx context.Context, source string, force bool) error {
