@@ -170,3 +170,56 @@ Logging is done using zerolog (https://github.com/rs/zerolog). The logging is co
 To create a new release, we use github actions (see `.github/workflows/release.yml`). The release is created using goreleaser (https://goreleaser.com/). The release is created when a new tag is pushed to the repository.
 
 The release configuration is defined in `.goreleaser.yaml`.
+
+
+## Networking
+
+The ApiGear cli creates several network servers to communicate with other components. It has a monitoring endpoint for API traffic as also an ObjectLink ws endpoint for simulation. Additionally it exposes a NATS endpoint for inspecting the message routing.
+
+To manage all these andpoints there is a facade calles the network maanger (see `pkg/net/manager.go`). To bring up all these endpoints. When you run apigear serve the network manager will be started and the endpoints will be available at the following addresses:
+
+- http://localhost:5555/monitor/{source}
+- ws://localhost:5555/ws
+- nats://localhost:4222
+
+Here a short diagram to show the connection between the components:
+
+```mermaid
+graph TD
+    httpMon
+    httpMon
+    wsOlink
+    nats
+    simClient
+    simService
+    simManager
+    wsOlink --> simClient
+    simClient --> nats
+    nats --> simService
+    httpMon --> simClient
+    httpServ --> httpMon
+    httpServ --> wsOlink 
+    cli --> simClient
+    simService --> simManager
+```
+
+At the end all traffic is routed though NATS to allow us to record the message flow and to inspect the message for later API flow analysis.
+
+## Simulation
+
+The simulation is done using an embedded JS engine (https://github.com/dop251/goja) and a Go based simulation engine based on worlds and actors (objects). Each world can run a simulation script and it's possible to call actor functions or world level functions. With this we can easily simulate complex systems.
+
+```mermaid
+graph TD
+    nats
+    simClient
+    simService
+    simManager
+    simClient --> nats
+    nats --> simService
+    simService --> simManager
+    simManager --> world
+    world --> actors
+```
+
+So to use the simulation we need to start an embedded NATS server with the attached simService which uses the simManager to orchestrate the simulations. The simManager uses the world and actors to orchestrate the simulation. The world can run a simulation script and it's possible to call actor functions or world level functions using the simClient which uses the nats connection to send messages to the simService and vice versa.

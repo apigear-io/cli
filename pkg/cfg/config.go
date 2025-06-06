@@ -106,7 +106,16 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	// If a config file is found, read it in.
 	err = nv.ReadInConfig()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+		// try to write a new config file
+		err = nv.WriteConfigAs(cfgFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to write config file %s: %w", cfgFile, err)
+		}
+		// try to read the new config file
+		err = nv.ReadInConfig()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read config file %s: %w", cfgFile, err)
+		}
 	}
 	return nv, nil
 }

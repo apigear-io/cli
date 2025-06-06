@@ -65,7 +65,9 @@ primitiveSchema:
 	| name = 'float32'
 	| name = 'float64'
 	| name = 'string'
-	| name = 'bytes';
+	| name = 'bytes'
+	| name = 'any'
+	| name = 'void';
 
 symbolSchema: name = IDENTIFIER;
 

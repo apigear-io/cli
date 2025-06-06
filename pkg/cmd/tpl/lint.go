@@ -2,6 +2,7 @@ package tpl
 
 import (
 	"github.com/apigear-io/cli/pkg/gen"
+	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/spf13/cobra"
 )
@@ -28,6 +29,9 @@ func NewLintCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "template directory")
-	cmd.MarkFlagRequired("dir")
+	err := cmd.MarkFlagRequired("dir")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to mark flag required")
+	}
 	return cmd
 }

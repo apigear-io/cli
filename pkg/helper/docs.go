@@ -25,8 +25,8 @@ func GetDocumentType(path string) string {
 	if strings.HasSuffix(path, ".solution.yaml") {
 		return "solution"
 	}
-	if strings.HasSuffix(path, ".scenario.yaml") {
-		return "scenario"
+	if strings.HasSuffix(path, ".js") {
+		return "simulation"
 	}
 	return "unknown"
 }

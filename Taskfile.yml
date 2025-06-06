@@ -39,6 +39,10 @@ tasks:
     desc: Run tests on CI
     cmds:
       - go test -failfast -race ./...
+  test:nats:
+    desc: Run tests with nats
+    cmds:
+      - go test -tags=nats ./...
   cover:
     desc: Show coverage
     cmds:

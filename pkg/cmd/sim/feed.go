@@ -35,17 +35,17 @@ func (s *ObjectSink) ObjectId() string {
 	return s.objectId
 }
 
-func (s *ObjectSink) OnSignal(signalId string, args core.Args) {
+func (s *ObjectSink) HandleSignal(signalId string, args core.Args) {
 	log.Info().Msgf("<- signal %s(%v)", signalId, args)
 }
-func (s *ObjectSink) OnPropertyChange(propertyId string, value core.Any) {
+func (s *ObjectSink) HandlePropertyChange(propertyId string, value core.Any) {
 	log.Info().Msgf("<- property %s = %v", propertyId, value)
 }
-func (s *ObjectSink) OnInit(objectId string, props core.KWArgs, node *client.Node) {
+func (s *ObjectSink) HandleInit(objectId string, props core.KWArgs, node *client.Node) {
 	s.objectId = objectId
 	log.Info().Msgf("<- init %s with %v", objectId, props)
 }
-func (s *ObjectSink) OnRelease() {
+func (s *ObjectSink) HandleRelease() {
 	log.Info().Msgf("<- release %s", s.objectId)
 	s.objectId = ""
 }
@@ -132,19 +132,15 @@ func handleNodeData(node *client.Node, data []byte) error {
 	switch m[0] {
 	case core.MsgLink:
 		objectId := m.AsLink()
-		log.Info().Msgf("-> link %s", objectId)
 		node.LinkRemoteNode(objectId)
 	case core.MsgUnlink:
 		objectId := m.AsLink()
-		log.Info().Msgf("-> unlink %s", objectId)
 		node.UnlinkRemoteNode(objectId)
 	case core.MsgSetProperty:
 		propertyId, value := m.AsSetProperty()
-		log.Info().Msgf("-> set %s = %v", propertyId, value)
 		node.SetRemoteProperty(propertyId, value)
 	case core.MsgInvoke:
 		_, methodId, args := m.AsInvoke()
-		log.Info().Msgf("-> invoke %s(%v)", methodId, args)
 		node.InvokeRemote(methodId, args, func(arg client.InvokeReplyArg) {
 			log.Info().Msgf("<- reply %s : %v", arg.Identifier, arg.Value)
 		})

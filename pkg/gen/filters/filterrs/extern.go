@@ -10,11 +10,6 @@ type RsExtern struct {
 	Version string
 }
 
-func parseRsExtern(schema *model.Schema) RsExtern {
-	xe := schema.GetExtern()
-	return rsExtern(xe)
-}
-
 func rsExtern(xe *model.Extern) RsExtern {
 	name := xe.Meta.GetString("rs.type")
 	crate := xe.Meta.GetString("rs.crate")
