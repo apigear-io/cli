@@ -37,6 +37,9 @@ func (s *OlinkServer) Close() {
 }
 
 func (s *OlinkServer) RegisterSource(source remote.IObjectSource) {
+	// make sure source is not registered yet
+	s.UnregisterSource(source)
+	// register source
 	err := s.registry.AddObjectSource(source)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to register source")
