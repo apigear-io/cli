@@ -18,7 +18,7 @@ service.increment = function() {
 
 service.reset = function() {
     service.count = 0
-    service.$.emitSignal("reset", service.getProperty("count"));
+    service.$.emitSignal("reset", service.count);
 }
 
 
