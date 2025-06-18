@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/objectlink-core-go/olink/client"
-	"github.com/rs/zerolog/log"
 )
 
 type Channel struct {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/apigear-io/objectlink-core-go/log"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
 )

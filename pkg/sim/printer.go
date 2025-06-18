@@ -3,7 +3,7 @@ package sim
 import (
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	zlog "github.com/rs/zerolog/log"
 )
 
 type LogPrinter struct {
@@ -12,7 +12,7 @@ type LogPrinter struct {
 
 func NewLogPrinter(logger *zerolog.Logger) *LogPrinter {
 	if logger == nil {
-		logger = &log.Logger
+		logger = &zlog.Logger
 	}
 	return &LogPrinter{logger: logger}
 }

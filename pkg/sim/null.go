@@ -3,7 +3,6 @@ package sim
 import (
 	"github.com/apigear-io/objectlink-core-go/olink/client"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
-	"github.com/rs/zerolog/log"
 )
 
 type NullConnector struct {

@@ -8,7 +8,6 @@ import (
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/eventloop"
 	"github.com/dop251/goja_nodejs/require"
-	"github.com/rs/zerolog/log"
 
 	_ "embed"
 )
@@ -42,7 +41,7 @@ func NewEngine(opts EngineOptions) *Engine {
 	if opts.Connector == nil {
 		opts.Connector = NewOlinkConnector()
 	}
-	printer := NewLogPrinter(&log.Logger)
+	printer := NewLogPrinter(&log)
 	require.RegisterCoreModule(console.ModuleName, console.RequireWithPrinter(printer))
 	registry := require.NewRegistry(require.WithLoader(require.DefaultSourceLoader), require.WithGlobalFolders(opts.WorkDir))
 	e := &Engine{
@@ -104,6 +103,14 @@ func (e *Engine) RunFunction(name string, args ...any) {
 			log.Error().Err(err).Msg("Failed to run function")
 		}
 	})
+}
+
+func (e *Engine) CompileScript(name string, src string) error {
+	_, err := goja.Compile(name, src, true)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (e *Engine) Close() {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dop251/goja"
-	"github.com/rs/zerolog/log"
 )
 
 type World struct {

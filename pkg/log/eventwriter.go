@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	eventEmitter func(e map[string]interface{})
+	eventEmitter func(e map[string]any)
 	bytesEmitter func(s string)
 )
 
@@ -23,7 +23,7 @@ func (w *EventLogWriter) Write(p []byte) (n int, err error) {
 		bytesEmitter(string(p))
 	}
 	if eventEmitter != nil {
-		event := map[string]interface{}{}
+		event := map[string]any{}
 		d := json.NewDecoder(bytes.NewReader(p))
 		// d.UseNumber()
 		err = d.Decode(&event)
@@ -36,7 +36,7 @@ func (w *EventLogWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func OnReportEvent(handler func(e map[string]interface{})) {
+func OnReportEvent(handler func(e map[string]any)) {
 	eventEmitter = handler
 }
 

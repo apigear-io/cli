@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 )
 
 func nextId() string {

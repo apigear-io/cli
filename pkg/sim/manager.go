@@ -2,7 +2,6 @@ package sim
 
 import (
 	"github.com/apigear-io/cli/pkg/net"
-	"github.com/rs/zerolog/log"
 )
 
 type ManagerOptions struct {

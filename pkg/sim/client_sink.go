@@ -5,7 +5,6 @@ import (
 
 	"github.com/apigear-io/objectlink-core-go/olink/client"
 	"github.com/apigear-io/objectlink-core-go/olink/core"
-	"github.com/rs/zerolog/log"
 )
 
 type ObjectClientSink struct {

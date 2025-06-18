@@ -5,7 +5,6 @@ import (
 
 	"github.com/apigear-io/objectlink-core-go/olink/core"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
-	"github.com/rs/zerolog/log"
 )
 
 type OLinkSource struct {

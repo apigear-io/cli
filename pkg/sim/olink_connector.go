@@ -6,7 +6,6 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/objectlink-core-go/olink/client"
 	"github.com/apigear-io/objectlink-core-go/olink/ws"
-	"github.com/rs/zerolog/log"
 )
 
 var nextChannelId = helper.MakeIdGenerator("c")
