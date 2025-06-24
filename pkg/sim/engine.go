@@ -55,7 +55,9 @@ func NewEngine(opts EngineOptions) *Engine {
 	e.loop.RunOnLoop(func(rt *goja.Runtime) {
 		rt.SetFieldNameMapper(goja.UncapFieldNameMapper())
 		e.world.register(rt)
-		rt.RunScript("proxy.js", proxyJS)
+		if _, err := rt.RunScript("proxy.js", proxyJS); err != nil {
+			log.Error().Err(err).Msg("failed to run proxy.js script")
+		}
 	})
 	return e
 }

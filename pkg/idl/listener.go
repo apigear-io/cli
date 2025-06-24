@@ -178,10 +178,7 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 	IsNotNil(o.module)
 	IsNil(o.property)
 	name := c.GetName().GetText()
-	readOnly := false
-	if c.GetReadonly() != nil {
-		readOnly = true
-	}
+	readOnly := c.GetReadonly() != nil
 	o.kind = model.KindProperty
 	o.property = model.NewTypedNode(name, model.KindProperty)
 	o.property.IsReadOnly = readOnly
@@ -299,10 +296,7 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 	IsNil(o.schema)
 	IsNil(o.field)
 	name := c.GetName().GetText()
-	readOnly := false
-	if c.GetReadonly() != nil {
-		readOnly = true
-	}
+	readOnly := c.GetReadonly() != nil
 	o.field = model.NewTypedNode(name, model.KindField)
 	o.field.IsReadOnly = readOnly
 }

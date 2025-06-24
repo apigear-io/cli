@@ -19,8 +19,12 @@ type connEntry struct {
 }
 
 func (e *connEntry) Close() {
-	e.conn.Close()
-	e.node.Close()
+	if err := e.conn.Close(); err != nil {
+		log.Error().Err(err).Msgf("failed to close connection for %s", e.url)
+	}
+	if err := e.node.Close(); err != nil {
+		log.Error().Err(err).Msgf("failed to close node for %s", e.url)
+	}
 }
 
 type IOlinkConnector interface {
@@ -101,7 +105,10 @@ func (c *OlinkConnector) RegisterSink(url string, sink client.IObjectSink) {
 		log.Error().Str("url", url).Msg("connection not found")
 		return
 	}
-	entry.registry.AddObjectSink(sink)
+	if err := entry.registry.AddObjectSink(sink); err != nil {
+		log.Error().Err(err).Str("sink", sink.ObjectId()).Msg("failed to add object sink")
+		return
+	}
 	entry.node.LinkRemoteNode(sink.ObjectId())
 }
 

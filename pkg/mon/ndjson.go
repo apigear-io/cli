@@ -17,7 +17,9 @@ func ReadJsonEvents(fn string) ([]Event, error) {
 		return nil, err
 	}
 	defer func() {
-		file.Close()
+		if err := file.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close file %s", fn)
+		}
 	}()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {

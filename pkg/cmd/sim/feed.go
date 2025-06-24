@@ -81,7 +81,11 @@ func NewClientCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer conn.Close()
+			defer func() {
+				if err := conn.Close(); err != nil {
+					log.Error().Err(err).Msg("failed to close connection")
+				}
+			}()
 			node := client.NewNode(registry)
 			conn.SetOutput(node)
 			node.SetOutput(conn)

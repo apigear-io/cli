@@ -62,10 +62,16 @@ func (t *TaskItem) Watch(ctx context.Context, dependencies ...string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Error().Msgf("error creating watcher: %s", err)
-		watcher.Close()
+		if err := watcher.Close(); err != nil {
+			log.Error().Err(err).Msg("failed to close watcher")
+		}
 		return
 	}
-	defer watcher.Close()
+	defer func() {
+		if err := watcher.Close(); err != nil {
+			log.Error().Err(err).Msg("failed to close watcher")
+		}
+	}()
 
 	for _, dep := range dependencies {
 		// check if the file exists

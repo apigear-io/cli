@@ -34,11 +34,13 @@ Using a scenario you can define additional static and scripted data and behavior
 				return err
 			}
 			netman := net.NewManager()
-			netman.Start(&net.Options{
+			if err := netman.Start(&net.Options{
 				NatsListen:   false,
 				HttpAddr:     fmt.Sprintf("localhost:%d", port),
 				HttpDisabled: noServe,
-			})
+			}); err != nil {
+				return err
+			}
 			netman.OnMonitorEvent(func(event *mon.Event) {
 				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
@@ -77,6 +79,8 @@ Using a scenario you can define additional static and scripted data and behavior
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")
 	cmd.Flags().IntVar(&port, "port", 5555, "protocol server port")
 	cmd.Flags().BoolVar(&noServe, "no-serve", false, "disable protocol server")
-	cmd.MarkFlagRequired("script")
+	if err := cmd.MarkFlagRequired("script"); err != nil {
+		log.Error().Err(err).Msg("failed to mark script flag as required")
+	}
 	return cmd
 }

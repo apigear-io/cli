@@ -63,7 +63,7 @@ func (tm *TaskManager) RmTask(name string) error {
 	tm.Lock()
 	defer tm.Unlock()
 	delete(tm.tasks, name)
-	tm.Hook.FireHook(NewTaskEvent(task, TaskStateRemoved))
+	tm.FireHook(NewTaskEvent(task, TaskStateRemoved))
 	return nil
 }
 

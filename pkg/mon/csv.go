@@ -18,7 +18,11 @@ func ReadCsvEvents(fn string) ([]Event, error) {
 		log.Error().Err(err).Msgf("open file %s", fn)
 		return nil, err
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close file %s", fn)
+		}
+	}()
 
 	// need to have a intermediate struct to unmarshal csv
 	type Row struct {

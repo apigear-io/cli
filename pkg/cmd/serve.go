@@ -22,11 +22,13 @@ func NewServeCommand() *cobra.Command {
 			sim.NewManager(sim.ManagerOptions{
 				Server: server,
 			})
-			netman.Start(&net.Options{
+			if err := netman.Start(&net.Options{
 				NatsHost: natsHost,
 				NatsPort: natsPort,
 				HttpAddr: httpAddr,
-			})
+			}); err != nil {
+				return err
+			}
 			netman.OnMonitorEvent(func(event *mon.Event) {
 				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
