@@ -50,6 +50,10 @@ func (s *NDJSONScanner) ScanFile(path string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close file %s", path)
+		}
+	}()
 	return s.Scan(f, w)
 }

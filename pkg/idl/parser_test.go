@@ -64,9 +64,9 @@ func TestParseStruct(t *testing.T) {
 	assert.Equal(t, "field2", struct_.Fields[2].Name)
 	assert.Equal(t, "float", struct_.Fields[2].Schema.Type)
 	assert.Equal(t, "field3", struct_.Fields[3].Name)
-	assert.Equal(t, "string", struct_.Fields[3].Schema.Type)
+	assert.Equal(t, "string", struct_.Fields[3].Type)
 	assert.Equal(t, "field4", struct_.Fields[4].Name)
-	assert.Equal(t, "bytes", struct_.Fields[4].Schema.Type)
+	assert.Equal(t, "bytes", struct_.Fields[4].Type)
 }
 
 var docIface = `
@@ -97,15 +97,15 @@ func TestParseInterfaceProperties(t *testing.T) {
 	assert.Equal(t, "Interface0", module.Interfaces[0].Name)
 	interface_ := module.Interfaces[0]
 	assert.Equal(t, "prop0", interface_.Properties[0].Name)
-	assert.Equal(t, "bool", interface_.Properties[0].Schema.Type)
+	assert.Equal(t, "bool", interface_.Properties[0].Type)
 	assert.Equal(t, "prop1", interface_.Properties[1].Name)
-	assert.Equal(t, "int", interface_.Properties[1].Schema.Type)
+	assert.Equal(t, "int", interface_.Properties[1].Type)
 	assert.Equal(t, "prop2", interface_.Properties[2].Name)
-	assert.Equal(t, "float", interface_.Properties[2].Schema.Type)
+	assert.Equal(t, "float", interface_.Properties[2].Type)
 	assert.Equal(t, "prop3", interface_.Properties[3].Name)
-	assert.Equal(t, "string", interface_.Properties[3].Schema.Type)
+	assert.Equal(t, "string", interface_.Properties[3].Type)
 	assert.Equal(t, "prop4", interface_.Properties[4].Name)
-	assert.Equal(t, "bytes", interface_.Properties[4].Schema.Type)
+	assert.Equal(t, "bytes", interface_.Properties[4].Type)
 }
 
 func TestParseInterfaceOperation(t *testing.T) {

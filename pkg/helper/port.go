@@ -1,6 +1,9 @@
 package helper
 
-import "net"
+import (
+	"log"
+	"net"
+)
 
 func GetFreePort() (int, error) {
 	addr, err := net.ResolveTCPAddr("tcp", ":0")
@@ -11,6 +14,9 @@ func GetFreePort() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	l.Close()
+	if err := l.Close(); err != nil {
+		log.Printf("error closing listener: %v", err)
+		_ = err
+	}
 	return l.Addr().(*net.TCPAddr).Port, nil
 }

@@ -217,7 +217,12 @@ func ScanFile(fn string) ([][]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Printf("error closing file %s: %v", fn, err)
+			_ = err
+		}
+	}()
 	scan := bufio.NewScanner(f)
 	result := make([][]byte, 0)
 	for scan.Scan() {

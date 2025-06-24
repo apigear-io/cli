@@ -50,7 +50,9 @@ func setupServer(t *testing.T) (*nats.Conn, func()) {
 	assert.NotNil(t, nc)
 
 	teardown := func() {
-		nc.Drain()
+		if err := nc.Drain(); err != nil {
+			log.Error().Err(err).Msg("failed to drain nats connection")
+		}
 		server.Shutdown()
 	}
 	return nc, teardown

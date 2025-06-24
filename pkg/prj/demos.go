@@ -23,8 +23,5 @@ func writeDemo(target string, content []byte) error {
 	}
 	defer f.Close()
 	_, err = f.Write(content)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

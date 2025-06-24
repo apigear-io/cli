@@ -42,11 +42,21 @@ func (w *World) GetService(object string) *ObjectService {
 }
 
 func (w *World) register(rt *goja.Runtime) {
-	rt.Set("$createBareService", w.CreateService)
-	rt.Set("$getService", w.GetService)
-	rt.Set("$createChannel", w.CreateChannel)
-	rt.Set("$$getChannel", w.GetChannel)
-	rt.Set("$quit", w.quit)
+	if err := rt.Set("$createBareService", w.CreateService); err != nil {
+		log.Error().Err(err).Msg("failed to set $createBareService")
+	}
+	if err := rt.Set("$getService", w.GetService); err != nil {
+		log.Error().Err(err).Msg("failed to set $getService")
+	}
+	if err := rt.Set("$createChannel", w.CreateChannel); err != nil {
+		log.Error().Err(err).Msg("failed to set $createChannel")
+	}
+	if err := rt.Set("$$getChannel", w.GetChannel); err != nil {
+		log.Error().Err(err).Msg("failed to set $$getChannel")
+	}
+	if err := rt.Set("$quit", w.quit); err != nil {
+		log.Error().Err(err).Msg("failed to set $quit")
+	}
 }
 
 func (w *World) CreateChannel(url string) (*Channel, error) {
@@ -80,7 +90,9 @@ func (w *World) GetChannel(url string) *Channel {
 
 func (w *World) quit() {
 	for _, c := range w.channels {
-		c.Disconnect()
+		if err := c.Disconnect(); err != nil {
+			log.Error().Err(err).Msgf("failed to disconnect channel %s", c.url)
+		}
 	}
 	w.engine.Close()
 }

@@ -105,7 +105,11 @@ func checkNdjsonFile(name string) (*Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open file %s: %w", name, err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close file %s", name)
+		}
+	}()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -128,7 +132,11 @@ func CheckCsvFile(name string) (*Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open file %s: %w", name, err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close file %s", name)
+		}
+	}()
 	var data []any
 	err = gocsv.UnmarshalFile(file, &data)
 	if err != nil {

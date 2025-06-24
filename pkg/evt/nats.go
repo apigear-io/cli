@@ -46,7 +46,9 @@ func (b *NatsEventBus) Publish(e *Event) error {
 // setup subscription
 func (b *NatsEventBus) setup() {
 	if b.sub != nil {
-		b.sub.Unsubscribe()
+		if err := b.sub.Unsubscribe(); err != nil {
+			log.Error().Err(err).Msg("failed to unsubscribe")
+		}
 	}
 	sub, err := b.nc.Subscribe(b.subject, b.handleMsg)
 	if err != nil {
@@ -98,7 +100,9 @@ func (b *NatsEventBus) handleMsg(msg *nats.Msg) {
 		log.Warn().Err(err).Msg("failed to marshal event")
 		return
 	}
-	msg.Respond(data)
+	if err := msg.Respond(data); err != nil {
+		log.Error().Err(err).Msg("failed to respond to message")
+	}
 }
 
 func (b *NatsEventBus) Close() error {

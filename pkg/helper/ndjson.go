@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"io"
+	"log"
 	"os"
 )
 
@@ -29,6 +30,11 @@ func ScanNDJSONFile[T any](path string) ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			log.Printf("error closing file %s: %v", path, err)
+			_ = err
+		}
+	}()
 	return ScanNDJSON[T](f)
 }

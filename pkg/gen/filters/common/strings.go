@@ -61,7 +61,7 @@ func TrimSuffix(s, postfix string) string {
 }
 
 func Replace(s, old, new string) string {
-	return strings.Replace(s, old, new, -1)
+	return strings.ReplaceAll(s, old, new)
 }
 
 func Split(s, sep string) []string {

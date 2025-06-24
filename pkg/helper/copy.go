@@ -2,6 +2,7 @@ package helper
 
 import (
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -32,7 +33,12 @@ func CopyFile(source, target string) error {
 	if err != nil {
 		return err
 	}
-	defer in.Close()
+	defer func() {
+		if err := in.Close(); err != nil {
+
+			_ = err
+		}
+	}()
 	// ensure target directory exists
 	err = os.MkdirAll(filepath.Dir(target), 0755)
 	if err != nil {
@@ -42,7 +48,12 @@ func CopyFile(source, target string) error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() {
+		if err := out.Close(); err != nil {
+			log.Printf("error closing file: %s", err)
+			_ = err
+		}
+	}()
 	_, err = io.Copy(out, in)
 	return err
 }

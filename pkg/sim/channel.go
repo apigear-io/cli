@@ -53,7 +53,10 @@ func (c *Channel) Connect() error {
 }
 
 func (c *Channel) Disconnect() error {
-	c.engine.connector.Disconnect(c.url)
+	if err := c.engine.connector.Disconnect(c.url); err != nil {
+		log.Error().Err(err).Msgf("failed to disconnect from %s", c.url)
+		return err
+	}
 	return nil
 }
 

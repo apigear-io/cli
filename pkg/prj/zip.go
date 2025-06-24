@@ -14,11 +14,23 @@ func createArchive(source string, target string) error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() {
+		if err := out.Close(); err != nil {
+			log.Error().Err(err).Msgf("failed to close output file %s", target)
+		}
+	}()
 	gw := gzip.NewWriter(out)
-	defer gw.Close()
+	defer func() {
+		if err := gw.Close(); err != nil {
+			log.Error().Err(err).Msg("failed to close gzip writer")
+		}
+	}()
 	tw := tar.NewWriter(gw)
-	defer tw.Close()
+	defer func() {
+		if err := tw.Close(); err != nil {
+			log.Error().Err(err).Msg("failed to close tar writer")
+		}
+	}()
 	// walk through the source directory
 	err = filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -42,7 +54,11 @@ func createArchive(source string, target string) error {
 			if err != nil {
 				return err
 			}
-			defer file.Close()
+			defer func() {
+				if err := file.Close(); err != nil {
+					log.Error().Err(err).Msgf("failed to close file %s", path)
+				}
+			}()
 			_, err = io.Copy(tw, file)
 			if err != nil {
 				return err
