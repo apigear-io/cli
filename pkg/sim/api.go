@@ -51,8 +51,8 @@ func (w *World) register(rt *goja.Runtime) {
 	if err := rt.Set("$createChannel", w.CreateChannel); err != nil {
 		log.Error().Err(err).Msg("failed to set $createChannel")
 	}
-	if err := rt.Set("$$getChannel", w.GetChannel); err != nil {
-		log.Error().Err(err).Msg("failed to set $$getChannel")
+	if err := rt.Set("$getChannel", w.GetChannel); err != nil {
+		log.Error().Err(err).Msg("failed to set $getChannel")
 	}
 	if err := rt.Set("$quit", w.quit); err != nil {
 		log.Error().Err(err).Msg("failed to set $quit")
