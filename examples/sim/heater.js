@@ -19,41 +19,43 @@ const tempSensor = $createService("tempSensor", {
     lastUpdate: Date.now()
 });
 
-// Heater methods
+// Heater methods using natural API
 heater.turnOn = function () {
-    if (!heater.isOn) {
-        heater.isOn = true;
+    if (!this.isOn) {
+        this.isOn = true;
         console.log("Heater turned ON");
+        this.emit('stateChanged', true);
     }
 }
 
 heater.turnOff = function () {
-    if (heater.isOn) {
-        heater.isOn = false;
+    if (this.isOn) {
+        this.isOn = false;
         console.log("Heater turned OFF");
+        this.emit('stateChanged', false);
     }
 }
 
 heater.updateTemperature = function (deltaTime) {
-    if (heater.isOn) {
+    if (this.isOn) {
         // Simple temperature increase model
         // Temperature rises faster when difference to max temp is larger
-        const heatIncrease = (heater.maxTemp - heater.temperature) * 0.1;
-        heater.temperature += heatIncrease * (deltaTime / 1000);
+        const heatIncrease = (this.maxTemp - this.temperature) * 0.1;
+        this.temperature += heatIncrease * (deltaTime / 1000);
     } else {
         // Natural cooling model
         // Temperature falls faster when difference to ambient temp is larger
-        const cooling = (heater.temperature - tempSensor.currentTemperature) * 0.05;
-        heater.temperature -= cooling * (deltaTime / 1000);
+        const cooling = (this.temperature - tempSensor.currentTemperature) * 0.05;
+        this.temperature -= cooling * (deltaTime / 1000);
     }
 }
 
-// Thermostat methods
+// Thermostat methods using natural API
 thermostat.setTargetTemperature = function (temp) {
     if (temp >= heater.minTemp && temp <= heater.maxTemp) {
-        thermostat.targetTemperature = temp;
+        this.targetTemperature = temp;
         console.log(`Target temperature set to ${temp}°C`);
-        thermostat.checkTemperature();
+        this.checkTemperature();
     } else {
         console.log(`Temperature ${temp}°C is outside allowed range`);
     }
@@ -61,8 +63,8 @@ thermostat.setTargetTemperature = function (temp) {
 
 thermostat.checkTemperature = function () {
     const currentTemp = tempSensor.currentTemperature;
-    const lowerBound = thermostat.targetTemperature - thermostat.tolerance;
-    const upperBound = thermostat.targetTemperature + thermostat.tolerance;
+    const lowerBound = this.targetTemperature - this.tolerance;
+    const upperBound = this.targetTemperature + this.tolerance;
 
     if (currentTemp < lowerBound) {
         heater.turnOn();
@@ -73,28 +75,28 @@ thermostat.checkTemperature = function () {
 
 thermostat.setMode = function (newMode) {
     if (newMode === 'auto' || newMode === 'manual') {
-        thermostat.mode = newMode;
+        this.mode = newMode;
         console.log(`Thermostat mode set to ${newMode}`);
         if (newMode === 'auto') {
-            thermostat.checkTemperature();
+            this.checkTemperature();
         }
     }
 }
 
-// Temperature sensor methods
+// Temperature sensor methods using natural API
 tempSensor.update = function () {
     const now = Date.now();
-    const deltaTime = now - tempSensor.lastUpdate;
-    tempSensor.lastUpdate = now;
+    const deltaTime = now - this.lastUpdate;
+    this.lastUpdate = now;
 
     // Update current temperature based on heater's influence
-    const heatTransfer = (heater.temperature - tempSensor.currentTemperature) * 0.1;
-    tempSensor.currentTemperature += heatTransfer * (deltaTime / 1000);
+    const heatTransfer = (heater.temperature - this.currentTemperature) * 0.1;
+    this.currentTemperature += heatTransfer * (deltaTime / 1000);
 
     // Add some random fluctuation
-    tempSensor.currentTemperature += (Math.random() - 0.5) * 0.1;
+    this.currentTemperature += (Math.random() - 0.5) * 0.1;
 
-    console.log(`Current temperature: ${tempSensor.currentTemperature.toFixed(1)}°C`);
+    console.log(`Current temperature: ${this.currentTemperature.toFixed(1)}°C`);
 
     if (thermostat.mode === 'auto') {
         thermostat.checkTemperature();
@@ -102,17 +104,22 @@ tempSensor.update = function () {
 }
 
 function main() {
-    // Set up monitoring
-    heater.$.onProperty("isOn", function (isOn) {
+    // Set up monitoring using natural API
+    heater.on("isOn", function (isOn) {
         console.log(`Heater state changed to: ${isOn ? "ON" : "OFF"}`);
     });
 
-    tempSensor.$.onProperty("currentTemperature", function (temp) {
+    tempSensor.on("currentTemperature", function (temp) {
         console.log(`Temperature sensor reading: ${temp.toFixed(1)}°C`);
     });
 
-    thermostat.$.onProperty("targetTemperature", function (temp) {
+    thermostat.on("targetTemperature", function (temp) {
         console.log(`Target temperature changed to: ${temp.toFixed(1)}°C`);
+    });
+    
+    // Listen to custom signal
+    heater.on('stateChanged', function(state) {
+        console.log(`Heater state signal: ${state ? "ON" : "OFF"}`);
     });
 
     // Initial setup

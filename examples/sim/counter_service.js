@@ -1,16 +1,20 @@
-// a bare service is a service which uses the bare methods
-const service = $createService("counter", { count: 1 });
+// Counter service example using the natural API
+const counter = $createService("counter", { count: 1 });
 
-service.increment = function () {
-  console.log("called service increment");
-  service.count++
+// Define methods using natural function assignment
+counter.increment = function () {
+  console.log("called counter increment");
+  this.count++;  // Natural property access with 'this'
 };
 
-service.$.onProperty("count", function (value) {
-  console.log("on property service count changed", value);
+// Use the streamlined event handler for property changes
+counter.on("count", function (value) {
+  console.log("counter.count changed to:", value);
 });
 
 function main() {
-  service.increment();
-  return service.count;
+  console.log("Initial count:", counter.count);  // Natural property read
+  counter.increment();
+  console.log("Final count:", counter.count);
+  return counter.count;
 }
