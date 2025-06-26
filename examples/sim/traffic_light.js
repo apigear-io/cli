@@ -15,79 +15,92 @@ const statistics = $createService("statistics", {
     carsWaitingHistory: []
 });
 
-// Traffic light methods
+// Traffic light methods using natural API
 trafficLight.changeState = function () {
-    switch (trafficLight.state) {
+    const previousState = this.state;
+    switch (this.state) {
         case "red":
-            trafficLight.state = "green";
+            this.state = "green";
             // Let cars pass while green
-            while (trafficLight.carsWaiting > 0) {
-                trafficLight.letCarPass();
+            while (this.carsWaiting > 0) {
+                this.letCarPass();
             }
             break;
         case "green":
-            trafficLight.state = "yellow";
+            this.state = "yellow";
             break;
         case "yellow":
-            trafficLight.state = "red";
+            this.state = "red";
             break;
     }
-    console.log(`Traffic light changed to ${trafficLight.state}`);
+    console.log(`Traffic light changed from ${previousState} to ${this.state}`);
+    this.emit('stateChanged', previousState, this.state);
 }
 
 trafficLight.letCarPass = function () {
-    if (trafficLight.state === "green" && trafficLight.carsWaiting > 0) {
-        trafficLight.carsWaiting--;
+    if (this.state === "green" && this.carsWaiting > 0) {
+        this.carsWaiting--;
         statistics.recordCarPassed();
         console.log("Car passed through intersection");
+        this.emit('carPassed');
     }
 }
 
 trafficLight.addWaitingCar = function () {
-    trafficLight.carsWaiting++;
-    statistics.recordWaitingCar(trafficLight.carsWaiting);
+    this.carsWaiting++;
+    statistics.recordWaitingCar(this.carsWaiting);
 }
 
-// Car generator methods
+// Car generator methods using natural API
 carGenerator.generateCar = function () {
-    carGenerator.carsGenerated++;
+    this.carsGenerated++;
     trafficLight.addWaitingCar();
-    console.log(`Generated car #${carGenerator.carsGenerated}`);
+    console.log(`Generated car #${this.carsGenerated}`);
+    this.emit('carGenerated', this.carsGenerated);
 }
 
-// Statistics methods
+// Statistics methods using natural API
 statistics.recordCarPassed = function () {
-    statistics.totalCarsPassed++;
+    this.totalCarsPassed++;
 }
 
 statistics.recordWaitingCar = function (currentWaiting) {
-    statistics.carsWaitingHistory.push({
+    this.carsWaitingHistory.push({
         timestamp: Date.now(),
         count: currentWaiting
     });
 
     // Calculate average waiting time
-    if (statistics.carsWaitingHistory.length > 1) {
-        const totalWaitTime = statistics.carsWaitingHistory.reduce((sum, record, index, array) => {
+    if (this.carsWaitingHistory.length > 1) {
+        const totalWaitTime = this.carsWaitingHistory.reduce((sum, record, index, array) => {
             if (index === 0) return sum;
             return sum + (record.timestamp - array[index - 1].timestamp);
         }, 0);
-        statistics.averageWaitTime = totalWaitTime / statistics.totalCarsPassed;
+        this.averageWaitTime = totalWaitTime / this.totalCarsPassed;
     }
 }
 
 function main() {
-    // Set up monitoring
-    trafficLight.$.onProperty("state", function (state) {
+    // Set up monitoring using natural API
+    trafficLight.on("state", function (state) {
         console.log(`Traffic light state changed to: ${state}`);
     });
 
-    trafficLight.$.onProperty("carsWaiting", function (count) {
+    trafficLight.on("carsWaiting", function (count) {
         console.log(`Cars waiting: ${count}`);
     });
 
-    statistics.$.onProperty("totalCarsPassed", function (total) {
+    statistics.on("totalCarsPassed", function (total) {
         console.log(`Total cars passed: ${total}`);
+    });
+    
+    // Listen to custom signals
+    trafficLight.on('stateChanged', function(from, to) {
+        console.log(`Light transitioned: ${from} → ${to}`);
+    });
+    
+    trafficLight.on('carPassed', function() {
+        console.log('Car passed signal received');
     });
 
     // Run simulation

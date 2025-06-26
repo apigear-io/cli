@@ -1,4 +1,5 @@
-// client side
+// Client side - connects to a remote service via channel
+// Note: Channel clients don't use the proxy API as they communicate remotely
 const channel = $createChannel();
 const client = channel.createClient("counter");
 
