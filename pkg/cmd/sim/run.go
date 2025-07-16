@@ -1,6 +1,7 @@
 package sim
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"github.com/apigear-io/cli/pkg/mon"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
+	"github.com/apigear-io/cli/pkg/tasks"
 
 	"github.com/spf13/cobra"
 )
@@ -17,6 +19,7 @@ func NewRunCommand() *cobra.Command {
 	var fn string
 	var port int
 	var noServe bool
+	var watch bool
 
 	// cmd represents the simSvr command
 	var cmd = &cobra.Command{
@@ -28,11 +31,6 @@ func NewRunCommand() *cobra.Command {
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cwd, err := os.Getwd()
-			if err != nil {
-				log.Error().Err(err).Msg("failed to get current working directory")
-				return err
-			}
 			netman := net.NewManager()
 			if err := netman.Start(&net.Options{
 				NatsListen:   false,
@@ -54,33 +52,68 @@ Using a scenario you can define additional static and scripted data and behavior
 
 			scriptFile := args[0]
 
-			absFile := filepath.Clean(filepath.Join(cwd, scriptFile))
-
-			log.Info().Str("script", absFile).Msg("load script file into simulation")
-			content, err := os.ReadFile(absFile)
+			cwd, err := os.Getwd()
 			if err != nil {
-				log.Error().Err(err).Msg("failed to read script file")
+				log.Error().Err(err).Msg("failed to get current working directory")
 				return err
 			}
-			script := sim.NewScript(absFile, string(content))
-			simman.ScriptRun(script)
-			if fn != "" {
-				log.Info().Str("function", fn).Msg("run world function")
-				simman.FunctionRun(fn, nil)
+
+			absFile := filepath.Clean(filepath.Join(cwd, scriptFile))
+
+			// Create task manager and register sim task
+			taskManager := tasks.NewTaskManager()
+			taskName := "sim-script"
+			
+			// Create task function that runs the script
+			taskFunc := func(ctx context.Context) error {
+				return runScript(ctx, simman, netman, absFile, fn)
 			}
-			// wait for server
-			err = netman.Wait(cmd.Context())
-			if err != nil {
-				log.Error().Err(err).Msg("failed to wait for services")
+			
+			// Register the task
+			taskManager.Register(taskName, map[string]interface{}{
+				"script_file": absFile,
+				"function": fn,
+			}, taskFunc)
+			
+			ctx := cmd.Context()
+			
+			if watch {
+				log.Info().Str("file", absFile).Msg("watching script file")
+				// Use task manager's watch functionality
+				if err := taskManager.Watch(ctx, taskName, absFile); err != nil {
+					return err
+				}
+				return netman.Wait(ctx)
+			} else {
+				// Run once without watching
+				if err := taskManager.Run(ctx, taskName); err != nil {
+					return err
+				}
+				return netman.Wait(ctx)
 			}
-			return nil
 		},
 	}
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")
 	cmd.Flags().IntVar(&port, "port", 5555, "protocol server port")
 	cmd.Flags().BoolVar(&noServe, "no-serve", false, "disable protocol server")
-	if err := cmd.MarkFlagRequired("script"); err != nil {
-		log.Error().Err(err).Msg("failed to mark script flag as required")
-	}
+	cmd.Flags().BoolVar(&watch, "watch", false, "watch for changes in the script file")
 	return cmd
+}
+
+func runScript(ctx context.Context, sm *sim.Manager, nm *net.NetworkManager, absFile string, fn string) error {
+	log.Info().Str("script", absFile).Msg("load script file into simulation")
+	content, err := os.ReadFile(absFile)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to read script file")
+		return err
+	}
+	script := sim.NewScript(absFile, string(content))
+	sm.ScriptRun(script)
+	if fn != "" {
+		log.Info().Str("function", fn).Msg("run world function")
+		sm.FunctionRun(fn, nil)
+	}
+	// Return immediately after running the script
+	// Don't block here - the TaskManager will handle the lifecycle
+	return nil
 }
