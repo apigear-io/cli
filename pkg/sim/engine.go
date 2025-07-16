@@ -1,6 +1,8 @@
 package sim
 
 import (
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
@@ -15,6 +17,34 @@ import (
 //go:embed proxy.js
 var proxyJS string
 
+func createSourceLoader() require.SourceLoader {
+	return func(filename string) ([]byte, error) {
+		log.Info().Str("filename", filename).Msg("Loading module")
+		return os.ReadFile(filename)
+	}
+}
+
+func createPathResolver(workDir string) require.PathResolver {
+	return func(base, path string) string {
+		log.Info().Str("base", base).Str("path", path).Msg("Resolving path")
+
+		// If path doesn't have an extension, try adding .js
+		if filepath.Ext(path) == "" {
+			path = path + ".js"
+		}
+
+		// If path is absolute, return as-is
+		if filepath.IsAbs(path) {
+			return path
+		}
+
+		// For relative paths, resolve relative to workDir (which is the script directory)
+		resolved := filepath.Join(workDir, path)
+		log.Info().Str("resolved", resolved).Msg("Resolved to workDir")
+		return resolved
+	}
+}
+
 type EngineOptions struct {
 	WorkDir   string
 	Server    IOlinkServer
@@ -28,6 +58,7 @@ type Engine struct {
 	server    IOlinkServer
 	connector IOlinkConnector
 	rt        *goja.Runtime
+	registry  *require.Registry
 }
 
 func NewEngine(opts EngineOptions) *Engine {
@@ -43,18 +74,25 @@ func NewEngine(opts EngineOptions) *Engine {
 	}
 	printer := NewLogPrinter(&log)
 	require.RegisterCoreModule(console.ModuleName, console.RequireWithPrinter(printer))
-	registry := require.NewRegistry(require.WithLoader(require.DefaultSourceLoader), require.WithGlobalFolders(opts.WorkDir))
+
+	registry := require.NewRegistry(
+		require.WithLoader(createSourceLoader()),
+		require.WithPathResolver(createPathResolver(opts.WorkDir)),
+		require.WithGlobalFolders(opts.WorkDir),
+	)
 	e := &Engine{
 		loop:      eventloop.NewEventLoop(eventloop.WithRegistry(registry)),
 		workDir:   opts.WorkDir,
 		server:    opts.Server,
 		connector: opts.Connector,
+		registry:  registry,
 	}
 	e.world = NewWorld(e)
 	e.loop.Start()
 	e.loop.RunOnLoop(func(rt *goja.Runtime) {
 		rt.SetFieldNameMapper(goja.UncapFieldNameMapper())
 		e.world.register(rt)
+		registry.Enable(rt)
 		if _, err := rt.RunScript("proxy.js", proxyJS); err != nil {
 			log.Error().Err(err).Msg("failed to run proxy.js script")
 		}
@@ -72,7 +110,8 @@ func (e *Engine) RunScript(name string, content string) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
 	e.loop.RunOnLoop(func(rt *goja.Runtime) {
-		log.Info().Str("name", name).Msg("Run script")
+		log.Info().Str("name", name).Str("workDir", e.workDir).Msg("Run script")
+
 		value, err := rt.RunScript(name, content)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to run script")
