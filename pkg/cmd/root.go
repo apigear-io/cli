@@ -39,5 +39,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewVersionCommand())
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(olink.NewRootCommand())
+	cmd.AddCommand(NewMCPCommand())
 	return cmd
 }
