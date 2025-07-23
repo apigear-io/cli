@@ -22,6 +22,15 @@ func displayRepoInfos(infos []*git.RepoInfo) {
 	}
 }
 
+func repoInfosToCSV(infos []*git.RepoInfo) string {
+	var csv string
+	csv += "template,git-url,description\n"
+	for _, info := range infos {
+		csv += fmt.Sprintf("%s,%s,\"%s\"\n", info.Name, info.Git, info.Description)
+	}
+	return csv
+}
+
 func DisplayTemplateInfos(infos []*git.RepoInfo) {
 	cells := make([][]string, len(infos)+1)
 	cells[0] = []string{"source", "url", "installed", "latest"}

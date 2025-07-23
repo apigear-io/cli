@@ -2,7 +2,8 @@ package tpl
 
 import (
 	"context"
-	"os/exec"
+
+	"github.com/apigear-io/cli/pkg/repos"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -17,11 +18,13 @@ func registerTemplateListTool(s *server.MCPServer) {
 		mcp.WithDescription("List available templates from registry"),
 	)
 	s.AddTool(templateListTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		cmd := exec.Command("apigear", "template", "list")
-		output_bytes, err := cmd.CombinedOutput()
+		infos, err := repos.Registry.List()
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
+
+		output_bytes := repoInfosToCSV(infos)
+
 		return mcp.NewToolResultText(string(output_bytes)), nil
 	})
 }
