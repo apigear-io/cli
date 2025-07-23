@@ -2,10 +2,6 @@ package cmd
 
 import (
 	"context"
-	"os/exec"
-	"fmt"
-
-	"github.com/apigear-io/cli/pkg/cfg"
 
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -26,12 +22,10 @@ func NewMCPCommand() *cobra.Command {
 }
 
 func runMCPServer() error {
-	bi := cfg.GetBuildInfo("cli")
-	version := fmt.Sprintf("%s-%s-%s", bi.Version, bi.Commit, bi.Date)
 	// Create MCP server
 	s := server.NewMCPServer(
 		"apigear-cli",
-		version,
+		RetrieveVersion(),
 		server.WithToolCapabilities(false),
 		server.WithRecovery(),
 	)
@@ -49,11 +43,6 @@ func addCoreTools(s *server.MCPServer) {
 		mcp.WithDescription("Display version information"),
 	)
 	s.AddTool(versionTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		cmd := exec.Command("apigear", "version")
-		output_bytes, err := cmd.CombinedOutput()
-		if err != nil {
-			return mcp.NewToolResultError(err.Error()), nil
-		}
-		return mcp.NewToolResultText(string(output_bytes)), nil
+		return mcp.NewToolResultText(RetrieveVersion()), nil
 	})
 }
