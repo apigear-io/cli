@@ -35,7 +35,7 @@ func ToType(schema *model.Schema) (string, error) {
 		text = "void"
 	// enums are expected to passed as integers
 	case model.TypeEnum:
-		text = "jint"
+		text = "jobject"
 	case model.TypeStruct:
 		text = "jobject"
 	case model.TypeExtern:
@@ -94,13 +94,13 @@ func ueJniJavaParams(prefix string, nodes []*model.TypedNode) (string, error) {
 	return strings.Join(params, ", "), nil
 }
 
-func ueJniSignatureType(schema *model.Schema) (string, error) {
-	if schema == nil {
-		return "", fmt.Errorf("ToType schema is nil")
+func ueJniSignatureType(node *model.TypedNode) (string, error) {
+	if node == nil {
+		return "", fmt.Errorf("ueJniSignatureType node is nil")
 	}
 
 	var text string
-	switch schema.KindType {
+	switch node.Schema.KindType {
 	case model.TypeString:
 		text = "Ljava/lang/String;"
 	case model.TypeInt:
@@ -121,31 +121,39 @@ func ueJniSignatureType(schema *model.Schema) (string, error) {
 		text = "V"
 	// enums are expected to passed as integers
 	case model.TypeEnum:
-		text = "I"
-
+		e := node.Schema.LookupEnum(node.Schema.Import, node.Schema.Type)
+		if e != nil {
+			var api_package_name = e.Module.Name + "_api"
+			packageName := ueJavaPath(e.Module.Name, api_package_name, "")
+			text = "L" + packageName + "/" + e.Name + ";"
+		} else {
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
+		}
 	case model.TypeStruct:
-		s := schema.LookupStruct(schema.Import, schema.Type)
+		s := node.Schema.LookupStruct(node.Schema.Import, node.Schema.Type)
 		if s != nil {
-			packageName := ueJavaPath(s.Module.Name, s.Module.Name, "common")
+			var api_package_name = s.Module.Name + "_api"
+			packageName := ueJavaPath(s.Module.Name, api_package_name, "")
 			text = "L" + packageName + "/" + s.Name + ";"
 		} else {
-			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", schema.Dump())
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
 		}
 	case model.TypeExtern:
-		return "xxx", fmt.Errorf("ToSignatureType TypeExtern not supported yet %s", schema.Dump())
+		return "xxx", fmt.Errorf("ToSignatureType TypeExtern not supported yet %s", node.Schema.Dump())
 	case model.TypeInterface:
-		i := schema.LookupInterface(schema.Import, schema.Type)
+		i := node.Schema.LookupInterface(node.Schema.Import, node.Schema.Type)
 		if i != nil {
-			packageName := ueJavaPath(i.Module.Name, i.Module.Name, "common")
+			var api_package_name = i.Module.Name + "_api"
+			packageName := ueJavaPath(i.Module.Name, api_package_name, "")
 			text = "L" + packageName + "/" + i.Name + ";"
 		} else {
-			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", schema.Dump())
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
 		}
 	default:
-		return "xxx", fmt.Errorf("ueReturn unknown schema %s", schema.Dump())
+		return "xxx", fmt.Errorf("ueReturn unknown schema %s", node.Schema.Dump())
 	}
-	if schema.IsArray {
-		text = fmt.Sprintf("[%", text)
+	if node.Schema.IsArray {
+		text = fmt.Sprintf("[%s", text)
 	}
 	return text, nil
 }
@@ -154,7 +162,7 @@ func ueJniJavaSignatureParam(node *model.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("ueJniJavaParam called with nil nodes")
 	}
-	return ueJniSignatureType(&node.Schema)
+	return ueJniSignatureType(node)
 }
 
 func ueJniJavaSignatureParams(nodes []*model.TypedNode) (string, error) {
@@ -163,7 +171,7 @@ func ueJniJavaSignatureParams(nodes []*model.TypedNode) (string, error) {
 	}
 	var text = ""
 	for _, p := range nodes {
-		r, err := ueJniSignatureType(&p.Schema)
+		r, err := ueJniSignatureType(p)
 		if err != nil {
 			return "xxx", err
 		}
@@ -195,9 +203,8 @@ func ToEnvNameType(schema *model.Schema) (string, error) {
 		text = "Double"
 	case model.TypeBool:
 		text = "Boolean"
-	// enums are expected to passed as integers
 	case model.TypeEnum:
-		text = "Int"
+		text = "Object"
 	case model.TypeStruct:
 		text = "Object"
 	case model.TypeExtern:
@@ -208,11 +215,57 @@ func ToEnvNameType(schema *model.Schema) (string, error) {
 		return "xxx", fmt.Errorf("ToEnvNameType unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
-		text = "Object"
+		//text = "Object"
 	}
 	return text, nil
 }
 
 func ueToEnvNameType(node *model.TypedNode) (string, error) {
 	return ToEnvNameType(&node.Schema)
+}
+
+func JniEmptyReturn(schema *model.Schema) (string, error) {
+	if schema == nil {
+		return "", fmt.Errorf("ToType schema is nil")
+	}
+
+	var text string
+	switch schema.KindType {
+	case model.TypeVoid:
+		text = ""
+	case model.TypeString:
+		text = "nullptr"
+	case model.TypeInt:
+		text = "0"
+	case model.TypeInt32:
+		text = "0"
+	case model.TypeInt64:
+		text = "0"
+	case model.TypeFloat:
+		text = "0"
+	case model.TypeFloat32:
+		text = "0"
+	case model.TypeFloat64:
+		text = "0"
+	case model.TypeBool:
+		text = "false"
+	case model.TypeEnum:
+		text = "nullptr"
+	case model.TypeStruct:
+		text = "nullptr"
+	case model.TypeInterface:
+		text = "nullptr"
+	case model.TypeExtern:
+		text = "TODO"
+	default:
+		return "xxx", fmt.Errorf("ToEnvNameType unknown schema %s", schema.Dump())
+	}
+	if schema.IsArray {
+		text = "nullptr"
+	}
+	return text, nil
+}
+
+func ueJniEmptyReturn(node *model.TypedNode) (string, error) {
+	return JniEmptyReturn(&node.Schema)
 }

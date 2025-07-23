@@ -6,22 +6,26 @@ import (
 
 //TODO: add test including prefix for all filters
 
-func makeString(project string, moduleName string, submodule string, delimeter string) string {
-	return "com" + delimeter +
-		common.CamelLowerCase(project) + delimeter +
-		ueGetModuleName(moduleName, submodule)
+func makeString3(project string, moduleName string, submodule string, delimeter string) string {
+	return common.CamelLowerCase(project) + delimeter + moduleName + delimeter + submodule
 }
 
-func ueGetModuleName(moduleName string, submodule string) string {
-	return common.CamelLowerCase(moduleName) + common.CamelLowerCase(submodule)
+func makeString2(project string, moduleName string, delimeter string) string {
+	return common.CamelLowerCase(project) + delimeter + moduleName
 }
 
 func ueJavaPckgName(project string, moduleName string, submodule string) string {
-	return makeString(project, moduleName, submodule, ".")
+	if submodule != "" {
+		return makeString3(project, moduleName, submodule, ".")
+	}
+	return makeString2(project, moduleName, ".")
 }
 
 func ueJavaPath(project string, moduleName string, submodule string) string {
-	return makeString(project, moduleName, submodule, "/")
+	if submodule != "" {
+		return makeString3(project, moduleName, submodule, "/")
+	}
+	return makeString2(project, moduleName, "/")
 }
 
 func javaOnSingalStyle(signalName string) string {
@@ -41,9 +45,12 @@ func jniNameGetProperty(propertyName string) string {
 }
 
 func jniNameOperation(methodName string) string {
-	return "nativet" + common.CamelTitleCase(methodName)
+	return "native" + common.CamelTitleCase(methodName)
 }
 
 func ueJniClassPathPrefix(project string, moduleName string, submodule string, className string) string {
-	return "Java" + makeString(project, moduleName, submodule, "_")
+	if submodule != "" {
+		return "Java_" + makeString3(project, moduleName, submodule, "_") + "_" + className
+	}
+	return "Java_" + makeString3(project, moduleName, className, "_")
 }
