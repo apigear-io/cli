@@ -7,6 +7,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/cfg"
 
+	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/spf13/cobra"
@@ -34,6 +35,8 @@ func runMCPServer() error {
 		server.WithToolCapabilities(false),
 		server.WithRecovery(),
 	)
+
+	tpl.RegisterMCPTools(s)
 
 	addCoreTools(s)
 
