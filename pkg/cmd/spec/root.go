@@ -13,5 +13,6 @@ func NewRootCommand() *cobra.Command {
 		Long:    `Specification defines the file formats used inside apigear`,
 	}
 	cmd.AddCommand(NewCheckCommand())
+	cmd.AddCommand(NewShowCommand())
 	return cmd
 }
