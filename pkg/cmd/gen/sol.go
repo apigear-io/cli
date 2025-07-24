@@ -15,7 +15,6 @@ import (
 func NewSolutionCommand() *cobra.Command {
 	var source string
 	var watch bool
-	var exec string
 	var force bool
 	var cmd = &cobra.Command{
 		Use:     "solution [solution-file]",
@@ -28,16 +27,15 @@ as also the other options. To create a demo module or solution use the 'project 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("generating solution %s", args[0])
 			source = args[0]
-			return runGenerateSolution(source, watch, exec, force)
+			return runGenerateSolution(source, watch, force)
 		},
 	}
 	cmd.Flags().BoolVarP(&watch, "watch", "", false, "watch solution file for changes")
-	cmd.Flags().StringVarP(&exec, "exec", "", "", "execute a command after generation")
 	cmd.Flags().BoolVarP(&force, "force", "", false, "force overwrite")
 	return cmd
 }
 
-func runGenerateSolution(solutionPath string, watch bool, _ string, force bool) error {
+func runGenerateSolution(solutionPath string, watch bool, force bool) error {
 	result, err := spec.CheckFileAndType(solutionPath, spec.DocumentTypeSolution)
 	if err != nil {
 		return err
