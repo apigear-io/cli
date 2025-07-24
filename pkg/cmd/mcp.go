@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 
+	"github.com/apigear-io/cli/pkg/cmd/spec"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -30,6 +31,7 @@ func runMCPServer() error {
 		server.WithRecovery(),
 	)
 
+	spec.RegisterMCPTools(s)
 	tpl.RegisterMCPTools(s)
 
 	addCoreTools(s)
