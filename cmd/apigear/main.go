@@ -8,7 +8,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/cfg"
 	"github.com/apigear-io/cli/pkg/cmd"
-	"github.com/apigear-io/cli/pkg/log"
 )
 
 var (
@@ -25,7 +24,6 @@ func main() {
 		Date:    date,
 	})
 
-	log.Info().Msgf("apigear-cli version: %s-%s-%s", version, commit, date)
 	err := cmd.Run()
 	if err != nil {
 		os.Exit(1)
