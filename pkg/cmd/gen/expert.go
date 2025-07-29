@@ -20,12 +20,12 @@ func Must(err error) {
 }
 
 type ExpertOptions struct {
-	inputs      []string
-	outputDir   string
-	features    []string
-	force       bool
-	watch       bool
-	templateDir string
+	Inputs      []string
+	OutputDir   string
+	Features    []string
+	Force       bool
+	Watch       bool
+	TemplateDir string
 }
 
 func NewExpertCommand() *cobra.Command {
@@ -37,7 +37,7 @@ func NewExpertCommand() *cobra.Command {
 		Short:   "Generate code using expert mode",
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			doc := makeSolution(options)
+			doc := MakeSolution(options)
 			if err := doc.Validate(); err != nil {
 				return fmt.Errorf("invalid solution document: %w", err)
 			}
@@ -49,7 +49,7 @@ func NewExpertCommand() *cobra.Command {
 				return err
 			}
 
-			if options.watch {
+			if options.Watch {
 				err := runner.WatchDoc(ctx, doc.RootDir, doc)
 				if err != nil {
 					log.Error().Err(err).Msg("watching solution file")
@@ -60,19 +60,19 @@ func NewExpertCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVarP(&options.templateDir, "template", "t", "tpl", "template directory")
-	cmd.Flags().StringSliceVarP(&options.inputs, "input", "i", []string{"apigear"}, "input files")
-	cmd.Flags().StringVarP(&options.outputDir, "output", "o", "out", "output directory")
-	cmd.Flags().StringSliceVarP(&options.features, "features", "f", []string{"all"}, "features to enable")
-	cmd.Flags().BoolVarP(&options.force, "force", "", false, "force overwrite")
-	cmd.Flags().BoolVarP(&options.watch, "watch", "", false, "watch for changes")
+	cmd.Flags().StringVarP(&options.TemplateDir, "template", "t", "tpl", "template directory")
+	cmd.Flags().StringSliceVarP(&options.Inputs, "input", "i", []string{"apigear"}, "input files")
+	cmd.Flags().StringVarP(&options.OutputDir, "output", "o", "out", "output directory")
+	cmd.Flags().StringSliceVarP(&options.Features, "features", "f", []string{"all"}, "features to enable")
+	cmd.Flags().BoolVarP(&options.Force, "force", "", false, "force overwrite")
+	cmd.Flags().BoolVarP(&options.Watch, "watch", "", false, "watch for changes")
 	Must(cmd.MarkFlagRequired("input"))
 	Must(cmd.MarkFlagRequired("output"))
 	Must(cmd.MarkFlagRequired("template"))
 	return cmd
 }
 
-func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
+func MakeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	rootDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal().Err(err).Msg("get current working directory")
@@ -81,11 +81,11 @@ func makeSolution(options *ExpertOptions) *spec.SolutionDoc {
 		RootDir: rootDir,
 		Targets: []*spec.SolutionTarget{
 			{
-				Inputs:   options.inputs,
-				Output:   options.outputDir,
-				Template: options.templateDir,
-				Features: options.features,
-				Force:    options.force,
+				Inputs:   options.Inputs,
+				Output:   options.OutputDir,
+				Template: options.TemplateDir,
+				Features: options.Features,
+				Force:    options.Force,
 			},
 		},
 	}

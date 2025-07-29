@@ -22,7 +22,7 @@ func displayRepoInfos(infos []*git.RepoInfo) {
 	}
 }
 
-func repoInfosToCSV(infos []*git.RepoInfo) string {
+func RepoInfosToCSV(infos []*git.RepoInfo) string {
 	var csv string
 	csv += "template,git-url,description\n"
 	for _, info := range infos {
