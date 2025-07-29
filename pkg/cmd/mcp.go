@@ -1,13 +1,7 @@
 package cmd
 
 import (
-	"context"
-
-	"github.com/apigear-io/cli/pkg/cmd/gen"
-	"github.com/apigear-io/cli/pkg/cmd/spec"
-	"github.com/apigear-io/cli/pkg/cmd/tpl"
-	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/mark3labs/mcp-go/server"
+	"github.com/apigear-io/cli/pkg/mcp"
 	"github.com/spf13/cobra"
 )
 
@@ -17,36 +11,8 @@ func NewMCPCommand() *cobra.Command {
 		Short: "Start MCP server exposing apigear CLI commands",
 		Long:  `Start a Model Context Protocol (MCP) server that exposes selected apigear CLI commands as tools for AI assistants.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runMCPServer()
+			return mcp.RunMCPServer()
 		},
 	}
 	return cmd
-}
-
-func runMCPServer() error {
-	// Create MCP server
-	s := server.NewMCPServer(
-		"apigear-cli",
-		RetrieveVersion(),
-		server.WithToolCapabilities(false),
-		server.WithRecovery(),
-	)
-
-	gen.RegisterMCPTools(s)
-	spec.RegisterMCPTools(s)
-	tpl.RegisterMCPTools(s)
-
-	addCoreTools(s)
-
-	return server.ServeStdio(s)
-}
-
-func addCoreTools(s *server.MCPServer) {
-	// Version tool
-	versionTool := mcp.NewTool("version",
-		mcp.WithDescription("Display version information"),
-	)
-	s.AddTool(versionTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		return mcp.NewToolResultText(RetrieveVersion()), nil
-	})
 }

@@ -27,7 +27,7 @@ as also the other options. To create a demo module or solution use the 'project 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Info().Msgf("generating solution %s", args[0])
 			source = args[0]
-			return runGenerateSolution(source, watch, force)
+			return RunGenerateSolution(source, watch, force)
 		},
 	}
 	cmd.Flags().BoolVarP(&watch, "watch", "", false, "watch solution file for changes")
@@ -35,7 +35,7 @@ as also the other options. To create a demo module or solution use the 'project 
 	return cmd
 }
 
-func runGenerateSolution(solutionPath string, watch bool, force bool) error {
+func RunGenerateSolution(solutionPath string, watch bool, force bool) error {
 	result, err := spec.CheckFileAndType(solutionPath, spec.DocumentTypeSolution)
 	if err != nil {
 		return err

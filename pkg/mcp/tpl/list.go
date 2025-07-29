@@ -3,15 +3,12 @@ package tpl
 import (
 	"context"
 
+	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/repos"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
-
-func RegisterMCPTools(s *server.MCPServer) {
-	registerTemplateListTool(s)
-}
 
 func registerTemplateListTool(s *server.MCPServer) {
 	templateListTool := mcp.NewTool("templateList",
@@ -23,7 +20,7 @@ func registerTemplateListTool(s *server.MCPServer) {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
 
-		output_bytes := repoInfosToCSV(infos)
+		output_bytes := tpl.RepoInfosToCSV(infos)
 
 		return mcp.NewToolResultText(string(output_bytes)), nil
 	})
