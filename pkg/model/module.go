@@ -88,6 +88,32 @@ func NewModule(n string, v string) *Module {
 	}
 }
 
+func (m *Module) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitModule(m)
+	if err != nil {
+		return err
+	}
+	for _, i := range m.Interfaces {
+		err = i.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	for _, s := range m.Structs {
+		err = s.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	for _, e := range m.Enums {
+		err = e.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ShortName returns the last part of the name, i.e. the module name
 func (m *Module) ShortName() string {
 	parts := strings.Split(m.Name, ".")

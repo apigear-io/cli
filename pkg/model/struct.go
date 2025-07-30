@@ -22,6 +22,21 @@ func NewStruct(name string) *Struct {
 	}
 }
 
+// AcceptModelVisitor implements the AcceptModelVisitor interface for Struct
+func (s *Struct) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitStruct(s)
+	if err != nil {
+		return err
+	}
+	for _, f := range s.Fields {
+		err = f.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *Struct) Validate(m *Module) error {
 	// check for duplicate fields
 	names := make(map[string]bool)
