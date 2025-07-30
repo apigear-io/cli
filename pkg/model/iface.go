@@ -21,6 +21,20 @@ func NewSignal(name string) *Signal {
 	}
 }
 
+func (s *Signal) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitSignal(s)
+	if err != nil {
+		return err
+	}
+	for _, p := range s.Params {
+		err = p.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *Signal) Validate(m *Module) error {
 	if s.Params == nil {
 		s.Params = make([]*TypedNode, 0)
@@ -56,6 +70,26 @@ func NewOperation(name string) *Operation {
 		Params: make([]*TypedNode, 0),
 		Return: NewTypedNode("", KindReturn),
 	}
+}
+
+func (m *Operation) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitOperation(m)
+	if err != nil {
+		return err
+	}
+	for _, p := range m.Params {
+		err = p.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	if m.Return != nil {
+		err = m.Return.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (m *Operation) Validate(mod *Module) error {
@@ -123,6 +157,32 @@ func NewInterface(name string) *Interface {
 		Operations: make([]*Operation, 0),
 		Signals:    make([]*Signal, 0),
 	}
+}
+
+func (i *Interface) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitInterface(i)
+	if err != nil {
+		return err
+	}
+	for _, p := range i.Properties {
+		err = p.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	for _, o := range i.Operations {
+		err = o.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	for _, s := range i.Signals {
+		err = s.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (i *Interface) HasExtends() bool {

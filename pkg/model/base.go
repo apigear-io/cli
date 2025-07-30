@@ -158,6 +158,14 @@ func NewTypedNode(n string, k Kind) *TypedNode {
 	}
 }
 
+func (t *TypedNode) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitTypedNode(t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Validate resolves all the types in the schema
 func (t *TypedNode) Validate(m *Module) error {
 	return t.Schema.Validate(m)
