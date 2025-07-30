@@ -27,6 +27,21 @@ func NewSystem(name string) *System {
 	}
 }
 
+// AcceptModelVisitor implements the AcceptModelVisitor interface for System
+func (s *System) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitSystem(s)
+	if err != nil {
+		return err
+	}
+	for _, m := range s.Modules {
+		err = m.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *System) AddModule(m *Module) {
 	s.Modules = append(s.Modules, m)
 	m.System = s

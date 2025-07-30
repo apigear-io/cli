@@ -23,6 +23,21 @@ func NewEnum(name string) *Enum {
 	}
 }
 
+// AcceptModelVisitor implements the AcceptModelVisitor interface for Enum
+func (e *Enum) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitEnum(e)
+	if err != nil {
+		return err
+	}
+	for _, mem := range e.Members {
+		err = mem.AcceptModelVisitor(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Validate resolves all references in the enum.
 func (e *Enum) Validate(mod *Module) error {
 	names := make(map[string]bool)
@@ -94,6 +109,15 @@ func NewEnumMember(name string, value int) *EnumMember {
 		},
 		Value: value,
 	}
+}
+
+// AcceptModelVisitor implements the AcceptModelVisitor interface for EnumMember
+func (e *EnumMember) AcceptModelVisitor(v ModelVisitor) error {
+	err := v.VisitEnumMember(e)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Validate resolves all references in the enum member.
