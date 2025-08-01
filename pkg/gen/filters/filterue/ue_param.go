@@ -58,7 +58,7 @@ func ToParamString(schema *model.Schema, name string, prefix string) (string, er
 	}
 	i := schema.LookupInterface(schema.Import, schema.Type)
 	if i != nil {
-		return fmt.Sprintf("F%s%s* %s%s", moduleId, i.Name, prefix, name), nil
+		return fmt.Sprintf("const TScriptInterface<I%s%sInterface>& %s%s", moduleId, i.Name, prefix, name), nil
 	}
 	return "xxx", fmt.Errorf("ueParam: unknown schema %s", schema.Dump())
 }
