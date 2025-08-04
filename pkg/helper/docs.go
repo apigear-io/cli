@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 func ParseJson(data []byte, out any) error {

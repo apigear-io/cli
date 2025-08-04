@@ -140,7 +140,7 @@ type Extends struct {
 type Interface struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Module     *Module      `json:"-" yaml:"-"`
-	Extends    Extends      `json:"extends" yaml:"extends"`
+	Extends    Extends      `json:"extends,omitempty" yaml:"extends,omitempty"`
 	Properties []*TypedNode `json:"properties" yaml:"properties"`
 	Operations []*Operation `json:"operations" yaml:"operations"`
 	Signals    []*Signal    `json:"signals" yaml:"signals"`

@@ -64,8 +64,8 @@ func NewImport(name string, version string) *Import {
 type Module struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Version    Version      `json:"version" yaml:"version"`
-	Imports    []*Import    `json:"imports" yaml:"imports"`
-	Externs    []*Extern    `json:"externs" yaml:"externs"`
+	Imports    []*Import    `json:"imports,omitempty" yaml:"imports,omitempty"`
+	Externs    []*Extern    `json:"externs,omitempty" yaml:"externs,omitempty"`
 	Interfaces []*Interface `json:"interfaces" yaml:"interfaces"`
 	Structs    []*Struct    `json:"structs" yaml:"structs"`
 	Enums      []*Enum      `json:"enums" yaml:"enums"`
