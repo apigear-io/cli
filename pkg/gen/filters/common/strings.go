@@ -78,3 +78,7 @@ func SplitLast(s, sep string) string {
 func SplitFirst(s, sep string) string {
 	return strings.Split(s, sep)[0]
 }
+
+func StrSlice(elems ...string) []string {
+	return elems
+}

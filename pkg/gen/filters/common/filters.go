@@ -34,6 +34,7 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["FIRST"] = FirstCharUpper
 	fm["join"] = Join
 	fm["split"] = Split
+	fm["strSlice"] = StrSlice
 	fm["splitLast"] = SplitLast
 	fm["splitFirst"] = SplitFirst
 	fm["trim"] = Trim
