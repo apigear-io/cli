@@ -3,7 +3,7 @@ module {{.Module.Name}} {{.Module.Version}}
 
 enum {{Camel .Name}} {
     {{- range .Members }}
-    {{Camel .Name}} = {{.Value}}
+    {{.Name}} = {{.Value}}
     {{- end}}
 }
 {{- end }}
@@ -12,7 +12,7 @@ enum {{Camel .Name}} {
 
 struct {{Camel .Name}} {
     {{- range .Fields -}}
-    {{camel .Name}}: {{.Type}}
+    {{.Name}}: {{.Type}}
     {{- end}}
 }
 {{- end }}
@@ -21,13 +21,13 @@ struct {{Camel .Name}} {
 
 interface {{Camel .Name}} {
     {{- range .Properties }}
-    {{camel .Name}}: {{.Type}}
+    {{.Name}}: {{.Type}}
     {{- end}}
     {{- range .Operations }}
-    {{camel .Name}}({{range $index, $param := .Params}}{{if $index}}, {{end}}{{.Type}} {{camel .Name}}{{end}}): {{.Return}}
+    {{.Name}}({{range $index, $param := .Params}}{{if $index}}, {{end}}{{.Type}} {{.Name}}{{end}}): {{ .Return.Type }}
     {{- end}}
     {{- range .Signals }}
-    signal {{camel .Name}}({{range $index, $param := .Params}}{{if $index}}, {{end}}{{.Type}} {{camel .Name}}{{end}})
+    signal {{.Name}}({{range $index, $param := .Params}}{{if $index}}, {{end}}{{.Type}} {{.Name}}{{end}})
     {{- end}}
 }
 {{- end -}}

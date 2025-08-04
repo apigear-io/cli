@@ -6,7 +6,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/spec"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 func ReadSolutionDoc(file string) (*spec.SolutionDoc, error) {
