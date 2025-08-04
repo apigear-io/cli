@@ -113,10 +113,10 @@ func (m Meta) AssertKey(key string) (string, error) {
 // { "name": "foo", "kind": "interface" }
 type NamedNode struct {
 	Id          uint   `json:"-" yaml:"-"` // internal id
-	Name        string `json:"name" yaml:"name"`
-	Kind        Kind   `json:"kind" yaml:"kind"`
-	Description string `json:"description" yaml:"description"`
-	Meta        Meta   `json:"meta" yaml:"meta"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
+	Kind        Kind   `json:"-" yaml:"-"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Meta        Meta   `json:"meta,omitempty" yaml:"meta,omitempty"`
 }
 
 func (n *NamedNode) String() string {
@@ -141,7 +141,7 @@ func (n NamedNode) IsEmpty() bool {
 type TypedNode struct {
 	NamedNode  `json:",inline" yaml:",inline"`
 	Schema     `json:",inline" yaml:",inline"`
-	IsReadOnly bool `json:"readonly" yaml:"readonly"`
+	IsReadOnly bool `json:"readonly,omitempty" yaml:"readonly,omitempty"` // if true, the property is read-only
 }
 
 // NewTypedNode creates a new typed node

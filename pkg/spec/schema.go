@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/goccy/go-yaml"
 	"github.com/xeipuuv/gojsonschema"
-	"gopkg.in/yaml.v3"
 )
 
 //go:embed schema/apigear.module.schema.json

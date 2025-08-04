@@ -9,12 +9,12 @@ import (
 // { type: array, items: { type: string } }
 type Schema struct {
 	Type        string     `json:"type" yaml:"type"`
-	Import      string     `json:"import" yaml:"import"`
+	Import      string     `json:"import,omitempty" yaml:"import,omitempty"`
 	IsArray     bool       `json:"array" yaml:"array"`
 	Module      *Module    `json:"-" yaml:"-"`
-	KindType    KindType   `json:"kindType" yaml:"kindType"`
-	IsPrimitive bool       `json:"isPrimitive" yaml:"isPrimitive"`
-	IsSymbol    bool       `json:"isSymbol" yaml:"isSymbol"`
+	KindType    KindType   `json:"-" yaml:"-"`
+	IsPrimitive bool       `json:"-" yaml:"-"`
+	IsSymbol    bool       `json:"-" yaml:"-"`
 	struct_     *Struct    `json:"-" yaml:"-"`
 	enum_       *Enum      `json:"-" yaml:"-"`
 	interface_  *Interface `json:"-" yaml:"-"`

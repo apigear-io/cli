@@ -8,8 +8,8 @@ import (
 	"github.com/apigear-io/cli/pkg/model"
 	"github.com/apigear-io/cli/pkg/spec"
 
+	"github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
 )
 
 func readRules(t *testing.T, filename string) *spec.RulesDoc {

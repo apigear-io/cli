@@ -11,7 +11,7 @@ import (
 	"github.com/apigear-io/cli/pkg/idl/parser"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/model"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 type ObjectApiListener struct {
