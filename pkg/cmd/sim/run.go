@@ -2,7 +2,6 @@ package sim
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -17,7 +16,7 @@ import (
 
 func NewRunCommand() *cobra.Command {
 	var fn string
-	var port int
+	var addr string
 	var noServe bool
 	var watch bool
 
@@ -34,7 +33,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			netman := net.NewManager()
 			if err := netman.Start(&net.Options{
 				NatsListen:   false,
-				HttpAddr:     fmt.Sprintf("localhost:%d", port),
+				HttpAddr:     addr,
 				HttpDisabled: noServe,
 			}); err != nil {
 				return err
@@ -63,20 +62,20 @@ Using a scenario you can define additional static and scripted data and behavior
 			// Create task manager and register sim task
 			taskManager := tasks.NewTaskManager()
 			taskName := "sim-script"
-			
+
 			// Create task function that runs the script
 			taskFunc := func(ctx context.Context) error {
 				return runScript(ctx, simman, netman, absFile, fn)
 			}
-			
+
 			// Register the task
 			taskManager.Register(taskName, map[string]interface{}{
 				"script_file": absFile,
-				"function": fn,
+				"function":    fn,
 			}, taskFunc)
-			
+
 			ctx := cmd.Context()
-			
+
 			if watch {
 				log.Info().Str("file", absFile).Msg("watching script file")
 				// Use task manager's watch functionality
@@ -94,7 +93,7 @@ Using a scenario you can define additional static and scripted data and behavior
 		},
 	}
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")
-	cmd.Flags().IntVar(&port, "port", 5555, "protocol server port")
+	cmd.Flags().StringVar(&addr, "addr", "localhost:5555", "protocol server address")
 	cmd.Flags().BoolVar(&noServe, "no-serve", false, "disable protocol server")
 	cmd.Flags().BoolVar(&watch, "watch", false, "watch for changes in the script file")
 	return cmd
