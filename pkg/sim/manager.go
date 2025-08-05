@@ -23,6 +23,8 @@ func NewManager(opts ManagerOptions) *Manager {
 
 func (m *Manager) Start(netman *net.NetworkManager) {
 	server := NewOlinkServer()
+	addr := netman.HttpServer().Address()
+	log.Info().Msgf("starting Olink server at ws://%s/ws", addr)
 	netman.HttpServer().Router().Handle("/ws", server)
 	m.server = server
 }
