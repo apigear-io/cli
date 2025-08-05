@@ -12,5 +12,6 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["javaType"] = javaType
 	fm["javaExtern"] = javaExtern
 	fm["javaAsyncReturn"] = javaAsyncReturn
+	fm["javaTestValue"] = javaTestValue
 	fm["javaElementType"] = javaElementType
 }
