@@ -9,4 +9,7 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["jniToReturnType"] = jniToReturnType
 	fm["jniJavaParam"] = jniJavaParam
 	fm["jniJavaParams"] = jniJavaParams
+	fm["jniJavaSignatureParam"] = jniJavaSignatureParam
+	fm["jniJavaSignatureParams"] = jniJavaSignatureParams
+	fm["jniSignatureType"] = jniSignatureType
 }
