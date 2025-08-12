@@ -5,21 +5,21 @@
   "definitions": {
     "Document": {
       "additionalProperties": false,
-      "description": "Document defines a document which will be transformed in the form os source and target.",
+      "description": "Document defines a file which will be transformed using the template engine from source to target. If target is not specified, it will be the same as the source.",
       "properties": {
         "force": {
           "default": false,
-          "description": "Force defines whether the document should be overwritten if it already exists.",
+          "description": "Force defines whether the document should be forcefully overwritten if it already exists.",
           "type": "boolean"
         },
         "preserve": {
           "default": false,
-          "description": "Preserve defines whether the document should be preserved if it already exists.",
+          "description": "Preserve defines whether the document should be preserved if it already exists (can be overwritten by force).",
           "type": "boolean"
         },
         "raw": {
           "default": false,
-          "description": "Defines whether the document should be processed by the template engine or not.",
+          "description": "When true, the template engine will not be applied to the document, it will be copied as is.",
           "type": "boolean"
         },
         "source": {
@@ -38,7 +38,7 @@
     },
     "Feature": {
       "additionalProperties": false,
-      "description": "Feature defines a section in a template which can be enabled.",
+      "description": "Feature defines a certain aspect in a template which can be enabled.",
       "properties": {
         "name": {
           "description": "Name of the feature. This is used to enable/disable the feature on the command line. All features are enabled by default. Features must be lowercase and start with a letter, they can contain letters, numbers, hyphens and underscores.",
@@ -46,7 +46,7 @@
           "type": "string"
         },
         "path": {
-          "description": "Path defines the path where the documents will be written to. It is a template which can be evaluated in the given context.",
+          "description": "Path defines the a template enabled path where the documents will be written to. For example '{{dot .Module.Name}}/api'",
           "type": "string"
         },
         "requires": {
@@ -59,7 +59,7 @@
           "type": "array"
         },
         "scopes": {
-          "description": "Scopes defines a list of scopes which will be applied to the documents.",
+          "description": "Scopes defines a list of scoped api nodes the feature applies to (e.g. system, module, interface, struct, enum).",
           "items": {
             "$ref": "#/definitions/Scope"
           },
@@ -70,17 +70,17 @@
     },
     "Scope": {
       "additionalProperties": false,
-      "description": "Scope defines a set of documents which will be transformed.",
+      "description": "Scope defines a set of documents which will be transformed, when the scope is applied.",
       "properties": {
         "documents": {
-          "description": "List of documents which will be transformed.",
+          "description": "List of documents which will be transformed using the template engine.",
           "items": {
             "$ref": "#/definitions/Document"
           },
           "type": "array"
         },
         "match": {
-          "description": "Match defines the context where this scope is applied to.",
+          "description": "Match defines the context where this scope is applied to, e.g. system, module, interface, struct, enum.",
           "enum": [
             "system",
             "module",
@@ -91,7 +91,7 @@
           "type": "string"
         },
         "prefix": {
-          "description": "Prefix defines the prefix for all document targets.",
+          "description": "Prefix defines the prefix for all documents written",
           "type": "string"
         }
       },
@@ -102,7 +102,7 @@
   "properties": {
     "engines": {
       "additionalProperties": false,
-      "description": "Engines defines a list engine versions which are supported by this rules engine.",
+      "description": "Engines defines a list cli versions which are supported by this rules engine.",
       "properties": {
         "cli": {
           "description": "SemVer version constraint for the cli engine (e.g. \"\u003e= v0.1.0 \u003c v1.0.0\")",
@@ -112,27 +112,27 @@
       "type": "object"
     },
     "features": {
-      "description": "Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.",
+      "description": "Features define different aspects of the generated code, for example core, stubs, api.",
       "items": {
         "$ref": "#/definitions/Feature"
       },
       "type": "array"
     },
     "languages": {
-      "description": "Languages defines a list of languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.",
+      "description": "Languages defines a list of generated coding languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.",
       "items": {
-        "description": "Name of the language which is supported by this rules engine.",
+        "description": "Coding language name. It should be a short, descriptive name of the coding language.",
         "type": "string"
       },
       "type": "array"
     },
     "name": {
-      "description": "The name of the rules engine.",
+      "description": "The name of the rules document. It should be a short, descriptive name of the rules document.",
       "type": "string"
     },
     "schema": {
       "default": "apigear.rules/1.0",
-      "description": "The ApiGear Blueprint Rules specification version of this document.",
+      "description": "The ApiGear rules specification version of this document.",
       "enum": [
         "apigear.rules/1.0"
       ],
