@@ -47,12 +47,12 @@ additionalProperties: false
 properties:
   schema:
     type: string
-    description: "The ApiGear Blueprint Rules specification version of this document."
+    description: "The ApiGear rules specification version of this document."
     enum: ["apigear.rules/1.0"]
     default: "apigear.rules/1.0"
   name:
     type: string
-    description: "The name of the rules engine."
+    description: "The name of the rules document. It should be a short, descriptive name of the rules document."
   version:
     type: string
     description: "The version of the rules document. Should be a major and minor and an optional patch version, separated by a dot (e.g. 0.1 or 0.1.0)."
@@ -60,7 +60,7 @@ properties:
     default: "0.1.0"
   engines:
     type: object
-    description: Engines defines a list engine versions which are supported by this rules engine.
+    description: Engines defines a list cli versions which are supported by this rules engine.
     additionalProperties: false
     properties:
       cli:
@@ -68,18 +68,18 @@ properties:
         description: SemVer version constraint for the cli engine (e.g. ">= v0.1.0 < v1.0.0")
   languages:
     type: array
-    description: Languages defines a list of languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.
+    description: Languages defines a list of generated coding languages (e.g. cpp, java, py, ue, rs, go, ...) which are supported by this rules engine.
     items:
       type: string
-      description: Name of the language which is supported by this rules engine.
+      description: Coding language name. It should be a short, descriptive name of the coding language.
   features:
-    description: Features define a set of factory sections which can be enabled/disabled on the command line. typically it should contain api, core and init.
+    description: Features define different aspects of the generated code, for example core, stubs, api.
     type: array
     items: # each feature is an object with at least a name
       $ref: "#/definitions/Feature"
 definitions:
   Feature:
-    description: Feature defines a section in a template which can be enabled.
+    description: Feature defines a certain aspect in a template which can be enabled.
     type: object
     additionalProperties: false
     properties:
@@ -95,33 +95,33 @@ definitions:
           description: Name of the feature which must be run before this feature can be used.
           pattern: "^[a-z][a-z0-9-_]*$"
       path:
-        description: Path defines the path where the documents will be written to. It is a template which can be evaluated in the given context.
+        description: Path defines the a template enabled path where the documents will be written to. For example '{{dot .Module.Name}}/api' 
         type: string
       scopes:
-        description: Scopes defines a list of scopes which will be applied to the documents.
+        description: Scopes defines a list of scoped api nodes the feature applies to (e.g. system, module, interface, struct, enum).
         type: array
         items:
           $ref: "#/definitions/Scope"
   Scope:
     type: object
-    description: Scope defines a set of documents which will be transformed.
+    description: Scope defines a set of documents which will be transformed, when the scope is applied.
     additionalProperties: false
     properties:
       match:
         type: string
-        description: Match defines the context where this scope is applied to.
+        description: Match defines the context where this scope is applied to, e.g. system, module, interface, struct, enum.
         enum: [system, module, interface, struct, enum]
       prefix:
         type: string
-        description: Prefix defines the prefix for all document targets.
+        description: Prefix defines the prefix for all documents written
       documents:
         type: array
-        description: List of documents which will be transformed.
+        description: List of documents which will be transformed using the template engine.
         items:
           "$ref": "#/definitions/Document"
   Document:
     type: object
-    description: Document defines a document which will be transformed in the form os source and target.
+    description: Document defines a file which will be transformed using the template engine from source to target. If target is not specified, it will be the same as the source.
     required: [source]
     additionalProperties: false
     properties:
@@ -133,13 +133,13 @@ definitions:
         description: Target defines the document target path relative to the output folder
       force:
         type: boolean
-        description: Force defines whether the document should be overwritten if it already exists.
+        description: Force defines whether the document should be forcefully overwritten if it already exists.
         default: false
       preserve:
         type: boolean
-        description: Preserve defines whether the document should be preserved if it already exists.
+        description: Preserve defines whether the document should be preserved if it already exists (can be overwritten by force).
         default: false
       raw:
         type: boolean
-        description: Defines whether the document should be processed by the template engine or not.
+        description: When true, the template engine will not be applied to the document, it will be copied as is.
         default: false
