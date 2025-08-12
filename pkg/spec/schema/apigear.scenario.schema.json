@@ -132,7 +132,7 @@
     },
     "name": {
       "default": "demo",
-      "description": "The name of the scenario.",
+      "description": "The name of the scenario document.",
       "type": "string"
     },
     "schema": {
@@ -152,7 +152,7 @@
     },
     "version": {
       "default": "0.1.0",
-      "description": "The version of the solution document. Should be a major and minor and an optional patch version, separated by a dot (e.g. 0.1 or 0.1.0).",
+      "description": "The version of the scenario document. Should be a major and minor and an optional patch version, separated by a dot (e.g. 0.1 or 0.1.0).",
       "pattern": "^[0-9]+[.][0-9]+([.][0-9]+)*$",
       "type": "string"
     }

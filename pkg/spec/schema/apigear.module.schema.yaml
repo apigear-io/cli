@@ -39,11 +39,11 @@ properties:
     default: "apigear.module/1.0"
   name:
     type: string
-    description: module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
+    description: Module name inside the system. A module name must be unique inside the generated system. Starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
     pattern: "^[a-zA-Z][0-9A-Za-z_.]*$"
   imports:
     type: array
-    description: a list of imported modules
+    description: A list of imported modules
     items:
       type: object
       required: [name]
@@ -51,50 +51,50 @@ properties:
       properties:
         name:
           type: string
-          description: module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
+          description: Module name to import, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)
           pattern: "^[a-zA-Z][0-9A-Za-z_.]*$"
         description:
           type: string
-          description: import description. Should be a short description for the import
+          description: Import description. Should be a short description for the import
         meta:
           type: object
-          description: meta information for the import. Read the template manual which meta tags are supported.
+          description: Meta information for the import. Read the template manual which meta tags are supported.
   version:
     type: string
-    description: module version, should be a major and minor and an optional patch version, separated by a dot.
+    description: Module version, should be a major and minor and an optional patch version, separated by a dot.
     pattern: "^[0-9]+[.][0-9]+([.][0-9]+)*$"
     default: "1.0"
   description:
     type: string
-    description: module description. Should be a short description of the module.
+    description: Module description. Should be a short description of the module.
   meta:
     type: object
-    description: meta information are read by the individual template. Read the template manual which meta tags are supported.
+    description: Meta information are read by the individual template. Read the template manual which meta tags are supported.
   externs:
     type: array
-    description: a list of externs, exported by this module
+    description: A list of externs, exported by this module. Externs are native types defined outside of the module and handled by the template.
     items:
       $ref: "#/definitions/Extern"
   interfaces:
     type: array
-    description: a list of interfaces, exported by this module
+    description: A list of interfaces, defined by this module
     items:
       $ref: "#/definitions/Interface"
   structs:
     type: array
-    description: a list of data structures, exported by this module
+    description: A list of data structures, defined by this module
     items:
       $ref: "#/definitions/Struct"
   enums:
     type: array
-    description: a list of enumerations, exported by this module
+    description: A list of enumerations, defined by this module
     items:
       $ref: "#/definitions/Enum"
 
 definitions:
   NamedType:
     type: object
-    description: "A named type is a type with a name and a type."
+    description: "Type information with a name. (e.g. name is a string)"
     required: [name, type]
     additionalProperties: false
     properties:
@@ -104,25 +104,25 @@ definitions:
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
       description:
         type: string
-        description: "A description of the type."
+        description: "A description of the type. Should be a short, descriptive text about the type."
       meta:
         type: object
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       type:
         type: string
-        description: "A type either a primitive type or a declared type name."
+        description: "A type either a primitive type (int, int16, int32, int64, float, float16, float32, float64, bool, string) or a declared type name (e.g. an interface name, struct name or enum name)."
       import:
         type: string
-        description: "The name of the module where the type is defined."
+        description: "If the type is defined in another module, this is the name of that module."
       array:
         type: boolean
         description: "If true, the type is an array of the given type."
       readonly:
         type: boolean
-        description: "If true, the type is readonly."
+        description: "If true, the type is readonly, meaning it cannot be modified after creation."
   Type:
     type: object
-    description: "A type is a type key with additional information."
+    description: "A type information without a name. (e.g. int), used for return types."
     required: [type]
     additionalProperties: false
     properties:
@@ -134,16 +134,16 @@ definitions:
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       type:
         type: string
-        description: "A primitive type or a declared type name."
+        description: "A primitive type or a defined type (such as interface, struct or enum)."
       import:
         type: string
-        description: "The name of the module where the type is defined."
+        description: "If the type is defined in another module, this is the name of that module."
       array:
         type: boolean
         description: "If true, the type is an array of the given type."
   Extern:
     type: object
-    description: "An extern is a reference to a type defined outside of ApiGear."
+    description: "An extern is a reference to a type to a native type defined outside of the set of modules."
     required: [name]
     additionalProperties: false
     properties:
@@ -156,54 +156,54 @@ definitions:
         description: "A description of the extern."
       meta:
         type: object
-        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
   Interface:
     type: object
-    description: "An interface is a collection of properties, operations and signals."
+    description: "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals must be unique within the interface."
     required: [name]
     additionalProperties: false
     properties:
       name:
         type: string
-        description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
+        description: "The interface name, typical upper camel case (Vehicle, Ball). A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
       description:
         type: string
-        description: "A description of the interface."
+        description: "A description of the interface. This should provide a clear and concise explanation of the interface's purpose and functionality."
       extends:
         type: object
-        description: "The interface extends another interface."
+        description: "An interface can extend another interface, inheriting its properties and operations. If the interface comes from another module, the import field must be set."
         required: [name]
         additionalProperties: false
         properties:
           name:
             type: string
-            description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
+            description: "The base interface this interface extends from. A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
             pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
           import:
             type: string
-            description: "The name of the module where the interface is defined."
+            description: "The name of the module where the base interface is defined."
       meta:
         type: object
-        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       properties:
         type: array
-        description: "A list of properties."
+        description: "An array of reactive properties (set<Name>, get<Name>, on<Name>). Templates automatically generate setter, getter and change signal for each property."
         items:
           $ref: "#/definitions/NamedType"
       operations:
         type: array
-        description: "A list of operations."
+        description: "An array of callable operations with parameters and a return type."
         items:
           $ref: "#/definitions/Operation"
       signals:
         type: array
-        description: "A list of signals."
+        description: "An array of emittablesignals, with parameters."
         items:
           $ref: "#/definitions/Operation"
   Struct:
     type: object
-    description: "A struct is a collection of fields."
+    description: "A struct is a message format that groups related data fields under a single name."
     required: [name]
     additionalProperties: false
     properties:
@@ -216,15 +216,15 @@ definitions:
         description: "A description of the struct."
       meta:
         type: object
-        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       fields:
         type: array
-        description: "A list of fields."
+        description: "An array of fields."
         items:
           $ref: "#/definitions/NamedType"
   Enum:
     type: object
-    description: "An enum is a collection of name, value pairs."
+    description: "An enum is an enumeration type that consists of a set of named values."
     required: [name]
     additionalProperties: false
     properties:
@@ -237,15 +237,15 @@ definitions:
         description: "A description of the enum."
       meta:
         type: object
-        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       members:
         type: array
-        description: "A list of members."
+        description: "An array of members."
         items:
           $ref: "#/definitions/EnumMember"
   Operation:
     type: object
-    description: "An operation is a function with a name, parameters and a return type."
+    description: "An operation is a callable interface method, with parameters and a return type."
     additionalProperties: false
     properties:
       name:
@@ -254,15 +254,15 @@ definitions:
         pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
       description:
         type: string
-        description: "A description of the operation."
+        description: "A description of the operation. Should be a short, descriptive text about the operation."
       meta:
         type: object
-        description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       return:
         $ref: "#/definitions/Type"
       params:
         type: array
-        description: "A list of operation parameters."
+        description: "An array of operation parameters."
         items:
           $ref: "#/definitions/NamedType"
   EnumMember: # member value inside an enum
@@ -283,5 +283,5 @@ definitions:
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       value:
         type: integer
-        description: "The value of the enum member. It must be unique within the enum and must be a positive integer."
+        description: "The value of the enum member. It must be unique within the enum and must be a positive integer. If no value is specified, the first member will be assigned the value 0, and subsequent members will be assigned incrementing values."
         minimum: 0

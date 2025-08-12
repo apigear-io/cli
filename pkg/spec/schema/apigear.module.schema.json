@@ -4,21 +4,21 @@
   "definitions": {
     "Enum": {
       "additionalProperties": false,
-      "description": "An enum is a collection of name, value pairs.",
+      "description": "An enum is an enumeration type that consists of a set of named values.",
       "properties": {
         "description": {
           "description": "A description of the enum.",
           "type": "string"
         },
         "members": {
-          "description": "A list of members.",
+          "description": "An array of members.",
           "items": {
             "$ref": "#/definitions/EnumMember"
           },
           "type": "array"
         },
         "meta": {
-          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
@@ -50,7 +50,7 @@
           "type": "string"
         },
         "value": {
-          "description": "The value of the enum member. It must be unique within the enum and must be a positive integer.",
+          "description": "The value of the enum member. It must be unique within the enum and must be a positive integer. If no value is specified, the first member will be assigned the value 0, and subsequent members will be assigned incrementing values.",
           "minimum": 0,
           "type": "integer"
         }
@@ -62,14 +62,14 @@
     },
     "Extern": {
       "additionalProperties": false,
-      "description": "An extern is a reference to a type defined outside of ApiGear.",
+      "description": "An extern is a reference to a type to a native type defined outside of the set of modules.",
       "properties": {
         "description": {
           "description": "A description of the extern.",
           "type": "string"
         },
         "meta": {
-          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
@@ -85,22 +85,22 @@
     },
     "Interface": {
       "additionalProperties": false,
-      "description": "An interface is a collection of properties, operations and signals.",
+      "description": "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals must be unique within the interface.",
       "properties": {
         "description": {
-          "description": "A description of the interface.",
+          "description": "A description of the interface. This should provide a clear and concise explanation of the interface's purpose and functionality.",
           "type": "string"
         },
         "extends": {
           "additionalProperties": false,
-          "description": "The interface extends another interface.",
+          "description": "An interface can extend another interface, inheriting its properties and operations. If the interface comes from another module, the import field must be set.",
           "properties": {
             "import": {
-              "description": "The name of the module where the interface is defined.",
+              "description": "The name of the module where the base interface is defined.",
               "type": "string"
             },
             "name": {
-              "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+              "description": "The base interface this interface extends from. A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
               "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
               "type": "string"
             }
@@ -111,30 +111,30 @@
           "type": "object"
         },
         "meta": {
-          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
-          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "description": "The interface name, typical upper camel case (Vehicle, Ball). A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
           "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
           "type": "string"
         },
         "operations": {
-          "description": "A list of operations.",
+          "description": "An array of callable operations with parameters and a return type.",
           "items": {
             "$ref": "#/definitions/Operation"
           },
           "type": "array"
         },
         "properties": {
-          "description": "A list of properties.",
+          "description": "An array of reactive properties (set\u003cName\u003e, get\u003cName\u003e, on\u003cName\u003e). Templates automatically generate setter, getter and change signal for each property.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
         "signals": {
-          "description": "A list of signals.",
+          "description": "An array of emittablesignals, with parameters.",
           "items": {
             "$ref": "#/definitions/Operation"
           },
@@ -148,18 +148,18 @@
     },
     "NamedType": {
       "additionalProperties": false,
-      "description": "A named type is a type with a name and a type.",
+      "description": "Type information with a name. (e.g. name is a string)",
       "properties": {
         "array": {
           "description": "If true, the type is an array of the given type.",
           "type": "boolean"
         },
         "description": {
-          "description": "A description of the type.",
+          "description": "A description of the type. Should be a short, descriptive text about the type.",
           "type": "string"
         },
         "import": {
-          "description": "The name of the module where the type is defined.",
+          "description": "If the type is defined in another module, this is the name of that module.",
           "type": "string"
         },
         "meta": {
@@ -172,11 +172,11 @@
           "type": "string"
         },
         "readonly": {
-          "description": "If true, the type is readonly.",
+          "description": "If true, the type is readonly, meaning it cannot be modified after creation.",
           "type": "boolean"
         },
         "type": {
-          "description": "A type either a primitive type or a declared type name.",
+          "description": "A type either a primitive type (int, int16, int32, int64, float, float16, float32, float64, bool, string) or a declared type name (e.g. an interface name, struct name or enum name).",
           "type": "string"
         }
       },
@@ -188,14 +188,14 @@
     },
     "Operation": {
       "additionalProperties": false,
-      "description": "An operation is a function with a name, parameters and a return type.",
+      "description": "An operation is a callable interface method, with parameters and a return type.",
       "properties": {
         "description": {
-          "description": "A description of the operation.",
+          "description": "A description of the operation. Should be a short, descriptive text about the operation.",
           "type": "string"
         },
         "meta": {
-          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
@@ -204,7 +204,7 @@
           "type": "string"
         },
         "params": {
-          "description": "A list of operation parameters.",
+          "description": "An array of operation parameters.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
@@ -218,21 +218,21 @@
     },
     "Struct": {
       "additionalProperties": false,
-      "description": "A struct is a collection of fields.",
+      "description": "A struct is a message format that groups related data fields under a single name.",
       "properties": {
         "description": {
           "description": "A description of the struct.",
           "type": "string"
         },
         "fields": {
-          "description": "A list of fields.",
+          "description": "An array of fields.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
         "meta": {
-          "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
           "type": "object"
         },
         "name": {
@@ -248,7 +248,7 @@
     },
     "Type": {
       "additionalProperties": false,
-      "description": "A type is a type key with additional information.",
+      "description": "A type information without a name. (e.g. int), used for return types.",
       "properties": {
         "array": {
           "description": "If true, the type is an array of the given type.",
@@ -259,7 +259,7 @@
           "type": "string"
         },
         "import": {
-          "description": "The name of the module where the type is defined.",
+          "description": "If the type is defined in another module, this is the name of that module.",
           "type": "string"
         },
         "meta": {
@@ -267,7 +267,7 @@
           "type": "object"
         },
         "type": {
-          "description": "A primitive type or a declared type name.",
+          "description": "A primitive type or a defined type (such as interface, struct or enum).",
           "type": "string"
         }
       },
@@ -277,41 +277,41 @@
       "type": "object"
     }
   },
-  "description": "This is the schema for the ObjectAPI 1.0 specification. \nIt is used to validate the ObjectAPI 1.0 specification.\n\nAn example of a valid ObjectAPI 1.0 specification is:\n\n```\nschema: apigear.module/1.0\nname: my.module\nversion: 1.0\ninterfaces:\n  - name: Counter\n    properties:\n      - name: value\n        type: int\n    operations:\n      - name: increment\n        params:\n          - name: value\n            type: int\n        return: int\n      - name: decrement\n        params:\n          - name: value\n            type: int\n        return: int\n```\n",
+  "description": "This is the schema for the ObjectAPI 1.0 specification.\nIt is used to validate the ObjectAPI 1.0 specification.\n\nAn example of a valid ObjectAPI 1.0 specification is:\n\n```\nschema: apigear.module/1.0\nname: my.module\nversion: 1.0\ninterfaces:\n  - name: Counter\n    properties:\n      - name: value\n        type: int\n    operations:\n      - name: increment\n        params:\n          - name: value\n            type: int\n        return: int\n      - name: decrement\n        params:\n          - name: value\n            type: int\n        return: int\n```\n",
   "properties": {
     "description": {
-      "description": "module description. Should be a short description of the module.",
+      "description": "Module description. Should be a short description of the module.",
       "type": "string"
     },
     "enums": {
-      "description": "a list of enumerations, exported by this module",
+      "description": "A list of enumerations, defined by this module",
       "items": {
         "$ref": "#/definitions/Enum"
       },
       "type": "array"
     },
     "externs": {
-      "description": "a list of externs, exported by this module",
+      "description": "A list of externs, exported by this module. Externs are native types defined outside of the module and handled by the template.",
       "items": {
         "$ref": "#/definitions/Extern"
       },
       "type": "array"
     },
     "imports": {
-      "description": "a list of imported modules",
+      "description": "A list of imported modules",
       "items": {
         "additionalProperties": false,
         "properties": {
           "description": {
-            "description": "import description. Should be a short description for the import",
+            "description": "Import description. Should be a short description for the import",
             "type": "string"
           },
           "meta": {
-            "description": "meta information for the import. Read the template manual which meta tags are supported.",
+            "description": "Meta information for the import. Read the template manual which meta tags are supported.",
             "type": "object"
           },
           "name": {
-            "description": "module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
+            "description": "Module name to import, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
             "pattern": "^[a-zA-Z][0-9A-Za-z_.]*$",
             "type": "string"
           }
@@ -324,18 +324,18 @@
       "type": "array"
     },
     "interfaces": {
-      "description": "a list of interfaces, exported by this module",
+      "description": "A list of interfaces, defined by this module",
       "items": {
         "$ref": "#/definitions/Interface"
       },
       "type": "array"
     },
     "meta": {
-      "description": "meta information are read by the individual template. Read the template manual which meta tags are supported.",
+      "description": "Meta information are read by the individual template. Read the template manual which meta tags are supported.",
       "type": "object"
     },
     "name": {
-      "description": "module name, starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
+      "description": "Module name inside the system. A module name must be unique inside the generated system. Starts with a letter, followed by letters, numbers, underscores or dots (e.g. a.b.c)",
       "pattern": "^[a-zA-Z][0-9A-Za-z_.]*$",
       "type": "string"
     },
@@ -348,7 +348,7 @@
       "type": "string"
     },
     "structs": {
-      "description": "a list of data structures, exported by this module",
+      "description": "A list of data structures, defined by this module",
       "items": {
         "$ref": "#/definitions/Struct"
       },
@@ -356,7 +356,7 @@
     },
     "version": {
       "default": "1.0",
-      "description": "module version, should be a major and minor and an optional patch version, separated by a dot.",
+      "description": "Module version, should be a major and minor and an optional patch version, separated by a dot.",
       "pattern": "^[0-9]+[.][0-9]+([.][0-9]+)*$",
       "type": "string"
     }

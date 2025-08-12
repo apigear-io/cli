@@ -20,13 +20,13 @@ properties:
     default: "0.1.0"
   description:
     type: string
-    description: "The description of the solution."
+    description: "The description of the solution. It should be a short, descriptive text about the solution."
   rootDir:
     type: string
-    description: "The root directory of the solution to map all other paths to."
+    description: "The root directory of the solution to map all other paths to. Defaults to the current working directory."
   meta:
     type: object
-    description: "The meta section contains meta data about the solution."
+    description: "The meta section contains meta data about the solution, as key-value pairs."
   layers:
     type: array
     items:
@@ -37,7 +37,7 @@ properties:
     type: array
     items:
       $ref: "#/definitions/Target"
-    description: "The targets section contains a list of targets which are used to generate the solution."
+    description: "The targets section contains a list of code generation targets. A target could be c++ and another target could be python"
 definitions:
   Target:
     type: object
@@ -46,44 +46,44 @@ definitions:
       - output
       - template
     additionalProperties: false
-    description: "The target section defines a target which is used to generate the solution."
+    description: "The target defines a target which is used to generate source code."
     properties:
       name:
         type: string
-        description: "name of the target."
+        description: "Name of the target, for development purposes."
       description:
         type: string
-        description: "description of the target."
+        description: "Description of the target."
       inputs:
         type: array
         items:
           type: string
-        description: "list of input files which are used to generate the target."
+        description: "List of input files which are used to generate the target (either API YAML definitions or IDL definition files)."
         default: []
       output:
         type: string
-        description: "the output directory of the target."
+        description: "The output directory of the target."
       imports:
         type: array
         items:
           type: string
-        description: "list of imports which are used to enhance the meta information."
+        description: "List of imports which are used to enhance the meta information."
         default: []
       meta:
         type: object
-        description: "meta data about the target which will be passed on to the template."
+        description: "Meta data about the target which will be passed on to the template."
       template:
         type: string
-        description: "path to the template which can be either template package name or a template folder with a rules document."
+        description: "Path to the template which can be either template package name (e.g. apigear-io/template-cpp) or a template folder with a rules document (../<template_folder>)."
       features:
         type: array
         items:
           type: string
-        description: "a list of features which can be enabled/disabled on the command line."
+        description: "A template features, which can be enabled. See the template documentation for available features."
         default: []
       dryRun:
         type: boolean
-        description: "if true the target will not be generated."
+        description: "If true the target will not be generated, only the actions will be printed."
       force:
         type: boolean
-        description: "if true the target will be generated even if it already exists."
+        description: "If true the target will be generated even if it already exists."
