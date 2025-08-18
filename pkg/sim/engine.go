@@ -10,12 +10,7 @@ import (
 	"github.com/dop251/goja_nodejs/console"
 	"github.com/dop251/goja_nodejs/eventloop"
 	"github.com/dop251/goja_nodejs/require"
-
-	_ "embed"
 )
-
-//go:embed proxy.js
-var proxyJS string
 
 func createSourceLoader() require.SourceLoader {
 	return func(filename string) ([]byte, error) {
@@ -89,14 +84,19 @@ func NewEngine(opts EngineOptions) *Engine {
 	}
 	e.world = NewWorld(e)
 	e.loop.Start()
+	
+	// Initial setup - wait for initialization to complete before returning
+	// This ensures e.rt is set and the engine is fully ready
+	done := make(chan bool)
 	e.loop.RunOnLoop(func(rt *goja.Runtime) {
+		e.rt = rt  // Set the runtime once during initialization
 		rt.SetFieldNameMapper(goja.UncapFieldNameMapper())
 		e.world.register(rt)
 		registry.Enable(rt)
-		if _, err := rt.RunScript("proxy.js", proxyJS); err != nil {
-			log.Error().Err(err).Msg("failed to run proxy.js script")
-		}
+		done <- true
 	})
+	<-done  // Wait for initialization to complete
+	
 	return e
 }
 
@@ -107,9 +107,7 @@ func (e *Engine) SetOlinkServer(server IOlinkServer) {
 }
 
 func (e *Engine) RunScript(name string, content string) {
-	e.rw.Lock()
-	defer e.rw.Unlock()
-	e.loop.RunOnLoop(func(rt *goja.Runtime) {
+	e.RunOnLoop(func(rt *goja.Runtime) {
 		log.Info().Str("name", name).Str("workDir", e.workDir).Msg("Run script")
 
 		value, err := rt.RunScript(name, content)
@@ -117,14 +115,11 @@ func (e *Engine) RunScript(name string, content string) {
 			log.Error().Err(err).Msg("Failed to run script")
 		}
 		log.Info().Interface("value", value).Msg("Script result")
-		e.rt = rt
 	})
 }
 
 func (e *Engine) RunFunction(name string, args ...any) {
-	e.rw.Lock()
-	defer e.rw.Unlock()
-	e.loop.RunOnLoop(func(rt *goja.Runtime) {
+	e.RunOnLoop(func(rt *goja.Runtime) {
 		log.Info().Str("name", name).Msg("Run function")
 		fn, ok := goja.AssertFunction(rt.Get(name))
 		if !ok {
@@ -144,6 +139,22 @@ func (e *Engine) RunFunction(name string, args ...any) {
 			log.Error().Err(err).Msg("Failed to run function")
 		}
 	})
+}
+
+func (e *Engine) RunOnLoop(fn func(rt *goja.Runtime)) {
+	// No lock needed here - eventloop.RunOnLoop is thread-safe
+	// and queues the function to run on the event loop thread
+	e.loop.RunOnLoop(func(rt *goja.Runtime) {
+		// e.rt is already set during initialization in NewEngine
+		// and remains constant throughout the engine's lifetime
+		fn(rt)
+	})
+}
+
+func (e *Engine) Runtime() *goja.Runtime {
+	e.rw.RLock()
+	defer e.rw.RUnlock()
+	return e.rt
 }
 
 func (e *Engine) CompileScript(name string, src string) error {
