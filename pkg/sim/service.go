@@ -91,7 +91,12 @@ func (o *ObjectService) HasProperty(name string) bool {
 	return ok
 }
 
-func (o *ObjectService) OnMethod(method string, fn goja.Callable) {
+func (o *ObjectService) OnMethod(method string, v goja.Value) {
+	fn, ok := goja.AssertFunction(v)
+	if !ok {
+		log.Warn().Msgf("ObjectService.OnMethod: value is not a function: %v", v)
+		return
+	}
 	o.methods[method] = fn
 }
 
@@ -121,11 +126,13 @@ func (o *ObjectService) HasMethod(method string) bool {
 }
 
 func (o *ObjectService) EmitSignal(signal string, args ...any) {
-	if o.source == nil {
-		log.Warn().Msgf("ObjectService.EmitSignal: source is nil")
-		return
+	// Emit locally to JavaScript listeners
+	o.signalEmitter.Emit(signal, args)
+	
+	// Also notify OLink clients if source is available
+	if o.source != nil {
+		o.source.NotifySignal(signal, core.Args(args))
 	}
-	o.source.NotifySignal(signal, core.Args(args))
 }
 
 func (o *ObjectService) OnSignal(signal string, fn func(args ...any)) {
