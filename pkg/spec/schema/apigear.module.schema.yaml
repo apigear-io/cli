@@ -119,7 +119,7 @@ definitions:
         description: "If true, the type is an array of the given type."
       readonly:
         type: boolean
-        description: "If true, the type is readonly, meaning it cannot be modified after creation."
+        description: "If true, the type is readonly and no setter will be generated, meaning it cannot be modified after creation."
   Type:
     type: object
     description: "A type information without a name. (e.g. int), used for return types."
@@ -188,7 +188,7 @@ definitions:
         description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       properties:
         type: array
-        description: "An array of reactive properties (set<Name>, get<Name>, on<Name>). Templates automatically generate setter, getter and change signal for each property."
+        description: "An array of reactive properties. Templates automatically generate setter, getter and change signal for each property (set<Name>, get<Name>, on<Name>)."
         items:
           $ref: "#/definitions/NamedType"
       operations:
