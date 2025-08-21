@@ -42,6 +42,12 @@ func NewRegistry(registryDir, registryURL string) *registry {
 func (r *registry) Load() error {
 	src := helper.Join(r.RegistryDir, "registry.json")
 	if !helper.IsFile(src) {
+		// try to update
+		log.Info().Msgf("registry file not found: %s, trying to update...", src)
+		err := r.Update()
+		if err != nil {
+			log.Debug().Msgf("failed to update registry: %s", err)
+		}
 		log.Debug().Msgf("registry file not found: %s", src)
 		return fmt.Errorf("registry file not found: %s", src)
 	}
