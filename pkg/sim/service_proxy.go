@@ -14,9 +14,10 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 	// Create proxy with all trap handlers
 	proxyConfig := &goja.ProxyTrapConfig{
 		Get: func(target *goja.Object, property string, receiver goja.Value) (value goja.Value) {
-			// Access to raw service object
+			// Access to raw service object - just return the service
+			// Goja will automatically handle the method name conversion
 			if property == "$" {
-				return target
+				return vm.ToValue(service)
 			}
 			
 			// Method access - return bound method with proxy as context
