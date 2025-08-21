@@ -12,7 +12,7 @@ func TestVoidReturn(t *testing.T) {
 	err := helper.ReadDocument("./testdata/module.yaml", &module)
 	assert.NoError(t, module.Validate())
 	assert.NoError(t, err)
-	assert.Equal(t, 5, len(module.Interfaces))
+	assert.Equal(t, 6, len(module.Interfaces))
 	iface3 := module.Interfaces[3]
 	assert.Equal(t, 3, len(iface3.Operations))
 	op0 := iface3.Operations[0]

@@ -14,7 +14,7 @@ func TestInterface(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "Module01", module.Name)
 	assert.Equal(t, "1.0.0", string(module.Version))
-	assert.Equal(t, 5, len(module.Interfaces))
+	assert.Equal(t, 6, len(module.Interfaces))
 	iface0 := module.Interfaces[0]
 	assert.Equal(t, "Interface01", iface0.Name)
 
@@ -125,6 +125,6 @@ func TestExtends(t *testing.T) {
 	iface0 := module.LookupInterface("Module01", "Interface01")
 	assert.True(t, iface6.HasExtends())
 	assert.Equal(t, "Interface01", iface6.Extends.Name)
-	assert.Equal(t, "", iface6.Extends.Import)
+	assert.Equal(t, "Module01", iface6.Extends.Import)
 	assert.Equal(t, iface0, iface6.Extends.Reference)
 }

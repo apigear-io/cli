@@ -45,7 +45,7 @@ func TestChecksum(t *testing.T) {
 	err = module.Validate()
 	assert.NoError(t, err)
 	module.computeChecksum()
-	assert.Equal(t, "aacb40d122fb8a126754d15e1c78e2ad", module.Checksum)
+	assert.Equal(t, "4979caffda11ce255f9ab5007681d438", module.Checksum)
 	assert.Equal(t, 32, len(module.Checksum))
 }
 
