@@ -38,6 +38,9 @@ interfaces:
       - name: prop03
         type: int
         readonly: false
+  - name: Interface06
+    extends:
+      name: Interface01
 enums:
   - name: Enum1
     members:
