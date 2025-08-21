@@ -133,8 +133,17 @@ func (m *Operation) CheckReservedWords(langs []rkw.Lang) {
 }
 
 type Extends struct {
-	Name   string `json:"name" yaml:"name"`
+	// Name of the extended interface
+	Name string `json:"name" yaml:"name"`
+	// Import path of the extended interface
 	Import string `json:"import" yaml:"import"`
+	// Reference to the extended interface, resolved during validation
+	Reference *Interface `json:"-" yaml:"-"`
+}
+
+// IsEmpty returns true if the extends is empty
+func (e *Extends) IsEmpty() bool {
+	return e.Name == ""
 }
 
 type Interface struct {
@@ -185,10 +194,12 @@ func (i *Interface) AcceptModelVisitor(v ModelVisitor) error {
 	return nil
 }
 
+// HasExtends returns true if the interface extends another interface
 func (i *Interface) HasExtends() bool {
 	return i.Extends.Name != ""
 }
 
+// LookupMember looks up a member by name
 func (i Interface) LookupMember(name string) *NamedNode {
 	for _, p := range i.Properties {
 		if p.Name == name {
@@ -242,7 +253,10 @@ func (i *Interface) Validate(mod *Module) error {
 		if i.Extends.Name == i.Name && i.Extends.Import == "" {
 			log.Warn().Msgf("%s: interface extends itself", i.Name)
 		}
-		if i.Module.LookupInterface(i.Extends.Import, i.Extends.Name) == nil {
+		extends := i.Module.LookupInterface(i.Extends.Import, i.Extends.Name)
+		if extends != nil {
+			i.Extends.Reference = extends
+		} else {
 			log.Warn().Msgf("%s: interface extends unknown interface: %s", i.Name, i.Extends.Name)
 		}
 	}

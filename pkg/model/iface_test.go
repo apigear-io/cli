@@ -114,3 +114,17 @@ func TestEnumNameDuplicates(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "demo: duplicate name Hello", err.Error())
 }
+
+func TestExtends(t *testing.T) {
+	var module Module
+	err := helper.ReadDocument("./testdata/module.yaml", &module)
+	assert.NoError(t, err)
+	err = module.Validate()
+	assert.NoError(t, err)
+	iface6 := module.LookupInterface("Module01", "Interface06")
+	iface0 := module.LookupInterface("Module01", "Interface01")
+	assert.True(t, iface6.HasExtends())
+	assert.Equal(t, "Interface01", iface6.Extends.Name)
+	assert.Equal(t, "", iface6.Extends.Import)
+	assert.Equal(t, iface0, iface6.Extends.Reference)
+}
