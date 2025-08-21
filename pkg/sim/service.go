@@ -16,6 +16,7 @@ type ObjectService struct {
 	signalEmitter   *Emitter[[]any]
 	engine          *Engine
 	source          *OLinkSource
+	proxy           *goja.Object // Reference to the proxy object
 }
 
 func NewObjectService(engine *Engine, objectId string, properties map[string]any) *ObjectService {
@@ -30,10 +31,20 @@ func NewObjectService(engine *Engine, objectId string, properties map[string]any
 		methods:         make(map[string]goja.Callable),
 		signalEmitter:   NewEmitter[[]any](),
 		engine:          engine,
+		proxy:           nil, // Will be set after creation
 	}
 	s.source = NewOLinkSource(s)
 	s.engine.registerSource(s.source)
+	
+	// Create the proxy for this service
+	s.proxy = CreateServiceProxy(engine.rt, s)
+	
 	return s
+}
+
+// GetProxy returns the proxy object for this service
+func (s *ObjectService) GetProxy() *goja.Object {
+	return s.proxy
 }
 
 func (s *ObjectService) Close() {
@@ -111,7 +122,12 @@ func (o *ObjectService) CallMethod(method string, args ...any) (goja.Value, erro
 	for i, arg := range args {
 		jsArgs[i] = o.engine.rt.ToValue(arg)
 	}
-	return fn(goja.Undefined(), jsArgs...)
+	// Use the proxy as 'this' context if available, otherwise use undefined
+	thisContext := goja.Undefined()
+	if o.proxy != nil {
+		thisContext = o.engine.rt.ToValue(o.proxy)
+	}
+	return fn(thisContext, jsArgs...)
 }
 
 // GetMethod return method

@@ -210,5 +210,5 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 // CreateService creates a new service with proxy wrapper
 func CreateService(engine *Engine, objectId string, properties map[string]any) *goja.Object {
 	service := NewObjectService(engine, objectId, properties)
-	return CreateServiceProxy(engine.rt, service)
+	return service.GetProxy()
 }

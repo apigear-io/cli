@@ -6,7 +6,7 @@ demo.dynamicSignal = function(arg0, arg1) {
 }
 demo.constSignal = function() {
     console.log("Const signal called");
-    this.emit('signal', "arg0", "arg1");
+    demo.emit('signal', "arg0", "arg1");
 };
 
 demo.on('signal', function(arg0, arg1) {
