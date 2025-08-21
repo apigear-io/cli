@@ -127,7 +127,7 @@
           "type": "array"
         },
         "properties": {
-          "description": "An array of reactive properties (set\u003cName\u003e, get\u003cName\u003e, on\u003cName\u003e). Templates automatically generate setter, getter and change signal for each property.",
+          "description": "An array of reactive properties. Templates automatically generate setter, getter and change signal for each property (set\u003cName\u003e, get\u003cName\u003e, on\u003cName\u003e).",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
@@ -172,7 +172,7 @@
           "type": "string"
         },
         "readonly": {
-          "description": "If true, the type is readonly, meaning it cannot be modified after creation.",
+          "description": "If true, the type is readonly and no setter will be generated, meaning it cannot be modified after creation.",
           "type": "boolean"
         },
         "type": {
