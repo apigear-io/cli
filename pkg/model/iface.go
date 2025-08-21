@@ -141,9 +141,9 @@ type Extends struct {
 	Reference *Interface `json:"-" yaml:"-"`
 }
 
-// IsEmpty returns true if the extends is empty
-func (e *Extends) IsEmpty() bool {
-	return e.Name == ""
+// IsValid returns true if the extends is valid
+func (e *Extends) IsValid() bool {
+	return e.Name != "" && e.Import != "" && e.Reference != nil
 }
 
 type Interface struct {
@@ -250,7 +250,11 @@ func (i *Interface) Validate(mod *Module) error {
 	// check if any names are duplicated
 	names := make(map[string]bool)
 	if i.HasExtends() {
-		if i.Extends.Name == i.Name && i.Extends.Import == "" {
+		if i.Extends.Import == "" {
+			// if import is empty, set it to the module name
+			i.Extends.Import = i.Module.Name
+		}
+		if i.Extends.Name == i.Name && i.Extends.Import == i.Module.Name {
 			log.Warn().Msgf("%s: interface extends itself", i.Name)
 		}
 		extends := i.Module.LookupInterface(i.Extends.Import, i.Extends.Name)

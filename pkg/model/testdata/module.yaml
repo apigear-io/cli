@@ -41,6 +41,7 @@ interfaces:
   - name: Interface06
     extends:
       name: Interface01
+      import: "Module01"
 enums:
   - name: Enum1
     members:
