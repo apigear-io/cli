@@ -7,10 +7,10 @@ import (
 func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 	// Create target object
 	target := vm.NewObject()
-	
+
 	// Store the service reference
 	target.Set("__service", service)
-	
+
 	// Create proxy with all trap handlers
 	proxyConfig := &goja.ProxyTrapConfig{
 		Get: func(target *goja.Object, property string, receiver goja.Value) (value goja.Value) {
@@ -19,14 +19,12 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 			if property == "$" {
 				return vm.ToValue(service)
 			}
-			
+
 			// Method access - return bound method with proxy as context
 			if service.HasMethod(property) {
-				log.Warn().Str("property", property).Str("objectId", service.ObjectId()).Msg("Accessing method on service")
 				method := service.GetMethod(property)
 				// Create a wrapper function that will be called with the proxy as context
 				return vm.ToValue(func(call goja.FunctionCall) goja.Value {
-					log.Warn().Str("property", property).Str("objectId", service.ObjectId()).Interface("args", call.Arguments).Msg("Calling method on service")
 					// Call the original method with the proxy as 'this'
 					result, err := method(receiver, call.Arguments...)
 					if err != nil {
@@ -35,12 +33,17 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					return result
 				})
 			}
-			
+
 			// Property access
 			if service.HasProperty(property) {
-				return vm.ToValue(service.GetProperty(property))
+				val := service.GetProperty(property)
+				// Return undefined for nil values (more JavaScript-idiomatic)
+				if val == nil {
+					return goja.Undefined()
+				}
+				return vm.ToValue(val)
 			}
-			
+
 			// Convenience method: on
 			if property == "on" {
 				return vm.ToValue(func(call goja.FunctionCall) goja.Value {
@@ -49,7 +52,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					}
 					event := call.Argument(0).String()
 					callback := call.Argument(1)
-					
+
 					if fn, ok := goja.AssertFunction(callback); ok {
 						if service.HasProperty(event) {
 							service.OnProperty(event, func(value any) {
@@ -68,7 +71,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					return goja.Undefined()
 				})
 			}
-			
+
 			// Convenience method: emit
 			if property == "emit" {
 				return vm.ToValue(func(call goja.FunctionCall) goja.Value {
@@ -84,7 +87,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					return goja.Undefined()
 				})
 			}
-			
+
 			// Built-in service methods and properties
 			if val := target.Get(property); val != nil && !goja.IsUndefined(val) {
 				if fn, ok := goja.AssertFunction(val); ok {
@@ -93,7 +96,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 				}
 				return val
 			}
-			
+
 			// Direct service method access (objectId, hasMethod, hasProperty, etc.)
 			serviceVal := vm.ToValue(service)
 			if serviceObj := serviceVal.ToObject(vm); serviceObj != nil {
@@ -101,7 +104,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					return method
 				}
 			}
-			
+
 			// Undefined property - provide helpful error
 			if property != "" && property[0] != '_' {
 				keys := make([]string, 0, len(service.properties))
@@ -110,63 +113,67 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 				}
 				log.Warn().Str("property", property).Str("objectId", service.ObjectId()).Strs("available", keys).Msg("Property not found on service")
 			}
-			
+
 			return goja.Undefined()
 		},
-		
+
 		Set: func(target *goja.Object, property string, value goja.Value, receiver goja.Value) bool {
-			// Don't intercept internal properties
-			if property == "$" || (len(property) > 0 && property[0] == '_') {
+			// Don't intercept internal properties except __proto__
+			if property == "$" || (len(property) > 0 && property[0] == '_' && property != "__proto__") {
 				target.Set(property, value)
 				return true
 			}
-			
+
 			// Function assignment = method registration
 			if _, ok := goja.AssertFunction(value); ok {
 				log.Debug().Str("property", property).Msg("Registering method")
 				service.OnMethod(property, value)
+				// If this was previously a property, remove it
+				service.RemoveProperty(property)
 				return true
 			}
-			
-			// Property assignment
+
+			// Property assignment (including when overwriting a method)
 			service.SetProperty(property, value.Export())
+			// If this was previously a method, remove it
+			service.RemoveMethod(property)
 			return true
 		},
-		
+
 		Has: func(target *goja.Object, property string) bool {
 			// Check for special properties
 			if property == "$" || property == "on" || property == "emit" {
 				return true
 			}
-			
+
 			// Check service properties and methods
 			return service.HasProperty(property) || service.HasMethod(property)
 		},
-		
+
 		OwnKeys: func(target *goja.Object) *goja.Object {
 			// Collect all property and method names
 			keys := make([]any, 0)
-			
+
 			// Add properties
 			for k := range service.properties {
 				keys = append(keys, k)
 			}
-			
+
 			// Add methods
 			for k := range service.methods {
 				keys = append(keys, k)
 			}
-			
+
 			// Add special properties
 			keys = append(keys, "$", "on", "emit")
-			
+
 			return vm.ToValue(keys).ToObject(vm)
 		},
-		
+
 		GetOwnPropertyDescriptor: func(target *goja.Object, property string) goja.PropertyDescriptor {
 			// Check if property exists
-			if property == "$" || property == "on" || property == "emit" || 
-			   service.HasProperty(property) || service.HasMethod(property) {
+			if property == "$" || property == "on" || property == "emit" ||
+				service.HasProperty(property) || service.HasMethod(property) {
 				return goja.PropertyDescriptor{
 					Configurable: goja.FLAG_TRUE,
 					Enumerable:   goja.FLAG_TRUE,
@@ -175,7 +182,7 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 			}
 			return goja.PropertyDescriptor{}
 		},
-		
+
 		DefineProperty: func(target *goja.Object, property string, descriptor goja.PropertyDescriptor) bool {
 			// Allow property definition
 			if descriptor.Value != nil {
@@ -188,14 +195,14 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 			}
 			return false
 		},
-		
+
 		DeleteProperty: func(target *goja.Object, property string) bool {
 			// For now, don't allow deletion of properties
 			// This could be enhanced to support property removal if needed
 			return false
 		},
 	}
-	
+
 	proxy := vm.NewProxy(target, proxyConfig)
 	return vm.ToValue(proxy).ToObject(vm)
 }

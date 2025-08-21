@@ -125,6 +125,16 @@ func (o *ObjectService) HasMethod(method string) bool {
 	return ok
 }
 
+// RemoveMethod removes a method from the service
+func (o *ObjectService) RemoveMethod(method string) {
+	delete(o.methods, method)
+}
+
+// RemoveProperty removes a property from the service
+func (o *ObjectService) RemoveProperty(name string) {
+	delete(o.properties, name)
+}
+
 func (o *ObjectService) EmitSignal(signal string, args ...any) {
 	// Emit locally to JavaScript listeners
 	o.signalEmitter.Emit(signal, args)
