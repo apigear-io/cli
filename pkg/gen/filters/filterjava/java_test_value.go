@@ -16,11 +16,11 @@ func ToTestValueString(prefix string, schema *model.Schema) (string, error) {
 	var text string
 	switch schema.KindType {
 	case model.TypeString:
-		text = "String(\"xyz\")"
+		text = "new String(\"xyz\")"
 	case model.TypeInt, model.TypeInt32:
 		text = "1"
 	case model.TypeInt64:
-		text = "1LL"
+		text = "1L"
 	case model.TypeFloat, model.TypeFloat32:
 		text = "1.0f"
 	case model.TypeFloat64:
