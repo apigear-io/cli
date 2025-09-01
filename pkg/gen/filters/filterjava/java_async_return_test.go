@@ -15,7 +15,7 @@ func TestAsyncReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test1", "propVoid", "CompletableFuture<void>"},
+		{"test", "Test1", "propVoid", "CompletableFuture<Void>"},
 		{"test", "Test1", "propBool", "CompletableFuture<Boolean>"},
 		{"test", "Test1", "propInt", "CompletableFuture<Integer>"},
 		{"test", "Test1", "propInt32", "CompletableFuture<Integer>"},
@@ -55,7 +55,7 @@ func TestOperationAsyncReturn(t *testing.T) {
 		pn string
 		rt string
 	}{
-		{"test", "Test3", "opVoid", "CompletableFuture<void>"},
+		{"test", "Test3", "opVoid", "CompletableFuture<Void>"},
 		{"test", "Test3", "opBool", "CompletableFuture<Boolean>"},
 		{"test", "Test3", "opInt", "CompletableFuture<Integer>"},
 		{"test", "Test3", "opInt32", "CompletableFuture<Integer>"},

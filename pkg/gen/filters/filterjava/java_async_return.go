@@ -41,7 +41,7 @@ func ToAsyncReturnString(prefix string, schema *model.Schema) (string, error) {
 		symbol := schema.GetInterface()
 		text = fmt.Sprintf("%s%s", prefix, symbol.Name)
 	case model.TypeVoid:
-		text = "void"
+		text = "Void"
 	default:
 		return "xxx", fmt.Errorf("javaReturn unknown schema %s", schema.Dump())
 	}
