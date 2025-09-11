@@ -18,7 +18,6 @@ func NewServeCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			netman := net.NewManager()
 			server := sim.NewOlinkServer()
-			netman.HttpServer().Router().Handle("/ws", server)
 			sim.NewManager(sim.ManagerOptions{
 				Server: server,
 			})
