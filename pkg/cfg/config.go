@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"sync"
 
@@ -10,18 +11,19 @@ import (
 )
 
 const (
-	KeyRecent        = "recent"
-	KeyServerPort    = "server_port"
-	KeyEditorCommand = "editor_command"
-	KeyUpdateChannel = "update_channel"
-	KeyCacheDir      = "templates_dir"
-	KeyRegistryDir   = "registry_dir"
-	KeyRegistryUrl   = "registry_url"
-	KeyVersion       = "version"
-	KeyCommit        = "commit"
-	KeyDate          = "date"
-	KeyWindowHeight  = "window_height"
-	KeyWindowWidth   = "window_width"
+	KeyRecent          = "recent"
+	KeyServerPort      = "server_port"
+	KeyEditorCommand   = "editor_command"
+	KeyUpdateChannel   = "update_channel"
+	KeyCacheDir        = "templates_dir" // backward compatibility
+	KeyRegistryDir     = "registry_dir"
+	KeyRegistryUrl     = "registry_url"
+	KeyVersion         = "version"
+	KeyCommit          = "commit"
+	KeyDate            = "date"
+	KeyWindowHeight    = "window_height"
+	KeyWindowWidth     = "window_width"
+	APIGEAR_CONFIG_DIR = "APIGEAR_CONFIG_DIR"
 )
 
 const (
@@ -42,6 +44,9 @@ func init() {
 		os.Exit(1)
 	}
 	cfgDir := helper.Join(home, ".apigear")
+	if os.Getenv(APIGEAR_CONFIG_DIR) != "" {
+		cfgDir = os.Getenv(APIGEAR_CONFIG_DIR)
+	}
 	vip, err := NewConfig(cfgDir)
 	if err != nil {
 		fmt.Println(err)
@@ -59,14 +64,18 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 	nv.AutomaticEnv() // read in environment variables that match
 
 	cacheDir := helper.Join(cfgDir, "cache")
-
+	if os.Getenv("APIGEAR_CACHE_DIR") != "" {
+		cacheDir = os.Getenv("APIGEAR_CACHE_DIR")
+	}
 	err := helper.MakeDir(cacheDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cache dir: %w", err)
 	}
 
 	registryDir := helper.Join(cfgDir, "registry")
-
+	if os.Getenv("APIGEAR_REGISTRY_DIR") != "" {
+		registryDir = os.Getenv("APIGEAR_REGISTRY_DIR")
+	}
 	err = helper.MakeDir(registryDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create registry dir: %w", err)
@@ -109,12 +118,12 @@ func NewConfig(cfgDir string) (*viper.Viper, error) {
 		// try to write a new config file
 		err = nv.WriteConfigAs(cfgFile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to write config file %s: %w", cfgFile, err)
+			log.Printf("WARNING: failed to create config file %s: %v\n", cfgFile, err)
 		}
 		// try to read the new config file
 		err = nv.ReadInConfig()
 		if err != nil {
-			return nil, fmt.Errorf("failed to read config file %s: %w", cfgFile, err)
+			log.Printf("WARNING: failed to read config file %s: %v\n", cfgFile, err)
 		}
 	}
 	return nv, nil
