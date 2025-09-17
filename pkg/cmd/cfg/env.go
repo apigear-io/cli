@@ -23,6 +23,7 @@ func NewEnvCommand() *cobra.Command {
 		Long:  `Env prints apigear environment variables`,
 		Run: func(cmd *cobra.Command, args []string) {
 			settings := cfg.AllSettings()
+			cmd.Printf("APIGEAR_CONFIG_DIR=%s\n", cfg.ConfigDir())
 			for key, value := range settings {
 				name := fmt.Sprintf("APIGEAR_%s", strings.ToUpper(key))
 				valueStr := jsonIdent(value)
