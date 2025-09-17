@@ -20,7 +20,7 @@ func jniSignatureType(node *model.TypedNode) (string, error) {
 	}
 
 	var text string
-	switch node.Schema.KindType {
+	switch node.KindType {
 	case model.TypeString:
 		text = "Ljava/lang/String;"
 	case model.TypeInt:
@@ -41,32 +41,32 @@ func jniSignatureType(node *model.TypedNode) (string, error) {
 		text = "V"
 	// enums are expected to passed as integers
 	case model.TypeEnum:
-		e := node.Schema.LookupEnum(node.Schema.Import, node.Schema.Type)
+		e := node.LookupEnum(node.Import, node.Type)
 		if e != nil {
 			text = makeFullTypeName(e.Module.Name, e.Name)
 		} else {
-			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
 	case model.TypeStruct:
-		s := node.Schema.LookupStruct(node.Schema.Import, node.Schema.Type)
+		s := node.LookupStruct(node.Import, node.Type)
 		if s != nil {
 			text = makeFullTypeName(s.Module.Name, s.Name)
 		} else {
-			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
 	case model.TypeExtern:
-		return "xxx", fmt.Errorf("ToSignatureType TypeExtern not supported yet %s", node.Schema.Dump())
+		return "xxx", fmt.Errorf("ToSignatureType TypeExtern not supported yet %s", node.Dump())
 	case model.TypeInterface:
-		i := node.Schema.LookupInterface(node.Schema.Import, node.Schema.Type)
+		i := node.LookupInterface(node.Import, node.Type)
 		if i != nil {
 			text = makeFullTypeName(i.Module.Name, i.Name)
 		} else {
-			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Schema.Dump())
+			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
 	default:
-		return "xxx", fmt.Errorf("jniJavaSignatureParam unknown schema %s", node.Schema.Dump())
+		return "xxx", fmt.Errorf("jniJavaSignatureParam unknown schema %s", node.Dump())
 	}
-	if node.Schema.IsArray {
+	if node.IsArray {
 		text = fmt.Sprintf("[%s", text)
 	}
 	return text, nil

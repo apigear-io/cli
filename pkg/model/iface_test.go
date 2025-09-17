@@ -28,7 +28,7 @@ func TestProperties(t *testing.T) {
 	assert.Equal(t, 1, len(iface0.Properties))
 	prop0 := iface0.Properties[0]
 	assert.Equal(t, "prop01", prop0.Name)
-	assert.Equal(t, "bool", prop0.Schema.Type)
+	assert.Equal(t, "bool", prop0.Type)
 }
 
 func TestReadonlyProperties(t *testing.T) {
@@ -60,8 +60,8 @@ func TestOperations(t *testing.T) {
 	assert.Equal(t, "operation01", op0.Name)
 	assert.Equal(t, 1, len(op0.Params))
 	assert.Equal(t, "param01", op0.Params[0].Name)
-	assert.Equal(t, "bool", op0.Params[0].Schema.Type)
-	assert.Equal(t, "bool", op0.Return.Schema.Type)
+	assert.Equal(t, "bool", op0.Params[0].Type)
+	assert.Equal(t, "bool", op0.Return.Type)
 }
 
 const duplicatesYAML = `schema: apigear.module/1.0

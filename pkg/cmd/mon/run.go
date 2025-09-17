@@ -19,16 +19,17 @@ func NewServerCommand() *cobra.Command {
 			opts := net.Options{
 				HttpAddr: addr,
 			}
-			netman.Start(&opts)
+			err := netman.Start(&opts)
+			if err != nil {
+				return err
+			}
 			netman.MonitorEmitter().AddHook(func(e *mon.Event) {
 				log.Info().Msgf("event: %s %s %v", e.Type.String(), e.Source, e.Data)
 			})
 			netman.OnMonitorEvent(func(event *mon.Event) {
 				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
-			netman.Wait(cmd.Context())
-
-			return nil
+			return netman.Wait(cmd.Context())
 		},
 	}
 	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:5555", "address to listen on")

@@ -9,7 +9,10 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 	target := vm.NewObject()
 
 	// Store the service reference
-	target.Set("__service", service)
+	setErr := target.Set("__service", service)
+	if setErr != nil {
+		panic(setErr)
+	}
 
 	// Create proxy with all trap handlers
 	proxyConfig := &goja.ProxyTrapConfig{
@@ -56,7 +59,10 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 					if fn, ok := goja.AssertFunction(callback); ok {
 						if service.HasProperty(event) {
 							service.OnProperty(event, func(value any) {
-								fn(goja.Undefined(), vm.ToValue(value))
+								_, callErr := fn(goja.Undefined(), vm.ToValue(value))
+								if callErr != nil {
+									panic(callErr)
+								}
 							})
 						} else {
 							service.OnSignal(event, func(args ...any) {
@@ -64,7 +70,10 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 								for i, arg := range args {
 									jsArgs[i] = vm.ToValue(arg)
 								}
-								fn(goja.Undefined(), jsArgs...)
+								_, callErr := fn(goja.Undefined(), jsArgs...)
+								if callErr != nil {
+									panic(callErr)
+								}
 							})
 						}
 					}
@@ -120,7 +129,11 @@ func CreateServiceProxy(vm *goja.Runtime, service *ObjectService) *goja.Object {
 		Set: func(target *goja.Object, property string, value goja.Value, receiver goja.Value) bool {
 			// Don't intercept internal properties except __proto__
 			if property == "$" || (len(property) > 0 && property[0] == '_' && property != "__proto__") {
-				target.Set(property, value)
+				setErr := target.Set(property, value)
+				if setErr != nil {
+					log.Error().Err(setErr).Str("property", property).Msg("failed to set proxy target property")
+					return false
+				}
 				return true
 			}
 

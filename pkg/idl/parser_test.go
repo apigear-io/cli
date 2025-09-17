@@ -58,11 +58,11 @@ func TestParseStruct(t *testing.T) {
 	assert.Equal(t, "Struct0", module.Structs[0].Name)
 	struct_ := module.Structs[0]
 	assert.Equal(t, "field0", struct_.Fields[0].Name)
-	assert.Equal(t, "bool", struct_.Fields[0].Schema.Type)
+	assert.Equal(t, "bool", struct_.Fields[0].Type)
 	assert.Equal(t, "field1", struct_.Fields[1].Name)
-	assert.Equal(t, "int", struct_.Fields[1].Schema.Type)
+	assert.Equal(t, "int", struct_.Fields[1].Type)
 	assert.Equal(t, "field2", struct_.Fields[2].Name)
-	assert.Equal(t, "float", struct_.Fields[2].Schema.Type)
+	assert.Equal(t, "float", struct_.Fields[2].Type)
 	assert.Equal(t, "field3", struct_.Fields[3].Name)
 	assert.Equal(t, "string", struct_.Fields[3].Type)
 	assert.Equal(t, "field4", struct_.Fields[4].Name)
@@ -117,21 +117,21 @@ func TestParseInterfaceOperation(t *testing.T) {
 	// operation1
 	assert.Equal(t, "operation0", iface.Operations[0].Name)
 	assert.Equal(t, "param0", iface.Operations[0].Params[0].Name)
-	assert.Equal(t, "bool", iface.Operations[0].Params[0].Schema.Type)
+	assert.Equal(t, "bool", iface.Operations[0].Params[0].Type)
 	// operation2
 	assert.Equal(t, "operation1", iface.Operations[1].Name)
 	assert.Equal(t, "param0", iface.Operations[1].Params[0].Name)
-	assert.Equal(t, "bool", iface.Operations[1].Params[0].Schema.Type)
+	assert.Equal(t, "bool", iface.Operations[1].Params[0].Type)
 	assert.Equal(t, "param1", iface.Operations[1].Params[1].Name)
-	assert.Equal(t, "int", iface.Operations[1].Params[1].Schema.Type)
+	assert.Equal(t, "int", iface.Operations[1].Params[1].Type)
 	// operation3
 	assert.Equal(t, "operation2", iface.Operations[2].Name)
 	assert.Equal(t, "param0", iface.Operations[2].Params[0].Name)
-	assert.Equal(t, "bool", iface.Operations[2].Params[0].Schema.Type)
+	assert.Equal(t, "bool", iface.Operations[2].Params[0].Type)
 	assert.Equal(t, "param1", iface.Operations[2].Params[1].Name)
-	assert.Equal(t, "int", iface.Operations[2].Params[1].Schema.Type)
+	assert.Equal(t, "int", iface.Operations[2].Params[1].Type)
 	assert.Equal(t, "param2", iface.Operations[2].Params[2].Name)
-	assert.Equal(t, "float", iface.Operations[2].Params[2].Schema.Type)
+	assert.Equal(t, "float", iface.Operations[2].Params[2].Type)
 }
 
 func TestParseInterfaceSignal(t *testing.T) {
@@ -141,12 +141,12 @@ func TestParseInterfaceSignal(t *testing.T) {
 	interface_ := module.Interfaces[2]
 	assert.Equal(t, "signal0", interface_.Signals[0].Name)
 	assert.Equal(t, "param0", interface_.Signals[0].Params[0].Name)
-	assert.Equal(t, "bool", interface_.Signals[0].Params[0].Schema.Type)
+	assert.Equal(t, "bool", interface_.Signals[0].Params[0].Type)
 	assert.Equal(t, "signal1", interface_.Signals[1].Name)
 	assert.Equal(t, "param0", interface_.Signals[1].Params[0].Name)
-	assert.Equal(t, "bool", interface_.Signals[1].Params[0].Schema.Type)
+	assert.Equal(t, "bool", interface_.Signals[1].Params[0].Type)
 	assert.Equal(t, "param1", interface_.Signals[1].Params[1].Name)
-	assert.Equal(t, "int", interface_.Signals[1].Params[1].Schema.Type)
+	assert.Equal(t, "int", interface_.Signals[1].Params[1].Type)
 }
 
 var docSymbols = `
@@ -178,11 +178,11 @@ func TestParseSymbolProperties(t *testing.T) {
 	assert.Equal(t, "Interface0", iface0.Name)
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "prop0", iface1.Properties[0].Name)
-	assert.Equal(t, "Enum0", iface1.Properties[0].Schema.Type)
+	assert.Equal(t, "Enum0", iface1.Properties[0].Type)
 	assert.Equal(t, "prop1", iface1.Properties[1].Name)
-	assert.Equal(t, "Struct0", iface1.Properties[1].Schema.Type)
+	assert.Equal(t, "Struct0", iface1.Properties[1].Type)
 	assert.Equal(t, "prop2", iface1.Properties[2].Name)
-	assert.Equal(t, "Interface0", iface1.Properties[2].Schema.Type)
+	assert.Equal(t, "Interface0", iface1.Properties[2].Type)
 }
 
 func TestParseSymbolOperations(t *testing.T) {
@@ -195,13 +195,13 @@ func TestParseSymbolOperations(t *testing.T) {
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "operation0", iface1.Operations[0].Name)
 	assert.Equal(t, "param0", iface1.Operations[0].Params[0].Name)
-	assert.Equal(t, "Enum0", iface1.Operations[0].Params[0].Schema.Type)
+	assert.Equal(t, "Enum0", iface1.Operations[0].Params[0].Type)
 	assert.Equal(t, "operation1", iface1.Operations[1].Name)
 	assert.Equal(t, "param0", iface1.Operations[1].Params[0].Name)
-	assert.Equal(t, "Struct0", iface1.Operations[1].Params[0].Schema.Type)
+	assert.Equal(t, "Struct0", iface1.Operations[1].Params[0].Type)
 	assert.Equal(t, "operation2", iface1.Operations[2].Name)
 	assert.Equal(t, "param0", iface1.Operations[2].Params[0].Name)
-	assert.Equal(t, "Interface0", iface1.Operations[2].Params[0].Schema.Type)
+	assert.Equal(t, "Interface0", iface1.Operations[2].Params[0].Type)
 }
 
 func TestParseSymbolSignals(t *testing.T) {
@@ -214,13 +214,13 @@ func TestParseSymbolSignals(t *testing.T) {
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "signal0", iface1.Signals[0].Name)
 	assert.Equal(t, "param0", iface1.Signals[0].Params[0].Name)
-	assert.Equal(t, "Enum0", iface1.Signals[0].Params[0].Schema.Type)
+	assert.Equal(t, "Enum0", iface1.Signals[0].Params[0].Type)
 	assert.Equal(t, "signal1", iface1.Signals[1].Name)
 	assert.Equal(t, "param0", iface1.Signals[1].Params[0].Name)
-	assert.Equal(t, "Struct0", iface1.Signals[1].Params[0].Schema.Type)
+	assert.Equal(t, "Struct0", iface1.Signals[1].Params[0].Type)
 	assert.Equal(t, "signal2", iface1.Signals[2].Name)
 	assert.Equal(t, "param0", iface1.Signals[2].Params[0].Name)
-	assert.Equal(t, "Interface0", iface1.Signals[2].Params[0].Schema.Type)
+	assert.Equal(t, "Interface0", iface1.Signals[2].Params[0].Type)
 }
 
 var docPrimitiveArrays = `
@@ -254,20 +254,20 @@ func TestPrimitiveArrayProperties(t *testing.T) {
 	assert.Equal(t, "Interface0", iface0.Name)
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "prop0", iface1.Properties[0].Name)
-	assert.Equal(t, "bool", iface1.Properties[0].Schema.Type)
-	assert.True(t, iface1.Properties[0].Schema.IsArray)
+	assert.Equal(t, "bool", iface1.Properties[0].Type)
+	assert.True(t, iface1.Properties[0].IsArray)
 	assert.Equal(t, "prop1", iface1.Properties[1].Name)
-	assert.Equal(t, "int", iface1.Properties[1].Schema.Type)
-	assert.True(t, iface1.Properties[1].Schema.IsArray)
+	assert.Equal(t, "int", iface1.Properties[1].Type)
+	assert.True(t, iface1.Properties[1].IsArray)
 	assert.Equal(t, "prop2", iface1.Properties[2].Name)
-	assert.Equal(t, "float", iface1.Properties[2].Schema.Type)
-	assert.True(t, iface1.Properties[2].Schema.IsArray)
+	assert.Equal(t, "float", iface1.Properties[2].Type)
+	assert.True(t, iface1.Properties[2].IsArray)
 	assert.Equal(t, "prop3", iface1.Properties[3].Name)
-	assert.Equal(t, "string", iface1.Properties[3].Schema.Type)
-	assert.True(t, iface1.Properties[3].Schema.IsArray)
+	assert.Equal(t, "string", iface1.Properties[3].Type)
+	assert.True(t, iface1.Properties[3].IsArray)
 	assert.Equal(t, "prop4", iface1.Properties[4].Name)
-	assert.Equal(t, "bytes", iface1.Properties[4].Schema.Type)
-	assert.True(t, iface1.Properties[4].Schema.IsArray)
+	assert.Equal(t, "bytes", iface1.Properties[4].Type)
+	assert.True(t, iface1.Properties[4].IsArray)
 }
 
 func TestPrimitiveArrayOperations(t *testing.T) {
@@ -280,24 +280,24 @@ func TestPrimitiveArrayOperations(t *testing.T) {
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "operation0", iface1.Operations[0].Name)
 	assert.Equal(t, "param0", iface1.Operations[0].Params[0].Name)
-	assert.Equal(t, "bool", iface1.Operations[0].Params[0].Schema.Type)
-	assert.True(t, iface1.Operations[0].Params[0].Schema.IsArray)
+	assert.Equal(t, "bool", iface1.Operations[0].Params[0].Type)
+	assert.True(t, iface1.Operations[0].Params[0].IsArray)
 	assert.Equal(t, "operation1", iface1.Operations[1].Name)
 	assert.Equal(t, "param0", iface1.Operations[1].Params[0].Name)
-	assert.Equal(t, "int", iface1.Operations[1].Params[0].Schema.Type)
-	assert.True(t, iface1.Operations[1].Params[0].Schema.IsArray)
+	assert.Equal(t, "int", iface1.Operations[1].Params[0].Type)
+	assert.True(t, iface1.Operations[1].Params[0].IsArray)
 	assert.Equal(t, "operation2", iface1.Operations[2].Name)
 	assert.Equal(t, "param0", iface1.Operations[2].Params[0].Name)
-	assert.Equal(t, "float", iface1.Operations[2].Params[0].Schema.Type)
-	assert.True(t, iface1.Operations[2].Params[0].Schema.IsArray)
+	assert.Equal(t, "float", iface1.Operations[2].Params[0].Type)
+	assert.True(t, iface1.Operations[2].Params[0].IsArray)
 	assert.Equal(t, "operation3", iface1.Operations[3].Name)
 	assert.Equal(t, "param0", iface1.Operations[3].Params[0].Name)
-	assert.Equal(t, "string", iface1.Operations[3].Params[0].Schema.Type)
-	assert.True(t, iface1.Operations[3].Params[0].Schema.IsArray)
+	assert.Equal(t, "string", iface1.Operations[3].Params[0].Type)
+	assert.True(t, iface1.Operations[3].Params[0].IsArray)
 	assert.Equal(t, "operation4", iface1.Operations[4].Name)
 	assert.Equal(t, "param0", iface1.Operations[4].Params[0].Name)
-	assert.Equal(t, "bytes", iface1.Operations[4].Params[0].Schema.Type)
-	assert.True(t, iface1.Operations[4].Params[0].Schema.IsArray)
+	assert.Equal(t, "bytes", iface1.Operations[4].Params[0].Type)
+	assert.True(t, iface1.Operations[4].Params[0].IsArray)
 }
 
 func TestPrimitiveArraySignals(t *testing.T) {
@@ -312,32 +312,32 @@ func TestPrimitiveArraySignals(t *testing.T) {
 	input := signal.Params[0]
 	assert.Equal(t, "signal0", signal.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "bool", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "bool", input.Type)
+	assert.True(t, input.IsArray)
 	signal = iface1.Signals[1]
 	input = signal.Params[0]
 	assert.Equal(t, "signal1", signal.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "int", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "int", input.Type)
+	assert.True(t, input.IsArray)
 	signal = iface1.Signals[2]
 	input = signal.Params[0]
 	assert.Equal(t, "signal2", signal.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "float", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "float", input.Type)
+	assert.True(t, input.IsArray)
 	signal = iface1.Signals[3]
 	input = signal.Params[0]
 	assert.Equal(t, "signal3", signal.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "string", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "string", input.Type)
+	assert.True(t, input.IsArray)
 	signal = iface1.Signals[4]
 	input = signal.Params[0]
 	assert.Equal(t, "signal4", signal.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "bytes", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "bytes", input.Type)
+	assert.True(t, input.IsArray)
 }
 
 var docSymbolArrays = `
@@ -370,16 +370,16 @@ func TestSymbolArrayProperties(t *testing.T) {
 	iface1 := module.Interfaces[1]
 	prop := iface1.Properties[0]
 	assert.Equal(t, "prop0", prop.Name)
-	assert.Equal(t, "Enum0", prop.Schema.Type)
-	assert.True(t, prop.Schema.IsArray)
+	assert.Equal(t, "Enum0", prop.Type)
+	assert.True(t, prop.IsArray)
 	prop = iface1.Properties[1]
 	assert.Equal(t, "prop1", prop.Name)
-	assert.Equal(t, "Struct0", prop.Schema.Type)
-	assert.True(t, prop.Schema.IsArray)
+	assert.Equal(t, "Struct0", prop.Type)
+	assert.True(t, prop.IsArray)
 	prop = iface1.Properties[2]
 	assert.Equal(t, "prop2", prop.Name)
-	assert.Equal(t, "Interface0", prop.Schema.Type)
-	assert.True(t, prop.Schema.IsArray)
+	assert.Equal(t, "Interface0", prop.Type)
+	assert.True(t, prop.IsArray)
 }
 
 func TestSymbolArrayOperations(t *testing.T) {
@@ -394,20 +394,20 @@ func TestSymbolArrayOperations(t *testing.T) {
 	input := op.Params[0]
 	assert.Equal(t, "operation0", op.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "Enum0", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "Enum0", input.Type)
+	assert.True(t, input.IsArray)
 	op = iface1.Operations[1]
 	input = op.Params[0]
 	assert.Equal(t, "operation1", op.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "Struct0", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "Struct0", input.Type)
+	assert.True(t, input.IsArray)
 	op = iface1.Operations[2]
 	input = op.Params[0]
 	assert.Equal(t, "operation2", op.Name)
 	assert.Equal(t, "param0", input.Name)
-	assert.Equal(t, "Interface0", input.Schema.Type)
-	assert.True(t, input.Schema.IsArray)
+	assert.Equal(t, "Interface0", input.Type)
+	assert.True(t, input.IsArray)
 }
 
 func TestSymbolArraySignals(t *testing.T) {
@@ -420,14 +420,14 @@ func TestSymbolArraySignals(t *testing.T) {
 	iface1 := module.Interfaces[1]
 	assert.Equal(t, "signal0", iface1.Signals[0].Name)
 	assert.Equal(t, "param0", iface1.Signals[0].Params[0].Name)
-	assert.Equal(t, "Enum0", iface1.Signals[0].Params[0].Schema.Type)
-	assert.True(t, iface1.Signals[0].Params[0].Schema.IsArray)
+	assert.Equal(t, "Enum0", iface1.Signals[0].Params[0].Type)
+	assert.True(t, iface1.Signals[0].Params[0].IsArray)
 	assert.Equal(t, "signal1", iface1.Signals[1].Name)
 	assert.Equal(t, "param0", iface1.Signals[1].Params[0].Name)
-	assert.Equal(t, "Struct0", iface1.Signals[1].Params[0].Schema.Type)
-	assert.True(t, iface1.Signals[2].Params[0].Schema.IsArray)
+	assert.Equal(t, "Struct0", iface1.Signals[1].Params[0].Type)
+	assert.True(t, iface1.Signals[2].Params[0].IsArray)
 	assert.Equal(t, "signal2", iface1.Signals[2].Name)
 	assert.Equal(t, "param0", iface1.Signals[2].Params[0].Name)
-	assert.Equal(t, "Interface0", iface1.Signals[2].Params[0].Schema.Type)
-	assert.True(t, iface1.Signals[2].Params[0].Schema.IsArray)
+	assert.Equal(t, "Interface0", iface1.Signals[2].Params[0].Type)
+	assert.True(t, iface1.Signals[2].Params[0].IsArray)
 }
