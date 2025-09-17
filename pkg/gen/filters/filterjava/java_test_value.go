@@ -41,7 +41,7 @@ func ToTestValueString(prefix string, schema *model.Schema) (string, error) {
 		symbol := schema.GetStruct()
 		text = fmt.Sprintf("new %s%s()", prefix, symbol.Name)
 	case model.TypeExtern:
-		text = fmt.Sprintf("TODO EXTERN")
+		text = "TODO EXTERN"
 	case model.TypeInterface:
 		symbol := schema.GetInterface()
 		text = fmt.Sprintf("%s%s()", prefix, symbol.Name)

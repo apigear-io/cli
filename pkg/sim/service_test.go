@@ -203,12 +203,13 @@ func TestObjectServiceWithRuntime(t *testing.T) {
 				}
 
 				// Get count property from 'this'
-				countVal := this.ToObject(rt).Get("count")
+				obj := this.ToObject(rt)
+				countVal := obj.Get("count")
 				count := countVal.ToInteger()
-				
+
 				// Set new count value
-				this.ToObject(rt).Set("count", rt.ToValue(count + 1))
-				
+				require.NoError(t, obj.Set("count", rt.ToValue(count+1)))
+
 				return rt.ToValue(count + 1)
 			})
 
@@ -216,18 +217,18 @@ func TestObjectServiceWithRuntime(t *testing.T) {
 
 			// Test calling with proper context
 			proxy := CreateServiceProxy(rt, service)
-			
+
 			// Call increment through proxy
 			incrementFn := proxy.Get("increment")
 			require.NotNil(t, incrementFn)
-			
+
 			fn, ok := goja.AssertFunction(incrementFn)
 			require.True(t, ok)
-			
+
 			result, err := fn(proxy)
 			require.NoError(t, err)
 			assert.Equal(t, int64(6), result.ToInteger())
-			
+
 			// Verify count was updated
 			assert.Equal(t, int64(6), service.GetProperty("count"))
 
@@ -250,10 +251,11 @@ func TestObjectServiceWithRuntime(t *testing.T) {
 			// Create methods that return 'this' for chaining
 			appendMethod := rt.ToValue(func(call goja.FunctionCall) goja.Value {
 				this := call.This
+				obj := this.ToObject(rt)
 				if len(call.Arguments) > 0 {
-					currentVal := this.ToObject(rt).Get("value").String()
+					currentVal := obj.Get("value").String()
 					newVal := currentVal + call.Arguments[0].String()
-					this.ToObject(rt).Set("value", rt.ToValue(newVal))
+					require.NoError(t, obj.Set("value", rt.ToValue(newVal)))
 				}
 				return this // Return 'this' for chaining
 			})
@@ -261,21 +263,21 @@ func TestObjectServiceWithRuntime(t *testing.T) {
 			service.OnMethod("append", appendMethod)
 
 			proxy := CreateServiceProxy(rt, service)
-			
+
 			// Test method chaining
 			appendFn := proxy.Get("append")
 			fn, _ := goja.AssertFunction(appendFn)
-			
+
 			// First call: append("hello")
 			result1, err := fn(proxy, rt.ToValue("hello"))
 			require.NoError(t, err)
 			assert.Equal(t, proxy, result1.ToObject(rt))
-			
+
 			// Second call: append(" world")
 			result2, err := fn(proxy, rt.ToValue(" world"))
 			require.NoError(t, err)
 			assert.Equal(t, proxy, result2.ToObject(rt))
-			
+
 			// Verify final value
 			assert.Equal(t, "hello world", service.GetProperty("value"))
 

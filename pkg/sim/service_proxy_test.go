@@ -32,7 +32,7 @@ func TestServiceProxy(t *testing.T) {
 			assert.Equal(t, int64(42), countVal.Export())
 
 			// Test property set
-			proxy.Set("count", rt.ToValue(100))
+			require.NoError(t, proxy.Set("count", rt.ToValue(100)))
 			assert.Equal(t, int64(100), service.GetProperty("count"))
 
 			done <- true
@@ -58,7 +58,7 @@ func TestServiceProxy(t *testing.T) {
 				return rt.ToValue("success")
 			})
 
-			proxy.Set("testMethod", method)
+			require.NoError(t, proxy.Set("testMethod", method))
 			assert.True(t, service.HasMethod("testMethod"))
 
 			// Call the method through the proxy

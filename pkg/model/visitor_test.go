@@ -103,10 +103,8 @@ func TestVisitor(t *testing.T) {
 
 	// Create a mock visitor
 	mockVisitor := &MockVisitor{}
-	system.AcceptModelVisitor(mockVisitor)
-	if err != nil {
-		t.Errorf("AcceptModelVisitor returned an error: %v", err)
-	}
+	err = system.AcceptModelVisitor(mockVisitor)
+	assert.NoError(t, err)
 	// Check if all nodes were visited
 	assert.NotEmpty(t, mockVisitor.visited)
 	// Check if specific nodes were visited

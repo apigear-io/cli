@@ -55,7 +55,7 @@ func TestProxyJavaScript(t *testing.T) {
 			// Run the script
 			engine.RunOnLoop(func(rt *goja.Runtime) {
 				value, err := rt.RunString(string(script))
-				
+
 				result := struct {
 					success bool
 					result  string
@@ -89,7 +89,7 @@ func TestProxyJavaScript(t *testing.T) {
 				if result.err != nil {
 					t.Fatalf("JavaScript error: %v", result.err)
 				}
-				assert.True(t, result.success, 
+				assert.True(t, result.success,
 					"Test failed. Expected '%s', got '%s'", tt.expectedMsg, result.result)
 			case <-time.After(5 * time.Second):
 				t.Fatal("Test timeout")
@@ -118,10 +118,11 @@ func TestProxyJavaScriptInteractive(t *testing.T) {
 
 	// Capture console output for debugging
 	outputChan := make(chan string, 100)
-	
+
 	engine.RunOnLoop(func(rt *goja.Runtime) {
+		defer close(outputChan)
 		// Override console.log to capture output
-		rt.Set("console", map[string]interface{}{
+		setErr := rt.Set("console", map[string]interface{}{
 			"log": func(args ...interface{}) {
 				output := ""
 				for i, arg := range args {
@@ -135,18 +136,20 @@ func TestProxyJavaScriptInteractive(t *testing.T) {
 				t.Log(output)
 			},
 		})
+		if setErr != nil {
+			t.Errorf("failed to override console: %v", setErr)
+			return
+		}
 
 		// Run the test
 		value, err := rt.RunString(string(script))
-		
+
 		if err != nil {
 			outputChan <- "ERROR: " + err.Error()
 			t.Errorf("JavaScript error: %v", err)
 		} else if value != nil {
 			outputChan <- "RESULT: " + value.String()
 		}
-		
-		close(outputChan)
 	})
 
 	// Wait for all output
@@ -194,19 +197,34 @@ func BenchmarkProxyOperations(b *testing.B) {
 			return sum;
 		}
 		`
-		
-		done := make(chan bool)
+
+		done := make(chan error, 1)
 		engine.RunOnLoop(func(rt *goja.Runtime) {
-			rt.RunString(script)
-			fn, _ := goja.AssertFunction(rt.Get("benchmark"))
-			
+			_, runErr := rt.RunString(script)
+			if runErr != nil {
+				done <- fmt.Errorf("run script: %w", runErr)
+				return
+			}
+			fn, ok := goja.AssertFunction(rt.Get("benchmark"))
+			if !ok {
+				done <- fmt.Errorf("benchmark is not a function")
+				return
+			}
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				fn(nil)
+				_, callErr := fn(goja.Undefined())
+				if callErr != nil {
+					done <- fmt.Errorf("call benchmark: %w", callErr)
+					return
+				}
 			}
-			done <- true
+			done <- nil
 		})
-		<-done
+		doneErr := <-done
+		if doneErr != nil {
+			b.Fatalf("benchmark PropertyAccess failed: %v", doneErr)
+		}
 	})
 
 	b.Run("MethodCall", func(b *testing.B) {
@@ -225,18 +243,33 @@ func BenchmarkProxyOperations(b *testing.B) {
 			}
 		}
 		`
-		
-		done := make(chan bool)
+
+		done := make(chan error, 1)
 		engine.RunOnLoop(func(rt *goja.Runtime) {
-			rt.RunString(script)
-			fn, _ := goja.AssertFunction(rt.Get("benchmark"))
-			
+			_, runErr := rt.RunString(script)
+			if runErr != nil {
+				done <- fmt.Errorf("run script: %w", runErr)
+				return
+			}
+			fn, ok := goja.AssertFunction(rt.Get("benchmark"))
+			if !ok {
+				done <- fmt.Errorf("benchmark is not a function")
+				return
+			}
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				fn(nil)
+				_, callErr := fn(goja.Undefined())
+				if callErr != nil {
+					done <- fmt.Errorf("call benchmark: %w", callErr)
+					return
+				}
 			}
-			done <- true
+			done <- nil
 		})
-		<-done
+		doneErr := <-done
+		if doneErr != nil {
+			b.Fatalf("benchmark MethodCall failed: %v", doneErr)
+		}
 	})
 }
