@@ -33,7 +33,7 @@ const (
 // Event represents an API event.
 type Event struct {
 	Id        string    `json:"id" yaml:"id" csv:"id"`
-	Source    string    `json:"source" yaml:"source" csv:"source"`
+	Device    string    `json:"device" yaml:"device" csv:"device"`
 	Type      EventType `json:"type" yaml:"type" csv:"type"`
 	Timestamp time.Time `json:"timestamp" yaml:"timestamp" csv:"timestamp"`
 	Symbol    string    `json:"symbol" yaml:"symbol" csv:"symbol"`
@@ -41,7 +41,7 @@ type Event struct {
 }
 
 func (e *Event) Subject() string {
-	return "mon." + e.Source
+	return "mon." + e.Device
 }
 
 // EventFactory is used to create events.
@@ -64,7 +64,7 @@ func (f EventFactory) MakeEvent(kind EventType, symbol string, data Payload) *Ev
 		Id:        id,
 		Type:      kind,
 		Timestamp: time.Now(),
-		Source:    f.Source,
+		Device:    f.Source,
 		Symbol:    symbol,
 		Data:      data,
 	}
@@ -87,8 +87,8 @@ func (f EventFactory) MakeState(symbol string, data Payload) *Event {
 
 // Sanitize ensures events are valid and fills in missing fields.
 func (f EventFactory) Sanitize(event *Event) *Event {
-	if event.Source == "" {
-		event.Source = f.Source
+	if event.Device == "" {
+		event.Device = f.Source
 	}
 	if event.Id == "" {
 		event.Id = uuid.New().String()
