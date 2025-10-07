@@ -2,6 +2,7 @@ package mon
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/helper"
@@ -13,10 +14,12 @@ import (
 
 func NewClientCommand() *cobra.Command {
 	type ClientOptions struct {
-		url    string        // monitor server url
-		script string        // script to run
-		repeat int           // -1 for infinite
-		sleep  time.Duration // sleep between each event
+		url      string        // monitor server url
+		script   string        // script to run
+		repeat   int           // -1 for infinite
+		interval time.Duration // sleep between each event
+		deviceId string        // device id to use
+		batch    int           // number of events to send in a batch
 	}
 	var options = &ClientOptions{}
 	var cmd = &cobra.Command{
@@ -53,15 +56,18 @@ func NewClientCommand() *cobra.Command {
 			if len(events) == 0 {
 				return fmt.Errorf("no events to send")
 			}
-			sender := helper.NewHTTPSender(options.url)
-			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
+			url := strings.Join([]string{strings.TrimRight(options.url, "/"), "monitor", options.deviceId}, "/")
+			log.Info().Msgf("sending %d events to %s", len(events), url)
+			sender := helper.NewHTTPSender(url)
+			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.interval, options.batch)
 			err = ctrl.Run(events, func(event mon.Event) error {
-				if event.Source == "" {
-					event.Source = "123"
+				if event.Device == "" {
+					event.Device = options.deviceId
 				}
 				// send as an array of events
-				payload := [1]mon.Event{event}
 
+				payload := [1]mon.Event{event}
+				log.Info().Msgf("send event %s %s %s", event.Device, event.Type.String(), event.Symbol)
 				return sender.SendValue(payload)
 			})
 			if err != nil {
@@ -70,11 +76,15 @@ func NewClientCommand() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.url, "url", "http://localhost:5555/monitor/123", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://localhost:5555", "monitor server address")
 	// repeat is -1 for infinite
 	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
 	// sleep is in milliseconds
-	cmd.Flags().DurationVar(&options.sleep, "sleep", 0, "sleep between each event")
+	cmd.Flags().DurationVar(&options.interval, "interval", 100*time.Millisecond, "interval between each event")
+	// deviceId to use
+	cmd.Flags().StringVar(&options.deviceId, "device", "123", "device id to use")
+	// batch size
+	cmd.Flags().IntVar(&options.batch, "batch", 1, "number of events to send in a batch")
 
 	return cmd
 }

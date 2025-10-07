@@ -13,6 +13,7 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/stim"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/cmd/x"
+	"github.com/apigear-io/cli/pkg/streams/cli"
 
 	"github.com/spf13/cobra"
 )
@@ -42,5 +43,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(olink.NewRootCommand())
 	cmd.AddCommand(NewMCPCommand())
+	cmd.AddCommand(cli.NewRootCmd())
 	return cmd
 }
