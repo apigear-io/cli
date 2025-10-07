@@ -9,6 +9,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/streams"
 	"github.com/nats-io/nats.go"
 
 	"github.com/go-chi/chi/v5"
@@ -19,9 +20,9 @@ var counter = atomic.Uint64{}
 
 func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		source := chi.URLParam(r, "source")
-		log.Debug().Msgf("handle monitor request %s", source)
-		if source == "" {
+		deviceId := chi.URLParam(r, "source")
+		log.Debug().Msgf("handle monitor request %s", deviceId)
+		if deviceId == "" {
 			log.Error().Msg("source id is required")
 			http.Error(w, "source id is required", http.StatusBadRequest)
 			return
@@ -34,7 +35,7 @@ func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
 			return
 		}
 		for _, event := range events {
-			event.Source = source
+			event.Device = deviceId
 			if event.Id == "" {
 				event.Id = strconv.FormatUint(counter.Add(1), 10)
 			}
@@ -48,8 +49,7 @@ func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
 				return
 			}
 			mon.Emitter.FireHook(event)
-			subject := event.Subject()
-			err = nc.Publish(subject, data)
+			err = streams.PublishMonitorMessage(nc, deviceId, data)
 			if err != nil {
 				log.Error().Msgf("publish event: %v", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -79,7 +79,7 @@ func HandleMonitorRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	// set source and id for each event
 	for _, event := range events {
-		event.Source = source
+		event.Device = source
 		event.Id = uuid.New().String()
 		if event.Timestamp.IsZero() {
 			event.Timestamp = time.Now()

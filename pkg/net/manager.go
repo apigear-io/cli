@@ -11,6 +11,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 )
 
@@ -18,7 +19,7 @@ type Options struct {
 	NatsHost          string `json:"nats_host"`
 	NatsPort          int    `json:"nats_port"`
 	NatsDisabled      bool   `json:"nats_disabled"`
-	NatsListen        bool   `json:"nats_inprocess_only"`
+	DontListen        bool   `json:"nats_inprocess_only"`
 	NatsLeafURL       string `json:"nats_leaf_url"`
 	NatsCredentials   string `json:"nats_credentials"`
 	HttpAddr          string `json:"http_addr"`
@@ -29,13 +30,13 @@ type Options struct {
 }
 
 var DefaultOptions = &Options{
-	NatsHost:          "localhost",
-	NatsPort:          4222,
+	NatsHost:          server.DEFAULT_HOST,
+	NatsPort:          server.DEFAULT_PORT,
 	NatsDisabled:      false,
-	NatsListen:        false,
+	DontListen:        false,
 	NatsLeafURL:       "",
 	NatsCredentials:   "",
-	HttpAddr:          "localhost:5555",
+	HttpAddr:          "127.0.0.1:5555",
 	HttpDisabled:      false,
 	MonitorDisabled:   false,
 	ObjectAPIDisabled: false,
@@ -68,7 +69,7 @@ func (s *NetworkManager) Start(opts *Options) error {
 		err := s.StartNATS(&NatsServerOptions{
 			Host:        s.opts.NatsHost,
 			Port:        s.opts.NatsPort,
-			NatsListen:  s.opts.NatsListen,
+			DontListen:  s.opts.DontListen,
 			LeafURL:     s.opts.NatsLeafURL,
 			Credentials: s.opts.NatsCredentials,
 		})
@@ -120,6 +121,7 @@ func (s *NetworkManager) Stop() error {
 }
 
 func (s *NetworkManager) StartNATS(opts *NatsServerOptions) error {
+	log.Info().Msg("start nats server")
 	if s.natsServer != nil {
 		return fmt.Errorf("nats server already started")
 	}
@@ -187,6 +189,7 @@ func (s *NetworkManager) HttpServer() *HTTPServer {
 }
 
 func (s *NetworkManager) EnableMonitor() error {
+	log.Info().Msg("enable monitor endpoint")
 	if s.httpServer == nil {
 		log.Error().Msg("http server not started")
 		return fmt.Errorf("http server not started")
