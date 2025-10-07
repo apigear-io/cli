@@ -32,14 +32,14 @@ Using a scenario you can define additional static and scripted data and behavior
 		RunE: func(cmd *cobra.Command, args []string) error {
 			netman := net.NewManager()
 			if err := netman.Start(&net.Options{
-				NatsListen:   false,
+				DontListen:   false,
 				HttpAddr:     addr,
 				HttpDisabled: noServe,
 			}); err != nil {
 				return err
 			}
 			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
+				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
 			var simman *sim.Manager
 			if !noServe {

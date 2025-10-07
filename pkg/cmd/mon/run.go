@@ -24,10 +24,10 @@ func NewServerCommand() *cobra.Command {
 				return err
 			}
 			netman.MonitorEmitter().AddHook(func(e *mon.Event) {
-				log.Info().Msgf("event: %s %s %v", e.Type.String(), e.Source, e.Data)
+				log.Info().Msgf("event: %s %s %v", e.Type.String(), e.Device, e.Data)
 			})
 			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
+				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
 			return netman.Wait(cmd.Context())
 		},

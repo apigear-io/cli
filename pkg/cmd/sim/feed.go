@@ -58,6 +58,7 @@ func NewClientCommand() *cobra.Command {
 		script string
 		sleep  time.Duration
 		repeat int
+		batch  int
 	}
 	var options = &ClientOptions{}
 	// cmd represents the simCli command
@@ -96,7 +97,7 @@ func NewClientCommand() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				ctrl := helper.NewSenderControl[[]byte](options.repeat, options.sleep)
+				ctrl := helper.NewSenderControl[[]byte](options.repeat, options.sleep, options.batch)
 				err = ctrl.Run(items, func(data []byte) error {
 					log.Debug().Msgf("send -> %s", data)
 					err := handleNodeData(node, data)
@@ -117,6 +118,7 @@ func NewClientCommand() *cobra.Command {
 	cmd.Flags().DurationVarP(&options.sleep, "sleep", "", 100, "sleep duration between messages")
 	cmd.Flags().StringVarP(&options.addr, "addr", "", "ws://127.0.0.1:4333/ws", "address of the simulation server")
 	cmd.Flags().IntVarP(&options.repeat, "repeat", "", 1, "number of times to repeat the script")
+	cmd.Flags().IntVarP(&options.batch, "batch", "", 1, "number of messages to send in a batch")
 	return cmd
 }
 

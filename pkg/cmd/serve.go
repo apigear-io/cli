@@ -29,7 +29,7 @@ func NewServeCommand() *cobra.Command {
 				return err
 			}
 			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
+				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
 			return netman.Wait(cmd.Context())
 		},
