@@ -50,6 +50,7 @@ func (v Version) Patch() int {
 
 type Import struct {
 	NamedNode `json:",inline" yaml:",inline"`
+	// TDOD: add resolved module reference
 }
 
 func NewImport(name string, version string) *Import {
