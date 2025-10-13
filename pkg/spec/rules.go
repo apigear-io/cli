@@ -24,6 +24,7 @@ const (
 	ScopeInterface ScopeType = "interface"
 	ScopeStruct    ScopeType = "struct"
 	ScopeEnum      ScopeType = "enum"
+	ScopeExtern    ScopeType = "extern"
 )
 
 func containsString(list []string, value string) bool {

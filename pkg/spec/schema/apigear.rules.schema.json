@@ -86,7 +86,8 @@
             "module",
             "interface",
             "struct",
-            "enum"
+            "enum",
+            "extern"
           ],
           "type": "string"
         },

@@ -246,6 +246,23 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 				}
 			}
 		}
+		for _, extern := range module.Externs {
+			ctx := model.ExternScope{
+				System:   g.opts.System,
+				Module:   module,
+				Extern:   extern,
+				Features: g.ComputedFeatures,
+				Meta:     g.opts.Meta,
+			}
+			scopes := f.FindScopesByMatch(spec.ScopeExtern)
+			for _, scope := range scopes {
+				err := g.processScope(scope, ctx)
+				if err != nil {
+					log.Warn().Msgf("An error occured")
+					return err
+				}
+			}
+		}
 	}
 	return nil
 }
