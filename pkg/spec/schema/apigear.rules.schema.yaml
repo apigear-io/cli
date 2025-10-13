@@ -110,7 +110,7 @@ definitions:
       match:
         type: string
         description: Match defines the context where this scope is applied to, e.g. system, module, interface, struct, enum.
-        enum: [system, module, interface, struct, enum]
+        enum: [system, module, interface, struct, enum, extern]
       prefix:
         type: string
         description: Prefix defines the prefix for all documents written

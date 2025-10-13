@@ -63,3 +63,17 @@ type EnumScope struct {
 	// Meta is the map of metadata
 	Meta map[string]any
 }
+
+// ExternScope is used by the generator to generate code for an extern
+type ExternScope struct {
+	// System is the root of all modules
+	System *System
+	// Module is the module that contains the interfaces, structs, and enums
+	Module *Module
+	// Enum is the enum that contains the values
+	Extern *Extern
+	// Features is the list of features that are enabled
+	Features map[string]bool
+	// Meta is the map of metadata
+	Meta map[string]any
+}
