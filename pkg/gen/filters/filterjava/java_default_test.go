@@ -57,10 +57,10 @@ func TestDefaultSymbolsFromIdl(t *testing.T) {
 		// EnumValues: {"test", "Test2", "propEnum", "ETestEnum1::Default"},
 		{"test", "Test2", "propEnum", "Enum1.Default"},
 		{"test", "Test2", "propStruct", "new Struct1()"},
-		{"test", "Test2", "propInterface", "new Interface1()"},
+		{"test", "Test2", "propInterface", "null"},
 		{"test", "Test2", "propEnumArray", "new Enum1[]{}"},
 		{"test", "Test2", "propStructArray", "new Struct1[]{}"},
-		{"test", "Test2", "propInterfaceArray", "new Interface1[]{}"},
+		{"test", "Test2", "propInterfaceArray", "new IInterface1[]{}"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -91,8 +91,8 @@ func TestExternDefault(t *testing.T) {
 		rt string
 	}{
 		{"demo", "Iface1", "prop1", "new XType1()"},
-		{"demo", "Iface1", "prop2", "new XType2()"},
-		{"demo", "Iface1", "prop3", "new XType3A()"},
+		{"demo", "Iface1", "prop2", "new demo.x.XType2()"},
+		{"demo", "Iface1", "prop3", "new demo.x.XType3A()"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -102,6 +102,36 @@ func TestExternDefault(t *testing.T) {
 				r, err := javaDefault("", prop)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestDefaultExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "prop1", "new XType1()"},
+		{"test_apigear_next", "Iface1", "prop2", "new demo.x.XType2A()"},
+		{"test_apigear_next", "Iface1", "prop3", "someCtorXType3A()"},
+		{"test_apigear_next", "Iface1", "propList", "new demo.x.XType3A[]{}"},
+		{"test_apigear_next", "Iface1", "propImportedEnum", "test.test_api.Enum1.Default"},
+		{"test_apigear_next", "Iface1", "propImportedStruct", "new test.test_api.Struct1()"},
+	}
+	syss := loadExternSystemsYAML(t)
+	prefix := "my_prefix::"
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, prop)
+				r, err := javaDefault(prefix, prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
 			})
 		}
 	}
