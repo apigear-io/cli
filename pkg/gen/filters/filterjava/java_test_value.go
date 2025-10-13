@@ -30,21 +30,56 @@ func ToTestValueString(prefix string, schema *model.Schema) (string, error) {
 	case model.TypeVoid:
 		text = ""
 	case model.TypeEnum:
-		symbol := schema.GetEnum()
-		member := symbol.Members[0]
-		if len(symbol.Members) > 1 {
-			member = symbol.Members[1]
+		e_local := schema.LookupEnum("", schema.Type)
+		e_imported := schema.LookupEnum(schema.Import, schema.Type)
+		if e_local == nil && e_imported == nil {
+			return "xxx", fmt.Errorf("javaTestValue enum not found: %s", schema.Dump())
 		}
-		menberName := common.UpperFirst(member.Name)
-		text = fmt.Sprintf("%s%s.%s", prefix, symbol.Name, menberName)
+		// if enum is local it is found both as e_local and e_imported
+		name := common.CamelTitleCase(e_imported.Name)
+		member := common.CamelTitleCase(e_imported.Members[0].Name)
+		if len(e_imported.Members) > 1 {
+			member = common.CamelTitleCase(e_imported.Members[1].Name)
+		}
+		if e_local == nil {
+			prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(e_imported.Module.Name), common.CamelLowerCase(e_imported.Module.Name))
+		}
+		text = fmt.Sprintf("%s%s.%s", prefix, name, member)
 	case model.TypeStruct:
-		symbol := schema.GetStruct()
-		text = fmt.Sprintf("new %s%s()", prefix, symbol.Name)
+		s_local := schema.LookupStruct("", schema.Type)
+		s_imported := schema.LookupStruct(schema.Import, schema.Type)
+		if s_local == nil && s_imported == nil {
+			return "xxx", fmt.Errorf("javaTestValue struct not found: %s", schema.Dump())
+		}
+		// if struct is local it is found both as s_local and s_imported
+		if s_local == nil {
+			prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(s_imported.Module.Name), common.CamelLowerCase(s_imported.Module.Name))
+		}
+		text = fmt.Sprintf("new %s%s()", prefix, s_imported.Name)
 	case model.TypeExtern:
-		text = "TODO EXTERN"
+		xe := parseJavaExtern(schema)
+		text = fmt.Sprintf("new %s()", xe.Name)
+		if xe.Default != "" {
+			text = xe.Default
+		} else {
+			var java_module string
+			java_module = ""
+			if xe.Package != "" {
+				java_module = fmt.Sprintf("%s.", xe.Package)
+			}
+			text = fmt.Sprintf("new %s%s()", java_module, xe.Name)
+		}
 	case model.TypeInterface:
-		symbol := schema.GetInterface()
-		text = fmt.Sprintf("%s%s()", prefix, symbol.Name)
+		i_local := schema.LookupInterface("", schema.Type)
+		i_imported := schema.LookupInterface(schema.Import, schema.Type)
+		if i_local == nil && i_imported == nil {
+			return "xxx", fmt.Errorf("javaTestValue interface not found: %s", schema.Dump())
+		}
+		// if interface is local it is found both as s_local and s_imported
+		if i_local == nil {
+			prefix = fmt.Sprintf("%s.%s_impl.", common.CamelLowerCase(i_imported.Module.Name), common.CamelLowerCase(i_imported.Module.Name))
+		}
+		text = fmt.Sprintf("new %s%sService()", prefix, i_imported.Name)
 	default:
 		return "xxx", fmt.Errorf("javaTestValue unknown schema %s", schema.Dump())
 	}

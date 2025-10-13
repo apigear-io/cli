@@ -59,10 +59,10 @@ func TestParamSymbols(t *testing.T) {
 	}{
 		{"test", "Test2", "propEnum", "Enum1 propEnum"},
 		{"test", "Test2", "propStruct", "Struct1 propStruct"},
-		{"test", "Test2", "propInterface", "Interface1 propInterface"},
+		{"test", "Test2", "propInterface", "IInterface1 propInterface"},
 		{"test", "Test2", "propEnumArray", "Enum1[] propEnumArray"},
 		{"test", "Test2", "propStructArray", "Struct1[] propStructArray"},
-		{"test", "Test2", "propInterfaceArray", "Interface1[] propInterfaceArray"},
+		{"test", "Test2", "propInterfaceArray", "IInterface1[] propInterfaceArray"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -92,8 +92,8 @@ func TestExternParam(t *testing.T) {
 		rt string
 	}{
 		{"demo", "Iface1", "func1", "XType1 arg1"},
-		{"demo", "Iface1", "func2", "XType2 arg1"},
-		{"demo", "Iface1", "func3", "XType3A arg1"},
+		{"demo", "Iface1", "func2", "demo.x.XType2 arg1"},
+		{"demo", "Iface1", "func3", "demo.x.XType3A arg1"},
 	}
 	for _, sys := range syss {
 		for _, tt := range propTests {
@@ -103,6 +103,34 @@ func TestExternParam(t *testing.T) {
 				r, err := javaParam("", op.Params[0])
 				assert.NoError(t, err)
 				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestParamsExterns(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "XType1 arg1"},
+		{"test_apigear_next", "Iface1", "func3", "demo.x.XType3A arg1"},
+		{"test_apigear_next", "Iface1", "funcList", "demo.x.XType3A[] arg1"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "test.test_api.Enum1 arg1"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "test.test_api.Struct1 arg1"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := javaParams("", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
 			})
 		}
 	}

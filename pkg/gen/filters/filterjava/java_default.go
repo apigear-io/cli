@@ -31,20 +31,45 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeBool:
 			text = "new boolean[]{}"
 		case model.TypeEnum:
-			return fmt.Sprintf("new %s%s[]{}", prefix, schema.Type), nil
+			e_local := schema.LookupEnum("", schema.Type)
+			e_imported := schema.LookupEnum(schema.Import, schema.Type)
+			if e_local == nil && e_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault enum not found: %s", schema.Dump())
+			}
+			if e_local == nil {
+				prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(e_imported.Module.Name), common.CamelLowerCase(e_imported.Module.Name))
+			}
+			return fmt.Sprintf("new %s%s[]{}", prefix, common.CamelTitleCase(e_imported.Name)), nil
 		case model.TypeStruct:
-			symbol := schema.GetStruct()
-			text = fmt.Sprintf("new %s%s[]{}", prefix, symbol.Name)
+			s_local := schema.LookupStruct("", schema.Type)
+			s_imported := schema.LookupStruct(schema.Import, schema.Type)
+			if s_local == nil && s_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault struct not found: %s", schema.Dump())
+			}
+			// if struct is local it is found both as s_local and s_imported
+			if s_local == nil {
+				prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(s_imported.Module.Name), common.CamelLowerCase(s_imported.Module.Name))
+			}
+			text = fmt.Sprintf("new %s%s[]{}", prefix, common.CamelTitleCase(s_imported.Name))
 		case model.TypeExtern:
 			xe := parseJavaExtern(schema)
-			if xe.Default != "" {
-				text = xe.Default
-			} else {
-				text = fmt.Sprintf("%s%s()", prefix, xe.Name)
+			var java_module string
+			java_module = ""
+			if xe.Package != "" {
+				java_module = fmt.Sprintf("%s.", xe.Package)
 			}
+			text = fmt.Sprintf("new %s%s[]{}", java_module, xe.Name)
 		case model.TypeInterface:
-			symbol := schema.GetInterface()
-			text = fmt.Sprintf("new %s%s[]{}", prefix, symbol.Name)
+			i_local := schema.LookupInterface("", schema.Type)
+			i_imported := schema.LookupInterface(schema.Import, schema.Type)
+			if i_local == nil && i_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault interface not found: %s", schema.Dump())
+			}
+			// if interface is local it is found both as s_local and s_imported
+			if i_local == nil {
+				prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(i_imported.Module.Name), common.CamelLowerCase(i_imported.Module.Name))
+			}
+			text = fmt.Sprintf("new %sI%s[]{}", prefix, common.CamelTitleCase(i_imported.Name))
 		default:
 			return "xxx", fmt.Errorf("javaDefault unknown schema %s", schema.Dump())
 		}
@@ -67,20 +92,53 @@ func ToDefaultString(schema *model.Schema, prefix string) (string, error) {
 		case model.TypeBool:
 			text = "false"
 		case model.TypeEnum:
-			symbol := schema.GetEnum()
-			member := symbol.Members[0]
-			// upper case first letter
-			// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
-			text = fmt.Sprintf("%s%s.%s", prefix, symbol.Name, common.CamelTitleCase(member.Name))
+			e_local := schema.LookupEnum("", schema.Type)
+			e_imported := schema.LookupEnum(schema.Import, schema.Type)
+			if e_local == nil && e_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault enum not found: %s", schema.Dump())
+			}
+			// if enum is local it is found both as e_local and e_imported
+			name := common.CamelTitleCase(e_imported.Name)
+			member := common.CamelTitleCase(e_imported.Members[0].Name)
+			if e_local == nil {
+				prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(e_imported.Module.Name), common.CamelLowerCase(e_imported.Module.Name))
+			}
+			text = fmt.Sprintf("%s%s.%s", prefix, name, member)
 		case model.TypeStruct:
-			symbol := schema.GetStruct()
-			text = fmt.Sprintf("new %s%s()", prefix, symbol.Name)
+			s_local := schema.LookupStruct("", schema.Type)
+			s_imported := schema.LookupStruct(schema.Import, schema.Type)
+			if s_local == nil && s_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault struct not found: %s", schema.Dump())
+			}
+			// if struct is local it is found both as s_local and s_imported
+			if s_local == nil {
+				prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(s_imported.Module.Name), common.CamelLowerCase(s_imported.Module.Name))
+			}
+			text = fmt.Sprintf("new %s%s()", prefix, s_imported.Name)
 		case model.TypeExtern:
 			xe := parseJavaExtern(schema)
-			text = fmt.Sprintf("new %s%s()", prefix, xe.Name)
+			text = fmt.Sprintf("new %s()", xe.Name)
+			if xe.Default != "" {
+				text = xe.Default
+			} else {
+				var java_module string
+				java_module = ""
+				if xe.Package != "" {
+					java_module = fmt.Sprintf("%s.", xe.Package)
+				}
+				text = fmt.Sprintf("new %s%s()", java_module, xe.Name)
+			}
 		case model.TypeInterface:
-			symbol := schema.GetInterface()
-			text = fmt.Sprintf("new %s%s()", prefix, symbol.Name)
+			i_local := schema.LookupInterface("", schema.Type)
+			i_imported := schema.LookupInterface(schema.Import, schema.Type)
+			if i_local == nil && i_imported == nil {
+				return "xxx", fmt.Errorf("javaDefault interface not found: %s", schema.Dump())
+			}
+			// if interface is local it is found both as s_local and s_imported
+			if i_local == nil {
+				prefix = fmt.Sprintf("%s.%s_impl.", common.CamelLowerCase(i_imported.Module.Name), common.CamelLowerCase(i_imported.Module.Name))
+			}
+			text = "null"
 		default:
 			return "xxx", fmt.Errorf("javaDefault unknown schema %s", schema.Dump())
 		}

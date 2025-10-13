@@ -85,3 +85,55 @@ func TestOperationAsyncReturn(t *testing.T) {
 		}
 	}
 }
+
+func TestImportedExternAsyncReturn(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "CompletableFuture<XType1>"},
+		{"demo", "Iface2", "prop2", "CompletableFuture<demo.x.XType2>"},
+		{"demo", "Iface2", "prop3", "CompletableFuture<demo.x.XType3A>"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := javaAsyncReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+func TestAsyncReturnExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "CompletableFuture<XType1>"},
+		{"test_apigear_next", "Iface1", "func3", "CompletableFuture<demo.x.XType3A>"},
+		{"test_apigear_next", "Iface1", "funcList", "CompletableFuture<demo.x.XType3A[]>"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "CompletableFuture<test.test_api.Enum1>"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "CompletableFuture<test.test_api.Struct1>"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := javaAsyncReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
