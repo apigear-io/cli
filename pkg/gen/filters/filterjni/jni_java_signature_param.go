@@ -10,7 +10,7 @@ import (
 func makeFullTypeName(module string, typename string) string {
 	var camelModuleName = common.CamelLowerCase(module)
 	packageName := camelModuleName + "/" + camelModuleName + "_api"
-	var text = "L" + packageName + "/" + typename + ";"
+	var text = "L" + packageName + "/" + common.CamelTitleCase(typename) + ";"
 	return text
 }
 
