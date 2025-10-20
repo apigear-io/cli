@@ -11,41 +11,29 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
-	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 )
 
 type Options struct {
-	NatsHost          string `json:"nats_host"`
-	NatsPort          int    `json:"nats_port"`
-	NatsDisabled      bool   `json:"nats_disabled"`
-	DontListen        bool   `json:"nats_inprocess_only"`
-	NatsLeafURL       string `json:"nats_leaf_url"`
-	NatsCredentials   string `json:"nats_credentials"`
-	HttpAddr          string `json:"http_addr"`
-	HttpDisabled      bool   `json:"http_disabled"`
-	MonitorDisabled   bool   `json:"monitor_disabled"`
-	ObjectAPIDisabled bool   `json:"object_api_disabled"`
-	Logging           bool   `json:"logging"`
+	NatsServerURL string `json:"nats_server_url"`
+	HttpAddr      string `json:"http_addr"`
+	Logging       bool   `json:"logging"`
 }
 
-var DefaultOptions = &Options{
-	NatsHost:          server.DEFAULT_HOST,
-	NatsPort:          server.DEFAULT_PORT,
-	NatsDisabled:      false,
-	DontListen:        false,
-	NatsLeafURL:       "",
-	NatsCredentials:   "",
-	HttpAddr:          "127.0.0.1:5555",
-	HttpDisabled:      false,
-	MonitorDisabled:   false,
-	ObjectAPIDisabled: false,
-	Logging:           false,
+func (o *Options) Validate() error {
+	if o.NatsServerURL == "" {
+		o.NatsServerURL = nats.DefaultURL
+		log.Info().Msgf("nats server URL not set, using default: %s", o.NatsServerURL)
+	}
+	if o.HttpAddr == "" {
+		o.HttpAddr = "127.0.0.1:5555"
+		log.Info().Msgf("http address not set, using default: %s", o.HttpAddr)
+	}
+	return nil
 }
 
 type NetworkManager struct {
-	opts       *Options
-	natsServer *NatsServer
+	opts       Options
 	httpServer *HTTPServer
 	nc         *nats.Conn
 }
@@ -55,35 +43,37 @@ func NewManager() *NetworkManager {
 	return &NetworkManager{}
 }
 
-func (s *NetworkManager) Start(opts *Options) error {
+func (s *NetworkManager) NatsConnection() (*nats.Conn, error) {
+	if s.nc != nil && !s.nc.IsClosed() {
+		return s.nc, nil
+	}
+	if s.opts.NatsServerURL == "" {
+		return nil, fmt.Errorf("nats server URL not set")
+	}
+	nc, err := nats.Connect(s.opts.NatsServerURL)
+	if err != nil {
+		return nil, err
+	}
+	s.nc = nc
+	return s.nc, nil
+}
+
+func (s *NetworkManager) Start(opts Options) error {
+	err := opts.Validate()
+	if err != nil {
+		return err
+	}
 	s.opts = opts
 	log.Debug().Msg("start network manager")
-	if !s.opts.HttpDisabled {
-		err := s.StartHTTP(s.opts.HttpAddr)
-		if err != nil {
-			log.Error().Err(err).Msg("failed to start http server")
-			return err
-		}
+	err = s.StartHTTP(s.opts.HttpAddr)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start http server")
+		return err
 	}
-	if !s.opts.NatsDisabled {
-		err := s.StartNATS(&NatsServerOptions{
-			Host:        s.opts.NatsHost,
-			Port:        s.opts.NatsPort,
-			DontListen:  s.opts.DontListen,
-			LeafURL:     s.opts.NatsLeafURL,
-			Credentials: s.opts.NatsCredentials,
-		})
-		if err != nil {
-			log.Error().Err(err).Msg("failed to start nats server")
-			return err
-		}
-	}
-	if !s.opts.MonitorDisabled {
-		err := s.EnableMonitor()
-		if err != nil {
-			log.Error().Err(err).Msg("failed to enable monitor")
-			return err
-		}
+	err = s.EnableMonitor()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to enable monitor")
+		return err
 	}
 	return nil
 }
@@ -113,52 +103,7 @@ func (s *NetworkManager) Stop() error {
 	if err != nil {
 		return err
 	}
-	err = s.StopNATS()
-	if err != nil {
-		return err
-	}
 	return nil
-}
-
-func (s *NetworkManager) StartNATS(opts *NatsServerOptions) error {
-	log.Info().Msg("start nats server")
-	if s.natsServer != nil {
-		return fmt.Errorf("nats server already started")
-	}
-	server, err := NewNatsServer(opts)
-	if err != nil {
-		return err
-	}
-	s.natsServer = server
-	return s.natsServer.Start()
-}
-
-func (s *NetworkManager) StopNATS() error {
-	log.Info().Msg("stop nats server")
-	if s.nc != nil {
-		err := s.nc.Drain()
-		if err != nil {
-			return err
-		}
-	}
-	if s.natsServer != nil {
-		return s.natsServer.Shutdown()
-	}
-	return nil
-}
-
-func (s *NetworkManager) NatsClientURL() string {
-	if s.natsServer != nil {
-		return s.natsServer.ClientURL()
-	}
-	return ""
-}
-
-func (s *NetworkManager) NatsConnection() (*nats.Conn, error) {
-	if s.natsServer == nil {
-		return nil, fmt.Errorf("nats server not started")
-	}
-	return s.natsServer.Connection()
 }
 
 func (s *NetworkManager) StartHTTP(addr string) error {
@@ -196,7 +141,8 @@ func (s *NetworkManager) EnableMonitor() error {
 	}
 	nc, err := s.NatsConnection()
 	if err != nil {
-		log.Error().Msgf("nats connection: %v", err)
+		log.Error().Err(err).Msg("nats connection")
+		return err
 	}
 	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc))
 	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", s.httpServer.Address())

@@ -36,7 +36,7 @@ func RunBuffer(ctx context.Context, js jetstream.JetStream, opts BufferOptions) 
 	}
 	refresh := opts.RefreshInterval
 	if refresh <= 0 {
-		refresh = 15 * time.Second
+		refresh = config.BufferRefresh
 	}
 
 	devStore, err := store.NewDeviceStore(js, bucket)

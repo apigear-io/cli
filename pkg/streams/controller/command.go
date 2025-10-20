@@ -23,7 +23,7 @@ type startCommand struct {
 	Device        store.DeviceInfo
 }
 
-func (cmd Command) normalizeStart() (startCommand, error) {
+func (cmd RpcRequest) normalizeStart() (startCommand, error) {
 	var out startCommand
 
 	subject := strings.TrimSpace(cmd.Subject)

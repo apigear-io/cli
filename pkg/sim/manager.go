@@ -14,6 +14,9 @@ type Manager struct {
 }
 
 func NewManager(opts ManagerOptions) *Manager {
+	if opts.Server == nil {
+		opts.Server = NewOlinkServer()
+	}
 	m := &Manager{
 		engine: nil,
 		server: opts.Server,

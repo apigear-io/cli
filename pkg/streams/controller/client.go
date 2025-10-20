@@ -10,9 +10,9 @@ import (
 )
 
 // SendCommand issues a controller command over NATS request/reply.
-func SendCommand(ctx context.Context, nc *nats.Conn, subject string, cmd Command) (Response, error) {
+func SendCommand(ctx context.Context, nc *nats.Conn, subject string, cmd RpcRequest) (RpcResponse, error) {
 	if nc == nil {
-		return Response{}, errors.New("nats connection is nil")
+		return RpcResponse{}, errors.New("nats connection is nil")
 	}
 	if subject == "" {
 		subject = DefaultCommandSubject
@@ -20,18 +20,18 @@ func SendCommand(ctx context.Context, nc *nats.Conn, subject string, cmd Command
 
 	data, err := json.Marshal(cmd)
 	if err != nil {
-		return Response{}, err
+		return RpcResponse{}, err
 	}
 
 	msg, err := nc.RequestWithContext(ctx, subject, data)
 	if err != nil {
-		return Response{}, err
+		return RpcResponse{}, err
 	}
 
-	var resp Response
+	var resp RpcResponse
 	err = json.Unmarshal(msg.Data, &resp)
 	if err != nil {
-		return Response{}, err
+		return RpcResponse{}, err
 	}
 	return resp, nil
 }

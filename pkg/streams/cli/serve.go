@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/streams/buffer"
@@ -37,7 +35,7 @@ func newServeCmd() *cobra.Command {
 	opts := &serviceAllOptions{
 		Host:           "127.0.0.1",
 		Port:           4222,
-		CommandSubject: config.CommandSubject,
+		CommandSubject: config.RecordRpcSubject,
 		StateBucket:    config.StateBucket,
 		DeviceBucket:   config.DeviceBucket,
 		MonitorSubject: config.MonitorSubject,
@@ -49,7 +47,7 @@ func newServeCmd() *cobra.Command {
 		Short:   "Serve controller and buffer services and optional NATS server",
 		Aliases: []string{"run"},
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return runServiceAll(cmd, opts)
+			return doRunServe(cmd, opts)
 		},
 	}
 
@@ -67,10 +65,7 @@ func newServeCmd() *cobra.Command {
 	return cmd
 }
 
-func runServiceAll(cmd *cobra.Command, opts *serviceAllOptions) error {
-	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
-
+func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 	var (
 		srv       *natsutil.ServerHandle
 		err       error
@@ -120,16 +115,28 @@ func runServiceAll(cmd *cobra.Command, opts *serviceAllOptions) error {
 	}
 	defer js.Conn().Drain()
 
+	return runServices(cmd, opts, js)
+}
+
+func runServices(cmd *cobra.Command, opts *serviceAllOptions, js jetstream.JetStream) error {
 	controllerOpts := controller.Options{
-		ServerURL:      serverURL,
-		CommandSubject: opts.CommandSubject,
-		StateBucket:    opts.StateBucket,
+		ServerURL:        rootOpts.server,
+		RecordRpcSubject: opts.CommandSubject,
+		StateBucket:      opts.StateBucket,
 	}
 
-	group, groupCtx := errgroup.WithContext(ctx)
-	group.Go(func() error {
-		return controller.Run(groupCtx, js, controllerOpts)
-	})
+	// Create and start controller
+	ctrl, err := controller.NewController(js, controllerOpts)
+	if err != nil {
+		return err
+	}
+	if err := ctrl.Start(); err != nil {
+		return err
+	}
+	defer ctrl.Close()
+
+	// Run buffer service
+	group, groupCtx := errgroup.WithContext(cmd.Context())
 	group.Go(func() error {
 		return buffer.RunBuffer(groupCtx, js, buffer.BufferOptions{
 			DeviceBucket:    opts.DeviceBucket,
@@ -139,13 +146,12 @@ func runServiceAll(cmd *cobra.Command, opts *serviceAllOptions) error {
 	})
 
 	log.Info().Msg("services running (controller + buffer)")
-	cmd.Printf("services running (controller subject=%s)\n", controllerOpts.CommandSubject)
+	cmd.Printf("services running (controller subject=%s)\n", controllerOpts.RecordRpcSubject)
 	cmd.Printf("press Ctrl+C to stop\n")
 
 	err = group.Wait()
 	if err != nil && !errors.Is(err, context.Canceled) {
 		return err
 	}
-
 	return nil
 }

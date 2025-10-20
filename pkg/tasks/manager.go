@@ -3,149 +3,163 @@ package tasks
 import (
 	"context"
 	"errors"
-
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/sasha-s/go-deadlock"
+	"sync"
 )
 
 // ErrTaskNotFound is returned when a task is not found
 var ErrTaskNotFound = errors.New("task not found")
 
-// TaskManager allows you to create tasks and run them
+// TaskManager provides a simple registry for managing multiple tasks
 type TaskManager struct {
-	deadlock.RWMutex
-	helper.Hook[TaskEvent]
-	tasks map[string]*TaskItem
+	mu      sync.RWMutex
+	tasks   map[string]*taskEntry
+	hooks   []func(*TaskEvent)
+	hooksMu sync.RWMutex
+}
+
+type taskEntry struct {
+	task *Task
+	fn   TaskFunc
 }
 
 // NewTaskManager creates a new task manager
 func NewTaskManager() *TaskManager {
 	return &TaskManager{
-		tasks: make(map[string]*TaskItem),
-		Hook:  helper.Hook[TaskEvent]{},
+		tasks: make(map[string]*taskEntry),
+		hooks: make([]func(*TaskEvent), 0),
 	}
 }
 
-// Register creates a new task
-func (tm *TaskManager) Register(name string, meta map[string]interface{}, tf TaskFunc) *TaskItem {
-	if tm.Has(name) {
-		err := tm.RmTask(name)
-		if err != nil {
-			log.Warn().Err(err).Msg("error removing task")
+// AddHook adds an event hook function
+func (tm *TaskManager) AddHook(fn func(*TaskEvent)) {
+	tm.hooksMu.Lock()
+	defer tm.hooksMu.Unlock()
+	tm.hooks = append(tm.hooks, fn)
+}
+
+// fireHook fires event hooks (if any exist)
+func (tm *TaskManager) fireHook(name string, state TaskState) {
+	tm.hooksMu.RLock()
+	hooks := make([]func(*TaskEvent), len(tm.hooks))
+	copy(hooks, tm.hooks)
+	tm.hooksMu.RUnlock()
+
+	if len(hooks) > 0 {
+		event := &TaskEvent{
+			Name:  name,
+			State: state,
+			Meta:  map[string]interface{}{},
+		}
+		for _, hook := range hooks {
+			hook(event)
 		}
 	}
-	task := NewTaskItem(name, meta, tf)
-	tm.AddTask(task)
+}
+
+// Register creates and registers a task (meta is ignored for simplicity)
+func (tm *TaskManager) Register(name string, meta map[string]interface{}, fn TaskFunc) *Task {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+
+	// Remove existing task if present
+	if entry, exists := tm.tasks[name]; exists {
+		entry.task.Cancel()
+		entry.task.CancelWatch()
+		tm.fireHook(name, TaskStateRemoved)
+	}
+
+	task := NewTask()
+	tm.tasks[name] = &taskEntry{
+		task: task,
+		fn:   fn,
+	}
+	tm.fireHook(name, TaskStateAdded)
 	return task
 }
 
-// AddTask adds a task to the task manager
-func (tm *TaskManager) AddTask(task *TaskItem) {
-	if task == nil {
-		return
-	}
-	if tm.Has(task.name) {
-		return
-	}
-	tm.Lock()
-	defer tm.Unlock()
-	tm.tasks[task.name] = task
-	tm.FireHook(NewTaskEvent(task, TaskStateAdded))
-}
-
-// RmTask removes a task from the task manager
-func (tm *TaskManager) RmTask(name string) error {
-	task := tm.Get(name)
-	if task == nil {
-		return ErrTaskNotFound
-	}
-	task.Cancel()
-	tm.Lock()
-	defer tm.Unlock()
-	delete(tm.tasks, name)
-	tm.FireHook(NewTaskEvent(task, TaskStateRemoved))
-	return nil
-}
-
-// Get returns a task
-func (tm *TaskManager) Get(name string) *TaskItem {
-	tm.RLock()
-	defer tm.RUnlock()
-	task, ok := tm.tasks[name]
-	if !ok {
-		return nil
-	}
-	return task
-}
-
-// Run runs a task
+// Run runs a registered task once
 func (tm *TaskManager) Run(ctx context.Context, name string) error {
-	task := tm.Get(name)
-	if task == nil {
+	tm.mu.RLock()
+	entry, exists := tm.tasks[name]
+	tm.mu.RUnlock()
+
+	if !exists {
 		return ErrTaskNotFound
 	}
-	tm.FireHook(NewTaskEvent(task, TaskStateRunning))
-	err := task.Run(ctx)
+
+	tm.fireHook(name, TaskStateRunning)
+	err := entry.task.Run(ctx, entry.fn)
 	if err != nil {
-		log.Error().Err(err).Str("task", name).Msg("failed to run task")
-		tm.FireHook(NewTaskEvent(task, TaskStateFailed))
+		tm.fireHook(name, TaskStateFailed)
 		return err
 	}
-	tm.FireHook(NewTaskEvent(task, TaskStateFinished))
+	tm.fireHook(name, TaskStateFinished)
 	return nil
 }
 
-// Watch watches a task
+// Watch runs a registered task and watches files for changes
 func (tm *TaskManager) Watch(ctx context.Context, name string, dependencies ...string) error {
-	task := tm.Get(name)
-	if task == nil {
+	tm.mu.RLock()
+	entry, exists := tm.tasks[name]
+	tm.mu.RUnlock()
+
+	if !exists {
 		return ErrTaskNotFound
 	}
-	err := task.Run(ctx)
-	if err != nil {
-		log.Error().Err(err).Str("task", name).Msg("failed to run task")
-	}
-	go task.Watch(ctx, dependencies...)
-	tm.FireHook(NewTaskEvent(task, TaskStateWatching))
+
+	tm.fireHook(name, TaskStateWatching)
+	go func() {
+		if err := entry.task.Watch(ctx, entry.fn, dependencies...); err != nil {
+			log.Error().Err(err).Str("task", name).Msg("watch failed")
+			tm.fireHook(name, TaskStateFailed)
+		}
+	}()
 	return nil
 }
 
-// Names returns the names of all the tasks
-func (tm *TaskManager) Names() []string {
-	tm.RLock()
-	defer tm.RUnlock()
-	var names []string
-	for name := range tm.tasks {
-		names = append(names, name)
+// Cancel cancels a registered task
+func (tm *TaskManager) Cancel(name string) error {
+	tm.mu.RLock()
+	entry, exists := tm.tasks[name]
+	tm.mu.RUnlock()
+
+	if !exists {
+		return ErrTaskNotFound
 	}
-	return names
+
+	entry.task.Cancel()
+	entry.task.CancelWatch()
+	tm.fireHook(name, TaskStateStopped)
+	return nil
+}
+
+// CancelAll cancels all registered tasks
+func (tm *TaskManager) CancelAll() {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+
+	for _, entry := range tm.tasks {
+		entry.task.Cancel()
+		entry.task.CancelWatch()
+	}
 }
 
 // Has returns true if the task exists
 func (tm *TaskManager) Has(name string) bool {
-	tm.RLock()
-	defer tm.RUnlock()
-	_, ok := tm.tasks[name]
-	return ok
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
+	_, exists := tm.tasks[name]
+	return exists
 }
 
-// Cancel cancels a task
-func (tm *TaskManager) Cancel(name string) error {
-	task := tm.Get(name)
-	if task == nil {
-		return ErrTaskNotFound
-	}
-	task.CancelWatch()
-	task.Cancel()
-	tm.FireHook(NewTaskEvent(task, TaskStateStopped))
-	return nil
-}
+// Names returns the names of all registered tasks
+func (tm *TaskManager) Names() []string {
+	tm.mu.RLock()
+	defer tm.mu.RUnlock()
 
-// CancelAll cancels all the tasks
-func (tm *TaskManager) CancelAll() {
-	tm.RLock()
-	defer tm.RUnlock()
-	for _, task := range tm.tasks {
-		task.Cancel()
+	names := make([]string, 0, len(tm.tasks))
+	for name := range tm.tasks {
+		names = append(names, name)
 	}
+	return names
 }

@@ -13,8 +13,7 @@ import (
 
 func newDataTailCmd() *cobra.Command {
 	opts := &msgio.TailOptions{
-		Subject:      config.MonitorSubject,
-		DeviceBucket: config.DeviceBucket,
+		Subject: config.MonitorSubject,
 	}
 
 	cmd := &cobra.Command{
@@ -35,9 +34,6 @@ func newDataTailCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.DeviceID, "device-id", "", "Device identifier to subscribe to")
 	cmd.Flags().BoolVar(&opts.Pretty, "pretty", false, "Pretty print JSON payloads")
 	cmd.Flags().BoolVar(&opts.Headers, "headers", false, "Print message headers")
-	cmd.Flags().StringVar(&opts.DeviceBucket, "device-bucket", opts.DeviceBucket, "Device metadata bucket")
-	cmd.Flags().DurationVar(&opts.BufferWindow, "buffer-window", 0, "Optional rolling buffer duration override (e.g. 5m)")
-	cmd.MarkFlagRequired("device-id")
 
 	return cmd
 }

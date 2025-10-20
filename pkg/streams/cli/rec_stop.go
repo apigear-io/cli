@@ -25,13 +25,13 @@ func newRecordingsStopCmd() *cobra.Command {
 
 			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
 				return withNATS(ctx, func(nc *nats.Conn) error {
-					request := controller.Command{
+					request := controller.RpcRequest{
 						Action:    controller.ActionStop,
 						SessionID: sessionID,
 					}
 					log.Info().Str("session", sessionID).Msg("record stop request")
 
-					resp, err := controller.SendCommand(ctx, nc, config.CommandSubject, request)
+					resp, err := controller.SendCommand(ctx, nc, config.RecordRpcSubject, request)
 					if err != nil {
 						return err
 					}

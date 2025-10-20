@@ -68,7 +68,7 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 		preRoll = opts.PreRoll.String()
 	}
 
-	request := controller.Command{
+	request := controller.RpcRequest{
 		Action:        controller.ActionStart,
 		Subject:       opts.Subject,
 		DeviceID:      opts.DeviceID,
@@ -86,7 +86,7 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 	return withNATS(ctx, func(nc *nats.Conn) error {
 		log.Info().Str("device", opts.DeviceID).Str("subject", opts.Subject).Msg("record start request")
 
-		resp, err := controller.SendCommand(ctx, nc, config.CommandSubject, request)
+		resp, err := controller.SendCommand(ctx, nc, config.RecordRpcSubject, request)
 		if err != nil {
 			return err
 		}

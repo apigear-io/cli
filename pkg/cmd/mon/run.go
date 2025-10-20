@@ -1,37 +1,40 @@
 package mon
 
 import (
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/mon"
-	"github.com/apigear-io/cli/pkg/net"
+	"github.com/apigear-io/cli/pkg/streams/msgio"
 	"github.com/spf13/cobra"
 )
 
 func NewServerCommand() *cobra.Command {
-	var addr string
+	var natsURL string
+	var verbose bool
+	var deviceID string
+	var pretty bool
+	var headers bool
 	var cmd = &cobra.Command{
 		Use:     "run",
 		Aliases: []string{"r", "start"},
 		Short:   "Run the monitor server",
 		Long:    `The monitor server runs on a HTTP port and listens for API calls.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			netman := net.NewManager()
-			opts := net.Options{
-				HttpAddr: addr,
+
+			opts := msgio.TailOptions{
+				ServerURL: natsURL,
+				Verbose:   verbose,
+				Pretty:    pretty,
+				Headers:   headers,
 			}
-			err := netman.Start(&opts)
-			if err != nil {
-				return err
+			if deviceID != "" {
+				opts.DeviceID = deviceID
 			}
-			netman.MonitorEmitter().AddHook(func(e *mon.Event) {
-				log.Info().Msgf("event: %s %s %v", e.Type.String(), e.Device, e.Data)
-			})
-			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
-			})
-			return netman.Wait(cmd.Context())
+			return msgio.Tail(cmd.Context(), opts)
 		},
 	}
-	cmd.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:5555", "address to listen on")
+
+	cmd.Flags().StringVarP(&natsURL, "nats-url", "n", "nats://127.0.0.1:4222", "NATS server URL")
+	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose logging")
+	cmd.Flags().StringVarP(&deviceID, "device-id", "d", "", "device ID to monitor")
+	cmd.Flags().BoolVarP(&pretty, "pretty", "p", false, "pretty print JSON output")
+	cmd.Flags().BoolVarP(&headers, "headers", "H", false, "include headers in output")
 	return cmd
 }

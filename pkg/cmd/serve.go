@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
 	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
+	"github.com/apigear-io/cli/pkg/streams"
 	"github.com/spf13/cobra"
 )
 
@@ -16,14 +19,19 @@ func NewServeCommand() *cobra.Command {
 		Use:   "serve",
 		Short: "starts apigear server for monitoring and simulation",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			netman := net.NewManager()
-			server := sim.NewOlinkServer()
-			sim.NewManager(sim.ManagerOptions{
-				Server: server,
-			})
-			if err := netman.Start(&net.Options{
-				NatsHost: natsHost,
+			log.Info().Msg("starting streams")
+			strman := streams.NewManager()
+			strman.Start(cmd.Context(), streams.ManagerOptions{
 				NatsPort: natsPort,
+				AppDir:   cfg.ConfigDir(),
+				Logging:  true,
+			})
+
+			log.Info().Msg("starting simulation server")
+			sim.NewManager(sim.ManagerOptions{})
+			log.Info().Msg("starting network services")
+			netman := net.NewManager()
+			if err := netman.Start(net.Options{
 				HttpAddr: httpAddr,
 			}); err != nil {
 				return err
@@ -31,7 +39,8 @@ func NewServeCommand() *cobra.Command {
 			netman.OnMonitorEvent(func(event *mon.Event) {
 				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 			})
-			return netman.Wait(cmd.Context())
+
+			return helper.Wait(cmd.Context(), nil)
 		},
 	}
 

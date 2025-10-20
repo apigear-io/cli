@@ -2,22 +2,20 @@ package sim
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/mon"
-	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/cli/pkg/sim"
 	"github.com/apigear-io/cli/pkg/tasks"
+	"github.com/nats-io/nats.go"
 
 	"github.com/spf13/cobra"
 )
 
 func NewRunCommand() *cobra.Command {
 	var fn string
-	var addr string
-	var noServe bool
+	var natsServer string
 	var watch bool
 
 	// cmd represents the simSvr command
@@ -30,89 +28,56 @@ func NewRunCommand() *cobra.Command {
 In its simplest form it just answers every call and all properties are set to default values. 
 Using a scenario you can define additional static and scripted data and behavior.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			netman := net.NewManager()
-			if err := netman.Start(&net.Options{
-				DontListen:   false,
-				HttpAddr:     addr,
-				HttpDisabled: noServe,
-			}); err != nil {
-				return err
-			}
-			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
-			})
-			var simman *sim.Manager
-			if !noServe {
-				simman = sim.NewManager(sim.ManagerOptions{})
-				simman.Start(netman)
-			} else {
-				simman = sim.NewManager(sim.ManagerOptions{})
-			}
 
-			scriptFile := args[0]
-
-			cwd, err := os.Getwd()
+			absFile, err := filepath.Abs(args[0])
 			if err != nil {
-				log.Error().Err(err).Msg("failed to get current working directory")
 				return err
 			}
 
-			absFile := filepath.Clean(filepath.Join(cwd, scriptFile))
+			sim.WithClient(cmd.Context(), natsServer, func(ctx context.Context, client *sim.Client) error {
+				taskManager := tasks.NewTaskManager()
+				taskName := "sim-script"
 
-			// Create task manager and register sim task
-			taskManager := tasks.NewTaskManager()
-			taskName := "sim-script"
-
-			// Create task function that runs the script
-			taskFunc := func(ctx context.Context) error {
-				return runScript(ctx, simman, netman, absFile, fn)
-			}
-
-			// Register the task
-			taskManager.Register(taskName, map[string]interface{}{
-				"script_file": absFile,
-				"function":    fn,
-			}, taskFunc)
-
-			ctx := cmd.Context()
-
-			if watch {
-				log.Info().Str("file", absFile).Msg("watching script file")
-				// Use task manager's watch functionality
-				if err := taskManager.Watch(ctx, taskName, absFile); err != nil {
-					return err
+				// Create task function that runs the script
+				taskFunc := func(ctx context.Context) error {
+					resp, err := client.RunScript(absFile)
+					if err != nil {
+						log.Error().Err(err).Msg("failed to run script")
+						return err
+					}
+					if resp.Error != "" {
+						log.Error().Err(err).Str("error", resp.Error).Msg("failed to run script")
+						return err
+					}
+					log.Info().Str("file", absFile).Msg("script executed")
+					return nil
 				}
-				return netman.Wait(ctx)
-			} else {
-				// Run once without watching
-				if err := taskManager.Run(ctx, taskName); err != nil {
-					return err
+
+				// Register the task
+				taskManager.Register(taskName, map[string]interface{}{
+					"script_file": absFile,
+					"function":    fn,
+				}, taskFunc)
+
+				if watch {
+					log.Info().Str("file", absFile).Msg("watching script file")
+					// Use task manager's watch functionality
+					if err := taskManager.Watch(ctx, taskName, absFile); err != nil {
+						return err
+					}
+				} else {
+					// Run once without watching
+					if err := taskManager.Run(ctx, taskName); err != nil {
+						return err
+					}
 				}
-				return netman.Wait(ctx)
-			}
+				return helper.Wait(ctx, nil)
+			})
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")
-	cmd.Flags().StringVar(&addr, "addr", "localhost:5555", "protocol server address")
-	cmd.Flags().BoolVar(&noServe, "no-serve", false, "disable protocol server")
+	cmd.Flags().StringVar(&natsServer, "nats-server", nats.DefaultURL, "nats server url")
 	cmd.Flags().BoolVar(&watch, "watch", false, "watch for changes in the script file")
 	return cmd
-}
-
-func runScript(ctx context.Context, sm *sim.Manager, nm *net.NetworkManager, absFile string, fn string) error {
-	log.Info().Str("script", absFile).Msg("load script file into simulation")
-	content, err := os.ReadFile(absFile)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to read script file")
-		return err
-	}
-	script := sim.NewScript(absFile, string(content))
-	sm.ScriptRun(script)
-	if fn != "" {
-		log.Info().Str("function", fn).Msg("run world function")
-		sm.FunctionRun(fn, nil)
-	}
-	// Return immediately after running the script
-	// Don't block here - the TaskManager will handle the lifecycle
-	return nil
 }

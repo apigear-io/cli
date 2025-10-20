@@ -13,7 +13,7 @@ const (
 	StateBucket   = "streams_record_state"
 
 	// Default subjects and prefixes.
-	CommandSubject             = "streams.record.cmd"
+	RecordRpcSubject           = "streams.record.rpc"
 	SessionSubjectPrefix       = "streams.session"
 	BufferSubjectPrefix        = "streams.buffer"
 	MonitorSubject             = "monitor"
@@ -28,6 +28,8 @@ const (
 	HeaderBufferedAt = "X-Streams-Buffered-At"
 	HeaderDeadline   = "X-Streams-Deadline"
 	HeaderPreRoll    = "X-Streams-PreRoll"
+
+	BufferRefresh = 15 * time.Second
 )
 
 // SessionSubject returns the fully qualified JetStream subject used to persist

@@ -29,7 +29,7 @@ func TestControllerStartStop(t *testing.T) {
 	subject := "monitor"
 	deviceID := "device-1"
 
-	startResp := sendStart(t, client, controller.Command{
+	startResp := sendStart(t, client, controller.RpcRequest{
 		Action:        controller.ActionStart,
 		Subject:       subject,
 		DeviceID:      deviceID,
@@ -84,7 +84,7 @@ func TestControllerDuplicateStart(t *testing.T) {
 	client := h.NewClientConn()
 	defer client.Close()
 
-	cmd := controller.Command{
+	cmd := controller.RpcRequest{
 		Action:        controller.ActionStart,
 		Subject:       "monitor",
 		DeviceID:      "device-1",
@@ -126,7 +126,7 @@ func TestControllerPreRoll(t *testing.T) {
 	client := h.NewClientConn()
 	defer client.Close()
 
-	resp := sendStart(t, client, controller.Command{
+	resp := sendStart(t, client, controller.RpcRequest{
 		Action:        controller.ActionStart,
 		Subject:       "monitor",
 		DeviceID:      "preroll-device",
@@ -176,7 +176,7 @@ func TestControllerInvalidAction(t *testing.T) {
 	client := h.NewClientConn()
 	defer client.Close()
 
-	resp, err := controller.SendCommand(context.Background(), client, controller.DefaultCommandSubject, controller.Command{Action: "bogus"})
+	resp, err := controller.SendCommand(context.Background(), client, controller.DefaultCommandSubject, controller.RpcRequest{Action: "bogus"})
 	require.NoError(t, err)
 	require.False(t, resp.OK)
 	require.Contains(t, resp.Message, "unknown action")
@@ -185,10 +185,9 @@ func TestControllerInvalidAction(t *testing.T) {
 type controllerHarness struct {
 	t         *testing.T
 	srv       *natsutil.ServerHandle
+	ctrl      *controller.Controller
 	ctrlJS    jetstream.JetStream
 	serverURL string
-	cancel    context.CancelFunc
-	errCh     chan error
 }
 
 func newControllerHarness(t *testing.T) *controllerHarness {
@@ -205,19 +204,18 @@ func newControllerHarness(t *testing.T) *controllerHarness {
 	js, err := natsutil.ConnectJetStream(srv.ClientURL())
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	errCh := make(chan error, 1)
-	go func() {
-		errCh <- controller.Run(ctx, js, controller.Options{ServerURL: srv.ClientURL()})
-	}()
+	ctrl, err := controller.NewController(js, controller.Options{ServerURL: srv.ClientURL()})
+	require.NoError(t, err)
+
+	err = ctrl.Start()
+	require.NoError(t, err)
 
 	harness := &controllerHarness{
 		t:         t,
 		srv:       srv,
+		ctrl:      ctrl,
 		ctrlJS:    js,
 		serverURL: srv.ClientURL(),
-		cancel:    cancel,
-		errCh:     errCh,
 	}
 
 	// Give the subscription a moment to be registered.
@@ -238,29 +236,21 @@ func (h *controllerHarness) NewClientConn() *nats.Conn {
 
 func (h *controllerHarness) Close() {
 	h.t.Helper()
-	h.cancel()
-	select {
-	case err := <-h.errCh:
-		if err != nil && err != context.Canceled {
-			h.t.Fatalf("controller run error: %v", err)
-		}
-	case <-time.After(2 * time.Second):
-		h.t.Fatal("controller did not shut down")
-	}
+	h.ctrl.Close()
 	h.ctrlJS.Conn().Drain()
 	h.srv.Shutdown()
 }
 
-func sendStart(t *testing.T, nc *nats.Conn, cmd controller.Command) controller.Response {
+func sendStart(t *testing.T, nc *nats.Conn, cmd controller.RpcRequest) controller.RpcResponse {
 	t.Helper()
 	resp, err := controller.SendCommand(context.Background(), nc, controller.DefaultCommandSubject, cmd)
 	require.NoError(t, err)
 	return resp
 }
 
-func sendStop(t *testing.T, nc *nats.Conn, sessionID string) controller.Response {
+func sendStop(t *testing.T, nc *nats.Conn, sessionID string) controller.RpcResponse {
 	t.Helper()
-	resp, err := controller.SendCommand(context.Background(), nc, controller.DefaultCommandSubject, controller.Command{
+	resp, err := controller.SendCommand(context.Background(), nc, controller.DefaultCommandSubject, controller.RpcRequest{
 		Action:    controller.ActionStop,
 		SessionID: sessionID,
 	})

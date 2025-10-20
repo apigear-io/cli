@@ -19,9 +19,8 @@ import (
 )
 
 const (
-	DefaultCommandSubject = config.CommandSubject
+	DefaultCommandSubject = config.RecordRpcSubject
 	DefaultStateBucket    = config.StateBucket
-	queueGroup            = config.RecordControllerQueueGroup
 )
 
 const (
@@ -29,8 +28,8 @@ const (
 	ActionStop  = "stop"
 )
 
-// Command represents an RPC request sent to the controller.
-type Command struct {
+// RpcRequest represents an RPC request sent to the controller.
+type RpcRequest struct {
 	Action        string `json:"action"`
 	Subject       string `json:"subject,omitempty"`
 	DeviceID      string `json:"device_id,omitempty"`
@@ -45,8 +44,8 @@ type Command struct {
 	Verbose       bool   `json:"verbose,omitempty"`
 }
 
-// Response communicates the outcome of a controller command.
-type Response struct {
+// RpcResponse communicates the outcome of a controller command.
+type RpcResponse struct {
 	OK        bool           `json:"ok"`
 	Message   string         `json:"message,omitempty"`
 	SessionID string         `json:"session_id,omitempty"`
@@ -68,54 +67,33 @@ type StateSnapshot struct {
 
 // Options configure the controller runtime.
 type Options struct {
-	ServerURL      string
-	CommandSubject string
-	StateBucket    string
+	ServerURL        string
+	RecordRpcSubject string
+	StateBucket      string
 }
 
-// Run attaches the controller to the provided NATS connection and blocks until ctx is done.
-func Run(ctx context.Context, js jetstream.JetStream, opts Options) error {
+// NewController creates a new controller instance with the provided options.
+func NewController(js jetstream.JetStream, opts Options) (*Controller, error) {
 	if js == nil {
-		return errors.New("jetstream context is nil")
+		return nil, errors.New("jetstream context is nil")
 	}
-	if opts.CommandSubject == "" {
-		opts.CommandSubject = config.CommandSubject
+	if opts.RecordRpcSubject == "" {
+		opts.RecordRpcSubject = config.RecordRpcSubject
 	}
 	if opts.StateBucket == "" {
 		opts.StateBucket = config.StateBucket
 	}
 	if opts.ServerURL == "" {
-		return errors.New("server URL is required")
+		return nil, errors.New("server URL is required")
 	}
-	ctrl, err := newController(js, opts)
-	if err != nil {
-		return err
-	}
-	log.Info().Str("subject", opts.CommandSubject).Msg("record controller starting")
-	return ctrl.run(ctx)
-}
 
-type controller struct {
-	js      jetstream.JetStream
-	opts    Options
-	stateKV jetstream.KeyValue
-
-	mu   sync.Mutex
-	jobs map[string]*recordJob
-}
-
-type recordJob struct {
-	cancel context.CancelFunc
-	done   chan struct{}
-}
-
-func newController(js jetstream.JetStream, opts Options) (*controller, error) {
 	ctx := context.Background()
 	kv, err := natsutil.EnsureKeyValue(ctx, js, opts.StateBucket)
 	if err != nil {
 		return nil, fmt.Errorf("state bucket %s: %w", opts.StateBucket, err)
 	}
-	return &controller{
+
+	return &Controller{
 		js:      js,
 		opts:    opts,
 		stateKV: kv,
@@ -123,20 +101,49 @@ func newController(js jetstream.JetStream, opts Options) (*controller, error) {
 	}, nil
 }
 
-func (c *controller) run(ctx context.Context) error {
-	sub, err := c.js.Conn().QueueSubscribe(c.opts.CommandSubject, queueGroup, c.handleMsg)
-	if err != nil {
-		return fmt.Errorf("subscribe %s: %w", c.opts.CommandSubject, err)
-	}
-	defer sub.Drain()
+type Controller struct {
+	js      jetstream.JetStream
+	opts    Options
+	stateKV jetstream.KeyValue
 
-	<-ctx.Done()
-	c.stopAll()
-	log.Info().Msg("record controller shutdown")
-	return ctx.Err()
+	mu   sync.Mutex
+	jobs map[string]*recordJob
+	sub  *nats.Subscription
 }
 
-func (c *controller) stopAll() {
+type recordJob struct {
+	cancel context.CancelFunc
+	done   chan struct{}
+}
+
+// Start begins listening for RPC commands on the configured subject.
+func (c *Controller) Start() error {
+	sub, err := c.js.Conn().Subscribe(c.opts.RecordRpcSubject, c.handleMsg)
+	if err != nil {
+		return fmt.Errorf("subscribe %s: %w", c.opts.RecordRpcSubject, err)
+	}
+
+	c.mu.Lock()
+	c.sub = sub
+	c.mu.Unlock()
+
+	log.Info().Str("subject", c.opts.RecordRpcSubject).Msg("record controller started")
+	return nil
+}
+
+// Close gracefully shuts down the controller by unsubscribing and stopping all jobs.
+func (c *Controller) Close() {
+	c.mu.Lock()
+	if c.sub != nil {
+		c.sub.Drain()
+		c.sub = nil
+	}
+	c.mu.Unlock()
+
+	c.stopAll()
+}
+
+func (c *Controller) stopAll() {
 	c.mu.Lock()
 	jobs := make([]*recordJob, 0, len(c.jobs))
 	for sessionID, job := range c.jobs {
@@ -151,35 +158,35 @@ func (c *controller) stopAll() {
 	}
 }
 
-func (c *controller) handleMsg(msg *nats.Msg) {
-	var cmd Command
-	err := json.Unmarshal(msg.Data, &cmd)
+func (c *Controller) handleMsg(msg *nats.Msg) {
+	var req RpcRequest
+	err := json.Unmarshal(msg.Data, &req)
 	if err != nil {
 		log.Error().Err(err).Msg("invalid command payload")
 		c.respondError(msg, "invalid command payload: %v", err)
 		return
 	}
 
-	switch strings.ToLower(cmd.Action) {
+	switch strings.ToLower(req.Action) {
 	case ActionStart:
-		log.Debug().Str("session", cmd.SessionID).Str("device", cmd.DeviceID).Msg("handling start command")
-		resp := c.handleStart(cmd)
+		log.Debug().Str("session", req.SessionID).Str("device", req.DeviceID).Msg("handling start command")
+		resp := c.handleStart(req)
 		c.respond(msg, resp)
 	case ActionStop:
-		log.Debug().Str("session", cmd.SessionID).Msg("handling stop command")
-		resp := c.handleStop(cmd)
+		log.Debug().Str("session", req.SessionID).Msg("handling stop command")
+		resp := c.handleStop(req)
 		c.respond(msg, resp)
 	default:
-		log.Warn().Str("action", cmd.Action).Msg("unknown controller action")
-		c.respondError(msg, "unknown action %q", cmd.Action)
+		log.Warn().Str("action", req.Action).Msg("unknown controller action")
+		c.respondError(msg, "unknown action %q", req.Action)
 	}
 }
 
-func (c *controller) handleStart(cmd Command) Response {
-	start, err := cmd.normalizeStart()
+func (c *Controller) handleStart(req RpcRequest) RpcResponse {
+	start, err := req.normalizeStart()
 	if err != nil {
-		log.Warn().Err(err).Str("action", cmd.Action).Msg("start command invalid")
-		resp := Response{Message: err.Error()}
+		log.Warn().Err(err).Str("action", req.Action).Msg("start command invalid")
+		resp := RpcResponse{Message: err.Error()}
 		if start.SessionID != "" {
 			resp.SessionID = start.SessionID
 		}
@@ -189,10 +196,10 @@ func (c *controller) handleStart(cmd Command) Response {
 	if start.PreRoll > 0 {
 		bufferWindow, err := c.lookupBufferWindow(start.DeviceBucket, start.DeviceID)
 		if err != nil {
-			return Response{Message: err.Error(), SessionID: start.SessionID}
+			return RpcResponse{Message: err.Error(), SessionID: start.SessionID}
 		}
 		if start.PreRoll > bufferWindow {
-			return Response{Message: fmt.Sprintf("pre-roll %s exceeds buffer window %s", start.PreRoll, bufferWindow), SessionID: start.SessionID}
+			return RpcResponse{Message: fmt.Sprintf("pre-roll %s exceeds buffer window %s", start.PreRoll, bufferWindow), SessionID: start.SessionID}
 		}
 	}
 
@@ -202,7 +209,7 @@ func (c *controller) handleStart(cmd Command) Response {
 	if _, exists := c.jobs[start.SessionID]; exists {
 		c.mu.Unlock()
 		log.Warn().Str("session", start.SessionID).Msg("start command rejected: already running")
-		return Response{Message: fmt.Sprintf("session %s already running", start.SessionID), SessionID: start.SessionID}
+		return RpcResponse{Message: fmt.Sprintf("session %s already running", start.SessionID), SessionID: start.SessionID}
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	job.cancel = cancel
@@ -223,10 +230,10 @@ func (c *controller) handleStart(cmd Command) Response {
 	go c.runRecord(ctx, job, start, started)
 
 	log.Info().Str("session", start.SessionID).Str("device", start.DeviceID).Msg("recording job launched")
-	return Response{OK: true, Message: "recording started", SessionID: start.SessionID, State: &state}
+	return RpcResponse{OK: true, Message: "recording started", SessionID: start.SessionID, State: &state}
 }
 
-func (c *controller) runRecord(ctx context.Context, job *recordJob, start startCommand, started time.Time) {
+func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startCommand, started time.Time) {
 	defer func() {
 		close(job.done)
 		c.mu.Lock()
@@ -290,7 +297,7 @@ func (c *controller) runRecord(ctx context.Context, job *recordJob, start startC
 	_ = c.writeState(state)
 }
 
-func (c *controller) lookupBufferWindow(bucket, deviceID string) (time.Duration, error) {
+func (c *Controller) lookupBufferWindow(bucket, deviceID string) (time.Duration, error) {
 	devStore, err := store.NewDeviceStore(c.js, bucket)
 	if err != nil {
 		return 0, fmt.Errorf("buffer lookup: %w", err)
@@ -312,10 +319,10 @@ func (c *controller) lookupBufferWindow(bucket, deviceID string) (time.Duration,
 	return dur, nil
 }
 
-func (c *controller) handleStop(cmd Command) Response {
-	sessionID := strings.TrimSpace(cmd.SessionID)
+func (c *Controller) handleStop(req RpcRequest) RpcResponse {
+	sessionID := strings.TrimSpace(req.SessionID)
 	if sessionID == "" {
-		return Response{Message: "session-id cannot be empty"}
+		return RpcResponse{Message: "session-id cannot be empty"}
 	}
 
 	c.mu.Lock()
@@ -327,7 +334,7 @@ func (c *controller) handleStop(cmd Command) Response {
 		snap, err := c.loadState(sessionID)
 		if err != nil {
 			log.Error().Err(err).Str("session", sessionID).Msg("load state failed")
-			return Response{Message: fmt.Sprintf("load state: %v", err), SessionID: sessionID}
+			return RpcResponse{Message: fmt.Sprintf("load state: %v", err), SessionID: sessionID}
 		}
 		snap.Status = "stopped"
 		snap.LastError = ""
@@ -335,17 +342,17 @@ func (c *controller) handleStop(cmd Command) Response {
 			snap.StartedAt = time.Now().UTC()
 		}
 		_ = c.writeState(snap)
-		return Response{OK: true, SessionID: sessionID, Message: "no active recording"}
+		return RpcResponse{OK: true, SessionID: sessionID, Message: "no active recording"}
 	}
 
 	job.cancel()
 	<-job.done
 
 	log.Info().Str("session", sessionID).Msg("recording job signaled to stop")
-	return Response{OK: true, SessionID: sessionID, Message: "recording stopped"}
+	return RpcResponse{OK: true, SessionID: sessionID, Message: "recording stopped"}
 }
 
-func (c *controller) respond(msg *nats.Msg, resp Response) {
+func (c *Controller) respond(msg *nats.Msg, resp RpcResponse) {
 	if !resp.OK && resp.Message == "" {
 		resp.Message = "command failed"
 	}
@@ -354,14 +361,14 @@ func (c *controller) respond(msg *nats.Msg, resp Response) {
 	_ = msg.Respond(data)
 }
 
-func (c *controller) respondError(msg *nats.Msg, format string, args ...any) {
-	resp := Response{OK: false, Message: fmt.Sprintf(format, args...)}
+func (c *Controller) respondError(msg *nats.Msg, format string, args ...any) {
+	resp := RpcResponse{OK: false, Message: fmt.Sprintf(format, args...)}
 	data, _ := json.Marshal(resp)
 	log.Error().Msgf(format, args...)
 	_ = msg.Respond(data)
 }
 
-func (c *controller) writeState(state StateSnapshot) error {
+func (c *Controller) writeState(state StateSnapshot) error {
 	if state.SessionID == "" {
 		return errors.New("state missing session id")
 	}
@@ -394,7 +401,7 @@ func (c *controller) writeState(state StateSnapshot) error {
 	return err
 }
 
-func (c *controller) loadState(sessionID string) (StateSnapshot, error) {
+func (c *Controller) loadState(sessionID string) (StateSnapshot, error) {
 	entry, err := c.stateKV.Get(context.Background(), sessionID)
 	if err != nil {
 		if errors.Is(err, jetstream.ErrKeyNotFound) {
