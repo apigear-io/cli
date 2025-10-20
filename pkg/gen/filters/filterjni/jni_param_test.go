@@ -76,3 +76,28 @@ func TestJniParamSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestImportedExternParam(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "jobject prop1"},
+		{"demo", "Iface2", "prop2", "jobject prop2"},
+		{"demo", "Iface2", "prop3", "jobject prop3"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := jniJavaParam("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}

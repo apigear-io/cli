@@ -114,3 +114,55 @@ func TestJniToEnvNameTypeSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestImportedExternJniToEnvNameType(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "Object"},
+		{"demo", "Iface2", "prop2", "Object"},
+		{"demo", "Iface2", "prop3", "Object"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := jniToEnvNameType(prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+func TestJniToEnvNameTypeExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "Object"},
+		{"test_apigear_next", "Iface1", "func3", "Object"},
+		{"test_apigear_next", "Iface1", "funcList", "Object"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "Object"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "Object"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := jniToEnvNameType(op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}

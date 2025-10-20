@@ -116,3 +116,55 @@ func TestJniReturnSymbols(t *testing.T) {
 		}
 	}
 }
+
+func TestImportedExternReturn(t *testing.T) {
+	syss := loadExternSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"demo", "Iface2", "prop1", "jobject"},
+		{"demo", "Iface2", "prop2", "jobject"},
+		{"demo", "Iface2", "prop3", "jobject"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := jniToReturnType(prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+func TestReturnExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "jobject"},
+		{"test_apigear_next", "Iface1", "func3", "jobject"},
+		{"test_apigear_next", "Iface1", "funcList", "jobjectArray"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "jobject"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "jobject"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := jniToReturnType(op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
