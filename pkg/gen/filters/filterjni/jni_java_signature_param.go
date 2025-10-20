@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/gen/filters/common"
+	"github.com/apigear-io/cli/pkg/gen/filters/filterjava"
 	"github.com/apigear-io/cli/pkg/model"
 )
 
@@ -55,11 +56,22 @@ func jniSignatureType(node *model.TypedNode) (string, error) {
 			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
 	case model.TypeExtern:
-		return "xxx", fmt.Errorf("ToSignatureType TypeExtern not supported yet %s", node.Dump())
+		xe := filterjava.MakeJavaExtern(&node.Schema)
+		var java_module string
+		java_module = ""
+		if xe.Package != "" {
+			java_module = xe.Package
+			java_module = common.Replace(java_module, ".", "/")
+			text = "L" + java_module + "/" + xe.Name + ";"
+		} else {
+			text = "L" + xe.Name + ";"
+		}
 	case model.TypeInterface:
 		i := node.LookupInterface(node.Import, node.Type)
 		if i != nil {
-			text = makeFullTypeName(i.Module.Name, i.Name)
+			var name string
+			name = "I" + i.Name
+			text = makeFullTypeName(i.Module.Name, name)
 		} else {
 			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}

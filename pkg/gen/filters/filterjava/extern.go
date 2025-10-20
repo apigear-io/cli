@@ -15,6 +15,10 @@ func parseJavaExtern(schema *model.Schema) JavaExtern {
 	return javaExtern(xe)
 }
 
+func MakeJavaExtern(schema *model.Schema) JavaExtern {
+	return parseJavaExtern(schema)
+}
+
 func javaExtern(xe *model.Extern) JavaExtern {
 	ns := xe.Meta.GetString("java.package")
 	name := xe.Meta.GetString("java.name")

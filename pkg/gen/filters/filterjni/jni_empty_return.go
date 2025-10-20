@@ -38,7 +38,7 @@ func jniEmptyReturnString(schema *model.Schema) (string, error) {
 	case model.TypeInterface:
 		text = "nullptr"
 	case model.TypeExtern:
-		text = "TODO"
+		text = "nullptr"
 	default:
 		return "xxx", fmt.Errorf("ToEnvNameType unknown schema %s", schema.Dump())
 	}

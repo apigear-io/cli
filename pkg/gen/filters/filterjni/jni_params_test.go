@@ -107,3 +107,31 @@ func TestJniParamsMultiple(t *testing.T) {
 		}
 	}
 }
+
+func TestParamsExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "jobject arg1"},
+		{"test_apigear_next", "Iface1", "func3", "jobject arg1"},
+		{"test_apigear_next", "Iface1", "funcList", "jobjectArray arg1"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "jobject arg1"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "jobject arg1"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := jniJavaParams("", op.Params)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
