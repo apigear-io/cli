@@ -2,17 +2,15 @@ package cli
 
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/apigear-io/cli/pkg/streams/msgio"
+	"github.com/nats-io/nats.go"
 	"github.com/spf13/cobra"
 )
 
 func newDataTailCmd() *cobra.Command {
-	opts := &msgio.TailOptions{
+	opts := msgio.TailOptions{
 		Subject: config.MonitorSubject,
 	}
 
@@ -21,12 +19,13 @@ func newDataTailCmd() *cobra.Command {
 		Short:   "Tail a monitor subject for a given device ID",
 		Aliases: []string{"follow", "watch"},
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-			defer cancel()
-
-			opts.ServerURL = rootOpts.server
-			opts.Verbose = rootOpts.verbose
-			return msgio.Tail(ctx, *opts)
+			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
+				opts.Verbose = rootOpts.verbose
+				return withNATS(ctx, func(nc *nats.Conn) error {
+					tailer := msgio.NewTailer(nc, opts)
+					return tailer.Run(ctx)
+				})
+			})
 		},
 	}
 

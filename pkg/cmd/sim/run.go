@@ -4,6 +4,7 @@ import (
 	"context"
 	"path/filepath"
 
+	"github.com/apigear-io/cli/pkg/app"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/sim"
@@ -34,7 +35,7 @@ Using a scenario you can define additional static and scripted data and behavior
 				return err
 			}
 
-			sim.WithClient(cmd.Context(), natsServer, func(ctx context.Context, client *sim.Client) error {
+			app.WithSimuClient(cmd.Context(), natsServer, func(ctx context.Context, client *sim.Client) error {
 				taskManager := tasks.NewTaskManager()
 				taskName := "sim-script"
 

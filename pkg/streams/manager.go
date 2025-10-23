@@ -33,15 +33,14 @@ type Manager struct {
 	controller *controller.Controller
 }
 
-func NewManager() *Manager {
+func NewManager(opts ManagerOptions) *Manager {
 	return &Manager{
-		opts: ManagerOptions{},
+		opts: opts,
 	}
 }
 
-func (m *Manager) Start(ctx context.Context, opts ManagerOptions) error {
+func (m *Manager) Start(ctx context.Context) error {
 	log.Info().Msg("starting streams manager")
-	m.opts = opts
 	err := m.runServer()
 	if err != nil {
 		return err

@@ -16,6 +16,8 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewYaml2JsonCommand())
 	cmd.AddCommand(NewYaml2IdlCommand())
 	cmd.AddCommand(NewIdl2YamlCommand())
+	cmd.AddCommand(NewWSEchoCommand())
+	cmd.AddCommand(NewWSCatCommand())
 	return cmd
 }
 

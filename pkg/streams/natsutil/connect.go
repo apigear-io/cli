@@ -28,13 +28,3 @@ func ConnectNATS(server string, opt ...nats.Option) (*nats.Conn, error) {
 	}
 	return nc, nil
 }
-
-func WithJetstream(server string, fn func(js jetstream.JetStream) error, opt ...nats.Option) (err error) {
-	js, err := ConnectJetStream(server, opt...)
-	if err != nil {
-		return err
-	}
-	err = fn(js)
-	js.Conn().Drain()
-	return err
-}

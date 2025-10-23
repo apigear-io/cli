@@ -85,6 +85,13 @@ func (h *ServerHandle) ClientURL() string {
 	return h.srv.ClientURL()
 }
 
+func (h *ServerHandle) NatsConn() (*nats.Conn, error) {
+	if h == nil || h.srv == nil {
+		return nil, errors.New("server not running")
+	}
+	return nats.Connect(h.srv.ClientURL())
+}
+
 // InProcessOption returns a connection option for embedded servers.
 func (h *ServerHandle) InProcessOption() nats.Option {
 	if h == nil || h.srv == nil {
@@ -99,4 +106,13 @@ func cloneOptions(opts *server.Options) *server.Options {
 	}
 	out := *opts
 	return &out
+}
+
+func WithServer(cfg ServerConfig, fn func(h *ServerHandle) error) error {
+	srv, err := StartServer(cfg)
+	if err != nil {
+		return err
+	}
+	defer srv.Shutdown()
+	return fn(srv)
 }

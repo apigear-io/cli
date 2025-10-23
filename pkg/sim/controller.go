@@ -1,7 +1,6 @@
 package sim
 
 import (
-	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -179,18 +178,4 @@ func (c *Client) RunFunction(function string, args []any) (RpcResponse, error) {
 		FunctionArgs: args,
 	}
 	return c.SendCommand(req)
-}
-
-func WithClient(ctx context.Context, natsServer string, action func(ctx context.Context, client *Client) error) error {
-	nc, err := nats.Connect(natsServer)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to connect to nats server")
-		return err
-	}
-	defer func() {
-		nc.Drain()
-		nc.Close()
-	}()
-	client := NewClient(nc)
-	return action(ctx, client)
 }

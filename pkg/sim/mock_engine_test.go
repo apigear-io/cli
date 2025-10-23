@@ -3,6 +3,7 @@ package sim
 import (
 	"slices"
 
+	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 )
 
@@ -10,7 +11,7 @@ type MockEngineServer struct {
 	sources []remote.IObjectSource
 }
 
-var _ IOlinkServer = (*MockEngineServer)(nil)
+var _ net.IOlinkServer = (*MockEngineServer)(nil)
 
 func (m *MockEngineServer) RegisterSource(source remote.IObjectSource) {
 	m.sources = append(m.sources, source)

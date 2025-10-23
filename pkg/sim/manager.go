@@ -1,35 +1,35 @@
 package sim
 
 import (
+	"context"
+
 	"github.com/apigear-io/cli/pkg/net"
 )
 
 type ManagerOptions struct {
-	Server IOlinkServer
 }
 
 type Manager struct {
 	engine *Engine
-	server IOlinkServer
+	netman *net.NetworkManager
+	opts   ManagerOptions
 }
 
 func NewManager(opts ManagerOptions) *Manager {
-	if opts.Server == nil {
-		opts.Server = NewOlinkServer()
-	}
 	m := &Manager{
 		engine: nil,
-		server: opts.Server,
+		opts:   opts,
 	}
 	return m
 }
 
-func (m *Manager) Start(netman *net.NetworkManager) {
-	server := NewOlinkServer()
-	addr := netman.HttpServer().Address()
-	log.Info().Msgf("starting Olink server at ws://%s/ws", addr)
-	netman.HttpServer().Router().Handle("/ws", server)
-	m.server = server
+func (m *Manager) Start(ctx context.Context, netman *net.NetworkManager) error {
+	m.netman = netman
+	return nil
+}
+
+func (m *Manager) OlinkServer() *net.OlinkServer {
+	return m.netman.OlinkServer()
 }
 
 func (m *Manager) Stop() {
@@ -43,7 +43,7 @@ func (m *Manager) ScriptRun(script Script) string {
 	if m.engine != nil {
 		m.engine.Close()
 	}
-	m.engine = NewEngine(EngineOptions{Server: m.server, WorkDir: script.Dir})
+	m.engine = NewEngine(EngineOptions{Server: m.OlinkServer(), WorkDir: script.Dir})
 	m.engine.RunScript(script.Name, script.Content)
 	log.Info().Msgf("manager running script %s", script.Name)
 	return script.Name

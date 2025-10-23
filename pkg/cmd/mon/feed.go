@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewClientCommand() *cobra.Command {
+func NewFeedCommand() *cobra.Command {
 	type ClientOptions struct {
 		url      string        // monitor server url
 		script   string        // script to run
@@ -33,8 +33,8 @@ func NewClientCommand() *cobra.Command {
 			var events []mon.Event
 			var err error
 			switch helper.Ext(options.script) {
-			case ".json", ".ndjson":
-				events, err = mon.ReadJsonEvents(options.script)
+            case ".json", ".ndjson":
+                events, err = helper.ReadNDJSONFile[mon.Event](options.script)
 				log.Debug().Msgf("read %d events", len(events))
 				if err != nil {
 					return fmt.Errorf("error reading events: %w", err)

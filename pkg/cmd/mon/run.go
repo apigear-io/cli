@@ -1,11 +1,13 @@
 package mon
 
 import (
+	"github.com/apigear-io/cli/pkg/app"
 	"github.com/apigear-io/cli/pkg/streams/msgio"
+	"github.com/nats-io/nats.go"
 	"github.com/spf13/cobra"
 )
 
-func NewServerCommand() *cobra.Command {
+func NewRunCommand() *cobra.Command {
 	var natsURL string
 	var verbose bool
 	var deviceID string
@@ -19,19 +21,20 @@ func NewServerCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 
 			opts := msgio.TailOptions{
-				ServerURL: natsURL,
-				Verbose:   verbose,
-				Pretty:    pretty,
-				Headers:   headers,
+				Verbose:  verbose,
+				Pretty:   pretty,
+				Headers:  headers,
+				DeviceID: deviceID,
 			}
-			if deviceID != "" {
-				opts.DeviceID = deviceID
-			}
-			return msgio.Tail(cmd.Context(), opts)
+
+			return app.WithNATS(cmd.Context(), natsURL, func(nc *nats.Conn) error {
+				tailer := msgio.NewTailer(nc, opts)
+				return tailer.Run(cmd.Context())
+			})
 		},
 	}
 
-	cmd.Flags().StringVarP(&natsURL, "nats-url", "n", "nats://127.0.0.1:4222", "NATS server URL")
+	cmd.Flags().StringVarP(&natsURL, "nats-url", "n", nats.DefaultURL, "NATS server URL")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose logging")
 	cmd.Flags().StringVarP(&deviceID, "device-id", "d", "", "device ID to monitor")
 	cmd.Flags().BoolVarP(&pretty, "pretty", "p", false, "pretty print JSON output")
