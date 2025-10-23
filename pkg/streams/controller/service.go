@@ -118,6 +118,7 @@ type recordJob struct {
 
 // Start begins listening for RPC commands on the configured subject.
 func (c *Controller) Start() error {
+	log.Info().Str("subject", c.opts.RecordRpcSubject).Msg("starting record controller")
 	sub, err := c.js.Conn().Subscribe(c.opts.RecordRpcSubject, c.handleMsg)
 	if err != nil {
 		return fmt.Errorf("subscribe %s: %w", c.opts.RecordRpcSubject, err)

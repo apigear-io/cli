@@ -25,6 +25,15 @@ type Server struct {
 }
 
 func New(opts Options) *Server {
+	if opts.NatsPort == 0 {
+		opts.NatsPort = 4222
+	}
+	if opts.HttpAddr == "" {
+		opts.HttpAddr = "localhost:5555"
+	}
+	if opts.NatsHost == "" {
+		opts.NatsHost = "localhost"
+	}
 	return &Server{
 		opts: opts,
 		strman: streams.NewManager(streams.ManagerOptions{
@@ -67,6 +76,7 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 func (s *Server) Stop() error {
+	log.Info().Msg("stopping server")
 	return nil
 }
 

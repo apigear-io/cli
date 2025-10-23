@@ -32,7 +32,7 @@ func RunBuffer(ctx context.Context, js jetstream.JetStream, opts BufferOptions) 
 	}
 	subjectPrefix := opts.MonitorSubject
 	if subjectPrefix == "" {
-		subjectPrefix = "monitor"
+		subjectPrefix = config.MonitorSubject
 	}
 	refresh := opts.RefreshInterval
 	if refresh <= 0 {

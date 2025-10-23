@@ -7,10 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	MonitorSubject = "mon"
-)
-
 // EventType is the type of event.
 type EventType string
 

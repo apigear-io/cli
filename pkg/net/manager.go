@@ -13,6 +13,7 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/nats-io/nats.go"
 )
 
@@ -259,8 +260,8 @@ func (m *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
 		log.Error().Msgf("nats connection: %v", err)
 		return
 	}
-	log.Debug().Msg("subscribe to monitor events")
-	_, err = nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
+	log.Info().Msg("subscribe to monitor events")
+	_, err = nc.Subscribe(config.MonitorSubject+".>", func(msg *nats.Msg) {
 		var event mon.Event
 		err := json.Unmarshal(msg.Data, &event)
 		if err != nil {
