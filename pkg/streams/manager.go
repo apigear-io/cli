@@ -31,6 +31,7 @@ type Manager struct {
 	nc         *nats.Conn
 	opts       ManagerOptions
 	controller *controller.Controller
+	serverURL  string
 }
 
 func NewManager(opts ManagerOptions) *Manager {
@@ -70,9 +71,11 @@ func (m *Manager) runServer() error {
 		m.srv.Shutdown()
 		return errors.New("nats server not ready in time")
 	}
-	log.Info().Msgf("NATS server started at %s", m.srv.ClientURL())
-	// connect to server
-	nc, err := nats.Connect(m.srv.ClientURL(), nats.InProcessServer(m.srv))
+	m.serverURL = m.srv.ClientURL()
+	log.Info().Str("url", m.serverURL).Msg("NATS server started")
+	log.Debug().Str("url", m.serverURL).Msg("connecting to NATS without in-process option")
+	// connect to server using TCP so downstream clients observe a routable address
+	nc, err := nats.Connect(m.serverURL)
 	if err != nil {
 		m.srv.Shutdown()
 		return err
@@ -86,14 +89,14 @@ func (m *Manager) runServer() error {
 		return err
 	}
 	m.js = js
-	log.Info().Msgf("NATS server running at %s", js.Conn().ConnectedUrl())
+	log.Info().Str("connected", js.Conn().ConnectedUrl()).Msg("JetStream connected")
 	return nil
 }
 
 func (m *Manager) runServices(ctx context.Context) error {
 	// Create and start controller
 	ctrl, err := controller.NewController(m.js, controller.Options{
-		ServerURL:        m.js.Conn().ConnectedAddr(),
+		ServerURL:        m.serverURL,
 		RecordRpcSubject: config.RecordRpcSubject,
 		StateBucket:      config.StateBucket,
 	})
@@ -121,8 +124,8 @@ func (m *Manager) runServices(ctx context.Context) error {
 }
 
 func (m *Manager) ClientURL() string {
-	if m.srv != nil {
-		return m.srv.ClientURL()
+	if m.serverURL != "" {
+		return m.serverURL
 	}
 	return nats.DefaultURL
 }

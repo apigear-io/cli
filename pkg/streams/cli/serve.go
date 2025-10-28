@@ -22,13 +22,13 @@ type serviceAllOptions struct {
 	Host           string
 	Port           int
 	StoreDir       string
-	Embedded       bool
 	NoNATS         bool
 	CommandSubject string
 	StateBucket    string
 	DeviceBucket   string
 	MonitorSubject string
 	BufferRefresh  time.Duration
+	ServerURL      string
 }
 
 func newServeCmd() *cobra.Command {
@@ -54,7 +54,6 @@ func newServeCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.Host, "host", opts.Host, "Host interface for the embedded NATS server")
 	cmd.Flags().IntVar(&opts.Port, "port", opts.Port, "Port for embedded NATS (use -1 for random)")
 	cmd.Flags().StringVar(&opts.StoreDir, "store", "", "Directory for JetStream storage (defaults to temp)")
-	cmd.Flags().BoolVar(&opts.Embedded, "embedded", false, "Use in-process client connections when running embedded NATS")
 	cmd.Flags().BoolVar(&opts.NoNATS, "external", false, "Use an external NATS server instead of starting one")
 	cmd.Flags().StringVar(&opts.CommandSubject, "command-subject", opts.CommandSubject, "Subject for controller commands")
 	cmd.Flags().StringVar(&opts.StateBucket, "state-bucket", opts.StateBucket, "KV bucket for controller state")
@@ -86,7 +85,7 @@ func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 			srvOpts.StoreDir = opts.StoreDir
 		}
 
-		serverCfg := natsutil.ServerConfig{Options: srvOpts, Embedded: opts.Embedded}
+		serverCfg := natsutil.ServerConfig{Options: srvOpts}
 		if opts.StoreDir == "" {
 			serverCfg.TempDir = filepath.Join(os.TempDir(), "streams-service")
 		}
@@ -96,20 +95,22 @@ func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 			return err
 		}
 		serverURL = srv.ClientURL()
+		opts.ServerURL = serverURL
 		log.Info().Str("url", serverURL).Msg("nats server started")
 		cmd.Printf("NATS server listening at %s\n", serverURL)
 		defer srv.Shutdown()
 	} else {
 		serverURL = rootOpts.server
+		opts.ServerURL = serverURL
 		log.Info().Str("url", serverURL).Msg("using external nats")
 	}
 
-	var js jetstream.JetStream
-	if !opts.NoNATS && opts.Embedded {
-		js, err = natsutil.ConnectJetStream(srv.ClientURL(), srv.InProcessOption())
-	} else {
-		js, err = natsutil.ConnectJetStream(serverURL)
+	if opts.ServerURL == "" {
+		return errors.New("no NATS server URL resolved")
 	}
+
+	var js jetstream.JetStream
+	js, err = natsutil.ConnectJetStream(opts.ServerURL)
 	if err != nil {
 		return err
 	}
@@ -120,10 +121,11 @@ func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 
 func runServices(cmd *cobra.Command, opts *serviceAllOptions, js jetstream.JetStream) error {
 	controllerOpts := controller.Options{
-		ServerURL:        rootOpts.server,
+		ServerURL:        opts.ServerURL,
 		RecordRpcSubject: opts.CommandSubject,
 		StateBucket:      opts.StateBucket,
 	}
+	log.Debug().Str("server", controllerOpts.ServerURL).Msg("starting controller with resolved server URL")
 
 	// Create and start controller
 	ctrl, err := controller.NewController(js, controllerOpts)

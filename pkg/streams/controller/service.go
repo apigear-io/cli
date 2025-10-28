@@ -235,6 +235,7 @@ func (c *Controller) handleStart(req RpcRequest) RpcResponse {
 }
 
 func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startCommand, started time.Time) {
+	log.Info().Str("session", start.SessionID).Str("device", start.DeviceID).Str("server", c.opts.ServerURL).Msg("recording job started")
 	defer func() {
 		close(job.done)
 		c.mu.Lock()
@@ -265,7 +266,10 @@ func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startC
 			StartedAt:     started,
 			LastMessageAt: meta.End,
 		}
-		_ = c.writeState(snap)
+		err := c.writeState(snap)
+		if err != nil {
+			log.Error().Err(err).Str("session", meta.SessionID).Msg("update state failed")
+		}
 	}
 
 	meta, err := session.Record(ctx, opts)

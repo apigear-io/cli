@@ -7,6 +7,7 @@ import (
 
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
+	"github.com/rs/zerolog/log"
 )
 
 // ServerConfig controls how a test or embedded NATS server should be started.
@@ -51,6 +52,7 @@ func StartServer(cfg ServerConfig) (*ServerHandle, error) {
 	}
 	opts.NoSigs = true
 	opts.NoLog = true
+	log.Debug().Str("host", opts.Host).Int("port", opts.Port).Bool("embedded", cfg.Embedded).Str("store", opts.StoreDir).Msg("starting embedded NATS server")
 
 	srv, err := server.NewServer(opts)
 	if err != nil {
@@ -61,6 +63,7 @@ func StartServer(cfg ServerConfig) (*ServerHandle, error) {
 		srv.Shutdown()
 		return nil, errors.New("nats server not ready in time")
 	}
+	log.Debug().Str("url", srv.ClientURL()).Bool("embedded", cfg.Embedded).Msg("embedded NATS server ready")
 	return &ServerHandle{srv: srv, storeDir: opts.StoreDir, embedded: cfg.Embedded}, nil
 }
 
@@ -70,6 +73,7 @@ func (h *ServerHandle) Shutdown() {
 		return
 	}
 	if h.srv != nil {
+		log.Debug().Str("url", h.srv.ClientURL()).Msg("shutting down embedded NATS server")
 		h.srv.Shutdown()
 	}
 	if h.storeDir != "" {
@@ -95,9 +99,15 @@ func (h *ServerHandle) NatsConn() (*nats.Conn, error) {
 // InProcessOption returns a connection option for embedded servers.
 func (h *ServerHandle) InProcessOption() nats.Option {
 	if h == nil || h.srv == nil {
+		log.Debug().Msg("in-process option requested without running server")
 		return nil
 	}
-	return nats.InProcessServer(h.srv)
+	log.Debug().Str("url", h.srv.ClientURL()).Msg("providing in-process NATS option")
+	inner := nats.InProcessServer(h.srv)
+	return func(o *nats.Options) error {
+		log.Debug().Msg("applying in-process NATS option")
+		return inner(o)
+	}
 }
 
 func cloneOptions(opts *server.Options) *server.Options {
