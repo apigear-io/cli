@@ -44,7 +44,9 @@ func RunWSClient(ctx context.Context, opts WSClientOptions) error {
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 
 	recvErr := make(chan error, 1)
 	go func() {
@@ -124,25 +126,34 @@ func sendFile(ctx context.Context, conn *websocket.Conn, path string, interval t
 			return err
 		}
 
-		scanner := helper.NewNDJSONScanner(interval, 1)
-		err = scanner.Scan(f, func(line []byte) error {
+		scanErr := func() error {
+			defer func() {
+				_ = f.Close()
+			}()
+			scanner := helper.NewNDJSONScanner(interval, 1)
+			return scanner.Scan(f, func(line []byte) error {
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				default:
+				}
+				payload := append([]byte{}, processPayload(line, decodeJSON)...)
+				if onSend != nil {
+					onSend(payload)
+				}
+				return conn.WriteMessage(websocket.TextMessage, payload)
+			})
+		}()
+		if scanErr != nil {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
 			}
-			payload := append([]byte{}, processPayload(line, decodeJSON)...)
-			if onSend != nil {
-				onSend(payload)
-			}
-			return conn.WriteMessage(websocket.TextMessage, payload)
-		})
-		f.Close()
-		if err != nil {
-			if errors.Is(err, context.Canceled) {
+			if errors.Is(scanErr, context.Canceled) {
 				return ctx.Err()
 			}
-			return err
+			return scanErr
 		}
 	}
 	return nil

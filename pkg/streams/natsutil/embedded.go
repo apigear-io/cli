@@ -8,6 +8,7 @@ import (
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
+	"github.com/rs/zerolog/log"
 )
 
 type EmbeddedServer struct {
@@ -51,7 +52,9 @@ func (e *EmbeddedServer) Close() {
 	if e.nc != nil && !e.nc.IsClosed() {
 		e.nc.Close()
 	}
-	os.RemoveAll(e.storeDir)
+	if err := os.RemoveAll(e.storeDir); err != nil {
+		log.Warn().Err(err).Str("dir", e.storeDir).Msg("failed to remove embedded store directory")
+	}
 	e.srv.Shutdown()
 }
 

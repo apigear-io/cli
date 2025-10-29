@@ -59,7 +59,11 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("connect to NATS: %w", err)
 	}
-	defer nc.Drain()
+	defer func() {
+		if drainErr := nc.Drain(); drainErr != nil {
+			log.Error().Err(drainErr).Str("session", sessionID).Msg("failed to drain NATS connection after record")
+		}
+	}()
 
 	js, err := jetstream.New(nc)
 	if err != nil {
@@ -115,7 +119,7 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 
 	log.Info().Str("session", sessionID).Str("device", opts.DeviceID).Msg("record stream created")
 
-	meta := &Metadata{
+	metadata := &Metadata{
 		SessionID:      sessionID,
 		DeviceID:       opts.DeviceID,
 		SourceSubject:  sourceSubject,
@@ -126,7 +130,7 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 		End:            time.Now().UTC(),
 	}
 	if opts.Retention > 0 {
-		meta.Retention = opts.Retention.String()
+		metadata.Retention = opts.Retention.String()
 	}
 
 	if opts.PreRoll > 0 {
@@ -154,19 +158,19 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 		if err != nil {
 			log.Error().Err(err).Str("session", sessionID).Msg("pre-roll replay failed")
 		} else if count > 0 {
-			meta.MessageCount = count
+			metadata.MessageCount = count
 			if !last.IsZero() {
-				meta.End = last
+				metadata.End = last
 			}
 		}
 	}
 
-	revision, err := sessMgr.Put(meta, 0)
+	revision, err := sessMgr.Put(metadata, 0)
 	if err != nil {
 		return nil, err
 	}
 	if opts.Progress != nil {
-		opts.Progress(*meta)
+		opts.Progress(*metadata)
 	}
 
 	msgCh := make(chan *nats.Msg, 1024)
@@ -174,21 +178,25 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("subscribe source: %w", err)
 	}
-	defer sub.Drain()
+	defer func() {
+		if err := sub.Drain(); err != nil {
+			log.Warn().Err(err).Str("subject", sourceSubject).Msg("failed to drain subscription")
+		}
+	}()
 
 	var mu sync.Mutex
 
 	updateMeta := func(update func(*Metadata)) error {
 		mu.Lock()
 		defer mu.Unlock()
-		update(meta)
-		rev, err := sessMgr.Put(meta, revision)
+		update(metadata)
+		rev, err := sessMgr.Put(metadata, revision)
 		if err != nil {
 			return err
 		}
 		revision = rev
 		if opts.Progress != nil {
-			copy := *meta
+			copy := *metadata
 			opts.Progress(copy)
 		}
 		return nil
@@ -203,13 +211,13 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 			})
 			if errors.Is(err, context.Canceled) {
 				log.Info().Str("session", sessionID).Msg("record context canceled")
-				return meta, nil
+				return metadata, nil
 			}
-			return meta, err
+			return metadata, err
 		case msg, ok := <-msgCh:
 			if !ok {
 				log.Info().Str("session", sessionID).Msg("record channel closed")
-				return meta, nil
+				return metadata, nil
 			}
 
 			recordedAt := time.Now().UTC()
@@ -226,7 +234,7 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 			err := publishToStream(ctx, js, stored)
 			if err != nil {
 				log.Error().Err(err).Str("session", sessionID).Msg("publish to stream failed")
-				return meta, err
+				return metadata, err
 			}
 
 			err = updateMeta(func(m *Metadata) {
@@ -235,7 +243,7 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 			})
 			if err != nil {
 				log.Error().Err(err).Str("session", sessionID).Msg("update metadata failed")
-				return meta, err
+				return metadata, err
 			}
 		}
 	}

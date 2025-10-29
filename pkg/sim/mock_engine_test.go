@@ -24,3 +24,5 @@ func (m *MockEngineServer) UnregisterSource(source remote.IObjectSource) {
 		}
 	}
 }
+
+func (m *MockEngineServer) SetSourceFactory(remote.SourceFactory) {}

@@ -38,7 +38,11 @@ func RunWSEcho(ctx context.Context, opts WSEchoOptions) error {
 			log.Printf("wsecho: upgrade error: %v", err)
 			return
 		}
-		defer conn.Close()
+		defer func() {
+			if err := conn.Close(); err != nil {
+				log.Printf("wsecho: close error: %v", err)
+			}
+		}()
 
 		log.Printf("wsecho: client connected %s", r.RemoteAddr)
 		for {

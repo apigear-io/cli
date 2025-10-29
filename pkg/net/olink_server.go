@@ -12,6 +12,7 @@ import (
 type IOlinkServer interface {
 	RegisterSource(source remote.IObjectSource)
 	UnregisterSource(source remote.IObjectSource)
+	SetSourceFactory(factory remote.SourceFactory)
 }
 
 type OlinkServer struct {
@@ -48,4 +49,8 @@ func (s *OlinkServer) RegisterSource(source remote.IObjectSource) {
 
 func (s *OlinkServer) UnregisterSource(source remote.IObjectSource) {
 	s.registry.RemoveObjectSource(source)
+}
+
+func (s *OlinkServer) SetSourceFactory(factory remote.SourceFactory) {
+	s.registry.SetSourceFactory(factory)
 }

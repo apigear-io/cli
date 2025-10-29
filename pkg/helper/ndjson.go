@@ -76,7 +76,9 @@ func (s *NDJSONScanner) ScanFile(path string, fn OnLineFunc) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 	return s.Scan(f, fn)
 }
 
@@ -104,6 +106,8 @@ func ReadNDJSONFile[T any](path string) ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 	return ReadNDJSON[T](f)
 }

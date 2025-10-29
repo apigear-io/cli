@@ -27,7 +27,9 @@ func newDataGenerateCmd() *cobra.Command {
 	cmd.Flags().StringVarP(&opts.OutputPath, "output", "o", "", "Destination JSONL file (defaults to stdout)")
 	cmd.Flags().IntVarP(&opts.Count, "count", "c", opts.Count, "Number of JSON objects to generate")
 	cmd.Flags().Int64Var(&opts.Seed, "seed", opts.Seed, "Random seed for faker data")
-	cmd.MarkFlagRequired("template")
+	if err := cmd.MarkFlagRequired("template"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

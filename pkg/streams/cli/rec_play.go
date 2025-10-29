@@ -32,10 +32,12 @@ func newRecordingsPlayCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&opts.SessionID, "session-id", "", "Session identifier to replay")
-	cmd.Flags().StringVar(&opts.TargetSubject, "target-subject", "", "Optional override subject to publish during playback")
+	cmd.Flags().StringVar(&opts.TargetSubject, "target-subject", "", "Optional override subject to publish during playback (default: "+config.PlaybackSubject+")")
 	cmd.Flags().Float64Var(&opts.Speed, "speed", opts.Speed, "Playback speed multiplier (e.g. 0.25, 1, 5)")
 	cmd.Flags().StringVar(&opts.Bucket, "session-bucket", opts.Bucket, "Key-value bucket containing session metadata")
-	cmd.MarkFlagRequired("session-id")
+	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

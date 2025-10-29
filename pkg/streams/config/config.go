@@ -18,6 +18,7 @@ const (
 	BufferSubjectPrefix        = "streams.buffer"
 	MonitorSubject             = "monitor"
 	RecordControllerQueueGroup = "streams-record-controller"
+	PlaybackSubject            = "streams.playback"
 
 	// Header keys used across publishing, recording, and buffering flows.
 	HeaderDevice     = "X-Streams-Device"

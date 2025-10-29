@@ -51,6 +51,8 @@ func newRecordingsStopCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
-	cmd.MarkFlagRequired("session-id")
+	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 	return cmd
 }

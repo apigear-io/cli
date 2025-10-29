@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -26,15 +27,27 @@ func newRecordingsExportCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var closeFn func() error
 			if file != nil {
-				defer file.Close()
 				opts.Writer = file
+				closeFn = file.Close
 			} else {
 				opts.Writer = os.Stdout
 			}
 
 			if err := session.Export(cmd.Context(), *opts); err != nil {
+				if closeFn != nil {
+					if closeErr := closeFn(); closeErr != nil {
+						return errors.Join(err, closeErr)
+					}
+				}
 				return err
+			}
+
+			if closeFn != nil {
+				if err := closeFn(); err != nil {
+					return err
+				}
 			}
 
 			if file != nil {
@@ -51,7 +64,9 @@ func newRecordingsExportCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.SessionID, "session-id", "", "Session identifier to export")
 	cmd.Flags().StringVar(&opts.Bucket, "session-bucket", opts.Bucket, "Key-value bucket containing session metadata")
 	cmd.Flags().StringVar(&opts.OutputPath, "output", opts.OutputPath, "Destination JSONL file (use '-' for stdout)")
-	cmd.MarkFlagRequired("session-id")
+	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

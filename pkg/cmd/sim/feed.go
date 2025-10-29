@@ -34,7 +34,11 @@ func NewClientCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer feeder.Close()
+			defer func() {
+				if closeErr := feeder.Close(); closeErr != nil {
+					log.Error().Err(closeErr).Msg("failed to close feeder")
+				}
+			}()
 			switch filepath.Ext(options.script) {
 			case ".ndjson":
 				items, err := helper.ScanFile(options.script)

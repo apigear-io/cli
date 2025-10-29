@@ -56,22 +56,29 @@ func PublishFromFile(ctx context.Context, opts PublishOptions) error {
 	if err != nil {
 		return fmt.Errorf("connect to NATS: %w", err)
 	}
-	defer nc.Drain()
+	defer func() {
+		if drainErr := nc.Drain(); drainErr != nil {
+			log.Error().Err(drainErr).Msg("failed to drain NATS connection after publish")
+		}
+	}()
 
 	file, err := os.Open(opts.FilePath)
 	if err != nil {
 		return fmt.Errorf("open file: %w", err)
 	}
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			log.Error().Err(closeErr).Str("file", opts.FilePath).Msg("failed to close publish file")
+		}
+	}()
+
 	info, err := file.Stat()
 	if err != nil {
-		file.Close()
 		return fmt.Errorf("stat file: %w", err)
 	}
 	if info.IsDir() {
-		file.Close()
 		return fmt.Errorf("%s is a directory", opts.FilePath)
 	}
-	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	buf := make([]byte, 1024*1024)
@@ -119,8 +126,7 @@ func PublishFromFile(ctx context.Context, opts PublishOptions) error {
 			msg.Header.Set(k, v)
 		}
 
-		err := nc.PublishMsg(msg)
-		if err != nil {
+		if err := nc.PublishMsg(msg); err != nil {
 			return fmt.Errorf("publish line %d: %w", lineNumber, err)
 		}
 
@@ -129,7 +135,9 @@ func PublishFromFile(ctx context.Context, opts PublishOptions) error {
 		}
 
 		if opts.Echo {
-			fmt.Fprintln(os.Stdout, rawLine)
+			if _, err := fmt.Fprintln(os.Stdout, rawLine); err != nil {
+				return fmt.Errorf("echo line %d: %w", lineNumber, err)
+			}
 		}
 
 		if opts.Interval > 0 {

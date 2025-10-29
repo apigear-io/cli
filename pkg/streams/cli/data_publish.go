@@ -42,8 +42,12 @@ func newDataPublishCmd() *cobra.Command {
 	cmd.Flags().StringToStringVar(&opts.Headers, "header", opts.Headers, "Additional NATS headers to include in each message")
 	cmd.Flags().BoolVar(&opts.Echo, "echo", false, "Print each published message to stdout")
 
-	cmd.MarkFlagRequired("file")
-	cmd.MarkFlagRequired("device-id")
+	if err := cmd.MarkFlagRequired("file"); err != nil {
+		cobra.CheckErr(err)
+	}
+	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

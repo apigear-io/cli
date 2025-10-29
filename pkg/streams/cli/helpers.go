@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/signal"
 	"syscall"
@@ -25,8 +26,15 @@ func withJetStream(ctx context.Context, fn func(jetstream.JetStream) error) erro
 	if err != nil {
 		return err
 	}
-	defer js.Conn().Drain()
-	return fn(js)
+	retErr := fn(js)
+	if drainErr := js.Conn().Drain(); drainErr != nil {
+		if retErr == nil {
+			retErr = drainErr
+		} else {
+			retErr = errors.Join(retErr, drainErr)
+		}
+	}
+	return retErr
 }
 
 func withSessionManager(ctx context.Context, bucket string, fn func(*session.SessionStore) error) error {
@@ -60,6 +68,13 @@ func withNATS(ctx context.Context, fn func(*nats.Conn) error) error {
 	if err != nil {
 		return err
 	}
-	defer nc.Drain()
-	return fn(nc)
+	retErr := fn(nc)
+	if drainErr := nc.Drain(); drainErr != nil {
+		if retErr == nil {
+			retErr = drainErr
+		} else {
+			retErr = errors.Join(retErr, drainErr)
+		}
+	}
+	return retErr
 }

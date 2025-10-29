@@ -38,7 +38,9 @@ func newDeviceGetCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
 	cmd.Flags().StringVar(&bucket, "device-bucket", bucket, "Device metadata bucket")
-	cmd.MarkFlagRequired("device-id")
+	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

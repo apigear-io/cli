@@ -42,7 +42,9 @@ func newDeviceSetCmd() *cobra.Command {
 	cmd.Flags().StringVar(&info.Location, "location", "", "Device location")
 	cmd.Flags().StringVar(&info.Owner, "owner", "", "Device owner")
 	cmd.Flags().DurationVar(&bufferDur, "buffer", 0, "Optional rolling buffer window (e.g. 5m)")
-	cmd.MarkFlagRequired("device-id")
+	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

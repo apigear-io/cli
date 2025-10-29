@@ -53,7 +53,9 @@ func newRecordingsStartCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.DeviceLoc, "device-location", "", "Optional device location")
 	cmd.Flags().StringVar(&opts.DeviceOwner, "device-owner", "", "Optional device owner")
 	cmd.Flags().DurationVar(&opts.PreRoll, "pre-roll", 0, "Optional buffer window to include before start (e.g. 5m)")
-	cmd.MarkFlagRequired("device-id")
+	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

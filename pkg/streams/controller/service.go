@@ -136,7 +136,9 @@ func (c *Controller) Start() error {
 func (c *Controller) Close() {
 	c.mu.Lock()
 	if c.sub != nil {
-		c.sub.Drain()
+		if err := c.sub.Drain(); err != nil {
+			log.Warn().Err(err).Str("subject", c.opts.RecordRpcSubject).Msg("failed to drain subscription")
+		}
 		c.sub = nil
 	}
 	c.mu.Unlock()

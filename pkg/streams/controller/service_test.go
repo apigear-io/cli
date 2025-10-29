@@ -229,7 +229,9 @@ func (h *controllerHarness) NewClientConn() *nats.Conn {
 	conn, err := nats.Connect(h.serverURL)
 	require.NoError(h.t, err)
 	h.t.Cleanup(func() {
-		conn.Drain()
+		if err := conn.Drain(); err != nil {
+			h.t.Errorf("drain client connection: %v", err)
+		}
 	})
 	return conn
 }
@@ -237,7 +239,9 @@ func (h *controllerHarness) NewClientConn() *nats.Conn {
 func (h *controllerHarness) Close() {
 	h.t.Helper()
 	h.ctrl.Close()
-	h.ctrlJS.Conn().Drain()
+	if err := h.ctrlJS.Conn().Drain(); err != nil {
+		h.t.Errorf("drain controller jetstream connection: %v", err)
+	}
 	h.srv.Shutdown()
 }
 

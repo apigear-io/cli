@@ -66,7 +66,9 @@ type NetworkManager struct {
 
 func NewManager(opts Options) *NetworkManager {
 	log.Debug().Msg("net.NewManager")
-	opts.Validate()
+	if err := opts.Validate(); err != nil {
+		log.Error().Err(err).Msg("invalid network manager options")
+	}
 	return &NetworkManager{
 		opts:       opts,
 		olnkServer: NewOlinkServer(),
@@ -296,6 +298,11 @@ func (m *NetworkManager) enableReplayRelay() error {
 		log.Error().Err(err).Msg("failed to get nats connection for replay relay")
 		return err
 	}
-	m.olnkRelay = NewReplayOlinkRelay(nc, "replay.olink", m.OlinkServer())
+	relay := NewReplayOlinkRelay(nc, config.PlaybackSubject, m.OlinkServer())
+	if err := relay.Start(context.Background()); err != nil {
+		log.Error().Err(err).Msg("failed to start playback relay")
+		return err
+	}
+	m.olnkRelay = relay
 	return nil
 }

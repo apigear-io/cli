@@ -67,8 +67,8 @@ func newServeCmd() *cobra.Command {
 func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 	var (
 		srv       *natsutil.ServerHandle
-		err       error
 		serverURL string
+		err       error
 	)
 
 	if !opts.NoNATS {
@@ -109,14 +109,19 @@ func doRunServe(cmd *cobra.Command, opts *serviceAllOptions) error {
 		return errors.New("no NATS server URL resolved")
 	}
 
-	var js jetstream.JetStream
-	js, err = natsutil.ConnectJetStream(opts.ServerURL)
+	js, err := natsutil.ConnectJetStream(opts.ServerURL)
 	if err != nil {
 		return err
 	}
-	defer js.Conn().Drain()
-
-	return runServices(cmd, opts, js)
+	retErr := runServices(cmd, opts, js)
+	if drainErr := js.Conn().Drain(); drainErr != nil {
+		if retErr == nil {
+			retErr = drainErr
+		} else {
+			retErr = errors.Join(retErr, drainErr)
+		}
+	}
+	return retErr
 }
 
 func runServices(cmd *cobra.Command, opts *serviceAllOptions, js jetstream.JetStream) error {

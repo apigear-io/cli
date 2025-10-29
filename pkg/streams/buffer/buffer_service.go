@@ -92,7 +92,11 @@ func RunBuffer(ctx context.Context, js jetstream.JetStream, opts BufferOptions) 
 	if err != nil {
 		return err
 	}
-	defer sub.Unsubscribe()
+	defer func() {
+		if err := sub.Unsubscribe(); err != nil {
+			log.Warn().Err(err).Msg("buffer: unsubscribe failed")
+		}
+	}()
 
 	ticker := time.NewTicker(refresh)
 	defer ticker.Stop()

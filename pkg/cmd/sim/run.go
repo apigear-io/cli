@@ -25,8 +25,8 @@ func NewRunCommand() *cobra.Command {
 		Aliases: []string{"r"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "Run simulation server using an optional scenario file",
-		Long: `Simulation server simulates the API backend. 
-In its simplest form it just answers every call and all properties are set to default values. 
+		Long: `Simulation server simulates the API backend.
+In its simplest form it just answers every call and all properties are set to default values.
 Using a scenario you can define additional static and scripted data and behavior.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -34,8 +34,7 @@ Using a scenario you can define additional static and scripted data and behavior
 			if err != nil {
 				return err
 			}
-
-			app.WithSimuClient(cmd.Context(), natsServer, func(ctx context.Context, client *sim.Client) error {
+			return app.WithSimuClient(cmd.Context(), natsServer, func(ctx context.Context, client *sim.Client) error {
 				taskManager := tasks.NewTaskManager()
 				taskName := "sim-script"
 
@@ -74,7 +73,6 @@ Using a scenario you can define additional static and scripted data and behavior
 				}
 				return helper.Wait(ctx, nil)
 			})
-			return nil
 		},
 	}
 	cmd.Flags().StringVar(&fn, "fn", "main", "function to run")

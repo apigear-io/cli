@@ -23,16 +23,15 @@ func NewServeCommand() *cobra.Command {
 				NatsPort: natsPort,
 				HttpAddr: httpAddr,
 			}
-			app.WithServer(cmd.Context(), opts, func(s *server.Server) error {
+			err := app.WithServer(cmd.Context(), opts, func(s *server.Server) error {
 				log.Info().Msgf("nats server running at %s:%d", opts.NatsHost, opts.NatsPort)
 				s.NetworkManager().OnMonitorEvent(func(event *mon.Event) {
 					log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
 				})
-				helper.Wait(cmd.Context(), nil)
-				return nil
+				return helper.Wait(cmd.Context(), nil)
 			})
 			log.Info().Msg("server is running. Press Ctrl+C to stop.")
-			return nil
+			return err
 		},
 	}
 

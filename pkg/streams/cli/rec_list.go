@@ -28,18 +28,22 @@ func newRecordingsListCmd() *cobra.Command {
 					return nil
 				}
 
-				fmt.Fprintf(cmd.OutOrStdout(), "%-36s  %-12s  %-25s  %-25s  %-9s  %s\n",
-					"SESSION", "DEVICE", "START", "END", "DURATION", "MESSAGES")
+				if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-36s  %-12s  %-25s  %-25s  %-9s  %s\n",
+					"SESSION", "DEVICE", "START", "END", "DURATION", "MESSAGES"); err != nil {
+					return err
+				}
 				for _, meta := range metas {
 					duration := meta.End.Sub(meta.Start)
-					fmt.Fprintf(cmd.OutOrStdout(), "%-36s  %-12s  %-25s  %-25s  %-9s  %d\n",
+					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-36s  %-12s  %-25s  %-25s  %-9s  %d\n",
 						meta.SessionID,
 						meta.DeviceID,
 						meta.Start.Format(time.RFC3339),
 						meta.End.Format(time.RFC3339),
 						duration.Round(time.Millisecond),
 						meta.MessageCount,
-					)
+					); err != nil {
+						return err
+					}
 				}
 				return nil
 			})

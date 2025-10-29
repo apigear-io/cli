@@ -16,6 +16,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 )
 
 // GenerateOptions controls how JSONL data is synthesized from a template.
@@ -42,7 +43,11 @@ func Generate(opts GenerateOptions) error {
 		return err
 	}
 	if closeFn != nil {
-		defer closeFn()
+		defer func() {
+			if closeErr := closeFn(); closeErr != nil {
+				log.Error().Err(closeErr).Msg("failed to close output writer")
+			}
+		}()
 	}
 
 	return renderRecords(opts.Count, tpl, writer)

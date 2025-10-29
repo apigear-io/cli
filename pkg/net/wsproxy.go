@@ -195,7 +195,11 @@ func (p *WSProxy) serveRoute(w http.ResponseWriter, r *http.Request, route *Rout
 		log.Warn().Err(err).Msg("websocket upgrade failed")
 		return
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			log.Warn().Err(err).Msg("failed to close client websocket")
+		}
+	}()
 
 	upstream, err := p.dialUpstream(r.Context(), targetURL)
 	if err != nil {
@@ -203,7 +207,11 @@ func (p *WSProxy) serveRoute(w http.ResponseWriter, r *http.Request, route *Rout
 		_ = conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseTryAgainLater, "upstream unavailable"))
 		return
 	}
-	defer upstream.Close()
+	defer func() {
+		if err := upstream.Close(); err != nil {
+			log.Warn().Err(err).Str("target", targetURL).Msg("failed to close upstream websocket")
+		}
+	}()
 
 	connectionID := uuid.NewString()
 	info := &ConnectionInfo{

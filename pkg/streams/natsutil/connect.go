@@ -5,6 +5,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
+	"github.com/rs/zerolog/log"
 )
 
 // ConnectJetStream establishes a NATS connection and JetStream context.
@@ -15,7 +16,9 @@ func ConnectJetStream(server string, opt ...nats.Option) (jetstream.JetStream, e
 	}
 	js, err := jetstream.New(nc)
 	if err != nil {
-		nc.Drain()
+		if drainErr := nc.Drain(); drainErr != nil {
+			log.Warn().Err(drainErr).Msg("failed to drain NATS connection after jetstream error")
+		}
 		return nil, fmt.Errorf("jetstream context: %w", err)
 	}
 	inProcess := nc.ConnectedAddr() == "pipe"

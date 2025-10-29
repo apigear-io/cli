@@ -22,7 +22,9 @@ func echoServer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 	for {
 		messageType, payload, err := conn.ReadMessage()
 		if err != nil {
@@ -62,7 +64,11 @@ func TestWSProxy_BasicTextRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("dial proxy: %v", err)
 	}
-	t.Cleanup(func() { clientConn.Close() })
+	t.Cleanup(func() {
+		if err := clientConn.Close(); err != nil {
+			t.Errorf("close client connection: %v", err)
+		}
+	})
 
 	payload := map[string]string{"hello": "world"}
 	data, err := json.Marshal(payload)
@@ -124,13 +130,19 @@ func TestWSProxy_MiddlewareDrop(t *testing.T) {
 	if err != nil {
 		t.Fatalf("dial proxy: %v", err)
 	}
-	t.Cleanup(func() { clientConn.Close() })
+	t.Cleanup(func() {
+		if err := clientConn.Close(); err != nil {
+			t.Errorf("close client connection: %v", err)
+		}
+	})
 
 	if err := clientConn.WriteMessage(websocket.BinaryMessage, []byte("ignored")); err != nil {
 		t.Fatalf("write message: %v", err)
 	}
 
-	clientConn.SetReadDeadline(time.Now().Add(200 * time.Millisecond))
+	if err := clientConn.SetReadDeadline(time.Now().Add(200 * time.Millisecond)); err != nil {
+		t.Fatalf("set read deadline: %v", err)
+	}
 	_, _, err = clientConn.ReadMessage()
 	if err == nil {
 		t.Fatalf("expected read error due to dropped message")

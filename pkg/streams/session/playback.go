@@ -12,6 +12,7 @@ import (
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
+	"github.com/rs/zerolog/log"
 )
 
 // PlaybackOptions controls replay of a recorded session.
@@ -43,7 +44,11 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 	if err != nil {
 		return fmt.Errorf("connect to NATS: %w", err)
 	}
-	defer nc.Drain()
+	defer func() {
+		if drainErr := nc.Drain(); drainErr != nil {
+			log.Error().Err(drainErr).Msg("failed to drain NATS connection after playback")
+		}
+	}()
 
 	js, err := jetstream.New(nc)
 	if err != nil {
@@ -62,7 +67,7 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 
 	targetSubject := strings.TrimSpace(opts.TargetSubject)
 	if targetSubject == "" {
-		targetSubject = meta.SourceSubject
+		targetSubject = config.PlaybackSubject
 	}
 
 	durable := config.PlaybackConsumerName(meta.SessionID)

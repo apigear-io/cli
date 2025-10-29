@@ -28,7 +28,9 @@ func newRecordingsDeleteCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
 	cmd.Flags().StringVar(&bucket, "session-bucket", bucket, "Key-value bucket containing session metadata")
-	cmd.MarkFlagRequired("session-id")
+	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+		cobra.CheckErr(err)
+	}
 
 	return cmd
 }

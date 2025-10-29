@@ -62,7 +62,10 @@ func TestTask_RunCancellation(t *testing.T) {
 		return ctx.Err()
 	}
 
-	go task.Run(context.Background(), fn)
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- task.Run(context.Background(), fn)
+	}()
 
 	// Wait for task to start
 	<-started
@@ -76,6 +79,15 @@ func TestTask_RunCancellation(t *testing.T) {
 		// Success
 	case <-time.After(1 * time.Second):
 		t.Error("task did not finish after cancellation")
+	}
+
+	select {
+	case runErr := <-errCh:
+		if runErr != nil && !errors.Is(runErr, context.Canceled) {
+			t.Errorf("unexpected run error: %v", runErr)
+		}
+	case <-time.After(1 * time.Second):
+		t.Error("run did not return after cancellation")
 	}
 }
 
@@ -97,7 +109,10 @@ func TestTask_RunReplacePrevious(t *testing.T) {
 	}
 
 	// Start first task
-	go task.Run(context.Background(), fn1)
+	firstErr := make(chan error, 1)
+	go func() {
+		firstErr <- task.Run(context.Background(), fn1)
+	}()
 	time.Sleep(50 * time.Millisecond)
 
 	// Start second task (should cancel first)
@@ -112,6 +127,15 @@ func TestTask_RunReplacePrevious(t *testing.T) {
 		// Success - first was cancelled
 	case <-time.After(1 * time.Second):
 		t.Error("first task was not cancelled")
+	}
+
+	select {
+	case err := <-firstErr:
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("expected context canceled from first task, got %v", err)
+		}
+	case <-time.After(1 * time.Second):
+		t.Error("first task run did not return")
 	}
 
 	// Second should complete
@@ -326,7 +350,10 @@ func TestTask_WatchMultipleFiles(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go task.Watch(ctx, fn, file1, file2)
+	done := make(chan error, 1)
+	go func() {
+		done <- task.Watch(ctx, fn, file1, file2)
+	}()
 
 	// Wait for initial execution
 	time.Sleep(100 * time.Millisecond)
@@ -351,4 +378,13 @@ func TestTask_WatchMultipleFiles(t *testing.T) {
 	}
 
 	cancel()
+
+	select {
+	case err := <-done:
+		if err != nil && !errors.Is(err, context.Canceled) {
+			t.Errorf("unexpected watch error: %v", err)
+		}
+	case <-time.After(1 * time.Second):
+		t.Error("watch did not return after cancellation")
+	}
 }

@@ -54,7 +54,11 @@ func newDeviceBufferEnableCmd() *cobra.Command {
 	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
 	cmd.Flags().DurationVar(&window, "window", 0, "Rolling buffer window (e.g. 5m)")
 	cmd.Flags().StringVar(&deviceBucket, "device-bucket", deviceBucket, "Device metadata bucket")
-	cmd.MarkFlagRequired("device-id")
-	cmd.MarkFlagRequired("window")
+	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+		cobra.CheckErr(err)
+	}
+	if err := cmd.MarkFlagRequired("window"); err != nil {
+		cobra.CheckErr(err)
+	}
 	return cmd
 }

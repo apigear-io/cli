@@ -26,12 +26,16 @@ func newDeviceBufferListCmd() *cobra.Command {
 					return nil
 				}
 
-				fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-8s\n", "DEVICE", "BUFFER")
+				if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-8s\n", "DEVICE", "BUFFER"); err != nil {
+					return err
+				}
 				for _, entry := range entries {
 					if entry.Info.BufferDuration == "" {
 						continue
 					}
-					fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-8s\n", entry.DeviceID, entry.Info.BufferDuration)
+					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-8s\n", entry.DeviceID, entry.Info.BufferDuration); err != nil {
+						return err
+					}
 				}
 				return nil
 			})

@@ -191,7 +191,10 @@ func TestTaskManager_Cancel(t *testing.T) {
 	tm.Register("blocking", nil, fn)
 
 	// Start task in background
-	go tm.Run(context.Background(), "blocking")
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- tm.Run(context.Background(), "blocking")
+	}()
 
 	// Give it time to start
 	time.Sleep(50 * time.Millisecond)
@@ -208,6 +211,15 @@ func TestTaskManager_Cancel(t *testing.T) {
 		// Success - task was cancelled
 	case <-time.After(1 * time.Second):
 		t.Error("task was not cancelled in time")
+	}
+
+	select {
+	case runErr := <-errCh:
+		if runErr != nil && !errors.Is(runErr, context.Canceled) {
+			t.Errorf("unexpected run error: %v", runErr)
+		}
+	case <-time.After(1 * time.Second):
+		t.Error("run did not return after cancellation")
 	}
 }
 
@@ -238,8 +250,12 @@ func TestTaskManager_CancelAll(t *testing.T) {
 	}
 
 	// Start all tasks
+	errs := make(chan error, count)
 	for i := 0; i < count; i++ {
-		go tm.Run(context.Background(), "task-"+string(rune('A'+i)))
+		name := "task-" + string(rune('A'+i))
+		go func(taskName string) {
+			errs <- tm.Run(context.Background(), taskName)
+		}(name)
 	}
 
 	time.Sleep(50 * time.Millisecond)
@@ -254,6 +270,17 @@ func TestTaskManager_CancelAll(t *testing.T) {
 			// Success
 		case <-time.After(1 * time.Second):
 			t.Errorf("task %d was not cancelled", i)
+		}
+	}
+
+	for i := 0; i < count; i++ {
+		select {
+		case runErr := <-errs:
+			if runErr != nil && !errors.Is(runErr, context.Canceled) {
+				t.Errorf("unexpected run error: %v", runErr)
+			}
+		case <-time.After(1 * time.Second):
+			t.Errorf("run %d did not return after CancelAll", i)
 		}
 	}
 }
@@ -379,7 +406,9 @@ func TestTaskManager_HooksOnError(t *testing.T) {
 	}
 
 	tm.Register("failing", nil, fn)
-	tm.Run(context.Background(), "failing")
+	if err := tm.Run(context.Background(), "failing"); err == nil {
+		t.Fatal("expected run to fail")
+	}
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -414,16 +443,24 @@ func TestTaskManager_Concurrent(t *testing.T) {
 	wg.Wait()
 
 	// Concurrent runs
+	errCh := make(chan error, count)
 	for i := 0; i < count; i++ {
 		wg.Add(1)
 		go func(n int) {
 			defer wg.Done()
 			name := "concurrent-" + string(rune('0'+n))
-			tm.Run(context.Background(), name)
+			errCh <- tm.Run(context.Background(), name)
 		}(i)
 	}
 
 	wg.Wait()
+	close(errCh)
+
+	for err := range errCh {
+		if err != nil {
+			t.Errorf("concurrent run failed: %v", err)
+		}
+	}
 
 	// Verify all registered
 	if len(tm.Names()) != count {

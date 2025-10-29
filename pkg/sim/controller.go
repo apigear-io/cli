@@ -2,6 +2,7 @@ package sim
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -50,8 +51,18 @@ func NewController(nc *nats.Conn, m *Manager) (*Controller, error) {
 
 func (c *Controller) Close() error {
 	if c.sub != nil {
-		c.nc.Drain()
-		return c.sub.Unsubscribe()
+		var joinedErr error
+		if err := c.nc.Drain(); err != nil {
+			joinedErr = err
+		}
+		if err := c.sub.Unsubscribe(); err != nil {
+			if joinedErr == nil {
+				joinedErr = err
+			} else {
+				joinedErr = errors.Join(joinedErr, err)
+			}
+		}
+		return joinedErr
 	}
 	return nil
 }
@@ -88,8 +99,14 @@ func (c *Controller) replyError(msg *nats.Msg, errMsg string) {
 		Status: "error",
 		Error:  errMsg,
 	}
-	data, _ := json.Marshal(resp)
-	msg.Respond(data)
+	data, err := json.Marshal(resp)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to marshal error response")
+		return
+	}
+	if err := msg.Respond(data); err != nil {
+		log.Error().Err(err).Msg("failed to respond to message")
+	}
 }
 
 func (c *Controller) handleStart(req RpcRequest) RpcResponse {
@@ -99,8 +116,9 @@ func (c *Controller) handleStart(req RpcRequest) RpcResponse {
 }
 
 func (c *Controller) handleStop(req RpcRequest) RpcResponse {
-	c.m.ScriptStop(req.World)
-	// Implement stop logic here
+	if err := c.m.ScriptStop(req.World); err != nil {
+		return RpcResponse{Status: "error", Error: err.Error()}
+	}
 	return RpcResponse{Status: "stopped"}
 }
 
@@ -119,7 +137,9 @@ func (c *Controller) respond(msg *nats.Msg, resp RpcResponse) {
 		c.replyError(msg, "failed to marshal response")
 		return
 	}
-	msg.Respond(data)
+	if err := msg.Respond(data); err != nil {
+		log.Error().Err(err).Msg("failed to respond to message")
+	}
 }
 
 type Client struct {

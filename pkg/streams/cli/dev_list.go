@@ -28,16 +28,20 @@ func newDeviceListCmd() *cobra.Command {
 					return nil
 				}
 
-				fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n", "DEVICE", "DESCRIPTION", "LOCATION", "OWNER", "BUFFER", "UPDATED")
+				if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n", "DEVICE", "DESCRIPTION", "LOCATION", "OWNER", "BUFFER", "UPDATED"); err != nil {
+					return err
+				}
 				for _, entry := range entries {
-					fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n",
+					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n",
 						entry.DeviceID,
 						entry.Info.Description,
 						entry.Info.Location,
 						entry.Info.Owner,
 						entry.Info.BufferDuration,
 						entry.Info.Updated.Format(time.RFC3339),
-					)
+					); err != nil {
+						return err
+					}
 				}
 				return nil
 			})
