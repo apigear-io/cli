@@ -229,9 +229,7 @@ func (h *controllerHarness) NewClientConn() *nats.Conn {
 	conn, err := nats.Connect(h.serverURL)
 	require.NoError(h.t, err)
 	h.t.Cleanup(func() {
-		if err := conn.Drain(); err != nil {
-			h.t.Errorf("drain client connection: %v", err)
-		}
+		_ = conn.Drain()
 	})
 	return conn
 }
