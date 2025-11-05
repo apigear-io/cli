@@ -12,16 +12,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsStatusCmd() *cobra.Command {
+func newStreamStateCmd() *cobra.Command {
 	var sessionID string
 
 	cmd := &cobra.Command{
-		Use:     "status",
-		Short:   "Show the latest controller state",
-		Aliases: []string{"state"},
+		Use:     "state",
+		Short:   "Show the latest recording state",
+		Aliases: []string{"status"},
+		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if sessionID == "" {
-				return errors.New("session-id cannot be empty")
+				return errors.New("session cannot be empty")
 			}
 			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
 				return withJetStream(ctx, func(js jetstream.JetStream) error {
@@ -53,9 +54,7 @@ func newRecordingsStatusCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
-	if err := cmd.MarkFlagRequired("session-id"); err != nil {
-		cobra.CheckErr(err)
-	}
+	cmd.Flags().StringVar(&sessionID, "session", "", "Session identifier")
+	cmd.MarkFlagRequired("session")
 	return cmd
 }

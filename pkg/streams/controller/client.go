@@ -38,24 +38,24 @@ func SendCommand(ctx context.Context, nc *nats.Conn, subject string, cmd RpcRequ
 
 // FetchState retrieves a session state snapshot from the controller KV bucket.
 func FetchState(js jetstream.JetStream, bucket, sessionID string) (StateSnapshot, error) {
+	snap := StateSnapshot{SessionID: sessionID}
 	if js == nil {
-		return StateSnapshot{}, errors.New("jetstream context is nil")
+		return snap, errors.New("jetstream context is nil")
 	}
 	if bucket == "" {
 		bucket = DefaultStateBucket
 	}
 	kv, err := js.KeyValue(context.Background(), bucket)
 	if err != nil {
-		return StateSnapshot{}, err
+		return snap, err
 	}
 	entry, err := kv.Get(context.Background(), sessionID)
 	if err != nil {
-		return StateSnapshot{}, err
+		return snap, err
 	}
-	var snap StateSnapshot
 	err = json.Unmarshal(entry.Value(), &snap)
 	if err != nil {
-		return StateSnapshot{}, err
+		return snap, err
 	}
 	return snap, nil
 }

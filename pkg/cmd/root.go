@@ -43,6 +43,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(tpl.NewRootCommand())
 	cmd.AddCommand(olink.NewRootCommand())
 	cmd.AddCommand(NewMCPCommand())
-	cmd.AddCommand(cli.NewRootCmd())
+	cmd.AddCommand(cli.NewStreamCmd())
 	return cmd
 }

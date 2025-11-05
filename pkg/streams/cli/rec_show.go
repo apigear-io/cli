@@ -9,14 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsShowCmd() *cobra.Command {
+func newStreamShowCmd() *cobra.Command {
 	var sessionID string
 	bucket := config.SessionBucket
 
 	cmd := &cobra.Command{
 		Use:     "show",
-		Short:   "Show metadata for a session",
+		Short:   "show stream session details",
 		Aliases: []string{"info"},
+		GroupID: "session",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withSessionManager(cmd.Context(), bucket, func(mgr *session.SessionStore) error {
 				meta, err := mgr.Info(sessionID)
@@ -59,9 +60,9 @@ func newRecordingsShowCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
+	cmd.Flags().StringVar(&sessionID, "session", "", "Session identifier")
 	cmd.Flags().StringVar(&bucket, "session-bucket", bucket, "Key-value bucket containing session metadata")
-	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+	if err := cmd.MarkFlagRequired("session"); err != nil {
 		cobra.CheckErr(err)
 	}
 

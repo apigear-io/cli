@@ -25,7 +25,7 @@ type recordStartOptions struct {
 	PreRoll       time.Duration
 }
 
-func newRecordingsStartCmd() *cobra.Command {
+func newStreamRecordCmd() *cobra.Command {
 	opts := &recordStartOptions{
 		Subject:       config.MonitorSubject,
 		SessionBucket: config.SessionBucket,
@@ -33,9 +33,10 @@ func newRecordingsStartCmd() *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "start",
-		Short:   "Start recording messages for a device",
+		Use:     "record",
+		Short:   "record a stream using a device id",
 		Aliases: []string{"begin"},
+		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
 				return runRecordingStart(ctx, cmd, opts)
@@ -44,8 +45,8 @@ func newRecordingsStartCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&opts.Subject, "subject", opts.Subject, "Base subject to record from")
-	cmd.Flags().StringVar(&opts.DeviceID, "device-id", "", "Device identifier to record")
-	cmd.Flags().StringVar(&opts.SessionID, "session-id", "", "Optional session identifier (defaults to UUID)")
+	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to record")
+	cmd.Flags().StringVar(&opts.SessionID, "session", "", "Optional session identifier (defaults to UUID)")
 	cmd.Flags().DurationVar(&opts.Retention, "retention", 0, "Optional JetStream retention (e.g. 24h)")
 	cmd.Flags().StringVar(&opts.SessionBucket, "session-bucket", opts.SessionBucket, "Key-value bucket for session metadata")
 	cmd.Flags().StringVar(&opts.DeviceBucket, "device-bucket", opts.DeviceBucket, "Key-value bucket for device profiles")
@@ -53,7 +54,7 @@ func newRecordingsStartCmd() *cobra.Command {
 	cmd.Flags().StringVar(&opts.DeviceLoc, "device-location", "", "Optional device location")
 	cmd.Flags().StringVar(&opts.DeviceOwner, "device-owner", "", "Optional device owner")
 	cmd.Flags().DurationVar(&opts.PreRoll, "pre-roll", 0, "Optional buffer window to include before start (e.g. 5m)")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 

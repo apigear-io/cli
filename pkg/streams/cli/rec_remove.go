@@ -6,14 +6,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsDeleteCmd() *cobra.Command {
+func newStreamRemoveCmd() *cobra.Command {
 	var sessionID string
 	bucket := config.SessionBucket
 
 	cmd := &cobra.Command{
-		Use:     "delete",
-		Short:   "Delete a recorded session",
+		Use:     "rm",
+		Short:   "remove a recorded stream session",
 		Aliases: []string{"rm"},
+		GroupID: "session",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withSessionManager(cmd.Context(), bucket, func(mgr *session.SessionStore) error {
 				err := mgr.Delete(sessionID)
@@ -26,9 +27,9 @@ func newRecordingsDeleteCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
+	cmd.Flags().StringVar(&sessionID, "session", "", "Session identifier")
 	cmd.Flags().StringVar(&bucket, "session-bucket", bucket, "Key-value bucket containing session metadata")
-	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+	if err := cmd.MarkFlagRequired("session"); err != nil {
 		cobra.CheckErr(err)
 	}
 

@@ -12,9 +12,10 @@ func newDeviceBufferListCmd() *cobra.Command {
 	deviceBucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "list",
+		Use:     "buffer-list",
 		Short:   "List buffered devices",
-		Aliases: []string{"ls"},
+		Aliases: []string{"buf-ls"},
+		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withDeviceStore(cmd.Context(), deviceBucket, func(mgr *store.DeviceStore) error {
 				entries, err := mgr.List()

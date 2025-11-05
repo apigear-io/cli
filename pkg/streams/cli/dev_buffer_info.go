@@ -13,12 +13,13 @@ func newDeviceBufferInfoCmd() *cobra.Command {
 	deviceBucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "info",
+		Use:     "buffer-info",
 		Short:   "Show buffering status for a device",
-		Aliases: []string{"show"},
+		Aliases: []string{"buf-info"},
+		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if deviceID == "" {
-				return errors.New("device-id is required")
+				return errors.New("device is required")
 			}
 
 			return withDeviceStore(cmd.Context(), deviceBucket, func(mgr *store.DeviceStore) error {
@@ -39,9 +40,9 @@ func newDeviceBufferInfoCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
 	cmd.Flags().StringVar(&deviceBucket, "device-bucket", deviceBucket, "Device metadata bucket")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 	return cmd

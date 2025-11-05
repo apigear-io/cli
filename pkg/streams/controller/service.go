@@ -409,19 +409,19 @@ func (c *Controller) writeState(state StateSnapshot) error {
 }
 
 func (c *Controller) loadState(sessionID string) (StateSnapshot, error) {
+	value := StateSnapshot{SessionID: sessionID}
 	entry, err := c.stateKV.Get(context.Background(), sessionID)
 	if err != nil {
 		if errors.Is(err, jetstream.ErrKeyNotFound) {
-			return StateSnapshot{SessionID: sessionID}, nil
+			return value, nil
 		}
-		return StateSnapshot{}, err
+		return value, err
 	}
-	var snap StateSnapshot
-	err = json.Unmarshal(entry.Value(), &snap)
+	err = json.Unmarshal(entry.Value(), &value)
 	if err != nil {
-		return StateSnapshot{}, err
+		return value, err
 	}
-	return snap, nil
+	return value, nil
 }
 
 func parseRetention(value string) (time.Duration, error) {

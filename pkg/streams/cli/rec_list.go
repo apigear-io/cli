@@ -9,13 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsListCmd() *cobra.Command {
+func newStreamListCmd() *cobra.Command {
 	bucket := config.SessionBucket
 
 	cmd := &cobra.Command{
-		Use:     "list",
-		Short:   "List recorded sessions",
-		Aliases: []string{"ls"},
+		Use:     "ls",
+		Short:   "list recorded stream sessions",
+		Aliases: []string{"list"},
+		GroupID: "session",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withSessionManager(cmd.Context(), bucket, func(mgr *session.SessionStore) error {
 				metas, err := mgr.List()

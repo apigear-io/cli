@@ -13,9 +13,10 @@ func newDeviceListCmd() *cobra.Command {
 	bucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "list",
+		Use:     "device-list",
 		Short:   "List device profiles",
 		Aliases: []string{"ls"},
+		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {
 				entries, err := mgr.List()

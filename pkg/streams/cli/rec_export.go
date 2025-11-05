@@ -11,14 +11,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsExportCmd() *cobra.Command {
+func newStreamExportCmd() *cobra.Command {
 	opts := &session.ExportOptions{
 		Bucket: config.SessionBucket,
 	}
 
 	cmd := &cobra.Command{
-		Use:   "export",
-		Short: "Export a recorded session to JSONL",
+		Use:     "export",
+		Short:   "export a recorded stream session",
+		GroupID: "data",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			opts.ServerURL = rootOpts.server
 			opts.Verbose = rootOpts.verbose
@@ -61,10 +62,10 @@ func newRecordingsExportCmd() *cobra.Command {
 
 	opts.OutputPath = "-"
 
-	cmd.Flags().StringVar(&opts.SessionID, "session-id", "", "Session identifier to export")
+	cmd.Flags().StringVar(&opts.SessionID, "session", "", "Session identifier to export")
 	cmd.Flags().StringVar(&opts.Bucket, "session-bucket", opts.Bucket, "Key-value bucket containing session metadata")
 	cmd.Flags().StringVar(&opts.OutputPath, "output", opts.OutputPath, "Destination JSONL file (use '-' for stdout)")
-	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+	if err := cmd.MarkFlagRequired("session"); err != nil {
 		cobra.CheckErr(err)
 	}
 

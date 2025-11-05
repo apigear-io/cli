@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newDataPublishCmd() *cobra.Command {
+func newStreamPublishCmd() *cobra.Command {
 	opts := &msgio.PublishOptions{
 		Subject:  config.MonitorSubject,
 		MaxLine:  8 * 1024 * 1024,
@@ -23,6 +23,7 @@ func newDataPublishCmd() *cobra.Command {
 		Use:     "publish",
 		Short:   "Publish JSONL messages to a NATS monitor subject",
 		Aliases: []string{"send", "pub"},
+		GroupID: "data",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 			defer cancel()
@@ -35,7 +36,7 @@ func newDataPublishCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&opts.FilePath, "file", "f", "", "Path to JSONL file to publish")
 	cmd.Flags().StringVar(&opts.Subject, "subject", opts.Subject, "Base monitor subject name")
-	cmd.Flags().StringVar(&opts.DeviceID, "device-id", "", "Device identifier used to segment streams")
+	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier used to segment streams")
 	cmd.Flags().DurationVar(&opts.Interval, "interval", opts.Interval, "Optional delay between published messages")
 	cmd.Flags().IntVar(&opts.MaxLine, "max-line-bytes", opts.MaxLine, "Maximum size of a single JSON line in bytes")
 	cmd.Flags().BoolVar(&opts.Validate, "validate", opts.Validate, "Validate that each line contains valid JSON before publishing")
@@ -45,7 +46,7 @@ func newDataPublishCmd() *cobra.Command {
 	if err := cmd.MarkFlagRequired("file"); err != nil {
 		cobra.CheckErr(err)
 	}
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 

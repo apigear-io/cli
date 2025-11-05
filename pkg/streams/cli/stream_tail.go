@@ -9,15 +9,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newDataTailCmd() *cobra.Command {
+func newStreamTailCmd() *cobra.Command {
 	opts := msgio.TailOptions{
 		Subject: config.MonitorSubject,
 	}
 
 	cmd := &cobra.Command{
 		Use:     "tail",
-		Short:   "Tail a monitor subject for a given device ID",
+		Short:   "tail a live stream from a device",
 		Aliases: []string{"follow", "watch"},
+		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
 				opts.Verbose = rootOpts.verbose
@@ -30,7 +31,7 @@ func newDataTailCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&opts.Subject, "subject", opts.Subject, "Base monitor subject name")
-	cmd.Flags().StringVar(&opts.DeviceID, "device-id", "", "Device identifier to subscribe to")
+	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to subscribe to. If empty, subscribes to all devices.")
 	cmd.Flags().BoolVar(&opts.Pretty, "pretty", false, "Pretty print JSON payloads")
 	cmd.Flags().BoolVar(&opts.Headers, "headers", false, "Print message headers")
 

@@ -11,16 +11,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newRecordingsStopCmd() *cobra.Command {
+func newStreamStopCmd() *cobra.Command {
 	var sessionID string
 
 	cmd := &cobra.Command{
 		Use:     "stop",
-		Short:   "Stop an active recording",
+		Short:   "stop an active stream recording",
 		Aliases: []string{"end"},
+		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if sessionID == "" {
-				return errors.New("session-id cannot be empty")
+				return errors.New("session cannot be empty")
 			}
 
 			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
@@ -50,8 +51,8 @@ func newRecordingsStopCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&sessionID, "session-id", "", "Session identifier")
-	if err := cmd.MarkFlagRequired("session-id"); err != nil {
+	cmd.Flags().StringVar(&sessionID, "session", "", "Session identifier")
+	if err := cmd.MarkFlagRequired("session"); err != nil {
 		cobra.CheckErr(err)
 	}
 	return cmd

@@ -19,12 +19,13 @@ func newDeviceBufferEnableCmd() *cobra.Command {
 	deviceBucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "enable",
+		Use:     "buffer",
 		Short:   "Enable rolling buffering for a device",
-		Aliases: []string{"on"},
+		Aliases: []string{"buf"},
+		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if deviceID == "" {
-				return errors.New("device-id is required")
+				return errors.New("device is required")
 			}
 			if window <= 0 {
 				return errors.New("window must be positive")
@@ -51,10 +52,10 @@ func newDeviceBufferEnableCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
 	cmd.Flags().DurationVar(&window, "window", 0, "Rolling buffer window (e.g. 5m)")
 	cmd.Flags().StringVar(&deviceBucket, "device-bucket", deviceBucket, "Device metadata bucket")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 	if err := cmd.MarkFlagRequired("window"); err != nil {

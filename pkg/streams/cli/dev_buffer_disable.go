@@ -14,12 +14,13 @@ func newDeviceBufferDisableCmd() *cobra.Command {
 	deviceBucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "disable",
+		Use:     "buffer-off",
 		Short:   "Disable buffering for a device",
-		Aliases: []string{"off"},
+		Aliases: []string{"buff-off"},
+		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if deviceID == "" {
-				return errors.New("device-id is required")
+				return errors.New("device is required")
 			}
 
 			return withDeviceStore(cmd.Context(), deviceBucket, func(mgr *store.DeviceStore) error {
@@ -40,9 +41,9 @@ func newDeviceBufferDisableCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
 	cmd.Flags().StringVar(&deviceBucket, "device-bucket", deviceBucket, "Device metadata bucket")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 	return cmd

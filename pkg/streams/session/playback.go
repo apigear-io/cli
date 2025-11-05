@@ -27,6 +27,7 @@ type PlaybackOptions struct {
 
 // Playback replays a recorded session at the requested speed.
 func Playback(ctx context.Context, opts PlaybackOptions) error {
+	log.Info().Str("session_id", opts.SessionID).Msg("starting session playback")
 	if opts.ServerURL == "" {
 		return errors.New("server URL cannot be empty")
 	}
@@ -70,6 +71,11 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 		targetSubject = config.PlaybackSubject
 	}
 
+	log.Info().Str("session_id", meta.SessionID).Str("from_stream", meta.Stream).
+		Str("from_subject", meta.SessionSubject).
+		Str("to_subject", targetSubject).
+		Int("message_count", meta.MessageCount).
+		Msg("beginning session playback")
 	durable := config.PlaybackConsumerName(meta.SessionID)
 	consumer, err := js.CreateOrUpdateConsumer(context.Background(), meta.Stream, jetstream.ConsumerConfig{
 		Durable:       durable,
@@ -90,6 +96,7 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 	)
 
 	for {
+		log.Debug().Str("session_id", meta.SessionID).Msg("fetching next batch of messages for playback")
 		err := ctx.Err()
 		if err != nil {
 			return err
@@ -112,6 +119,7 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 				continue
 			}
 			received++
+			log.Debug().Str("session_id", meta.SessionID).Int("received", received).Msg("message fetched for playback")
 			err := ctx.Err()
 			if err != nil {
 				return err
@@ -141,6 +149,10 @@ func Playback(ctx context.Context, opts PlaybackOptions) error {
 			}
 			publishMsg.Header.Set(config.HeaderReplayedAt, time.Now().UTC().Format(time.RFC3339Nano))
 
+			log.Info().Str("to", targetSubject).
+				Int("received", received).
+				Str("session_id", meta.SessionID).
+				Msg("replaying message")
 			err = nc.PublishMsg(publishMsg)
 			if err != nil {
 				return fmt.Errorf("publish replay: %w", err)
