@@ -29,9 +29,10 @@ func ConnectJetStream(server string, opt ...nats.Option) (jetstream.JetStream, e
 func ConnectNATS(server string, opt ...nats.Option) (*nats.Conn, error) {
 	nc, err := nats.Connect(server, opt...)
 	if err != nil {
+		log.Error().Err(err).Str("server", server).Msg("failed to connect to NATS server")
 		return nil, fmt.Errorf("connect to NATS: %w", err)
 	}
 	inProcess := nc.ConnectedAddr() == "pipe"
-	log.Debug().Str("url", nc.ConnectedUrl()).Str("addr", nc.ConnectedAddr()).Bool("in_process", inProcess).Msg("NATS connection established")
+	log.Info().Str("url", nc.ConnectedUrl()).Str("addr", nc.ConnectedAddr()).Bool("in_process", inProcess).Msg("NATS connection established")
 	return nc, nil
 }

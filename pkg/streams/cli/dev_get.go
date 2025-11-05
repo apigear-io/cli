@@ -13,9 +13,10 @@ func newDeviceGetCmd() *cobra.Command {
 	bucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "get",
+		Use:     "device-get",
 		Short:   "Fetch a device profile",
 		Aliases: []string{"show"},
+		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {
 				info, err := mgr.Get(deviceID)
@@ -36,9 +37,9 @@ func newDeviceGetCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
 	cmd.Flags().StringVar(&bucket, "device-bucket", bucket, "Device metadata bucket")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 

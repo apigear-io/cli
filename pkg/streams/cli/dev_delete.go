@@ -11,9 +11,10 @@ func newDeviceDeleteCmd() *cobra.Command {
 	bucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "delete",
+		Use:     "device-delete",
 		Short:   "Remove a device profile",
 		Aliases: []string{"rm"},
+		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {
 				err := mgr.Delete(deviceID)
@@ -26,9 +27,9 @@ func newDeviceDeleteCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&deviceID, "device-id", "", "Device identifier")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
 	cmd.Flags().StringVar(&bucket, "device-bucket", bucket, "Device metadata bucket")
-	if err := cmd.MarkFlagRequired("device-id"); err != nil {
+	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
 

@@ -63,18 +63,11 @@ func withDeviceStore(ctx context.Context, bucket string, fn func(*store.DeviceSt
 	})
 }
 
-func withNATS(ctx context.Context, fn func(*nats.Conn) error) error {
+func withNATS(_ context.Context, fn func(*nats.Conn) error) error {
 	nc, err := natsutil.ConnectNATS(rootOpts.server)
 	if err != nil {
 		return err
 	}
-	retErr := fn(nc)
-	if drainErr := nc.Drain(); drainErr != nil {
-		if retErr == nil {
-			retErr = drainErr
-		} else {
-			retErr = errors.Join(retErr, drainErr)
-		}
-	}
-	return retErr
+	defer nc.Drain()
+	return fn(nc)
 }

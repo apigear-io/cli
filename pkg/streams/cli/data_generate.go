@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newDataGenerateCmd() *cobra.Command {
+func newStreamGenerateCmd() *cobra.Command {
 	opts := &msgio.GenerateOptions{
 		Count: 1000,
 		Seed:  time.Now().UnixNano(),
@@ -18,6 +18,7 @@ func newDataGenerateCmd() *cobra.Command {
 		Short:   "Generate JSONL monitor data from a template",
 		Long:    "Render a Go template repeatedly with faker-backed helpers to build large JSONL files for testing.",
 		Aliases: []string{"gen"},
+		GroupID: "data",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return msgio.Generate(*opts)
 		},
