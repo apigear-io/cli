@@ -11,9 +11,9 @@ func newDeviceDeleteCmd() *cobra.Command {
 	bucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "device-delete",
+		Use:     "device-rm",
 		Short:   "Remove a device profile",
-		Aliases: []string{"rm"},
+		Aliases: []string{"dev-rm"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {

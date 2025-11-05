@@ -19,9 +19,9 @@ func newDeviceBufferEnableCmd() *cobra.Command {
 	deviceBucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
-		Use:     "buffer",
+		Use:     "buffer-on",
 		Short:   "Enable rolling buffering for a device",
-		Aliases: []string{"buf"},
+		Aliases: []string{"buf-on"},
 		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			if deviceID == "" {

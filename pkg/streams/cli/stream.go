@@ -33,11 +33,11 @@ func NewStreamCmd() *cobra.Command {
 	}
 	cmd.PersistentFlags().StringVar(&rootOpts.server, "server", nats.DefaultURL, "NATS server URL")
 	cmd.PersistentFlags().BoolVarP(&rootOpts.verbose, "verbose", "v", false, "Enable verbose output")
-	cmd.AddGroup(&cobra.Group{ID: "record", Title: "recording"})
-	cmd.AddGroup(&cobra.Group{ID: "session", Title: "sessions"})
+	cmd.AddGroup(&cobra.Group{ID: "record", Title: "stream recording"})
+	cmd.AddGroup(&cobra.Group{ID: "session", Title: "recording sessions"})
 	cmd.AddGroup(&cobra.Group{ID: "data", Title: "data"})
 	cmd.AddGroup(&cobra.Group{ID: "device", Title: "devices"})
-	cmd.AddGroup(&cobra.Group{ID: "buffer", Title: "buffers"})
+	cmd.AddGroup(&cobra.Group{ID: "buffer", Title: "device buffers"})
 	cmd.AddCommand(
 		newStreamRecordCmd(),
 		newStreamStateCmd(),
@@ -57,6 +57,8 @@ func NewStreamCmd() *cobra.Command {
 		newDeviceBufferEnableCmd(),
 		newDeviceBufferDisableCmd(),
 		newDeviceBufferInfoCmd(),
-		newDeviceBufferListCmd())
+		newDeviceBufferListCmd(),
+	)
+
 	return cmd
 }
