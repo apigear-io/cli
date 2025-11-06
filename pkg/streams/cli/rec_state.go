@@ -17,7 +17,7 @@ func newStreamStateCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "state",
-		Short:   "Show the latest recording state",
+		Short:   "show the latest recording state",
 		Aliases: []string{"status"},
 		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {

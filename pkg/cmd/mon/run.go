@@ -16,7 +16,7 @@ func NewRunCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "run",
 		Aliases: []string{"r", "start"},
-		Short:   "Run the monitor server",
+		Short:   "run the monitor server",
 		Long:    `The monitor server runs on a HTTP port and listens for API calls.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 

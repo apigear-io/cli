@@ -14,7 +14,7 @@ func newDeviceBufferInfoCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "buffer-info",
-		Short:   "Show buffering status for a device",
+		Short:   "show buffering status for a device",
 		Aliases: []string{"buf-info"},
 		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {

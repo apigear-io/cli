@@ -15,7 +15,7 @@ func newDeviceBufferDisableCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "buffer-off",
-		Short:   "Disable buffering for a device",
+		Short:   "disable buffering for a device",
 		Aliases: []string{"buff-off"},
 		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {

@@ -34,7 +34,7 @@ func NewExpertCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "expert",
 		Aliases: []string{"x"},
-		Short:   "Generate code using expert mode",
+		Short:   "generate code using expert mode",
 		Long:    `in expert mode you can individually set your generator options. This is helpful when you do not have a solution document.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			doc := MakeSolution(options)

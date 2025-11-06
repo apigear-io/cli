@@ -14,7 +14,7 @@ func newDeviceListCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "device-ls",
-		Short:   "List device profiles",
+		Short:   "list device profiles",
 		Aliases: []string{"dev-ls"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {

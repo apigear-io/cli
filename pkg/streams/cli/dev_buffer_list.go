@@ -13,7 +13,7 @@ func newDeviceBufferListCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "buffer-list",
-		Short:   "List buffered devices",
+		Short:   "list buffered devices",
 		Aliases: []string{"buf-ls"},
 		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {

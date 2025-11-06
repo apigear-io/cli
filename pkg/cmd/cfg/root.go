@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "config",
 		Aliases: []string{"cfg", "c"},
-		Short:   "Display the config vars",
+		Short:   "display the config vars",
 		Long:    `Display and edit the configuration variables`,
 	}
 	cmd.AddCommand(NewInfoCmd())

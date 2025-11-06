@@ -20,7 +20,7 @@ func newDeviceBufferEnableCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "buffer-on",
-		Short:   "Enable rolling buffering for a device",
+		Short:   "enable rolling buffering for a device",
 		Aliases: []string{"buf-on"},
 		GroupID: "buffer",
 		RunE: func(cmd *cobra.Command, _ []string) error {

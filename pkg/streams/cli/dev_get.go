@@ -14,7 +14,7 @@ func newDeviceGetCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "device-get",
-		Short:   "Fetch a device profile",
+		Short:   "fetch a device profile",
 		Aliases: []string{"show"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {

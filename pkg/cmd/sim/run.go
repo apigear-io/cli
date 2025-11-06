@@ -24,7 +24,7 @@ func NewRunCommand() *cobra.Command {
 		Use:     "run",
 		Aliases: []string{"r"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "Run simulation server using an optional scenario file",
+		Short:   "run simulation server using an optional scenario file",
 		Long: `Simulation server simulates the API backend.
 In its simplest form it just answers every call and all properties are set to default values.
 Using a scenario you can define additional static and scripted data and behavior.`,

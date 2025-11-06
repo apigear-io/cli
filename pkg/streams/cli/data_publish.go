@@ -21,7 +21,7 @@ func newStreamPublishCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "publish",
-		Short:   "Publish JSONL messages to a NATS monitor subject",
+		Short:   "publish JSONL messages to a NATS monitor subject",
 		Aliases: []string{"send", "pub"},
 		GroupID: "data",
 		RunE: func(cmd *cobra.Command, _ []string) error {

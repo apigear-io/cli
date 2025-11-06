@@ -10,9 +10,19 @@ apigear serve
 
 ## Recording a device stream
 
-### Producing monitoring data
+### Using Monitor Data
 
-To simulate a device producing monitoring data, you can publish data from a NDJSON file:
+To simulate monitoring data for testing purposes, you can use the `apigear monitor feed` command with a sample NDJSON file:
+
+```sh
+apigear monitor feed --repeat 1000 --interval 1s data/mon/sample.ndjson
+```
+
+This command will continuously publish monitoring data from the `sample.ndjson` file every second one line and repeat it 1000 times.
+
+### Producing data directly into streams
+
+Alternatively, simulate a device producing monitoring data, you can publish data from a NDJSON file directly into the streams system using the following command:
 
 ```sh
 apigear stream publish --file data/mon/sample.ndjson --device 123 --interval 1s

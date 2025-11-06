@@ -57,7 +57,7 @@ func idl2yaml(input string) error {
 func NewIdl2YamlCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "idl2yaml [file]",
-		Short: "Convert IDL file to YAML",
+		Short: "convert IDL file to YAML",
 		Long:  `Convert an IDL file to a YAML representation.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {

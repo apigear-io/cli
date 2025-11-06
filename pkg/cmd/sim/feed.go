@@ -23,7 +23,7 @@ func NewClientCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "feed",
 		Aliases: []string{"f"},
-		Short:   "Feed simulation from command line",
+		Short:   "feed simulation from command line",
 		Long:    `Feed simulation calls using JSON documents from command line`,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

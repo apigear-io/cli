@@ -24,7 +24,7 @@ func NewFeedCommand() *cobra.Command {
 	var options = &ClientOptions{}
 	var cmd = &cobra.Command{
 		Use:   "feed",
-		Short: "Feed a script to a monitor",
+		Short: "feed a script to a monitor",
 		Long:  `Feeds API calls from various sources to the monitor to be displayed. This is mainly to playback recorded API calls.`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
@@ -33,8 +33,8 @@ func NewFeedCommand() *cobra.Command {
 			var events []mon.Event
 			var err error
 			switch helper.Ext(options.script) {
-            case ".json", ".ndjson":
-                events, err = helper.ReadNDJSONFile[mon.Event](options.script)
+			case ".json", ".ndjson":
+				events, err = helper.ReadNDJSONFile[mon.Event](options.script)
 				log.Debug().Msgf("read %d events", len(events))
 				if err != nil {
 					return fmt.Errorf("error reading events: %w", err)

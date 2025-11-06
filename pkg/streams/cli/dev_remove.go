@@ -12,7 +12,7 @@ func newDeviceDeleteCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "device-rm",
-		Short:   "Remove a device profile",
+		Short:   "remove a device profile",
 		Aliases: []string{"dev-rm"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {

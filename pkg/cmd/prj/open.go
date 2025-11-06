@@ -10,7 +10,7 @@ import (
 func NewOpenCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "open project-path",
-		Short: "Open a project in studio",
+		Short: "open a project in studio",
 		Long:  `Open the given project in the desktop studio, if installed`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -8,7 +8,7 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "x",
 		Aliases: []string{"experimental"},
-		Short:   "Experimental commands",
+		Short:   "experimental commands",
 		Long:    `Command which are under development or experimental`,
 	}
 	cmd.AddCommand(NewDocsCommand())

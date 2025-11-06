@@ -15,7 +15,7 @@ func newStreamGenerateCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "generate",
-		Short:   "Generate JSONL monitor data from a template",
+		Short:   "generate JSONL monitor data from a template",
 		Long:    "Render a Go template repeatedly with faker-backed helpers to build large JSONL files for testing.",
 		Aliases: []string{"gen"},
 		GroupID: "data",

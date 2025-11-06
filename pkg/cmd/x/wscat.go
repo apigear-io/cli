@@ -12,7 +12,7 @@ func NewWSCatCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "wscat",
 		Aliases: []string{"ws", "websocket"},
-		Short:   "Run the WebSocket cat client",
+		Short:   "run the WebSocket cat client",
 		Long:    `The WebSocket cat client connects to the WebSocket proxy and allows sending and receiving messages.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return net.RunWSClient(cmd.Context(), opts)

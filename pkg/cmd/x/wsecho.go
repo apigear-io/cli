@@ -10,7 +10,7 @@ func NewWSEchoCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "wsecho",
 		Aliases: []string{"wse", "websocket-echo"},
-		Short:   "Run the WebSocket echo server",
+		Short:   "run the WebSocket echo server",
 		Long:    `The WebSocket echo server echoes back any message it receives from clients.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return net.RunWSEcho(cmd.Context(), opts)

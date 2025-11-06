@@ -18,7 +18,7 @@ func newDeviceSetCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "device-set",
-		Short:   "Create or update a device profile",
+		Short:   "create or update a device profile",
 		Aliases: []string{"update"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {

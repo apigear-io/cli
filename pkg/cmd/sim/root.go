@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "simulate",
 		Aliases: []string{"sim", "s", "simu"},
-		Short:   "Simulate API calls",
+		Short:   "simulate API calls",
 		Long:    `Simulate api calls using either a dynamic JS script or a static YAML document`,
 	}
 	cmd.AddCommand(NewClientCommand())
