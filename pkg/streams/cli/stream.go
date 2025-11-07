@@ -47,6 +47,7 @@ func NewStreamCmd() *cobra.Command {
 		newStreamShowCmd(),
 		newStreamRemoveCmd(),
 		newStreamExportCmd(),
+		newStreamImportCmd(),
 		newStreamTailCmd(),
 		newStreamPublishCmd(),
 		newStreamGenerateCmd(),
