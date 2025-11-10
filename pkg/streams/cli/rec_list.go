@@ -10,7 +10,7 @@ import (
 )
 
 func newStreamListCmd() *cobra.Command {
-	bucket := config.SessionBucket
+	var deviceID string
 
 	cmd := &cobra.Command{
 		Use:     "ls",
@@ -18,14 +18,29 @@ func newStreamListCmd() *cobra.Command {
 		Aliases: []string{"list"},
 		GroupID: "session",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return withSessionManager(cmd.Context(), bucket, func(mgr *session.SessionStore) error {
+			return withSessionManager(cmd.Context(), config.SessionBucket, func(mgr *session.SessionStore) error {
 				metas, err := mgr.List()
 				if err != nil {
 					return err
 				}
 
+				// Filter by device if specified
+				if deviceID != "" {
+					filtered := make([]session.Metadata, 0)
+					for _, meta := range metas {
+						if meta.DeviceID == deviceID {
+							filtered = append(filtered, meta)
+						}
+					}
+					metas = filtered
+				}
+
 				if len(metas) == 0 {
-					cmd.Println("no sessions found")
+					if deviceID != "" {
+						cmd.Printf("no sessions found for device %s\n", deviceID)
+					} else {
+						cmd.Println("no sessions found")
+					}
 					return nil
 				}
 
@@ -51,6 +66,7 @@ func newStreamListCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&bucket, "session-bucket", bucket, "Key-value bucket containing session metadata")
+	cmd.Flags().StringVar(&deviceID, "device", "", "Filter sessions by device identifier")
+
 	return cmd
 }

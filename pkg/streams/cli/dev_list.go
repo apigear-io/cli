@@ -10,15 +10,13 @@ import (
 )
 
 func newDeviceListCmd() *cobra.Command {
-	bucket := config.DeviceBucket
-
 	cmd := &cobra.Command{
 		Use:     "device-ls",
 		Short:   "list device profiles",
 		Aliases: []string{"dev-ls"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {
+			return withDeviceStore(cmd.Context(), config.DeviceBucket, func(mgr *store.DeviceStore) error {
 				entries, err := mgr.List()
 				if err != nil {
 					return err
@@ -29,16 +27,15 @@ func newDeviceListCmd() *cobra.Command {
 					return nil
 				}
 
-				if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n", "DEVICE", "DESCRIPTION", "LOCATION", "OWNER", "BUFFER", "UPDATED"); err != nil {
+				if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %s\n", "DEVICE", "DESCRIPTION", "LOCATION", "OWNER", "UPDATED"); err != nil {
 					return err
 				}
 				for _, entry := range entries {
-					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %-8s  %s\n",
+					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "%-20s  %-20s  %-20s  %-20s  %s\n",
 						entry.DeviceID,
 						entry.Info.Description,
 						entry.Info.Location,
 						entry.Info.Owner,
-						entry.Info.BufferDuration,
 						entry.Info.Updated.Format(time.RFC3339),
 					); err != nil {
 						return err
@@ -49,6 +46,5 @@ func newDeviceListCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&bucket, "device-bucket", bucket, "Device metadata bucket")
 	return cmd
 }

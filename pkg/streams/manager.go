@@ -111,9 +111,7 @@ func (m *Manager) runServices(ctx context.Context) error {
 	// Start buffer service in background
 	go func() {
 		err := buffer.RunBuffer(ctx, m.js, buffer.BufferOptions{
-			DeviceBucket:    config.DeviceBucket,
-			MonitorSubject:  config.MonitorSubject,
-			RefreshInterval: config.BufferRefresh,
+			MonitorSubject: config.MonitorSubject,
 		})
 		if err != nil && !errors.Is(err, context.Canceled) {
 			log.Error().Err(err).Msg("buffer service error")

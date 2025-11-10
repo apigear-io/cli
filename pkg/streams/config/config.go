@@ -30,6 +30,8 @@ const (
 	HeaderDeadline   = "X-Streams-Deadline"
 	HeaderPreRoll    = "X-Streams-PreRoll"
 
+	// Default buffer window for all devices (used for pre-roll)
+	BufferWindow  = 5 * time.Minute
 	BufferRefresh = 15 * time.Second
 )
 

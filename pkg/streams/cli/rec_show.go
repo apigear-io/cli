@@ -11,7 +11,6 @@ import (
 
 func newStreamShowCmd() *cobra.Command {
 	var sessionID string
-	bucket := config.SessionBucket
 
 	cmd := &cobra.Command{
 		Use:     "show",
@@ -19,7 +18,7 @@ func newStreamShowCmd() *cobra.Command {
 		Aliases: []string{"info"},
 		GroupID: "session",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return withSessionManager(cmd.Context(), bucket, func(mgr *session.SessionStore) error {
+			return withSessionManager(cmd.Context(), config.SessionBucket, func(mgr *session.SessionStore) error {
 				meta, err := mgr.Info(sessionID)
 				if err != nil {
 					return err
@@ -61,7 +60,6 @@ func newStreamShowCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&sessionID, "session", "", "Session identifier")
-	cmd.Flags().StringVar(&bucket, "session-bucket", bucket, "Key-value bucket containing session metadata")
 	if err := cmd.MarkFlagRequired("session"); err != nil {
 		cobra.CheckErr(err)
 	}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/streams/buffer"
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
@@ -22,20 +21,17 @@ func TestRunBufferMirrorsMessages(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(js.Conn().Close)
 
-	devStore, err := store.NewDeviceStore(js, store.DefaultDeviceBucket)
-	require.NoError(t, err)
-	require.NoError(t, devStore.Upsert("device-a", store.DeviceInfo{BufferDuration: "2m"}))
-
+	// No need to create device metadata - buffering is now always on
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	done := make(chan error, 1)
 	go func() {
-		done <- buffer.RunBuffer(ctx, js, buffer.BufferOptions{MonitorSubject: "monitor", RefreshInterval: 100 * time.Millisecond})
+		done <- buffer.RunBuffer(ctx, js, buffer.BufferOptions{MonitorSubject: "monitor"})
 	}()
 
-	// allow refresh to pull metadata
-	time.Sleep(150 * time.Millisecond)
+	// Brief delay to let buffer service start
+	time.Sleep(50 * time.Millisecond)
 
 	pub, err := nats.Connect(srv.ClientURL())
 	require.NoError(t, err)

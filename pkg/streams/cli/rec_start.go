@@ -13,23 +13,19 @@ import (
 )
 
 type recordStartOptions struct {
-	Subject       string
-	DeviceID      string
-	SessionID     string
-	Retention     time.Duration
-	SessionBucket string
-	DeviceBucket  string
-	DeviceDesc    string
-	DeviceLoc     string
-	DeviceOwner   string
-	PreRoll       time.Duration
+	Subject     string
+	DeviceID    string
+	SessionID   string
+	Retention   time.Duration
+	DeviceDesc  string
+	DeviceLoc   string
+	DeviceOwner string
+	PreRoll     time.Duration
 }
 
 func newStreamRecordCmd() *cobra.Command {
 	opts := &recordStartOptions{
-		Subject:       config.MonitorSubject,
-		SessionBucket: config.SessionBucket,
-		DeviceBucket:  config.DeviceBucket,
+		Subject: config.MonitorSubject,
 	}
 
 	cmd := &cobra.Command{
@@ -44,12 +40,8 @@ func newStreamRecordCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&opts.Subject, "subject", opts.Subject, "Base subject to record from")
 	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to record")
-	cmd.Flags().StringVar(&opts.SessionID, "session", "", "Optional session identifier (defaults to UUID)")
 	cmd.Flags().DurationVar(&opts.Retention, "retention", 0, "Optional JetStream retention (e.g. 24h)")
-	cmd.Flags().StringVar(&opts.SessionBucket, "session-bucket", opts.SessionBucket, "Key-value bucket for session metadata")
-	cmd.Flags().StringVar(&opts.DeviceBucket, "device-bucket", opts.DeviceBucket, "Key-value bucket for device profiles")
 	cmd.Flags().StringVar(&opts.DeviceDesc, "device-desc", "", "Optional device description")
 	cmd.Flags().StringVar(&opts.DeviceLoc, "device-location", "", "Optional device location")
 	cmd.Flags().StringVar(&opts.DeviceOwner, "device-owner", "", "Optional device owner")
@@ -77,8 +69,8 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 		DeviceID:      opts.DeviceID,
 		SessionID:     opts.SessionID,
 		Retention:     retention,
-		SessionBucket: opts.SessionBucket,
-		DeviceBucket:  opts.DeviceBucket,
+		SessionBucket: config.SessionBucket,
+		DeviceBucket:  config.DeviceBucket,
 		DeviceDesc:    opts.DeviceDesc,
 		DeviceLoc:     opts.DeviceLoc,
 		DeviceOwner:   opts.DeviceOwner,

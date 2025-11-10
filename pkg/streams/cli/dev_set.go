@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"time"
-
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/spf13/cobra"
@@ -10,11 +8,9 @@ import (
 
 func newDeviceSetCmd() *cobra.Command {
 	var (
-		info      store.DeviceInfo
-		deviceID  string
-		bufferDur time.Duration
+		info     store.DeviceInfo
+		deviceID string
 	)
-	bucket := config.DeviceBucket
 
 	cmd := &cobra.Command{
 		Use:     "device-set",
@@ -22,11 +18,7 @@ func newDeviceSetCmd() *cobra.Command {
 		Aliases: []string{"update"},
 		GroupID: "device",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			return withDeviceStore(cmd.Context(), bucket, func(mgr *store.DeviceStore) error {
-				if bufferDur > 0 {
-					info.BufferDuration = bufferDur.String()
-				}
-
+			return withDeviceStore(cmd.Context(), config.DeviceBucket, func(mgr *store.DeviceStore) error {
 				if err := mgr.Upsert(deviceID, info); err != nil {
 					return err
 				}
@@ -38,11 +30,9 @@ func newDeviceSetCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&deviceID, "device", "", "Device identifier")
-	cmd.Flags().StringVar(&bucket, "device-bucket", bucket, "Device metadata bucket")
 	cmd.Flags().StringVar(&info.Description, "description", "", "Device description")
 	cmd.Flags().StringVar(&info.Location, "location", "", "Device location")
 	cmd.Flags().StringVar(&info.Owner, "owner", "", "Device owner")
-	cmd.Flags().DurationVar(&bufferDur, "buffer", 0, "Optional rolling buffer window (e.g. 5m)")
 	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
 	}
