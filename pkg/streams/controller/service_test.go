@@ -105,11 +105,7 @@ func TestControllerPreRoll(t *testing.T) {
 	h := newControllerHarness(t)
 	t.Cleanup(h.Close)
 
-	// Configure device buffer
-	devStore, err := store.NewDeviceStore(h.ctrlJS, store.DefaultDeviceBucket)
-	require.NoError(t, err)
-	require.NoError(t, devStore.Upsert("preroll-device", store.DeviceInfo{BufferDuration: "5m"}))
-
+	// Create buffer stream (buffering is now always on)
 	_, subject, err := buffer.EnsureStream(h.ctrlJS, "preroll-device", 5*time.Minute)
 	require.NoError(t, err)
 

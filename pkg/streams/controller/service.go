@@ -12,7 +12,6 @@ import (
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
 	"github.com/apigear-io/cli/pkg/streams/session"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/rs/zerolog/log"
@@ -197,12 +196,8 @@ func (c *Controller) handleStart(req RpcRequest) RpcResponse {
 	}
 
 	if start.PreRoll > 0 {
-		bufferWindow, err := c.lookupBufferWindow(start.DeviceBucket, start.DeviceID)
-		if err != nil {
-			return RpcResponse{Message: err.Error(), SessionID: start.SessionID}
-		}
-		if start.PreRoll > bufferWindow {
-			return RpcResponse{Message: fmt.Sprintf("pre-roll %s exceeds buffer window %s", start.PreRoll, bufferWindow), SessionID: start.SessionID}
+		if start.PreRoll > config.BufferWindow {
+			return RpcResponse{Message: fmt.Sprintf("pre-roll %s exceeds buffer window %s", start.PreRoll, config.BufferWindow), SessionID: start.SessionID}
 		}
 	}
 
@@ -304,27 +299,6 @@ func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startC
 	_ = c.writeState(state)
 }
 
-func (c *Controller) lookupBufferWindow(bucket, deviceID string) (time.Duration, error) {
-	devStore, err := store.NewDeviceStore(c.js, bucket)
-	if err != nil {
-		return 0, fmt.Errorf("buffer lookup: %w", err)
-	}
-	info, err := devStore.Get(deviceID)
-	if err != nil {
-		return 0, fmt.Errorf("device buffer not configured")
-	}
-	if info.BufferDuration == "" {
-		return 0, fmt.Errorf("device buffer not configured")
-	}
-	dur, err := time.ParseDuration(info.BufferDuration)
-	if err != nil {
-		return 0, fmt.Errorf("invalid device buffer duration: %v", err)
-	}
-	if dur <= 0 {
-		return 0, fmt.Errorf("device buffer duration not positive")
-	}
-	return dur, nil
-}
 
 func (c *Controller) handleStop(req RpcRequest) RpcResponse {
 	sessionID := strings.TrimSpace(req.SessionID)

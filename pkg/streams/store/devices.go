@@ -17,16 +17,15 @@ const DefaultDeviceBucket = config.DeviceBucket
 
 // DeviceInfo captures descriptive information about a device being monitored.
 type DeviceInfo struct {
-	Description    string    `json:"description,omitempty"`
-	Location       string    `json:"location,omitempty"`
-	Owner          string    `json:"owner,omitempty"`
-	Updated        time.Time `json:"updated,omitempty"`
-	BufferDuration string    `json:"buffer_duration,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Location    string    `json:"location,omitempty"`
+	Owner       string    `json:"owner,omitempty"`
+	Updated     time.Time `json:"updated,omitempty"`
 }
 
 // IsZero reports whether the info carries any user-supplied metadata.
 func (info DeviceInfo) IsZero() bool {
-	return info.Description == "" && info.Location == "" && info.Owner == "" && info.BufferDuration == ""
+	return info.Description == "" && info.Location == "" && info.Owner == ""
 }
 
 // DeviceEntry represents a stored device profile.
@@ -178,9 +177,6 @@ func mergeInfo(base, update DeviceInfo) DeviceInfo {
 	}
 	if update.Owner != "" {
 		info.Owner = update.Owner
-	}
-	if update.BufferDuration != "" {
-		info.BufferDuration = update.BufferDuration
 	}
 	return info
 }
