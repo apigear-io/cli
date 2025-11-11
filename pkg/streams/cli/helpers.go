@@ -10,7 +10,6 @@ import (
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
 	"github.com/apigear-io/cli/pkg/streams/session"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 )
@@ -43,19 +42,6 @@ func withSessionManager(ctx context.Context, bucket string, fn func(*session.Ses
 	}
 	return withJetStream(ctx, func(js jetstream.JetStream) error {
 		mgr, err := session.NewSessionStore(js, bucket)
-		if err != nil {
-			return err
-		}
-		return fn(mgr)
-	})
-}
-
-func withDeviceStore(ctx context.Context, bucket string, fn func(*store.DeviceStore) error) error {
-	if bucket == "" {
-		bucket = config.DeviceBucket
-	}
-	return withJetStream(ctx, func(js jetstream.JetStream) error {
-		mgr, err := store.NewDeviceStore(js, bucket)
 		if err != nil {
 			return err
 		}

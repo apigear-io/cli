@@ -13,7 +13,6 @@ import (
 func newStreamImportCmd() *cobra.Command {
 	opts := &session.ImportOptions{
 		SessionBucket: config.SessionBucket,
-		DeviceBucket:  config.DeviceBucket,
 	}
 
 	cmd := &cobra.Command{
