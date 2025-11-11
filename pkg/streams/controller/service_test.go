@@ -11,7 +11,6 @@ import (
 	"github.com/apigear-io/cli/pkg/streams/controller"
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
 	"github.com/apigear-io/cli/pkg/streams/session"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
@@ -35,7 +34,6 @@ func TestControllerStartStop(t *testing.T) {
 		DeviceID:      deviceID,
 		SessionID:     sessionID,
 		SessionBucket: session.DefaultBucket,
-		DeviceBucket:  store.DefaultDeviceBucket,
 	})
 	require.True(t, startResp.OK, "start response should succeed: %s", startResp.Message)
 
@@ -90,7 +88,6 @@ func TestControllerDuplicateStart(t *testing.T) {
 		DeviceID:      "device-1",
 		SessionID:     "dup-session",
 		SessionBucket: session.DefaultBucket,
-		DeviceBucket:  store.DefaultDeviceBucket,
 	}
 
 	resp := sendStart(t, client, cmd)
@@ -128,7 +125,6 @@ func TestControllerPreRoll(t *testing.T) {
 		DeviceID:      "preroll-device",
 		SessionID:     "preroll-session",
 		SessionBucket: session.DefaultBucket,
-		DeviceBucket:  store.DefaultDeviceBucket,
 		PreRoll:       "2m",
 	})
 	require.True(t, resp.OK, resp.Message)

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/apigear-io/cli/pkg/streams/config"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/rs/zerolog/log"
@@ -19,13 +18,12 @@ import (
 
 // ImportOptions controls importing a recorded session from JSONL.
 type ImportOptions struct {
-	ServerURL    string
-	Reader       io.Reader
-	InputPath    string // optional source path for messaging purposes
-	DeviceID     string // defaults to "123" if not specified
+	ServerURL     string
+	Reader        io.Reader
+	InputPath     string // optional source path for messaging purposes
+	DeviceID      string // defaults to "123" if not specified
 	SessionBucket string
-	DeviceBucket string
-	Verbose      bool
+	Verbose       bool
 }
 
 // Import reads messages from a JSONL file and recreates the session in JetStream.
@@ -42,12 +40,9 @@ func Import(ctx context.Context, opts ImportOptions) error {
 		opts.DeviceID = "123"
 	}
 
-	// Default buckets
+	// Default session bucket
 	if opts.SessionBucket == "" {
 		opts.SessionBucket = config.SessionBucket
-	}
-	if opts.DeviceBucket == "" {
-		opts.DeviceBucket = config.DeviceBucket
 	}
 
 	nc, err := nats.Connect(opts.ServerURL)
@@ -85,24 +80,6 @@ func Import(ctx context.Context, opts ImportOptions) error {
 	// Override device ID if provided
 	if opts.DeviceID != "" {
 		meta.DeviceID = opts.DeviceID
-	}
-
-	// Create device store and ensure device exists
-	deviceStore, err := store.NewDeviceStore(js, opts.DeviceBucket)
-	if err != nil {
-		return fmt.Errorf("create device store: %w", err)
-	}
-	if _, err := deviceStore.Get(meta.DeviceID); err != nil {
-		// Device doesn't exist, create it
-		if err := deviceStore.Upsert(meta.DeviceID, store.DeviceInfo{
-			Description: fmt.Sprintf("Auto-created during import of session %s", meta.SessionID),
-			Updated:     time.Now(),
-		}); err != nil {
-			return fmt.Errorf("register device: %w", err)
-		}
-		if opts.Verbose {
-			log.Info().Str("device_id", meta.DeviceID).Msg("created device")
-		}
 	}
 
 	// Create session manager

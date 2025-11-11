@@ -7,10 +7,8 @@ import (
 
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
 	"github.com/apigear-io/cli/pkg/streams/session"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
-	"github.com/nats-io/nats.go/jetstream"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,7 +31,6 @@ func TestRecordProgressCallback(t *testing.T) {
 		Subject:       "monitor",
 		DeviceID:      "device-progress",
 		SessionBucket: session.DefaultBucket,
-		DeviceBucket:  store.DefaultDeviceBucket,
 		Progress: func(meta session.Metadata) {
 			progressCh <- meta
 		},
@@ -82,16 +79,6 @@ func TestRecordProgressCallback(t *testing.T) {
 	case meta := <-metaCh:
 		require.NotNil(t, meta)
 		require.GreaterOrEqual(t, meta.MessageCount, 1)
-
-		js, err := jetstream.New(publisher)
-		require.NoError(t, err)
-
-		devStore, err := store.NewDeviceStore(js, store.DefaultDeviceBucket)
-		require.NoError(t, err)
-
-		info, err := devStore.Get("device-progress")
-		require.NoError(t, err)
-		require.False(t, info.Updated.IsZero(), "device updated timestamp should be recorded")
 	default:
 		t.Fatal("expected metadata result")
 	}

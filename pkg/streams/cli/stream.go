@@ -36,7 +36,6 @@ func NewStreamCmd() *cobra.Command {
 	cmd.AddGroup(&cobra.Group{ID: "record", Title: "stream recording"})
 	cmd.AddGroup(&cobra.Group{ID: "session", Title: "recording sessions"})
 	cmd.AddGroup(&cobra.Group{ID: "data", Title: "data"})
-	cmd.AddGroup(&cobra.Group{ID: "device", Title: "devices"})
 	cmd.AddCommand(
 		newStreamRecordCmd(),
 		newStreamStateCmd(),
@@ -50,10 +49,6 @@ func NewStreamCmd() *cobra.Command {
 		newStreamTailCmd(),
 		newStreamPublishCmd(),
 		newStreamGenerateCmd(),
-		newDeviceSetCmd(),
-		newDeviceGetCmd(),
-		newDeviceListCmd(),
-		newDeviceDeleteCmd(),
 	)
 
 	return cmd

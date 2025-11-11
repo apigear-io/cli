@@ -9,7 +9,6 @@ import (
 const (
 	// Default JetStream bucket names.
 	SessionBucket = "streams_session"
-	DeviceBucket  = "streams_devices"
 	StateBucket   = "streams_record_state"
 
 	// Default subjects and prefixes.
