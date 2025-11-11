@@ -27,6 +27,7 @@ type Metadata struct {
 	End            time.Time `json:"end"`
 	MessageCount   int       `json:"message_count"`
 	Retention      string    `json:"retention,omitempty"`
+	Note           string    `json:"note,omitempty"`
 }
 
 // SessionStore provides helper methods around session metadata backed by JetStream KV.

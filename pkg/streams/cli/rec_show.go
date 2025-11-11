@@ -54,6 +54,11 @@ func newStreamShowCmd() *cobra.Command {
 						return err
 					}
 				}
+				if meta.Note != "" {
+					if _, err := fmt.Fprintf(cmd.OutOrStdout(), "note:      %s\n", meta.Note); err != nil {
+						return err
+					}
+				}
 				return nil
 			})
 		},

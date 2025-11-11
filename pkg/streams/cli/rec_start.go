@@ -13,14 +13,12 @@ import (
 )
 
 type recordStartOptions struct {
-	Subject     string
-	DeviceID    string
-	SessionID   string
-	Retention   time.Duration
-	DeviceDesc  string
-	DeviceLoc   string
-	DeviceOwner string
-	PreRoll     time.Duration
+	Subject   string
+	DeviceID  string
+	SessionID string
+	Retention time.Duration
+	Note      string
+	PreRoll   time.Duration
 }
 
 func newStreamRecordCmd() *cobra.Command {
@@ -42,9 +40,7 @@ func newStreamRecordCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to record")
 	cmd.Flags().DurationVar(&opts.Retention, "retention", 0, "Optional JetStream retention (e.g. 24h)")
-	cmd.Flags().StringVar(&opts.DeviceDesc, "device-desc", "", "Optional device description")
-	cmd.Flags().StringVar(&opts.DeviceLoc, "device-location", "", "Optional device location")
-	cmd.Flags().StringVar(&opts.DeviceOwner, "device-owner", "", "Optional device owner")
+	cmd.Flags().StringVar(&opts.Note, "note", "", "Optional note/description for this recording session")
 	cmd.Flags().DurationVar(&opts.PreRoll, "pre-roll", 0, "Optional buffer window to include before start (e.g. 5m)")
 	if err := cmd.MarkFlagRequired("device"); err != nil {
 		cobra.CheckErr(err)
@@ -70,10 +66,7 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 		SessionID:     opts.SessionID,
 		Retention:     retention,
 		SessionBucket: config.SessionBucket,
-		DeviceBucket:  config.DeviceBucket,
-		DeviceDesc:    opts.DeviceDesc,
-		DeviceLoc:     opts.DeviceLoc,
-		DeviceOwner:   opts.DeviceOwner,
+		Note:          opts.Note,
 		PreRoll:       preRoll,
 		Verbose:       rootOpts.verbose,
 	}

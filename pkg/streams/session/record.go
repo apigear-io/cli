@@ -11,7 +11,6 @@ import (
 	"github.com/apigear-io/cli/pkg/streams/buffer"
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/apigear-io/cli/pkg/streams/natsutil"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
@@ -26,8 +25,7 @@ type RecordOptions struct {
 	SessionID     string
 	Retention     time.Duration
 	SessionBucket string
-	DeviceBucket  string
-	Device        store.DeviceInfo
+	Note          string
 	Verbose       bool
 	Progress      func(Metadata)
 	PreRoll       time.Duration
@@ -82,22 +80,6 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 		return nil, err
 	}
 
-	devStore, err := store.NewDeviceStore(js, opts.DeviceBucket)
-	if err != nil {
-		return nil, err
-	}
-	if infoIsEmpty(opts.Device) {
-		err := devStore.Ensure(opts.DeviceID)
-		if err != nil {
-			return nil, fmt.Errorf("ensure device: %w", err)
-		}
-	} else {
-		err := devStore.Upsert(opts.DeviceID, opts.Device)
-		if err != nil {
-			return nil, fmt.Errorf("upsert device: %w", err)
-		}
-	}
-
 	sourceSubject := config.DeviceSubject(baseSubject, opts.DeviceID)
 	sessionSubject := config.SessionSubject(sessionID)
 	streamName := StreamName(sessionID)
@@ -128,6 +110,7 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 		Bucket:         sessionBucket,
 		Start:          time.Now().UTC(),
 		End:            time.Now().UTC(),
+		Note:           opts.Note,
 	}
 	if opts.Retention > 0 {
 		metadata.Retention = opts.Retention.String()
@@ -256,8 +239,4 @@ func publishToStream(ctx context.Context, js jetstream.JetStream, msg *nats.Msg)
 	}
 	_, err = js.PublishMsg(ctx, msg)
 	return err
-}
-
-func infoIsEmpty(info store.DeviceInfo) bool {
-	return info.IsZero()
 }

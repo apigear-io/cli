@@ -35,10 +35,7 @@ type RpcRequest struct {
 	SessionID     string `json:"session_id,omitempty"`
 	Retention     string `json:"retention,omitempty"`
 	SessionBucket string `json:"session_bucket,omitempty"`
-	DeviceBucket  string `json:"device_bucket,omitempty"`
-	DeviceDesc    string `json:"device_description,omitempty"`
-	DeviceLoc     string `json:"device_location,omitempty"`
-	DeviceOwner   string `json:"device_owner,omitempty"`
+	Note          string `json:"note,omitempty"`
 	PreRoll       string `json:"pre_roll,omitempty"`
 	Verbose       bool   `json:"verbose,omitempty"`
 }
@@ -247,8 +244,7 @@ func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startC
 		SessionID:     start.SessionID,
 		Retention:     start.Retention,
 		SessionBucket: start.SessionBucket,
-		DeviceBucket:  start.DeviceBucket,
-		Device:        start.Device,
+		Note:          start.Note,
 		Verbose:       start.Verbose,
 		PreRoll:       start.PreRoll,
 	}

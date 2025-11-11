@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/apigear-io/cli/pkg/streams/config"
-	"github.com/apigear-io/cli/pkg/streams/store"
 	"github.com/google/uuid"
 )
 
@@ -17,10 +16,9 @@ type startCommand struct {
 	SessionID     string
 	Retention     time.Duration
 	SessionBucket string
-	DeviceBucket  string
+	Note          string
 	PreRoll       time.Duration
 	Verbose       bool
-	Device        store.DeviceInfo
 }
 
 func (cmd RpcRequest) normalizeStart() (startCommand, error) {
@@ -56,11 +54,7 @@ func (cmd RpcRequest) normalizeStart() (startCommand, error) {
 	}
 	out.SessionBucket = sessionBucket
 
-	deviceBucket := strings.TrimSpace(cmd.DeviceBucket)
-	if deviceBucket == "" {
-		deviceBucket = config.DeviceBucket
-	}
-	out.DeviceBucket = deviceBucket
+	out.Note = strings.TrimSpace(cmd.Note)
 
 	preRoll := strings.TrimSpace(cmd.PreRoll)
 	if preRoll != "" {
@@ -72,11 +66,6 @@ func (cmd RpcRequest) normalizeStart() (startCommand, error) {
 	}
 
 	out.Verbose = cmd.Verbose
-	out.Device = store.DeviceInfo{
-		Description: cmd.DeviceDesc,
-		Location:    cmd.DeviceLoc,
-		Owner:       cmd.DeviceOwner,
-	}
 
 	return out, nil
 }
