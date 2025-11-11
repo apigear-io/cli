@@ -2,10 +2,12 @@ package session
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/nats-io/nats.go"
@@ -21,6 +23,17 @@ type ExportOptions struct {
 	Writer     io.Writer
 	OutputPath string // optional destination path for messaging purposes
 	Verbose    bool
+}
+
+// Envelope wraps a message with its headers for export/import.
+type Envelope struct {
+	Headers map[string]string `json:"headers"`
+	Data    json.RawMessage   `json:"data"`
+}
+
+// MetadataLine is the first line in an exported JSONL file containing session metadata.
+type MetadataLine struct {
+	Metadata Metadata `json:"metadata"`
 }
 
 // Export writes the messages of a recorded session to the provided writer as JSONL.
@@ -60,6 +73,19 @@ func Export(ctx context.Context, opts ExportOptions) error {
 		return fmt.Errorf("load metadata: %w", err)
 	}
 
+	// Write metadata as first line
+	metaLine := MetadataLine{Metadata: *meta}
+	metaJSON, err := json.Marshal(metaLine)
+	if err != nil {
+		return fmt.Errorf("marshal metadata: %w", err)
+	}
+	if _, err := opts.Writer.Write(metaJSON); err != nil {
+		return fmt.Errorf("write metadata: %w", err)
+	}
+	if _, err := opts.Writer.Write([]byte("\n")); err != nil {
+		return fmt.Errorf("write metadata: %w", err)
+	}
+
 	durable := config.ExportConsumerName(meta.SessionID)
 	consumer, err := js.CreateOrUpdateConsumer(context.Background(), meta.Stream, jetstream.ConsumerConfig{
 		Durable:       durable,
@@ -82,7 +108,7 @@ func Export(ctx context.Context, opts ExportOptions) error {
 		default:
 		}
 
-		batch, err := consumer.Fetch(128, jetstream.FetchContext(ctx))
+		batch, err := consumer.Fetch(128, jetstream.FetchMaxWait(1*time.Second))
 		if err != nil {
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return err
@@ -99,7 +125,27 @@ func Export(ctx context.Context, opts ExportOptions) error {
 				continue
 			}
 			received++
-			if _, err := opts.Writer.Write(msg.Data()); err != nil {
+
+			// Extract headers from NATS message
+			headers := make(map[string]string)
+			for key, values := range msg.Headers() {
+				if len(values) > 0 {
+					headers[key] = values[0]
+				}
+			}
+
+			// Create envelope with headers and data
+			envelope := Envelope{
+				Headers: headers,
+				Data:    json.RawMessage(msg.Data()),
+			}
+
+			envelopeJSON, err := json.Marshal(envelope)
+			if err != nil {
+				return fmt.Errorf("marshal envelope: %w", err)
+			}
+
+			if _, err := opts.Writer.Write(envelopeJSON); err != nil {
 				return fmt.Errorf("write message: %w", err)
 			}
 			if _, err := opts.Writer.Write([]byte("\n")); err != nil {
@@ -107,6 +153,15 @@ func Export(ctx context.Context, opts ExportOptions) error {
 			}
 			written++
 			_ = msg.Ack()
+
+			// Progress reporting
+			if opts.Verbose && written%100 == 0 {
+				if meta.MessageCount > 0 {
+					log.Info().Int("count", written).Int("total", meta.MessageCount).Msg("exporting messages")
+				} else {
+					log.Info().Int("count", written).Msg("exporting messages")
+				}
+			}
 		}
 
 		if batchErr := batch.Error(); batchErr != nil {
@@ -125,6 +180,13 @@ func Export(ctx context.Context, opts ExportOptions) error {
 		if meta.MessageCount > 0 && written >= meta.MessageCount {
 			break
 		}
+	}
+
+	if opts.Verbose {
+		log.Info().
+			Str("session_id", meta.SessionID).
+			Int("messages", written).
+			Msg("export complete")
 	}
 
 	return nil
