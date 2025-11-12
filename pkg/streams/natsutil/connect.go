@@ -33,6 +33,6 @@ func ConnectNATS(server string, opt ...nats.Option) (*nats.Conn, error) {
 		return nil, fmt.Errorf("connect to NATS: %w", err)
 	}
 	inProcess := nc.ConnectedAddr() == "pipe"
-	log.Info().Str("url", nc.ConnectedUrl()).Str("addr", nc.ConnectedAddr()).Bool("in_process", inProcess).Msg("NATS connection established")
+	log.Debug().Str("url", nc.ConnectedUrl()).Str("addr", nc.ConnectedAddr()).Bool("in_process", inProcess).Msg("NATS connection established")
 	return nc, nil
 }
