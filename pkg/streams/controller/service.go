@@ -90,10 +90,11 @@ func NewController(js jetstream.JetStream, opts Options) (*Controller, error) {
 	}
 
 	return &Controller{
-		js:      js,
-		opts:    opts,
-		stateKV: kv,
-		jobs:    map[string]*recordJob{},
+		js:           js,
+		opts:         opts,
+		stateKV:      kv,
+		jobs:         map[string]*recordJob{},
+		multiDevJobs: map[string]*multiDeviceJob{},
 	}, nil
 }
 
@@ -102,14 +103,22 @@ type Controller struct {
 	opts    Options
 	stateKV jetstream.KeyValue
 
-	mu   sync.Mutex
-	jobs map[string]*recordJob
-	sub  *nats.Subscription
+	mu            sync.Mutex
+	jobs          map[string]*recordJob
+	multiDevJobs  map[string]*multiDeviceJob
+	sub           *nats.Subscription
 }
 
 type recordJob struct {
 	cancel context.CancelFunc
 	done   chan struct{}
+}
+
+type multiDeviceJob struct {
+	cancel      context.CancelFunc
+	done        chan struct{}
+	deviceJobs  map[string]*recordJob
+	deviceJobMu sync.Mutex
 }
 
 // Start begins listening for RPC commands on the configured subject.
@@ -149,9 +158,18 @@ func (c *Controller) stopAll() {
 		jobs = append(jobs, job)
 		delete(c.jobs, sessionID)
 	}
+	multiJobs := make([]*multiDeviceJob, 0, len(c.multiDevJobs))
+	for sessionID, job := range c.multiDevJobs {
+		multiJobs = append(multiJobs, job)
+		delete(c.multiDevJobs, sessionID)
+	}
 	c.mu.Unlock()
 
 	for _, job := range jobs {
+		job.cancel()
+		<-job.done
+	}
+	for _, job := range multiJobs {
 		job.cancel()
 		<-job.done
 	}
@@ -198,6 +216,11 @@ func (c *Controller) handleStart(req RpcRequest) RpcResponse {
 		}
 	}
 
+	// Route to multi-device handler if device ID is empty
+	if start.DeviceID == "" {
+		return c.handleStartMultiDevice(start)
+	}
+
 	job := &recordJob{done: make(chan struct{})}
 
 	c.mu.Lock()
@@ -226,6 +249,30 @@ func (c *Controller) handleStart(req RpcRequest) RpcResponse {
 
 	log.Info().Str("session", start.SessionID).Str("device", start.DeviceID).Msg("recording job launched")
 	return RpcResponse{OK: true, Message: "recording started", SessionID: start.SessionID, State: &state}
+}
+
+func (c *Controller) handleStartMultiDevice(start startCommand) RpcResponse {
+	job := &multiDeviceJob{
+		done:       make(chan struct{}),
+		deviceJobs: make(map[string]*recordJob),
+	}
+
+	c.mu.Lock()
+	if _, exists := c.multiDevJobs[start.SessionID]; exists {
+		c.mu.Unlock()
+		log.Warn().Str("session", start.SessionID).Msg("start command rejected: multi-device recording already running")
+		return RpcResponse{Message: fmt.Sprintf("multi-device session %s already running", start.SessionID), SessionID: start.SessionID}
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	job.cancel = cancel
+	c.multiDevJobs[start.SessionID] = job
+	c.mu.Unlock()
+
+	started := time.Now().UTC()
+	go c.runRecordAllDevices(ctx, job, start, started)
+
+	log.Info().Str("session", start.SessionID).Str("subject", start.Subject).Msg("multi-device recording job launched")
+	return RpcResponse{OK: true, Message: "multi-device recording started", SessionID: start.SessionID}
 }
 
 func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startCommand, started time.Time) {
@@ -295,6 +342,116 @@ func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startC
 	_ = c.writeState(state)
 }
 
+func (c *Controller) runRecordAllDevices(ctx context.Context, job *multiDeviceJob, start startCommand, started time.Time) {
+	log.Info().Str("subject", start.Subject).Str("server", c.opts.ServerURL).Msg("multi-device recording job started")
+	defer func() {
+		close(job.done)
+		c.mu.Lock()
+		delete(c.multiDevJobs, start.SessionID)
+		c.mu.Unlock()
+	}()
+
+	// Subscribe to wildcard subject to capture all devices
+	subjectPattern := start.Subject + ".>"
+	sub, err := c.js.Conn().Subscribe(subjectPattern, func(msg *nats.Msg) {
+		deviceID := extractDeviceID(start.Subject, msg.Subject)
+		if deviceID == "" {
+			return
+		}
+
+		// Check if we already have a recording for this device
+		job.deviceJobMu.Lock()
+		_, exists := job.deviceJobs[deviceID]
+		job.deviceJobMu.Unlock()
+
+		if exists {
+			return // Already recording this device
+		}
+
+		// Spawn a new recording for this device
+		log.Info().Str("device", deviceID).Str("subject", msg.Subject).Msg("discovered new device, starting recording")
+		c.startDeviceRecording(ctx, job, start, deviceID, started)
+	})
+
+	if err != nil {
+		log.Error().Err(err).Str("subject", subjectPattern).Msg("failed to subscribe to wildcard subject")
+		return
+	}
+	defer func() {
+		if err := sub.Unsubscribe(); err != nil {
+			log.Warn().Err(err).Msg("multi-device: unsubscribe failed")
+		}
+	}()
+
+	<-ctx.Done()
+
+	// Stop all device recordings
+	job.deviceJobMu.Lock()
+	deviceJobs := make(map[string]*recordJob)
+	for k, v := range job.deviceJobs {
+		deviceJobs[k] = v
+	}
+	job.deviceJobMu.Unlock()
+
+	for deviceID, deviceJob := range deviceJobs {
+		log.Debug().Str("device", deviceID).Msg("stopping device recording")
+		deviceJob.cancel()
+		<-deviceJob.done
+	}
+
+	log.Info().Msg("multi-device recording job stopped")
+}
+
+func (c *Controller) startDeviceRecording(ctx context.Context, multiJob *multiDeviceJob, start startCommand, deviceID string, started time.Time) {
+	// Generate a unique session ID for this device
+	deviceSessionID := start.SessionID + "-" + deviceID
+
+	deviceJob := &recordJob{done: make(chan struct{})}
+	deviceCtx, cancel := context.WithCancel(ctx)
+	deviceJob.cancel = cancel
+
+	// Track this device job
+	multiJob.deviceJobMu.Lock()
+	multiJob.deviceJobs[deviceID] = deviceJob
+	multiJob.deviceJobMu.Unlock()
+
+	// Create state for this device session
+	state := StateSnapshot{
+		SessionID:    deviceSessionID,
+		DeviceID:     deviceID,
+		Subject:      start.Subject,
+		Status:       "running",
+		MessageCount: 0,
+		StartedAt:    started,
+	}
+	_ = c.writeState(state)
+
+	// Create device-specific start command
+	deviceStart := start
+	deviceStart.DeviceID = deviceID
+	deviceStart.SessionID = deviceSessionID
+
+	// Launch the recording
+	go func() {
+		c.runRecord(deviceCtx, deviceJob, deviceStart, started)
+		// Clean up when done
+		multiJob.deviceJobMu.Lock()
+		delete(multiJob.deviceJobs, deviceID)
+		multiJob.deviceJobMu.Unlock()
+	}()
+}
+
+func extractDeviceID(prefix, subject string) string {
+	if !strings.HasPrefix(subject, prefix+".") {
+		return ""
+	}
+	trimmed := strings.TrimPrefix(subject, prefix+".")
+	if trimmed == "" {
+		return ""
+	}
+	parts := strings.Split(trimmed, ".")
+	return parts[0]
+}
 
 func (c *Controller) handleStop(req RpcRequest) RpcResponse {
 	sessionID := strings.TrimSpace(req.SessionID)
@@ -303,10 +460,19 @@ func (c *Controller) handleStop(req RpcRequest) RpcResponse {
 	}
 
 	c.mu.Lock()
-	job, exists := c.jobs[sessionID]
+	job, jobExists := c.jobs[sessionID]
+	multiJob, multiExists := c.multiDevJobs[sessionID]
 	c.mu.Unlock()
 
-	if !exists {
+	// Check for multi-device job first
+	if multiExists {
+		multiJob.cancel()
+		<-multiJob.done
+		log.Info().Str("session", sessionID).Msg("multi-device recording job signaled to stop")
+		return RpcResponse{OK: true, SessionID: sessionID, Message: "multi-device recording stopped"}
+	}
+
+	if !jobExists {
 		// nothing running, but update state to stopped
 		snap, err := c.loadState(sessionID)
 		if err != nil {

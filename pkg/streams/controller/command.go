@@ -30,10 +30,8 @@ func (cmd RpcRequest) normalizeStart() (startCommand, error) {
 	}
 	out.Subject = subject
 
+	// Empty device ID signals multi-device recording mode
 	deviceID := strings.TrimSpace(cmd.DeviceID)
-	if deviceID == "" {
-		return out, fmt.Errorf("device-id cannot be empty")
-	}
 	out.DeviceID = deviceID
 
 	sessionID := strings.TrimSpace(cmd.SessionID)
