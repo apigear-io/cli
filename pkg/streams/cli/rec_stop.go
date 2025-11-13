@@ -40,12 +40,17 @@ func newStreamStopCmd() *cobra.Command {
 						return fmt.Errorf("list states: %w", err)
 					}
 
-					// Filter by device if specified
-					var sessionsToStop []controller.StateSnapshot
+					// Identify unique parent sessions to stop
+					// Multi-device sessions have format: {parent-session-id}-{device-id}
+					// We want to stop the parent session, not individual device sessions
+					parentSessions := make(map[string]bool)
+					var sessionsToStop []string
+
 					if deviceID != "" {
+						// Stop all sessions for a specific device
 						for _, state := range states {
 							if state.Status == "running" && state.DeviceID == deviceID {
-								sessionsToStop = append(sessionsToStop, state)
+								sessionsToStop = append(sessionsToStop, state.SessionID)
 							}
 						}
 						if len(sessionsToStop) == 0 {
@@ -56,9 +61,28 @@ func newStreamStopCmd() *cobra.Command {
 						cmd.Printf("found %d active session(s)\n", len(sessionsToStop))
 					} else {
 						// Stop all running sessions
+						// Detect multi-device parent sessions by looking for device-specific sessions
 						for _, state := range states {
-							if state.Status == "running" {
-								sessionsToStop = append(sessionsToStop, state)
+							if state.Status != "running" {
+								continue
+							}
+							// Check if this is a device-specific session (contains device ID in session ID)
+							sessionID := state.SessionID
+							// Device sessions have format: {parent}-{deviceID}
+							// If we find such sessions, we want to stop the parent instead
+							if lastDash := len(sessionID) - len(state.DeviceID) - 1; lastDash > 0 &&
+								lastDash < len(sessionID) &&
+								sessionID[lastDash] == '-' &&
+								sessionID[lastDash+1:] == state.DeviceID {
+								// This is a device-specific session from a multi-device recording
+								parentSessionID := sessionID[:lastDash]
+								if !parentSessions[parentSessionID] {
+									parentSessions[parentSessionID] = true
+									sessionsToStop = append(sessionsToStop, parentSessionID)
+								}
+							} else {
+								// This is a standalone single-device session
+								sessionsToStop = append(sessionsToStop, sessionID)
 							}
 						}
 						if len(sessionsToStop) == 0 {
@@ -71,27 +95,27 @@ func newStreamStopCmd() *cobra.Command {
 					// Stop each session
 					stoppedCount := 0
 					failedCount := 0
-					for _, state := range sessionsToStop {
+					for _, sessionID := range sessionsToStop {
 						request := controller.RpcRequest{
 							Action:    controller.ActionStop,
-							SessionID: state.SessionID,
+							SessionID: sessionID,
 						}
-						log.Debug().Str("session", state.SessionID).Str("device", state.DeviceID).Msg("record stop request")
+						log.Debug().Str("session", sessionID).Msg("record stop request")
 
 						resp, err := controller.SendCommand(ctx, nc, config.RecordRpcSubject, request)
 						if err != nil {
-							log.Error().Err(err).Str("session", state.SessionID).Msg("stop command failed")
+							log.Error().Err(err).Str("session", sessionID).Msg("stop command failed")
 							failedCount++
 							continue
 						}
 						if !resp.OK {
-							log.Error().Str("session", state.SessionID).Str("message", resp.Message).Msg("stop command failed")
+							log.Error().Str("session", sessionID).Str("message", resp.Message).Msg("stop command failed")
 							failedCount++
 							continue
 						}
 
 						log.Debug().Str("session", resp.SessionID).Msg("recording stopped")
-						cmd.Printf("stopped session=%s device=%s\n", resp.SessionID, state.DeviceID)
+						cmd.Printf("stopped session=%s\n", resp.SessionID)
 						stoppedCount++
 					}
 

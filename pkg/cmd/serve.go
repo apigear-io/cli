@@ -4,7 +4,6 @@ import (
 	"github.com/apigear-io/cli/pkg/app"
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/mon"
 	"github.com/apigear-io/cli/pkg/server"
 	"github.com/spf13/cobra"
 )
@@ -25,9 +24,9 @@ func NewServeCommand() *cobra.Command {
 			}
 			err := app.WithServer(cmd.Context(), opts, func(s *server.Server) error {
 				log.Info().Msgf("nats server running at %s:%d", opts.NatsHost, opts.NatsPort)
-				s.NetworkManager().OnMonitorEvent(func(event *mon.Event) {
-					log.Info().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
-				})
+				// s.NetworkManager().OnMonitorEvent(func(event *mon.Event) {
+				// 	log.Debug().Str("source", event.Device).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
+				// })
 				return helper.Wait(cmd.Context(), nil)
 			})
 			log.Info().Msg("server is running. Press Ctrl+C to stop.")
