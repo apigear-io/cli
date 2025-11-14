@@ -265,11 +265,36 @@ func (m *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
 	log.Info().Msg("subscribe to monitor events")
 	_, err = nc.Subscribe(config.MonitorSubject+".>", func(msg *nats.Msg) {
 		var event mon.Event
-		err := json.Unmarshal(msg.Data, &event)
-		if err != nil {
-			log.Error().Msgf("unmarshal event: %v", err)
-			return
+
+		// Try to read metadata from NATS headers first (optimized path)
+		if msg.Header != nil && msg.Header.Get("X-Monitor-Type") != "" {
+			// Headers available - reconstruct event from headers + data payload
+			event.Type = mon.ParseEventType(msg.Header.Get("X-Monitor-Type"))
+			event.Symbol = msg.Header.Get("X-Monitor-Symbol")
+			event.Device = msg.Header.Get("X-Monitor-Device")
+			event.Id = msg.Header.Get("X-Monitor-Id")
+			// Parse timestamp if available
+			if tsStr := msg.Header.Get("X-Monitor-Timestamp"); tsStr != "" {
+				if ts, err := time.Parse("2006-01-02T15:04:05.999999999Z07:00", tsStr); err == nil {
+					event.Timestamp = ts
+				}
+			}
+
+			// Unmarshal only the Data payload (not full event)
+			var payload mon.Payload
+			if err := json.Unmarshal(msg.Data, &payload); err != nil {
+				log.Error().Msgf("unmarshal data payload: %v", err)
+				return
+			}
+			event.Data = payload
+		} else {
+			// Fallback: full event decode (backward compatibility with old messages)
+			if err := json.Unmarshal(msg.Data, &event); err != nil {
+				log.Error().Msgf("unmarshal event: %v", err)
+				return
+			}
 		}
+
 		fn(&event)
 	})
 	if err != nil {

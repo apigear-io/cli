@@ -60,6 +60,10 @@ func NewFeedCommand() *cobra.Command {
 			log.Info().Msgf("sending %d events to %s", len(events), url)
 			sender := helper.NewHTTPSender(url)
 			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.interval, options.batch)
+
+			// Counter to track sent messages
+			var sentCount int
+
 			err = ctrl.Run(events, func(event mon.Event) error {
 				if event.Device == "" {
 					event.Device = options.deviceId
@@ -68,11 +72,21 @@ func NewFeedCommand() *cobra.Command {
 
 				payload := [1]mon.Event{event}
 				log.Info().Msgf("send event %s %s %s", event.Device, event.Type.String(), event.Symbol)
-				return sender.SendValue(payload)
+				err := sender.SendValue(payload)
+				if err == nil {
+					sentCount++
+				}
+				return err
 			})
 			if err != nil {
 				log.Warn().Msgf("error sending events: %s", err)
 			}
+
+			// Report total sent
+			totalExpected := len(events) * options.repeat
+			log.Info().Msgf("feed completed: sent %d/%d events (%.1f%%)", sentCount, totalExpected, float64(sentCount)/float64(totalExpected)*100)
+			fmt.Printf("Feed completed: sent %d/%d events\n", sentCount, totalExpected)
+
 			return nil
 		},
 	}

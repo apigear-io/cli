@@ -59,12 +59,32 @@ func (r *ReplayOlinkRelay) handleMsg(msg *nats.Msg) {
 		return
 	}
 	log.Debug().Str("subject", msg.Subject).RawJSON("data", msg.Data).Msg("playback relay: message received")
+
+	// Try to read metadata from NATS headers first (optimized path)
 	var event mon.Event
-	err := json.Unmarshal(msg.Data, &event)
-	if err != nil {
-		log.Error().Err(err).Msg("playback relay: unmarshal failed")
-		return
+	if msg.Header != nil && msg.Header.Get("X-Monitor-Type") != "" {
+		// Headers available - reconstruct event from headers + data payload
+		event.Type = mon.ParseEventType(msg.Header.Get("X-Monitor-Type"))
+		event.Symbol = msg.Header.Get("X-Monitor-Symbol")
+		event.Device = msg.Header.Get("X-Monitor-Device")
+		event.Id = msg.Header.Get("X-Monitor-Id")
+		// Timestamp parsing optional for routing
+
+		// Unmarshal only the Data payload (not full event)
+		var payload mon.Payload
+		if err := json.Unmarshal(msg.Data, &payload); err != nil {
+			log.Error().Err(err).Msg("playback relay: unmarshal data payload failed")
+			return
+		}
+		event.Data = payload
+	} else {
+		// Fallback: full event decode (backward compatibility with old messages)
+		if err := json.Unmarshal(msg.Data, &event); err != nil {
+			log.Error().Err(err).Msg("playback relay: unmarshal event failed")
+			return
+		}
 	}
+
 	frame, err := convertEventToOlinkMessage(&event)
 	if err != nil {
 		log.Error().Err(err).Msg("playback relay: convert event failed")

@@ -156,6 +156,9 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 		opts.Progress(*metadata)
 	}
 
+	// Capture the time BEFORE subscription to catch any missed messages from buffer
+	subscriptionStartTime := time.Now().UTC()
+
 	msgCh := make(chan *nats.Msg, 1024)
 	sub, err := nc.ChanSubscribe(sourceSubject, msgCh)
 	if err != nil {
@@ -166,6 +169,51 @@ func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
 			log.Warn().Err(err).Str("subject", sourceSubject).Msg("failed to drain subscription")
 		}
 	}()
+
+	// Ensure subscription is fully established on NATS server before proceeding
+	// This prevents race condition where messages arrive before subscription is ready
+	if err := nc.FlushTimeout(2 * time.Second); err != nil {
+		return nil, fmt.Errorf("flush subscription: %w", err)
+	}
+
+	// Replay messages from buffer that arrived during subscription setup
+	// This ensures we don't miss any messages due to timing
+	subscriptionReadyTime := time.Now().UTC()
+	replayCtx, cancelReplay := context.WithTimeout(context.Background(), 5*time.Second)
+	count, last, err := buffer.Replay(replayCtx, js, opts.DeviceID, subscriptionStartTime, subscriptionReadyTime, func(bufMsg *nats.Msg, bufferedAt time.Time) error {
+		recordedAt := bufferedAt
+		if recordedAt.IsZero() {
+			recordedAt = time.Now().UTC()
+		}
+		replayed := &nats.Msg{
+			Subject: sessionSubject,
+			Header:  nats.Header{},
+			Data:    append([]byte(nil), bufMsg.Data...),
+		}
+		replayed.Header.Set("Content-Type", "application/json")
+		replayed.Header.Set(config.HeaderDevice, opts.DeviceID)
+		replayed.Header.Set(config.HeaderSession, sessionID)
+		replayed.Header.Set(config.HeaderRecordedAt, recordedAt.Format(time.RFC3339Nano))
+		// Copy original headers from buffered message if they exist
+		if bufMsg.Header != nil {
+			for k, v := range bufMsg.Header {
+				if k != config.HeaderBufferedAt && k != config.HeaderDeadline {
+					replayed.Header[k] = v
+				}
+			}
+		}
+		return publishToStream(replayCtx, js, replayed)
+	})
+	cancelReplay()
+	if err != nil {
+		log.Warn().Err(err).Str("session", sessionID).Msg("failed to replay messages from buffer during setup")
+	} else if count > 0 {
+		log.Info().Str("session", sessionID).Int("count", count).Msg("replayed messages that arrived during subscription setup")
+		metadata.MessageCount += count
+		if !last.IsZero() {
+			metadata.End = last
+		}
+	}
 
 	var mu sync.Mutex
 

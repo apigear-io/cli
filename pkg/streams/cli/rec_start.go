@@ -28,7 +28,7 @@ func newStreamRecordCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "record",
-		Short:   "record a stream using a device id",
+		Short:   "record a stream for a device (defaults to device 123)",
 		Aliases: []string{"begin"},
 		GroupID: "record",
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -38,7 +38,7 @@ func newStreamRecordCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to record (omit to record all devices)")
+	cmd.Flags().StringVar(&opts.DeviceID, "device", "123", "Device identifier to record")
 	cmd.Flags().DurationVar(&opts.Retention, "retention", 0, "Optional JetStream retention (e.g. 24h)")
 	cmd.Flags().StringVar(&opts.Note, "note", "", "Optional note/description for this recording session")
 	cmd.Flags().DurationVar(&opts.PreRoll, "pre-roll", 0, "Optional buffer window to include before start (e.g. 5m)")
@@ -69,12 +69,7 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 	}
 
 	return withNATS(ctx, func(nc *nats.Conn) error {
-		if opts.DeviceID == "" {
-			log.Info().Str("subject", opts.Subject).Msg("record all devices request")
-			cmd.Println("recording all devices...")
-		} else {
-			log.Info().Str("device", opts.DeviceID).Str("subject", opts.Subject).Msg("record start request")
-		}
+		log.Info().Str("device", opts.DeviceID).Str("subject", opts.Subject).Msg("record start request")
 
 		resp, err := controller.SendCommand(ctx, nc, config.RecordRpcSubject, request)
 		if err != nil {
@@ -87,22 +82,13 @@ func runRecordingStart(ctx context.Context, cmd *cobra.Command, opts *recordStar
 			return errors.New(resp.Message)
 		}
 
-		if opts.DeviceID == "" {
-			// Multi-device mode
-			log.Info().Msg("recording all devices started")
-			cmd.Println("recording started for all devices")
-			cmd.Println("devices will be discovered automatically as messages arrive")
-			cmd.Println("use 'stream stop' to stop all recordings")
-		} else {
-			// Single device mode
-			log.Info().Str("session", resp.SessionID).Str("device", opts.DeviceID).Msg("recording started")
-			cmd.Printf("recording started session=%s\n", resp.SessionID)
-			if rootOpts.verbose && resp.State != nil {
-				cmd.Printf("state: %s (subject=%s device=%s messages=%d)\n",
-					resp.State.Status, resp.State.Subject, resp.State.DeviceID, resp.State.MessageCount)
-				if !resp.State.StartedAt.IsZero() {
-					cmd.Printf("started: %s\n", resp.State.StartedAt.Format(time.RFC3339))
-				}
+		log.Info().Str("session", resp.SessionID).Str("device", opts.DeviceID).Msg("recording started")
+		cmd.Printf("recording started session=%s device=%s\n", resp.SessionID, opts.DeviceID)
+		if rootOpts.verbose && resp.State != nil {
+			cmd.Printf("state: %s (subject=%s device=%s messages=%d)\n",
+				resp.State.Status, resp.State.Subject, resp.State.DeviceID, resp.State.MessageCount)
+			if !resp.State.StartedAt.IsZero() {
+				cmd.Printf("started: %s\n", resp.State.StartedAt.Format(time.RFC3339))
 			}
 		}
 		return nil

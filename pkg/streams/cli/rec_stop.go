@@ -40,10 +40,6 @@ func newStreamStopCmd() *cobra.Command {
 						return fmt.Errorf("list states: %w", err)
 					}
 
-					// Identify unique parent sessions to stop
-					// Multi-device sessions have format: {parent-session-id}-{device-id}
-					// We want to stop the parent session, not individual device sessions
-					parentSessions := make(map[string]bool)
 					var sessionsToStop []string
 
 					if deviceID != "" {
@@ -61,28 +57,9 @@ func newStreamStopCmd() *cobra.Command {
 						cmd.Printf("found %d active session(s)\n", len(sessionsToStop))
 					} else {
 						// Stop all running sessions
-						// Detect multi-device parent sessions by looking for device-specific sessions
 						for _, state := range states {
-							if state.Status != "running" {
-								continue
-							}
-							// Check if this is a device-specific session (contains device ID in session ID)
-							sessionID := state.SessionID
-							// Device sessions have format: {parent}-{deviceID}
-							// If we find such sessions, we want to stop the parent instead
-							if lastDash := len(sessionID) - len(state.DeviceID) - 1; lastDash > 0 &&
-								lastDash < len(sessionID) &&
-								sessionID[lastDash] == '-' &&
-								sessionID[lastDash+1:] == state.DeviceID {
-								// This is a device-specific session from a multi-device recording
-								parentSessionID := sessionID[:lastDash]
-								if !parentSessions[parentSessionID] {
-									parentSessions[parentSessionID] = true
-									sessionsToStop = append(sessionsToStop, parentSessionID)
-								}
-							} else {
-								// This is a standalone single-device session
-								sessionsToStop = append(sessionsToStop, sessionID)
+							if state.Status == "running" {
+								sessionsToStop = append(sessionsToStop, state.SessionID)
 							}
 						}
 						if len(sessionsToStop) == 0 {
