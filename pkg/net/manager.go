@@ -97,7 +97,7 @@ func (m *NetworkManager) Start(ctx context.Context) error {
 		log.Error().Err(err).Msg("failed to start http server")
 		return err
 	}
-	err = m.EnableMonitor()
+	err = m.EnableMonitor(true)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to enable monitor")
 		return err
@@ -181,7 +181,7 @@ func (m *NetworkManager) HttpServer() *HTTPServer {
 	return m.httpServer
 }
 
-func (m *NetworkManager) EnableMonitor() error {
+func (m *NetworkManager) EnableMonitor(doLog bool) error {
 	log.Info().Msg("enable monitor endpoint")
 	if m.httpServer == nil {
 		log.Error().Msg("http server not started")
@@ -192,7 +192,7 @@ func (m *NetworkManager) EnableMonitor() error {
 		log.Error().Err(err).Msg("nats connection")
 		return err
 	}
-	m.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc))
+	m.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc, doLog))
 	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", m.httpServer.Address())
 	return nil
 }

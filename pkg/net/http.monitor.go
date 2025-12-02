@@ -35,7 +35,7 @@ func (dt *deviceTracker) isNewDevice(deviceId string) bool {
 	return !loaded // true if newly stored, false if already existed
 }
 
-func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
+func MonitorRequestHandler(nc *nats.Conn, doLog bool) http.HandlerFunc {
 	// Create device tracker for auto on-demand recording
 	tracker := &deviceTracker{}
 
@@ -69,6 +69,9 @@ func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
 			}
 			if event.Timestamp.IsZero() {
 				event.Timestamp = time.Now()
+			}
+			if doLog {
+				log.Info().Msgf("event: %+v", event)
 			}
 			mon.Emitter.FireHook(event)
 		}

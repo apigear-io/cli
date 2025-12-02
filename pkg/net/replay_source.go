@@ -28,16 +28,18 @@ func (f *PlaybackSourceFactory) SourceFactoryFunc() remote.SourceFactory {
 	}
 }
 
-// Dispatch routes a decoded ObjectLink message to the appropriate playback source.
-func (f *PlaybackSourceFactory) Dispatch(msg core.Message) {
-	log.Info().Msgf("playback: dispatching message %v", msg)
-	objectID := resolveObjectID(msg)
-	if objectID == "" {
-		log.Warn().Msg("playback: unable to resolve object id from message")
-		return
+// Dispatch routes decoded ObjectLink messages to the appropriate playback sources.
+func (f *PlaybackSourceFactory) Dispatch(messages []core.Message) {
+	for _, msg := range messages {
+		log.Info().Msgf("playback: dispatching message %v", msg)
+		objectID := resolveObjectID(msg)
+		if objectID == "" {
+			log.Warn().Msg("playback: unable to resolve object id from message")
+			continue
+		}
+		src := f.getOrCreate(objectID)
+		src.HandleMessage(msg)
 	}
-	src := f.getOrCreate(objectID)
-	src.HandleMessage(msg)
 }
 
 func (f *PlaybackSourceFactory) getOrCreate(objectID string) *PlaybackSource {

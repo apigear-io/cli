@@ -85,26 +85,35 @@ func (r *ReplayOlinkRelay) handleMsg(msg *nats.Msg) {
 		}
 	}
 
-	frame, err := convertEventToOlinkMessage(&event)
+	// one event can trigger multiple OLink frames (e.g., state with multiple fields)
+	frames, err := convertEventToOlinkMessages(&event)
 	if err != nil {
 		log.Error().Err(err).Msg("playback relay: convert event failed")
 		return
 	}
-	r.factory.Dispatch(frame)
+	r.factory.Dispatch(frames)
 }
 
-func convertEventToOlinkMessage(event *mon.Event) (core.Message, error) {
+// convertEventToOlinkMessages converts a monitor event to one or more OLink messages
+func convertEventToOlinkMessages(event *mon.Event) ([]core.Message, error) {
 	switch event.Type {
 	case mon.TypeCall:
-		return core.MakeInvokeMessage(0, event.Symbol, core.AsArgs(nil)), nil
+		return []core.Message{core.MakeInvokeMessage(0, event.Symbol, core.AsArgs(nil))}, nil
 	case mon.TypeSignal:
-		return core.MakeSignalMessage(event.Symbol, core.AsArgs(event.Data)), nil
+		return []core.Message{core.MakeSignalMessage(event.Symbol, core.AsArgs(event.Data))}, nil
 	case mon.TypeState:
-		for _, v := range event.Data {
-			return core.MakePropertyChangeMessage(event.Symbol, v), nil
+		// State can have multiple fields, each becomes a separate PropertyChange message
+		messages := make([]core.Message, 0, len(event.Data))
+		module, object := core.SymbolIdToParts(event.Symbol)
+		for field, value := range event.Data {
+			// Build the property symbol: objectId/member
+			objectId := fmt.Sprintf("%s.%s", module, object)
+			propertySymbol := core.MakeSymbolId(objectId, field)
+			log.Debug().Str("propertySymbol", propertySymbol).Interface("value", value).Msg("playback relay: state field")
+			messages = append(messages, core.MakePropertyChangeMessage(propertySymbol, value))
 		}
+		return messages, nil
 	default:
-		return core.Message{}, fmt.Errorf("unknown event type: %s", event.Type)
+		return nil, fmt.Errorf("unknown event type: %s", event.Type)
 	}
-	return core.Message{}, nil
 }
