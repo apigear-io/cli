@@ -34,6 +34,10 @@ func addCoreTools(s *server.MCPServer) {
 	// Version tool
 	versionTool := mcp.NewTool("version",
 		mcp.WithDescription("Display version information"),
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(versionTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		return mcp.NewToolResultText(retrieveVersion()), nil

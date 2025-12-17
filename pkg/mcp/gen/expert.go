@@ -21,6 +21,9 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		mcp.WithString("features", mcp.Description("Features to enable (comma-separated, defaults to 'all')")),
 		mcp.WithString("force", mcp.Description("Force overwrite (true/false)")),
 		mcp.WithString("watch", mcp.Description("Watch for changes (true/false). This keeps the process running.")),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(genExpertTool, func(_ context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		options := &gen.ExpertOptions{}

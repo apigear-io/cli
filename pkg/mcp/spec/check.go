@@ -13,6 +13,10 @@ func registerSpecCheckTool(s *server.MCPServer) {
 	specCheckTool := mcp.NewTool("specificationCheck",
 		mcp.WithDescription("Load and validate API specification(module, solution, rules) files"),
 		mcp.WithString("file", mcp.Required(), mcp.Description("Path to specification file")),
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(specCheckTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		file, err := request.RequireString("file")

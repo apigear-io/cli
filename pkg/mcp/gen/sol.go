@@ -15,6 +15,9 @@ func registerGenerateSolutionTool(s *server.MCPServer) {
 		mcp.WithString("solution", mcp.Required(), mcp.Description("Path to solution file")),
 		mcp.WithString("force", mcp.Description("Force overwrite (true/false)")),
 		mcp.WithString("watch", mcp.Description("Watch for changes (true/false). This keeps the process running.")),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(genSolutionTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		solutionPath, err := request.RequireString("solution")
