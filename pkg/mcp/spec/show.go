@@ -14,6 +14,10 @@ func registerSpecShemaTool(s *server.MCPServer) {
 		mcp.WithDescription("Show the schema for module, solution, rules documents in either yaml or json format"),
 		mcp.WithString("type", mcp.Required(), mcp.Description("Document type (module, solution, rules)")),
 		mcp.WithString("format", mcp.Required(), mcp.Description("Output schema format (yaml, json)")),
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
+		mcp.WithOpenWorldHintAnnotation(false),
 	)
 	s.AddTool(specCheckTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		docType, err := request.RequireString("type")

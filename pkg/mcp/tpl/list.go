@@ -13,6 +13,9 @@ import (
 func registerTemplateListTool(s *server.MCPServer) {
 	templateListTool := mcp.NewTool("templateList",
 		mcp.WithDescription("List available templates from registry"),
+		mcp.WithReadOnlyHintAnnotation(true),
+		mcp.WithDestructiveHintAnnotation(false),
+		mcp.WithIdempotentHintAnnotation(true),
 	)
 	s.AddTool(templateListTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		infos, err := repos.Registry.List()
