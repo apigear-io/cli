@@ -12,8 +12,6 @@ import (
 )
 
 func registerGenerateExpertTool(s *server.MCPServer) {
-	options := &gen.ExpertOptions{}
-
 	genExpertTool := mcp.NewTool("generateExpert",
 		mcp.WithDescription("Generate code using expert mode with individual generator options"),
 		mcp.WithString("input", mcp.Required(), mcp.Description("Input module files (comma-separated)")),
@@ -24,11 +22,13 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		mcp.WithString("watch", mcp.Description("Watch for changes (true/false). This keeps the process running.")),
 	)
 	s.AddTool(genExpertTool, func(_ context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		options := &gen.ExpertOptions{}
+
 		input, err := request.RequireString("input")
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
-		options.Inputs = append(options.Inputs, input)
+		options.Inputs = []string{input}
 
 		output, err := request.RequireString("output")
 		if err != nil {
@@ -43,7 +43,7 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		options.TemplateDir = template
 
 		if features, err := request.RequireString("features"); err == nil && features != "" {
-			options.Features = append(options.Features, features)
+			options.Features = []string{features}
 		}
 		options.Force = false
 		if force, err := request.RequireString("force"); err == nil && force == "true" {
