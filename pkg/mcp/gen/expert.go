@@ -3,6 +3,7 @@ package gen
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/apigear-io/cli/pkg/cmd/gen"
 	"github.com/apigear-io/cli/pkg/helper"
@@ -28,7 +29,7 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
-		options.Inputs = []string{input}
+		options.Inputs = strings.Split(input, ",")
 
 		output, err := request.RequireString("output")
 		if err != nil {
@@ -43,7 +44,7 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		options.TemplateDir = template
 
 		if features, err := request.RequireString("features"); err == nil && features != "" {
-			options.Features = []string{features}
+			options.Features = strings.Split(features, ",")
 		}
 		options.Force = false
 		if force, err := request.RequireString("force"); err == nil && force == "true" {
