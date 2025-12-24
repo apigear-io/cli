@@ -12,7 +12,7 @@ import (
 
 func registerTemplateListTool(s *server.MCPServer) {
 	templateListTool := mcp.NewTool("templateList",
-		mcp.WithDescription("List available templates from registry"),
+		mcp.WithDescription("List available templates from registry (uses cached data, use templateUpdate to refresh)"),
 		mcp.WithReadOnlyHintAnnotation(true),
 		mcp.WithDestructiveHintAnnotation(false),
 		mcp.WithIdempotentHintAnnotation(true),

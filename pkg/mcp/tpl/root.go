@@ -6,4 +6,5 @@ import (
 
 func RegisterMCPTools(s *server.MCPServer) {
 	registerTemplateListTool(s)
+	registerTemplateUpdateTool(s)
 }
