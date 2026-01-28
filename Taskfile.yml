@@ -43,6 +43,10 @@ tasks:
     desc: Run tests with nats
     cmds:
       - go test -tags=nats ./...
+  test:cover:
+    desc: Run tests with coverage
+    cmds:
+      - go test -coverprofile=coverage.txt ./...
   cover:
     desc: Show coverage
     cmds:
