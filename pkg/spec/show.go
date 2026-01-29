@@ -11,9 +11,6 @@ var ApigearModuleYamlSchema []byte
 //go:embed schema/apigear.solution.schema.yaml
 var ApigearSolutionYamlSchema []byte
 
-//go:embed schema/apigear.scenario.schema.yaml
-var ApigearScenarioYamlSchema []byte
-
 //go:embed schema/apigear.rules.schema.yaml
 var ApigearRulesYamlSchema []byte
 
@@ -42,15 +39,6 @@ func ShowSchemaFile(t DocumentType, f SchemaFormat) (*string, error) {
 			schema = ApigearSolutionSchema
 		case SchemaFormatYaml:
 			schema = ApigearSolutionYamlSchema
-		default:
-			return nil, fmt.Errorf("unsupported schema format: %s", f)
-		}
-	case DocumentTypeScenario:
-		switch f {
-		case SchemaFormatJson:
-			schema = ApigearScenarioSchema
-		case SchemaFormatYaml:
-			schema = ApigearScenarioYamlSchema
 		default:
 			return nil, fmt.Errorf("unsupported schema format: %s", f)
 		}

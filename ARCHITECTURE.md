@@ -17,12 +17,11 @@ This document provides a comprehensive overview of the ApiGear CLI architecture,
 
 ## Overview
 
-ApiGear CLI is a command-line tool for API specification, code generation, monitoring, and simulation. It enables developers to:
+ApiGear CLI is a command-line tool for API specification, code generation, and monitoring. It enables developers to:
 
 - **Define APIs** using IDL (Interface Definition Language) or YAML/JSON specifications
 - **Generate code** for multiple target languages using customizable templates
 - **Monitor** API calls in real-time
-- **Simulate** API behavior using JavaScript-based simulation scripts
 - **Manage projects** with templates, versioning, and sharing capabilities
 
 ### High-Level Architecture
@@ -30,12 +29,12 @@ ApiGear CLI is a command-line tool for API specification, code generation, monit
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         CLI Commands                             │
-│  (gen, mon, sim, prj, tpl, spec, cfg, x, serve, olink, mcp)     │
+│  (gen, mon, prj, tpl, spec, cfg, x, olink, mcp)                 │
 ├─────────────────────────────────────────────────────────────────┤
 │                       Domain Services                            │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │
-│  │   Gen   │ │   Sim   │ │   Mon   │ │   Prj   │ │   Tpl   │   │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐               │
+│  │   Gen   │ │   Mon   │ │   Prj   │ │   Tpl   │               │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘               │
 ├─────────────────────────────────────────────────────────────────┤
 │                        Core Model                                │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐               │
@@ -69,7 +68,6 @@ apigear-io/cli/
 │   ├── model/                    # Core API model
 │   ├── idl/                      # IDL parser (ANTLR4)
 │   ├── spec/                     # Specification validation
-│   ├── sim/                      # Simulation engine
 │   ├── mon/                      # Monitoring
 │   ├── net/                      # Network management
 │   ├── streams/                  # Event streaming (NATS)
@@ -92,13 +90,10 @@ apigear-io/cli/
 ├── data/                         # Static data and samples
 │   ├── mon/                      # Monitoring samples
 │   ├── project/                  # Project templates
-│   ├── simu/                     # Simulation demos
 │   ├── spec/                     # Specification schemas
 │   └── template/                 # Template samples
 ├── examples/                     # Example projects
 │   ├── counter/                  # Counter example
-│   ├── sim/                      # Simulation examples
-│   ├── stim/                     # Stimulus examples
 │   └── tpl/                      # Template examples
 ├── tests/                        # Integration tests
 ├── docs/                         # Generated documentation
@@ -160,7 +155,7 @@ func main() {
 │ Cobra command handlers, user interaction                   │
 ├────────────────────────────────────────────────────────────┤
 │ Layer 2: Domain Services                                   │
-│ gen, sim, mon, prj, tpl, spec, sol                        │
+│ gen, mon, prj, tpl, spec, sol                             │
 ├────────────────────────────────────────────────────────────┤
 │ Layer 3: Core Model                                        │
 │ model, idl, evt                                            │
@@ -199,11 +194,10 @@ func main() {
 | `tpl` | Template repository management | Cache, registry operations |
 | `repos` | SDK template cache | Template storage |
 
-#### Simulation & Monitoring
+#### Monitoring
 
 | Package | Purpose | Key Types |
 |---------|---------|-----------|
-| `sim` | JavaScript simulation engine (Goja) | `Engine`, `World`, `ObjectService` |
 | `mon` | HTTP monitoring and recording | `Event`, `EventFactory` |
 
 #### Network & Communication
@@ -228,13 +222,11 @@ func main() {
 |---------|---------|
 | `cmd/gen` | Code generation commands |
 | `cmd/mon` | Monitoring commands |
-| `cmd/sim` | Simulation commands |
 | `cmd/prj` | Project management commands |
 | `cmd/tpl` | Template management commands |
 | `cmd/spec` | Specification validation commands |
 | `cmd/cfg` | Configuration commands |
 | `cmd/x` | Experimental/utility commands |
-| `cmd/stim` | Stimulus commands |
 | `cmd/olink` | ObjectLink REPL commands |
 
 ---
@@ -374,36 +366,6 @@ type Options struct {
 }
 ```
 
-### Simulation Engine Flow
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│ Load Script │───▶│ Create Goja │───▶│ Register    │
-│    (.js)    │    │   Runtime   │    │  World API  │
-└─────────────┘    └─────────────┘    └─────────────┘
-                                             │
-                                             ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Events    │◀───│   Execute   │◀───│   Create    │
-│  via OLink  │    │   Script    │    │  Services   │
-└─────────────┘    └─────────────┘    └─────────────┘
-```
-
-1. **Load Script** - Read JavaScript simulation file
-2. **Create Runtime** - Initialize Goja JavaScript engine
-3. **Register World API** - Expose `$createService`, `$createChannel`, etc.
-4. **Create Services** - Script creates simulated API services
-5. **Execute Script** - Run simulation logic
-6. **Events via OLink** - Communicate with clients over ObjectLink protocol
-
-**World API:**
-```javascript
-// Available in simulation scripts
-$createService(name)    // Create a service proxy
-$createClient(name)     // Create a client proxy
-$createChannel(name)    // Create a communication channel
-```
-
 ### Monitoring & Event Streaming
 
 ```
@@ -448,14 +410,11 @@ The CLI uses **Cobra** for command structure and **Viper** for configuration.
 
 ```
 apigear
-├── serve              # Start server for monitoring/simulation
 ├── generate (gen)     # Generate code from APIs
 │   ├── expert (x)     # Expert mode with flags
 │   └── solution (sol) # Generate from solution document
 ├── monitor (mon)      # Display/record API calls
 ├── config (cfg)       # Display/edit configuration
-├── simulate (sim)     # Simulate API behavior
-├── stimulate (stim)   # Stimulate API services
 ├── spec (s)           # Load and validate specs
 ├── project (prj)      # Manage projects
 │   ├── create         # Create new project
@@ -670,11 +629,6 @@ func (l *Listener) EnterModule(ctx *parser.ModuleContext) {
 }
 ```
 
-### Proxy Pattern
-**Location:** `pkg/sim/`
-
-Service proxies for JavaScript integration.
-
 ### Adapter Pattern
 **Location:** `pkg/net/`
 
@@ -691,7 +645,6 @@ Protocol adapters (OLink, WebSocket) adapt between different communication proto
 | Configuration | Viper | v1.21.0 |
 | Parsing | ANTLR4 | IDL grammar |
 | Schema Validation | gojsonschema | JSON Schema |
-| JavaScript VM | Goja | Simulation scripts |
 | Message Bus | NATS | JetStream enabled |
 | Logging | zerolog | With lumberjack rotation |
 | WebSocket | gorilla/websocket | Protocol communication |
@@ -707,7 +660,6 @@ Key dependencies from `go.mod`:
 github.com/spf13/cobra          # CLI framework
 github.com/spf13/viper          # Configuration
 github.com/apigear-io/objectlink-core-go  # ObjectLink protocol
-github.com/dop251/goja          # JavaScript engine
 github.com/go-git/go-git/v5     # Git operations
 github.com/nats-io/nats-server/v2  # Message bus
 github.com/gorilla/websocket    # WebSocket
