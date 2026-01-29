@@ -62,3 +62,92 @@ func TestUseLayers(t *testing.T) {
 	require.Equal(t, "layer1", doc.Targets[0].Name)
 	require.Equal(t, "layer2", doc.Targets[1].Name)
 }
+
+func TestAggregateDependencies(t *testing.T) {
+	t.Run("returns empty when no targets", func(t *testing.T) {
+		doc := &SolutionDoc{
+			Name:    "test",
+			Targets: []*SolutionTarget{},
+		}
+
+		deps := doc.AggregateDependencies()
+		require.NotNil(t, deps)
+		require.Empty(t, deps)
+	})
+
+	t.Run("aggregates dependencies from single target", func(t *testing.T) {
+		doc := &SolutionDoc{
+			Name: "test",
+			Targets: []*SolutionTarget{
+				{
+					Name:     "target1",
+					computed: true,
+					dependencies: []string{
+						"dep1.yaml",
+						"dep2.yaml",
+					},
+				},
+			},
+		}
+
+		deps := doc.AggregateDependencies()
+		require.Len(t, deps, 2)
+		require.Contains(t, deps, "dep1.yaml")
+		require.Contains(t, deps, "dep2.yaml")
+	})
+
+	t.Run("aggregates dependencies from multiple targets", func(t *testing.T) {
+		doc := &SolutionDoc{
+			Name: "test",
+			Targets: []*SolutionTarget{
+				{
+					Name:     "target1",
+					computed: true,
+					dependencies: []string{
+						"dep1.yaml",
+						"dep2.yaml",
+					},
+				},
+				{
+					Name:     "target2",
+					computed: true,
+					dependencies: []string{
+						"dep3.yaml",
+						"dep4.yaml",
+					},
+				},
+			},
+		}
+
+		deps := doc.AggregateDependencies()
+		require.Len(t, deps, 4)
+		require.Contains(t, deps, "dep1.yaml")
+		require.Contains(t, deps, "dep2.yaml")
+		require.Contains(t, deps, "dep3.yaml")
+		require.Contains(t, deps, "dep4.yaml")
+	})
+
+	t.Run("handles targets with no dependencies", func(t *testing.T) {
+		doc := &SolutionDoc{
+			Name: "test",
+			Targets: []*SolutionTarget{
+				{
+					Name:     "target1",
+					computed: true,
+					dependencies: []string{
+						"dep1.yaml",
+					},
+				},
+				{
+					Name:         "target2",
+					computed:     true,
+					dependencies: []string{},
+				},
+			},
+		}
+
+		deps := doc.AggregateDependencies()
+		require.Len(t, deps, 1)
+		require.Contains(t, deps, "dep1.yaml")
+	})
+}
