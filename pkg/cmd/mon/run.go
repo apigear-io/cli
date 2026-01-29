@@ -26,9 +26,8 @@ func NewServerCommand() *cobra.Command {
 			netman.MonitorEmitter().AddHook(func(e *mon.Event) {
 				log.Info().Msgf("event: %s %s %v", e.Type.String(), e.Source, e.Data)
 			})
-			netman.OnMonitorEvent(func(event *mon.Event) {
-				log.Info().Str("source", event.Source).Str("type", event.Type.String()).Str("symbol", event.Symbol).Any("data", event.Data).Msg("received monitor event")
-			})
+			// Note: NATS-based OnMonitorEvent removed. Only local hooks work now.
+			// Events received via HTTP /monitor/{source} will trigger the hook above.
 			return netman.Wait(cmd.Context())
 		},
 	}
