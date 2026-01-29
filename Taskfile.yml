@@ -94,11 +94,3 @@ tasks:
     desc: convert yaml schemas to json
     cmds:
       - go run ./cmd/apigear x y2j 'pkg/spec/schema/*.yaml'
-  simu-run:
-    desc: Run simulation with a demo scenario
-    cmds:
-      - go run ./cmd/apigear s r ./data/simu/demo.scenario.yaml
-  simu-feed:
-    desc: Feed simulation with a demo json feed
-    cmds:
-      - go run ./cmd/apigear s f ./data/simu/sample.olnk.ndjson

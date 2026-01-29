@@ -17,9 +17,6 @@ var ApigearModuleSchema []byte
 //go:embed schema/apigear.solution.schema.json
 var ApigearSolutionSchema []byte
 
-//go:embed schema/apigear.scenario.schema.json
-var ApigearScenarioSchema []byte
-
 //go:embed schema/apigear.rules.schema.json
 var ApigearRulesSchema []byte
 
@@ -28,7 +25,6 @@ type DocumentType string
 const (
 	DocumentTypeModule   DocumentType = "module"
 	DocumentTypeSolution DocumentType = "solution"
-	DocumentTypeScenario DocumentType = "scenario"
 	DocumentTypeRules    DocumentType = "rules"
 	DocumentTypeUnknown  DocumentType = "unknown"
 )
@@ -90,8 +86,6 @@ func LoadSchema(t DocumentType) (gojsonschema.JSONLoader, error) {
 		schema = ApigearModuleSchema
 	case DocumentTypeSolution:
 		schema = ApigearSolutionSchema
-	case DocumentTypeScenario:
-		schema = ApigearScenarioSchema
 	case DocumentTypeRules:
 		schema = ApigearRulesSchema
 	default:
@@ -120,8 +114,6 @@ func GetDocumentType(file string) (DocumentType, error) {
 		return DocumentTypeModule, nil
 	case "solution":
 		return DocumentTypeSolution, nil
-	case "scenario":
-		return DocumentTypeScenario, nil
 	case "rules":
 		return DocumentTypeRules, nil
 	default:

@@ -74,10 +74,9 @@ The packages are defined in `pkg`. The packages are used by the command line and
 - `pkg/net` - HTTP server for monitoring and olink adapter using (https://github.com/apigear-io/objectlink-core-go)
 - `pkg/prj` - API project creation and management
 - `pkg/repos` - SDK template repository management using git from `pkg/git`
-- `pkg/sim` - Simulation engine using actions (`pkg/sim/actions`) or script (`pkg/sim/script`)
 - `pkg/sol` - API solution creation and management using schemas from `pkg/spec/schema`
 - `pkg/spec` - Specification and schema validation using gojsonschema (https://github.com/xeipuuv/gojsonschema)
-- `pkg/tasks` - Task management using to run and watch tasks (e.g. run solution, run simulation, ...)
+- `pkg/tasks` - Task management using to run and watch tasks (e.g. run solution, ...)
 - `pkg/up` - Update management using self-updater (github.com/creativeprojects/go-selfupdate)
 - `pkg/vfs` - Virtual file system for project creation and management, used by `pkg/prj`
 
@@ -106,7 +105,6 @@ There are several schema files:
 - `apigear.module.schema.yaml` - The main schema for the ApiGear API
 - `apigear.rules.schema.yaml` - The rules schema for code generation inside sdk templates
 - `apigear.solution.schema.yaml` - The solution schema to bind modules with sdk templates
-- `apigear.scenario.schema.yaml` - The simulation scenario schema
 
 Note: These schemas are re-used inside the apigear-vscode extension.
 
@@ -151,16 +149,6 @@ Monitoring requires a HTTP server to receive the monitoring data. The server is 
 
 To display the event you need to register an listener to the emitter and print the event content.
 
-### Simulation
-
-The simulation engine is defined in `pkg/sim`. The simulation engine is defined as an interface in `pkg/sim/core/engine.go`. A multi engine is used as default implementation (see `pkg/sim/core/multi.go`). The multi engine allows to run multiple simulation engines (actions, script) in parallel.
-
-The actions based simulation engine is defined in `pkg/sim/actions/engine.go`. The actions are defined in `pkg/sim/actions/actions.go`. The actions are evaluated and the result is passed back to the caller.
-
-The script based simulation engine is defined in `pkg/sim/script/engine.go`. The script engine is based on a JS VM (https://github.com/dop251/goja).
-
-Note: The script is not well defined currently and needs to be improved.
-
 ### Logging
 
 Logging is done using zerolog (https://github.com/rs/zerolog). The logging is configured in `pkg/log/logger.go`. The logging is configured to write to a file in `~/.apigear/apigear.log` and to stdout. The log file is rotated automatically.
@@ -174,52 +162,11 @@ The release configuration is defined in `.goreleaser.yaml`.
 
 ## Networking
 
-The ApiGear cli creates several network servers to communicate with other components. It has a monitoring endpoint for API traffic as also an ObjectLink ws endpoint for simulation. Additionally it exposes a NATS endpoint for inspecting the message routing.
+The ApiGear cli creates several network servers to communicate with other components. It has a monitoring endpoint for API traffic. Additionally it exposes a NATS endpoint for inspecting the message routing.
 
-To manage all these andpoints there is a facade calles the network maanger (see `pkg/net/manager.go`). To bring up all these endpoints. When you run apigear serve the network manager will be started and the endpoints will be available at the following addresses:
+To manage all these endpoints there is a facade called the network manager (see `pkg/net/manager.go`). The network manager will be started and the endpoints will be available at the following addresses:
 
 - http://localhost:5555/monitor/{source}
-- ws://localhost:5555/ws
 - nats://localhost:4222
 
-Here a short diagram to show the connection between the components:
-
-```mermaid
-graph TD
-    httpMon
-    httpMon
-    wsOlink
-    nats
-    simClient
-    simService
-    simManager
-    wsOlink --> simClient
-    simClient --> nats
-    nats --> simService
-    httpMon --> simClient
-    httpServ --> httpMon
-    httpServ --> wsOlink 
-    cli --> simClient
-    simService --> simManager
-```
-
-At the end all traffic is routed though NATS to allow us to record the message flow and to inspect the message for later API flow analysis.
-
-## Simulation
-
-The simulation is done using an embedded JS engine (https://github.com/dop251/goja) and a Go based simulation engine based on worlds and actors (objects). Each world can run a simulation script and it's possible to call actor functions or world level functions. With this we can easily simulate complex systems.
-
-```mermaid
-graph TD
-    nats
-    simClient
-    simService
-    simManager
-    simClient --> nats
-    nats --> simService
-    simService --> simManager
-    simManager --> world
-    world --> actors
-```
-
-So to use the simulation we need to start an embedded NATS server with the attached simService which uses the simManager to orchestrate the simulations. The simManager uses the world and actors to orchestrate the simulation. The world can run a simulation script and it's possible to call actor functions or world level functions using the simClient which uses the nats connection to send messages to the simService and vice versa.
+At the end all traffic is routed through NATS to allow us to record the message flow and to inspect the message for later API flow analysis.
