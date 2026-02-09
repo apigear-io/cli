@@ -4,20 +4,20 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel/idl/parser"
+	"github.com/apigear-io/cli/pkg/objmodel/idl/parser"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 
 	"github.com/antlr4-go/antlr/v4"
 )
 
 // Parser defines the parser data
 type Parser struct {
-	System *apimodel.System
+	System *objmodel.System
 }
 
 // NewParser creates a new parser with a named system
-func NewParser(s *apimodel.System) *Parser {
+func NewParser(s *objmodel.System) *Parser {
 	return &Parser{
 		System: s,
 	}

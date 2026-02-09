@@ -3,10 +3,10 @@ package filterrs
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToTypeRefString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToTypeRefString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema.IsArray {
 		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefix, &inner)
@@ -57,7 +57,7 @@ func ToTypeRefString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // cast value to TypedNode and deduct the rs return type
-func rsTypeRef(prefix string, node *apimodel.TypedNode) (string, error) {
+func rsTypeRef(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rsTypeRef node is nil")
 	}

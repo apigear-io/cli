@@ -11,8 +11,8 @@ import (
 
 	"github.com/apigear-io/cli/pkg/codegen/filters"
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel"
-	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/objmodel"
+	"github.com/apigear-io/cli/pkg/objmodel/spec"
 )
 
 // Generator parses documents and applies
@@ -48,7 +48,7 @@ type Options struct {
 	// TemplatesDir is the directory where templates are located
 	TemplatesDir string
 	// System is the root system model
-	System *apimodel.System
+	System *objmodel.System
 	// Features is a list of features defined by user
 	Features []string
 	// Force forces overwrite of existing files
@@ -168,7 +168,7 @@ func (g *generator) ProcessRules(doc *spec.RulesDoc) error {
 func (g *generator) processFeature(f *spec.FeatureRule) error {
 	log.Debug().Msgf("processing feature %s", f.Name)
 	// process system
-	ctx := apimodel.SystemScope{
+	ctx := objmodel.SystemScope{
 		System:   g.opts.System,
 		Features: g.ComputedFeatures,
 		Meta:     g.opts.Meta,
@@ -183,7 +183,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 	for _, module := range g.opts.System.Modules {
 		// process module
 		scopes := f.FindScopesByMatch(spec.ScopeModule)
-		ctx := apimodel.ModuleScope{
+		ctx := objmodel.ModuleScope{
 			System:   g.opts.System,
 			Module:   module,
 			Features: g.ComputedFeatures,
@@ -197,7 +197,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		}
 		for _, iface := range module.Interfaces {
 			// process interface
-			ctx := apimodel.InterfaceScope{
+			ctx := objmodel.InterfaceScope{
 				System:    g.opts.System,
 				Module:    module,
 				Interface: iface,
@@ -214,7 +214,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		}
 		for _, struct_ := range module.Structs {
 			// process struct
-			ctx := apimodel.StructScope{
+			ctx := objmodel.StructScope{
 				System:   g.opts.System,
 				Module:   module,
 				Struct:   struct_,
@@ -231,7 +231,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 		}
 		for _, enum := range module.Enums {
 			// process enum
-			ctx := apimodel.EnumScope{
+			ctx := objmodel.EnumScope{
 				System:   g.opts.System,
 				Module:   module,
 				Enum:     enum,
@@ -247,7 +247,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			}
 		}
 		for _, extern := range module.Externs {
-			ctx := apimodel.ExternScope{
+			ctx := objmodel.ExternScope{
 				System:   g.opts.System,
 				Module:   module,
 				Extern:   extern,

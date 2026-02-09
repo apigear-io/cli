@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel"
-	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/objmodel"
+	"github.com/apigear-io/cli/pkg/objmodel/spec"
 
 	"github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func readRules(t *testing.T, filename string) *spec.RulesDoc {
 func createGenerator(t *testing.T) *generator {
 	outDir := t.TempDir()
 	opts := Options{
-		System:       apimodel.NewSystem("test"),
+		System:       objmodel.NewSystem("test"),
 		Force:        false,
 		TemplatesDir: "testdata/templates",
 		OutputDir:    outDir,
@@ -40,7 +40,7 @@ func createGenerator(t *testing.T) *generator {
 func createMockGenerator(t *testing.T, tplDir string, features []string) (*generator, *MockOutput) {
 	out := NewMockOutput()
 	opts := Options{
-		System:       apimodel.NewSystem("test"),
+		System:       objmodel.NewSystem("test"),
 		Force:        true,
 		TemplatesDir: foundation.Join(tplDir, "templates"),
 		OutputDir:    "testdata/output",

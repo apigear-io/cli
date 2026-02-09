@@ -3,10 +3,10 @@ package filterjs
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToParamString(schema *apimodel.Schema, name string, prefix string) (string, error) {
+func ToParamString(schema *objmodel.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("jsParam schema is nil")
 	}
@@ -14,27 +14,27 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 		return name, nil
 	}
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		return name, nil
-	case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+	case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 		return name, nil
-	case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+	case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 		return name, nil
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		return name, nil
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil {
 			return "xxx", fmt.Errorf("jsParam enum not found: %s", schema.Dump())
 		}
 		return name, nil
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil {
 			return "xxx", fmt.Errorf("jsParam struct not found: %s", schema.Dump())
 		}
 		return name, nil
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("jsParam interface not found: %s", schema.Dump())
@@ -45,7 +45,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 	}
 }
 
-func jsParam(prefix string, node *apimodel.TypedNode) (string, error) {
+func jsParam(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("jsParam called with nil node")
 	}

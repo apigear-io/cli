@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +21,7 @@ func TestNSOpen(t *testing.T) {
 	}
 	for _, tt := range table {
 		t.Run(tt.in, func(t *testing.T) {
-			m := apimodel.NewModule(tt.in, "1.0")
+			m := objmodel.NewModule(tt.in, "1.0")
 			r, err := nsOpen(reflect.ValueOf(m))
 			assert.NoError(t, err)
 			assert.Equal(t, tt.out, r.String())
@@ -40,7 +40,7 @@ func TestNSClose(t *testing.T) {
 		{"a.b.c", "} } } // mod a::b::c"},
 	}
 	for _, tt := range table {
-		m := apimodel.NewModule(tt.in, "1.0")
+		m := objmodel.NewModule(tt.in, "1.0")
 		r, err := nsClose(reflect.ValueOf(m))
 		assert.NoError(t, err)
 		assert.Equal(t, tt.out, r.String())
@@ -58,7 +58,7 @@ func TestNS(t *testing.T) {
 		{"a.b.c", "a::b::c"},
 	}
 	for _, tt := range table {
-		m := apimodel.NewModule(tt.in, "1.0")
+		m := objmodel.NewModule(tt.in, "1.0")
 		r, err := ns(reflect.ValueOf(m))
 		assert.NoError(t, err)
 		assert.Equal(t, tt.out, r.String())

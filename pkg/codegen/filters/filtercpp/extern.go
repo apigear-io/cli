@@ -1,7 +1,7 @@
 package filtercpp
 
 import (
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type CppExtern struct {
@@ -15,12 +15,12 @@ type CppExtern struct {
 	ConanVersion string
 }
 
-func parseCppExtern(schema *apimodel.Schema) CppExtern {
+func parseCppExtern(schema *objmodel.Schema) CppExtern {
 	xe := schema.GetExtern()
 	return cppExtern(xe)
 }
 
-func cppExtern(xe *apimodel.Extern) CppExtern {
+func cppExtern(xe *objmodel.Extern) CppExtern {
 	ns := xe.Meta.GetString("cpp.namespace")
 	inc := xe.Meta.GetString("cpp.include")
 	name := xe.Meta.GetString("cpp.name")
@@ -44,7 +44,7 @@ func cppExtern(xe *apimodel.Extern) CppExtern {
 	}
 }
 
-func cppExterns(externs []*apimodel.Extern) []CppExtern {
+func cppExterns(externs []*objmodel.Extern) []CppExtern {
 	var items = []CppExtern{}
 	for _, ex := range externs {
 		items = append(items, cppExtern(ex))

@@ -1,7 +1,7 @@
 package filterrs
 
 import (
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type RsExtern struct {
@@ -10,7 +10,7 @@ type RsExtern struct {
 	Version string
 }
 
-func rsExtern(xe *apimodel.Extern) RsExtern {
+func rsExtern(xe *objmodel.Extern) RsExtern {
 	name := xe.Meta.GetString("rs.type")
 	crate := xe.Meta.GetString("rs.crate")
 	version := xe.Meta.GetString("rs.version")

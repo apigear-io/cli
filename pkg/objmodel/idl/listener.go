@@ -8,29 +8,29 @@ import (
 	"unicode"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/apigear-io/cli/pkg/apimodel/idl/parser"
+	"github.com/apigear-io/cli/pkg/objmodel/idl/parser"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/goccy/go-yaml"
 )
 
 type ObjectApiListener struct {
 	antlr.ParseTreeListener
-	System       *apimodel.System
-	kind         apimodel.Kind
-	module       *apimodel.Module
-	iface        *apimodel.Interface
-	extern       *apimodel.Extern
-	struct_      *apimodel.Struct
-	enum         *apimodel.Enum
-	enumMember   *apimodel.EnumMember
-	operation    *apimodel.Operation
-	param        *apimodel.TypedNode
-	_return      *apimodel.TypedNode
-	signal       *apimodel.Signal
-	property     *apimodel.TypedNode
-	field        *apimodel.TypedNode
-	schema       *apimodel.Schema
+	System       *objmodel.System
+	kind         objmodel.Kind
+	module       *objmodel.Module
+	iface        *objmodel.Interface
+	extern       *objmodel.Extern
+	struct_      *objmodel.Struct
+	enum         *objmodel.Enum
+	enumMember   *objmodel.EnumMember
+	operation    *objmodel.Operation
+	param        *objmodel.TypedNode
+	_return      *objmodel.TypedNode
+	signal       *objmodel.Signal
+	property     *objmodel.TypedNode
+	field        *objmodel.TypedNode
+	schema       *objmodel.Schema
 	runningValue int
 }
 
@@ -48,7 +48,7 @@ func IsNotNil(v any) {
 	logging.Error().Msgf("isNotNil: %v is nil", v)
 }
 
-func NewObjectApiListener(system *apimodel.System) parser.ObjectApiListener {
+func NewObjectApiListener(system *objmodel.System) parser.ObjectApiListener {
 	return &ObjectApiListener{
 		System: system,
 	}
@@ -91,7 +91,7 @@ func (o *ObjectApiListener) EnterModuleRule(c *parser.ModuleRuleContext) {
 	} else {
 		version = c.GetVersion().GetText()
 	}
-	o.module = apimodel.NewModule(name, version)
+	o.module = objmodel.NewModule(name, version)
 	o.module.System = o.System
 }
 
@@ -106,7 +106,7 @@ func (o *ObjectApiListener) EnterImportRule(c *parser.ImportRuleContext) {
 	} else {
 		version = c.GetVersion().GetText()
 	}
-	import_ := apimodel.NewImport(name, version)
+	import_ := objmodel.NewImport(name, version)
 	o.module.Imports = append(o.module.Imports, import_)
 }
 
@@ -119,7 +119,7 @@ func (o *ObjectApiListener) EnterExternRule(c *parser.ExternRuleContext) {
 	IsNotNil(o.module)
 	IsNil(o.extern)
 	name := c.GetName().GetText()
-	o.extern = apimodel.NewExtern(name)
+	o.extern = objmodel.NewExtern(name)
 
 }
 
@@ -136,10 +136,10 @@ func (o *ObjectApiListener) ExitExternRule(c *parser.ExternRuleContext) {
 func (o *ObjectApiListener) EnterInterfaceRule(c *parser.InterfaceRuleContext) {
 	IsNotNil(o.module)
 	IsNil(o.iface)
-	o.kind = apimodel.KindInterface
+	o.kind = objmodel.KindInterface
 	name := c.GetName().GetText()
 
-	o.iface = apimodel.NewInterface(name)
+	o.iface = objmodel.NewInterface(name)
 
 	// check if the interface extends another interface
 	if c.GetExtends() != nil {
@@ -179,8 +179,8 @@ func (o *ObjectApiListener) EnterPropertyRule(c *parser.PropertyRuleContext) {
 	IsNil(o.property)
 	name := c.GetName().GetText()
 	readOnly := c.GetReadonly() != nil
-	o.kind = apimodel.KindProperty
-	o.property = apimodel.NewTypedNode(name, apimodel.KindProperty)
+	o.kind = objmodel.KindProperty
+	o.property = objmodel.NewTypedNode(name, objmodel.KindProperty)
 	o.property.IsReadOnly = readOnly
 }
 
@@ -199,8 +199,8 @@ func (o *ObjectApiListener) EnterOperationRule(c *parser.OperationRuleContext) {
 	IsNil(o.param)
 	IsNil(o._return)
 	name := c.GetName().GetText()
-	o.kind = apimodel.KindOperation
-	o.operation = apimodel.NewOperation(name)
+	o.kind = objmodel.KindOperation
+	o.operation = objmodel.NewOperation(name)
 }
 
 // ExitOperationRule is called when exiting the operationRule production.
@@ -221,7 +221,7 @@ func (o *ObjectApiListener) EnterOperationReturnRule(c *parser.OperationReturnRu
 	IsNotNil(o.operation)
 	IsNil(o._return)
 	IsNil(o.schema)
-	o._return = apimodel.NewTypedNode("", apimodel.KindReturn)
+	o._return = objmodel.NewTypedNode("", objmodel.KindReturn)
 }
 
 // ExitOperationReturnRule is called when exiting the operationReturnRule production.
@@ -238,7 +238,7 @@ func (o *ObjectApiListener) EnterOperationParamRule(c *parser.OperationParamRule
 	IsNil(o.param)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.param = apimodel.NewTypedNode(name, apimodel.KindParam)
+	o.param = objmodel.NewTypedNode(name, objmodel.KindParam)
 }
 
 // ExitOperationParamRule is called when exiting the operationArgRule production.
@@ -260,7 +260,7 @@ func (o *ObjectApiListener) EnterSignalRule(c *parser.SignalRuleContext) {
 	IsNil(o.signal)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.signal = apimodel.NewSignal(name)
+	o.signal = objmodel.NewSignal(name)
 }
 
 // ExitSignalRule is called when exiting the signalRule production.
@@ -277,8 +277,8 @@ func (o *ObjectApiListener) EnterStructRule(c *parser.StructRuleContext) {
 	IsNil(o.struct_)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.kind = apimodel.KindStruct
-	o.struct_ = apimodel.NewStruct(name)
+	o.kind = objmodel.KindStruct
+	o.struct_ = objmodel.NewStruct(name)
 	o.parseMeta(&o.struct_.NamedNode, c.AllMetaRule())
 }
 
@@ -297,7 +297,7 @@ func (o *ObjectApiListener) EnterStructFieldRule(c *parser.StructFieldRuleContex
 	IsNil(o.field)
 	name := c.GetName().GetText()
 	readOnly := c.GetReadonly() != nil
-	o.field = apimodel.NewTypedNode(name, apimodel.KindField)
+	o.field = objmodel.NewTypedNode(name, objmodel.KindField)
 	o.field.IsReadOnly = readOnly
 }
 
@@ -317,8 +317,8 @@ func (o *ObjectApiListener) EnterEnumRule(c *parser.EnumRuleContext) {
 	IsNil(o.enum)
 	IsNil(o.schema)
 	name := c.GetName().GetText()
-	o.enum = apimodel.NewEnum(name)
-	o.kind = apimodel.KindEnum
+	o.enum = objmodel.NewEnum(name)
+	o.kind = objmodel.KindEnum
 	o.runningValue = 0
 }
 
@@ -347,7 +347,7 @@ func (o *ObjectApiListener) EnterEnumMemberRule(c *parser.EnumMemberRuleContext)
 		value = o.runningValue
 		o.runningValue++
 	}
-	o.enumMember = apimodel.NewEnumMember(name, value)
+	o.enumMember = objmodel.NewEnumMember(name, value)
 }
 
 // ExitEnumMemberRule is called when exiting the enumMemberRule production.
@@ -361,7 +361,7 @@ func (o *ObjectApiListener) ExitEnumMemberRule(c *parser.EnumMemberRuleContext) 
 // EnterSchemaRule is called when entering the schemaRule production.
 func (o *ObjectApiListener) EnterSchemaRule(c *parser.SchemaRuleContext) {
 	IsNil(o.schema)
-	o.schema = &apimodel.Schema{}
+	o.schema = &objmodel.Schema{}
 }
 
 // ExitSchemaRule is called when exiting the schemaRule production.
@@ -459,7 +459,7 @@ func (o *ObjectApiListener) ExitMetaRule(c *parser.MetaRuleContext) {
 
 }
 
-func (o *ObjectApiListener) parseMeta(node *apimodel.NamedNode, ctxs []parser.IMetaRuleContext) {
+func (o *ObjectApiListener) parseMeta(node *objmodel.NamedNode, ctxs []parser.IMetaRuleContext) {
 	docLines := make([]string, 0)
 	tagLines := make([]string, 0)
 	ymlStart := 0

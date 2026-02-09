@@ -3,11 +3,11 @@ package filterrs
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToDefaultString(prefix string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.Type {
 	case "void":
@@ -45,7 +45,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // rsDefault returns the default value for a type
-func rsDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func rsDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rsDefault node is nil")
 	}

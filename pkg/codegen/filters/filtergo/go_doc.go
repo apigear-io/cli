@@ -3,7 +3,7 @@ package filtergo
 import (
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 func formatDoc(doc string) string {
@@ -24,6 +24,6 @@ func formatDoc(doc string) string {
 	return sb.String()
 }
 
-func goDoc(node *apimodel.NamedNode) (string, error) {
+func goDoc(node *objmodel.NamedNode) (string, error) {
 	return formatDoc(node.Description), nil
 }

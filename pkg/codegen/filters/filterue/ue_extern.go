@@ -1,7 +1,7 @@
 package filterue
 
 import (
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type UeExtern struct {
@@ -13,12 +13,12 @@ type UeExtern struct {
 	Plugin    string
 }
 
-func parseUeExtern(schema *apimodel.Schema) UeExtern {
+func parseUeExtern(schema *objmodel.Schema) UeExtern {
 	xe := schema.GetExtern()
 	return ueExtern(xe)
 }
 
-func ueExtern(xe *apimodel.Extern) UeExtern {
+func ueExtern(xe *objmodel.Extern) UeExtern {
 	ns := xe.Meta.GetString("ue.namespace")
 	inc := xe.Meta.GetString("ue.include")
 	lib := xe.Meta.GetString("ue.module")

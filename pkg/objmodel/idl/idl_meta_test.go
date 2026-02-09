@@ -6,7 +6,7 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +15,7 @@ func TestSimpleTag(t *testing.T) {
 	assert.NoError(t, err)
 	table := []struct {
 		ifaceId string
-		meta    apimodel.Meta
+		meta    objmodel.Meta
 		desc    string
 	}{
 		{"SingleLine", map[string]interface{}{"tag1": true}, "first line"},
@@ -37,7 +37,7 @@ func TestPropertyMeta(t *testing.T) {
 	table := []struct {
 		ifaceId string
 		propId  string
-		meta    apimodel.Meta
+		meta    objmodel.Meta
 		desc    string
 	}{
 		{"FullMeta", "prop1", map[string]interface{}{"prop1": true}, "prop1"},
@@ -60,7 +60,7 @@ func TestOperationMeta(t *testing.T) {
 	table := []struct {
 		ifaceId string
 		opId    string
-		meta    apimodel.Meta
+		meta    objmodel.Meta
 		desc    string
 	}{
 		{"FullMeta", "op1", map[string]interface{}{"op1": true}, "op1"},
@@ -83,7 +83,7 @@ func TestSignalMeta(t *testing.T) {
 	table := []struct {
 		ifaceId string
 		sigId   string
-		meta    apimodel.Meta
+		meta    objmodel.Meta
 		desc    string
 	}{
 		{"FullMeta", "sig1", map[string]interface{}{"sig1": true}, "sig1"},
@@ -105,7 +105,7 @@ func TestStructMeta(t *testing.T) {
 	assert.NoError(t, err)
 	table := []struct {
 		structId string
-		meta     apimodel.Meta
+		meta     objmodel.Meta
 		desc     string
 	}{
 		{"MetaStruct", map[string]interface{}{"tag1": true}, "line 1"},

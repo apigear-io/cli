@@ -5,11 +5,11 @@ import (
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/ettle/strcase"
 )
 
-func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToDefaultString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
@@ -19,21 +19,21 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 	}
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "FString()"
-	case apimodel.TypeInt, apimodel.TypeInt32:
+	case objmodel.TypeInt, objmodel.TypeInt32:
 		text = "0"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "0LL"
-	case apimodel.TypeFloat, apimodel.TypeFloat32:
+	case objmodel.TypeFloat, objmodel.TypeFloat32:
 		text = "0.0f"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "0.0"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "false"
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		return "xxx", fmt.Errorf("void type not allowed as default value")
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		symbol := schema.GetEnum()
 		member := symbol.Members[0]
 		typename := fmt.Sprintf("%s%s", moduleId, symbol.Name)
@@ -41,10 +41,10 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 		// upper case first letter
 		// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
 		text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, common.CamelTitleCase(member.Name))
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		symbol := schema.GetStruct()
 		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parseUeExtern(schema)
 		if xe.Default != "" {
 			text = xe.Default
@@ -54,7 +54,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 			}
 			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		symbol := schema.GetInterface()
 		text = fmt.Sprintf("TScriptInterface<%sI%s%sInterface>()", prefix, moduleId, symbol.Name)
 	default:
@@ -71,7 +71,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func ueDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func ueDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("ueDefault node is nil")
 	}

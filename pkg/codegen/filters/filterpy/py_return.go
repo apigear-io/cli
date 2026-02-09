@@ -4,21 +4,21 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToReturnString(schema *apimodel.Schema, prefix string) (string, error) {
+func ToReturnString(schema *objmodel.Schema, prefix string) (string, error) {
 	text := ""
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "str"
-	case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+	case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 		text = "int"
-	case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+	case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 		text = "float"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "bool"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		x := schema.LookupExtern(schema.Import, schema.Type)
 		if x == nil {
 			return "xxx", fmt.Errorf("pyReturn extern not found: %s", schema.Dump())
@@ -28,7 +28,7 @@ func ToReturnString(schema *apimodel.Schema, prefix string) (string, error) {
 			prefix = fmt.Sprintf("%s.", xe.Import)
 		}
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil && e_imported == nil {
@@ -40,7 +40,7 @@ func ToReturnString(schema *apimodel.Schema, prefix string) (string, error) {
 			prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
 		}
 		text = fmt.Sprintf("%s%s", prefix, ident)
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil && s_imported == nil {
@@ -52,14 +52,14 @@ func ToReturnString(schema *apimodel.Schema, prefix string) (string, error) {
 			prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
 		}
 		text = fmt.Sprintf("%s%s", prefix, ident)
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("pyReturn interface not found: %s", schema.Dump())
 		}
 		ident := common.CamelTitleCase(i.Name)
 		text = fmt.Sprintf("%s%s", prefix, ident)
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "None"
 	default:
 		return "xxx", fmt.Errorf("pyReturn unknown schema %s", schema.Dump())
@@ -71,7 +71,7 @@ func ToReturnString(schema *apimodel.Schema, prefix string) (string, error) {
 }
 
 // cast value to TypedNode and deduct the py return type
-func pyReturn(prefix string, node *apimodel.TypedNode) (string, error) {
+func pyReturn(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("pyReturn called with nil node")
 	}

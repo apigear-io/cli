@@ -3,10 +3,10 @@ package filterqt
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToReturnString(prefix string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.Type {
 	case "void":
@@ -67,7 +67,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // cast value to TypedNode and deduct the cpp return type
-func qtReturn(prefix string, node *apimodel.TypedNode) (string, error) {
+func qtReturn(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("qtReturn node is nil")
 	}

@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 
-	"github.com/apigear-io/cli/pkg/apimodel/idl"
+	"github.com/apigear-io/cli/pkg/objmodel/idl"
 
 	"github.com/gocarina/gocsv"
 )
@@ -143,7 +143,7 @@ func CheckCsvFile(name string) (*Result, error) {
 }
 
 func CheckIdlFile(name string) (*Result, error) {
-	s := apimodel.NewSystem("check")
+	s := objmodel.NewSystem("check")
 	parser := idl.NewParser(s)
 	err := parser.ParseFile(name)
 	if err != nil {

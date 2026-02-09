@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 type ModelVisitor interface {
 	VisitSystem(s *System) error

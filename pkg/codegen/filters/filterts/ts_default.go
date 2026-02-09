@@ -3,11 +3,11 @@ package filterts
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
+func ToDefaultString(schema *objmodel.Schema, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("tsDefault called with nil schema")
 	}
@@ -19,33 +19,33 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 		text = "[]"
 	} else {
 		switch schema.KindType {
-		case apimodel.TypeString:
+		case objmodel.TypeString:
 			text = "\"\""
-		case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+		case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 			text = "0"
-		case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+		case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 			text = "0.0"
-		case apimodel.TypeBool:
+		case objmodel.TypeBool:
 			text = "false"
-		case apimodel.TypeEnum:
+		case objmodel.TypeEnum:
 			e := schema.LookupEnum(schema.Import, schema.Type)
 			if e == nil {
 				return "xxx", fmt.Errorf("tsDefault enum not found: %s", schema.Dump())
 			}
 			text = fmt.Sprintf("%s%s.%s", prefix, e.Name, e.Members[0].Name)
-		case apimodel.TypeStruct:
+		case objmodel.TypeStruct:
 			s := schema.LookupStruct(schema.Import, schema.Type)
 			if s == nil {
 				return "xxx", fmt.Errorf("tsDefault struct not found: %s", schema.Dump())
 			}
 			text = "{}"
-		case apimodel.TypeInterface:
+		case objmodel.TypeInterface:
 			i := schema.LookupInterface(schema.Import, schema.Type)
 			if i == nil {
 				return "xxx", fmt.Errorf("tsDefault interface not found: %s", schema.Dump())
 			}
 			text = "null"
-		case apimodel.TypeVoid:
+		case objmodel.TypeVoid:
 			text = "void"
 		default:
 			return "xxx", fmt.Errorf("tsDefault unknown schema %s", schema.Dump())
@@ -55,7 +55,7 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 }
 
 // cppDefault returns the default value for a type
-func tsDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func tsDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("tsDefault called with nil node")
 	}

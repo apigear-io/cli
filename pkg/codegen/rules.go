@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/objmodel/spec"
 	"github.com/goccy/go-yaml"
 )
 

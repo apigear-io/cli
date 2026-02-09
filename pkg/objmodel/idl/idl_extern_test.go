@@ -3,13 +3,13 @@ package idl
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/stretchr/testify/assert"
 )
 
-func loadExternIdl(t *testing.T) *apimodel.System {
+func loadExternIdl(t *testing.T) *objmodel.System {
 	t.Helper()
-	sys1 := apimodel.NewSystem("sys1")
+	sys1 := objmodel.NewSystem("sys1")
 	o := NewParser(sys1)
 	err := o.ParseFile("./testdata/extern.idl")
 	assert.NoError(t, err)
@@ -18,10 +18,10 @@ func loadExternIdl(t *testing.T) *apimodel.System {
 	return sys1
 }
 
-func loadExternYaml(t *testing.T) *apimodel.System {
+func loadExternYaml(t *testing.T) *objmodel.System {
 	t.Helper()
-	sys1 := apimodel.NewSystem("sys1")
-	dp := apimodel.NewDataParser(sys1)
+	sys1 := objmodel.NewSystem("sys1")
+	dp := objmodel.NewDataParser(sys1)
 	err := dp.ParseFile("./testdata/extern.module.yaml")
 	assert.NoError(t, err)
 	err = sys1.Validate()

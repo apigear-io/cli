@@ -1,9 +1,9 @@
-package apimodel
+package objmodel
 
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel/spec/rkw"
+	"github.com/apigear-io/cli/pkg/objmodel/spec/rkw"
 )
 
 type Struct struct {

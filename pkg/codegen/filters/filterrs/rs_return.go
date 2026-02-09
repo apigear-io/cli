@@ -3,10 +3,10 @@ package filterrs
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToReturnString(prefixComplexType string, schema *apimodel.Schema) (string, error) {
+func ToReturnString(prefixComplexType string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.Type {
 	case "void":
@@ -52,7 +52,7 @@ func ToReturnString(prefixComplexType string, schema *apimodel.Schema) (string, 
 }
 
 // cast value to TypedNode and deduct the rs return type
-func rsReturn(prefixComplexType string, node *apimodel.TypedNode) (string, error) {
+func rsReturn(prefixComplexType string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rsReturn node is nil")
 	}

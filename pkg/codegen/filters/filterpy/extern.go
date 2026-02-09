@@ -1,7 +1,7 @@
 package filterpy
 
 import (
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type PyExtern struct {
@@ -10,12 +10,12 @@ type PyExtern struct {
 	Default string
 }
 
-func parsePyExtern(schema *apimodel.Schema) PyExtern {
+func parsePyExtern(schema *objmodel.Schema) PyExtern {
 	xe := schema.GetExtern()
 	return pyExtern(xe)
 }
 
-func pyExtern(xe *apimodel.Extern) PyExtern {
+func pyExtern(xe *objmodel.Extern) PyExtern {
 	imp := xe.Meta.GetString("py.import")
 	name := xe.Meta.GetString("py.name")
 	dft := xe.Meta.GetString("py.default")

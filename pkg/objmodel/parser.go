@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 import (
 	"encoding/json"

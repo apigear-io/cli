@@ -3,39 +3,39 @@ package filterue
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func CheckIsSimpleType(schema *apimodel.Schema) (bool, error) {
+func CheckIsSimpleType(schema *objmodel.Schema) (bool, error) {
 	if schema == nil {
 		return false, fmt.Errorf("CheckIsSimpleType schema is nil")
 	}
 
 	var result bool
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		result = false
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		result = true
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		result = true
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		result = true
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		result = true
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		result = true
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		result = true
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		result = true
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		result = true
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		result = false
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		result = false
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		result = false
 	default:
 		return false, fmt.Errorf("unknown schema kind type: %s", schema.KindType)
@@ -46,7 +46,7 @@ func CheckIsSimpleType(schema *apimodel.Schema) (bool, error) {
 	return result, nil
 }
 
-func ueIsStdSimpleType(node *apimodel.TypedNode) (bool, error) {
+func ueIsStdSimpleType(node *objmodel.TypedNode) (bool, error) {
 	if node == nil {
 		return false, fmt.Errorf("isStdSimpleType node is nil")
 	}

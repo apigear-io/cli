@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 import (
 	"crypto/md5"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel/spec/rkw"
+	"github.com/apigear-io/cli/pkg/objmodel/spec/rkw"
 )
 
 type Version string

@@ -6,8 +6,8 @@ import (
 	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/apigear-io/cli/pkg/codegen"
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel"
-	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/objmodel"
+	"github.com/apigear-io/cli/pkg/objmodel/spec"
 	"github.com/apigear-io/cli/pkg/foundation/tasks"
 )
 
@@ -131,7 +131,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if name == "" {
 			name = foundation.BaseName(outDir)
 		}
-		system := apimodel.NewSystem(name)
+		system := objmodel.NewSystem(name)
 		doc.Meta["Layer"] = target
 		doc.Meta["App"] = config.GetBuildInfo("cli")
 		system.Meta = foundation.JoinMaps(doc.Meta, target.Meta)
@@ -177,7 +177,7 @@ func runSolution(doc *spec.SolutionDoc) error {
 	return nil
 }
 
-func applyMetaDocument(t *spec.SolutionTarget, s *apimodel.System) {
+func applyMetaDocument(t *spec.SolutionTarget, s *objmodel.System) {
 	for k, v := range t.MetaImports {
 		log.Warn().Msgf("import %s %v", k, v)
 		node := s.LookupNode(k)

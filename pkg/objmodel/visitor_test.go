@@ -1,10 +1,10 @@
-package apimodel_test
+package objmodel_test
 
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/apimodel/idl"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel/idl"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,67 +34,67 @@ type MockMessage struct {
 	Kind string
 }
 type MockVisitor struct {
-	visited []apimodel.NamedNode
+	visited []objmodel.NamedNode
 }
 
-func (v *MockVisitor) VisitTypedNode(node *apimodel.TypedNode) error {
+func (v *MockVisitor) VisitTypedNode(node *objmodel.TypedNode) error {
 	v.visited = append(v.visited, node.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitSignal(node *apimodel.Signal) error {
+func (v *MockVisitor) VisitSignal(node *objmodel.Signal) error {
 	v.visited = append(v.visited, node.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitOperation(node *apimodel.Operation) error {
+func (v *MockVisitor) VisitOperation(node *objmodel.Operation) error {
 	v.visited = append(v.visited, node.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitSystem(s *apimodel.System) error {
+func (v *MockVisitor) VisitSystem(s *objmodel.System) error {
 	v.visited = append(v.visited, s.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitModule(m *apimodel.Module) error {
+func (v *MockVisitor) VisitModule(m *objmodel.Module) error {
 	v.visited = append(v.visited, m.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitExtern(e *apimodel.Extern) error {
+func (v *MockVisitor) VisitExtern(e *objmodel.Extern) error {
 	v.visited = append(v.visited, e.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitInterface(i *apimodel.Interface) error {
+func (v *MockVisitor) VisitInterface(i *objmodel.Interface) error {
 	v.visited = append(v.visited, i.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitStruct(s *apimodel.Struct) error {
+func (v *MockVisitor) VisitStruct(s *objmodel.Struct) error {
 	v.visited = append(v.visited, s.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitEnum(e *apimodel.Enum) error {
+func (v *MockVisitor) VisitEnum(e *objmodel.Enum) error {
 	v.visited = append(v.visited, e.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitEnumMember(m *apimodel.EnumMember) error {
+func (v *MockVisitor) VisitEnumMember(m *objmodel.EnumMember) error {
 	v.visited = append(v.visited, m.NamedNode)
 	return nil
 }
 
-func (v *MockVisitor) VisitParameter(p *apimodel.TypedNode) error {
+func (v *MockVisitor) VisitParameter(p *objmodel.TypedNode) error {
 	v.visited = append(v.visited, p.NamedNode)
 	return nil
 }
 
 func TestVisitor(t *testing.T) {
 	// Create a mock visitor
-	system := apimodel.NewSystem("TestSystem")
+	system := objmodel.NewSystem("TestSystem")
 	p := idl.NewParser(system)
 	err := p.ParseString(IDL)
 	assert.NoError(t, err)

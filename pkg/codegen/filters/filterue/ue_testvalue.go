@@ -5,13 +5,13 @@ import (
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
 	"github.com/apigear-io/cli/pkg/foundation"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/ettle/strcase"
 )
 
 // ToTestValueString returns the test value string for a given schema.
 // We intentionally ignore arrays in order to return the test value of the inner type.
-func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToTestValueString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToDefaultString schema is nil")
 	}
@@ -21,21 +21,21 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 	}
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "FString(\"xyz\")"
-	case apimodel.TypeInt, apimodel.TypeInt32:
+	case objmodel.TypeInt, objmodel.TypeInt32:
 		text = "1"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "1LL"
-	case apimodel.TypeFloat, apimodel.TypeFloat32:
+	case objmodel.TypeFloat, objmodel.TypeFloat32:
 		text = "1.0f"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "1.0"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "true"
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		return ToDefaultString(prefix, schema)
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		symbol := schema.GetEnum()
 		member := symbol.Members[0]
 		if len(symbol.Members) > 1 {
@@ -46,10 +46,10 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 		// upper case first letter
 		// TODO: EnumValues: using camel-cases for enum values: strcase.ToCamel(member.Name)
 		text = fmt.Sprintf("%sE%s::%s_%s", prefix, typename, abbreviation, common.CamelTitleCase(member.Name))
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		symbol := schema.GetStruct()
 		text = fmt.Sprintf("%sF%s%s()", prefix, moduleId, symbol.Name)
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parseUeExtern(schema)
 		if xe.Default != "" {
 			text = xe.Default
@@ -59,7 +59,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 			}
 			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		symbol := schema.GetInterface()
 		text = fmt.Sprintf("TScriptInterface<%sI%s%sInterface>()", prefix, moduleId, symbol.Name)
 	default:
@@ -68,7 +68,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func ueTestValue(prefix string, node *apimodel.TypedNode) (string, error) {
+func ueTestValue(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("ueDefault node is nil")
 	}

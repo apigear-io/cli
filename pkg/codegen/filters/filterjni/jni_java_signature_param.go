@@ -5,7 +5,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
 	"github.com/apigear-io/cli/pkg/codegen/filters/filterjava"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 func makeFullTypeName(module string, typename string) string {
@@ -15,47 +15,47 @@ func makeFullTypeName(module string, typename string) string {
 	return text
 }
 
-func jniSignatureType(node *apimodel.TypedNode) (string, error) {
+func jniSignatureType(node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("jniSignatureType node is nil")
 	}
 
 	var text string
 	switch node.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "Ljava/lang/String;"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "I"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "I"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "J"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "F"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "F"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "D"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "Z"
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "V"
 	// enums are expected to passed as integers
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := node.LookupEnum(node.Import, node.Type)
 		if e != nil {
 			text = makeFullTypeName(e.Module.Name, e.Name)
 		} else {
 			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := node.LookupStruct(node.Import, node.Type)
 		if s != nil {
 			text = makeFullTypeName(s.Module.Name, s.Name)
 		} else {
 			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())
 		}
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := filterjava.MakeJavaExtern(&node.Schema)
 		var java_module string
 		java_module = ""
@@ -66,7 +66,7 @@ func jniSignatureType(node *apimodel.TypedNode) (string, error) {
 		} else {
 			text = "L" + xe.Name + ";"
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := node.LookupInterface(node.Import, node.Type)
 		if i != nil {
 			var name string
@@ -84,7 +84,7 @@ func jniSignatureType(node *apimodel.TypedNode) (string, error) {
 	return text, nil
 }
 
-func jniJavaSignatureParam(node *apimodel.TypedNode) (string, error) {
+func jniJavaSignatureParam(node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "", fmt.Errorf("jniJavaSignatureParam called with nil nodes")
 	}

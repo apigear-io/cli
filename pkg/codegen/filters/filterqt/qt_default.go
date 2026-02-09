@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToDefaultString(prefix string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.Type {
 	case "void":
@@ -26,7 +26,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 	case "bool":
 		text = "false"
 	default:
-		if schema.KindType == apimodel.TypeExtern {
+		if schema.KindType == objmodel.TypeExtern {
 			xe := qtExtern(schema.GetExtern())
 			if xe.Default != "" {
 				text = xe.Default
@@ -60,7 +60,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 
 	}
 	if schema.IsArray {
-		inner := apimodel.Schema{
+		inner := objmodel.Schema{
 			Import: schema.Import,
 			Type:   schema.Type,
 			Module: schema.Module,
@@ -75,7 +75,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // qtDefault returns the default value for a type
-func qtDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func qtDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("qtDefault node is nil")
 	}

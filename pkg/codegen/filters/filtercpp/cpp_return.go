@@ -4,31 +4,31 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToReturnString(prefix string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.KindType {
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "void"
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "std::string"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "int"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "int32_t"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "int64_t"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "float"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "float"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "double"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "bool"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parseCppExtern(schema)
 		if xe.NameSpace != "" {
 			prefix = fmt.Sprintf("%s::", xe.NameSpace)
@@ -36,7 +36,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 			prefix = "" // Externs should not be prefixed with any other prefix than given in extern info.
 		}
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		if schema.Import != "" {
 			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
@@ -44,7 +44,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum", prefix, e.Name)
 		}
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		if schema.Import != "" {
 			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
@@ -52,7 +52,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 		if s != nil {
 			text = fmt.Sprintf("%s%s", prefix, s.Name)
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if schema.Import != "" {
 			prefix = fmt.Sprintf("%s::%s::", common.CamelTitleCase(schema.System().Name), common.CamelTitleCase(schema.Import))
@@ -68,7 +68,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // cast value to TypedNode and deduct the cpp return type
-func cppReturn(prefix string, node *apimodel.TypedNode) (string, error) {
+func cppReturn(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("cppReturn node is nil")
 	}

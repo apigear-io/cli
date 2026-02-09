@@ -3,48 +3,48 @@ package filterjni
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToType(schema *apimodel.Schema) (string, error) {
+func ToType(schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToType schema is nil")
 	}
 
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "jstring"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "jint"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "jint"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "jlong"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "jfloat"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "jfloat"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "jdouble"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "jboolean"
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "void"
 	// enums are expected to passed as integers
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		text = "jobject"
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		text = "jobject"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		text = "jobject"
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		text = "jobject"
 	default:
 		return "xxx", fmt.Errorf("jniToReturnType unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
-		if schema.KindType == apimodel.TypeString {
+		if schema.KindType == objmodel.TypeString {
 			text = "jobject"
 		}
 		text = fmt.Sprintf("%sArray", text)
@@ -52,6 +52,6 @@ func ToType(schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func jniToReturnType(node *apimodel.TypedNode) (string, error) {
+func jniToReturnType(node *objmodel.TypedNode) (string, error) {
 	return ToType(&node.Schema)
 }

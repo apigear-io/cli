@@ -3,10 +3,10 @@ package filterjni
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToJniJavaParamString(schema *apimodel.Schema, name string, prefix string) (string, error) {
+func ToJniJavaParamString(schema *objmodel.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("jniJavaParam schema is nil")
 	}
@@ -19,7 +19,7 @@ func ToJniJavaParamString(schema *apimodel.Schema, name string, prefix string) (
 	return "xxx", fmt.Errorf("jniJavaParam: unknown schema %s", schema.Dump())
 }
 
-func jniJavaParam(prefix string, node *apimodel.TypedNode) (string, error) {
+func jniJavaParam(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("jniJavaParam called with nil node")
 	}

@@ -3,11 +3,11 @@ package filtergo
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/ettle/strcase"
 )
 
-func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
+func ToDefaultString(schema *objmodel.Schema, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToDefaultString schema is nil")
 	}
@@ -17,81 +17,81 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 	var text string
 	if schema.IsArray {
 		switch schema.KindType {
-		case apimodel.TypeString:
+		case objmodel.TypeString:
 			text = "[]string{}"
-		case apimodel.TypeBytes:
+		case objmodel.TypeBytes:
 			text = "[][]byte{}"
-		case apimodel.TypeInt:
+		case objmodel.TypeInt:
 			text = "[]int32{}"
-		case apimodel.TypeInt32:
+		case objmodel.TypeInt32:
 			text = "[]int32{}"
-		case apimodel.TypeInt64:
+		case objmodel.TypeInt64:
 			text = "[]int64{}"
-		case apimodel.TypeFloat:
+		case objmodel.TypeFloat:
 			text = "[]float32{}"
-		case apimodel.TypeFloat32:
+		case objmodel.TypeFloat32:
 			text = "[]float32{}"
-		case apimodel.TypeFloat64:
+		case objmodel.TypeFloat64:
 			text = "[]float64{}"
-		case apimodel.TypeBool:
+		case objmodel.TypeBool:
 			text = "[]bool{}"
-		case apimodel.TypeAny:
+		case objmodel.TypeAny:
 			text = "[]any{}"
-		case apimodel.TypeExtern:
+		case objmodel.TypeExtern:
 			xe := parseGoExtern(schema)
 			if xe.Import != "" {
 				prefix = fmt.Sprintf("%s.", xe.Import)
 			}
 			text = fmt.Sprintf("[]%s%s{}", prefix, xe.Name)
-		case apimodel.TypeEnum:
+		case objmodel.TypeEnum:
 			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
-		case apimodel.TypeStruct:
+		case objmodel.TypeStruct:
 			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
-		case apimodel.TypeInterface:
+		case objmodel.TypeInterface:
 			text = fmt.Sprintf("[]%s%s{}", prefix, schema.Type)
 		default:
 			return "xxx", fmt.Errorf("goDefault: unknown schema %s", schema.Dump())
 		}
 	} else {
 		switch schema.KindType {
-		case apimodel.TypeString:
+		case objmodel.TypeString:
 			text = "\"\""
-		case apimodel.TypeBytes:
+		case objmodel.TypeBytes:
 			text = "[]byte{}"
-		case apimodel.TypeInt:
+		case objmodel.TypeInt:
 			text = "int32(0)"
-		case apimodel.TypeInt32:
+		case objmodel.TypeInt32:
 			text = "int32(0)"
-		case apimodel.TypeInt64:
+		case objmodel.TypeInt64:
 			text = "int64(0)"
-		case apimodel.TypeFloat:
+		case objmodel.TypeFloat:
 			text = "float32(0.0)"
-		case apimodel.TypeFloat32:
+		case objmodel.TypeFloat32:
 			text = "float32(0.0)"
-		case apimodel.TypeFloat64:
+		case objmodel.TypeFloat64:
 			text = "float64(0.0)"
-		case apimodel.TypeBool:
+		case objmodel.TypeBool:
 			text = "false"
-		case apimodel.TypeAny:
+		case objmodel.TypeAny:
 			text = "nil"
-		case apimodel.TypeExtern:
+		case objmodel.TypeExtern:
 			xe := parseGoExtern(schema)
 			if xe.Import != "" {
 				prefix = fmt.Sprintf("%s.", xe.Import)
 			}
 			text = fmt.Sprintf("%s%s{}", prefix, xe.Name)
-		case apimodel.TypeEnum:
+		case objmodel.TypeEnum:
 			symbol := schema.GetEnum()
 			member := symbol.Members[0]
 			// upper case first letter
 
 			text = fmt.Sprintf("%s%s%s", prefix, symbol.Name, strcase.ToPascal(member.Name))
-		case apimodel.TypeStruct:
+		case objmodel.TypeStruct:
 			symbol := schema.GetStruct()
 			text = fmt.Sprintf("%s%s{}", prefix, symbol.Name)
-		case apimodel.TypeInterface:
+		case objmodel.TypeInterface:
 			text = "nil"
-		case apimodel.TypeVoid:
+		case objmodel.TypeVoid:
 			text = ""
 		default:
 			return "xxx", fmt.Errorf("goDefault: unknown schema %s", schema.Dump())
@@ -100,7 +100,7 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 	return text, nil
 }
 
-func goDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func goDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("goDefault node is nil")
 	}
