@@ -1,0 +1,45 @@
+# Test that basic help commands work and show expected output
+# This ensures the root command structure doesn't change
+
+# Test root help with --help flag
+exec apigear --help
+stdout 'Usage:'
+stdout 'apigear \[command\]'
+stdout 'Available Commands:'
+stdout 'completion'
+stdout 'config'
+stdout 'generate'
+stdout 'monitor'
+stdout 'project'
+stdout 'spec'
+stdout 'template'
+stdout 'version'
+
+# Test root help with help command
+exec apigear help
+stdout 'Usage:'
+stdout 'Available Commands:'
+
+# Test that -h flag works
+exec apigear -h
+stdout 'Usage:'
+stdout 'Available Commands:'
+
+# Test help for subcommands
+exec apigear help generate
+stdout 'Usage:'
+stdout 'apigear generate'
+stdout 'Available Commands:'
+
+exec apigear generate --help
+stdout 'Usage:'
+stdout 'apigear generate'
+
+# Test aliases work
+exec apigear gen --help
+stdout 'Usage:'
+stdout 'generate'
+
+exec apigear g --help
+stdout 'Usage:'
+stdout 'generate'

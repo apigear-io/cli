@@ -61,6 +61,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/petermattis/goid v0.0.0-20250813065127-a731cc31b4fe // indirect
 	github.com/pjbgf/sha1cd v0.4.0 // indirect
+	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.10.0 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
@@ -73,6 +74,7 @@ require (
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
+	golang.org/x/tools v0.36.0 // indirect
 )
 
 require (

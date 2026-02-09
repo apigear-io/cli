@@ -1,0 +1,36 @@
+# Test generate expert command flags and arguments
+# Generate is the most critical user-facing command
+
+# Test generate help
+exec apigear generate --help
+stdout 'Usage:'
+stdout 'generate'
+stdout 'expert'
+stdout 'solution'
+
+# Test generate expert help
+exec apigear generate expert --help
+stdout 'Usage:'
+stdout 'expert'
+stdout '\-\-template'
+stdout '\-\-input'
+stdout '\-\-output'
+
+# Test that generate expert requires flags
+! exec apigear generate expert
+stderr '.'
+
+# Test aliases for generate
+exec apigear gen --help
+stdout 'generate'
+
+exec apigear g --help
+stdout 'generate'
+
+# Test aliases for expert
+exec apigear generate x --help
+stdout 'expert'
+
+# Test that invalid flags are rejected
+! exec apigear generate expert --invalid-flag
+stderr 'unknown flag'

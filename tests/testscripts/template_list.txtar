@@ -1,0 +1,41 @@
+# Test template commands to ensure stability
+# Template management is important for users
+
+# Note: template list requires network access and may fail in CI
+# We'll test the command structure but allow it to fail gracefully
+# Testing help is more reliable for regression testing
+
+# Test template list (may fail without registry, but command should exist)
+# We skip actual execution since it requires network/registry setup
+# Just test that help works to verify command structure
+
+# Test template list with aliases (command should exist)
+exec apigear tpl ls --help
+! stderr 'unknown command'
+
+exec apigear t list --help
+! stderr 'unknown command'
+
+# Test template help
+exec apigear template --help
+stdout 'Usage:'
+stdout 'template'
+stdout 'list'
+stdout 'install'
+stdout 'update'
+stdout 'info'
+stdout 'cache'
+stdout 'remove'
+stdout 'clean'
+stdout 'import'
+stdout 'create'
+stdout 'lint'
+stdout 'publish'
+
+# Test template cache command
+exec apigear template cache
+stdout '.'
+
+# Test template info requires argument
+! exec apigear template info
+stderr '.'

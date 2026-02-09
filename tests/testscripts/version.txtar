@@ -1,0 +1,9 @@
+# Test version command output format
+# This ensures version information structure is stable
+
+exec apigear version
+stderr '0\.0\.0'
+
+# Version should not accept unexpected flags
+! exec apigear version --invalid-flag
+stderr 'unknown flag'

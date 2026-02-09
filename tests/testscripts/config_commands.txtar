@@ -1,0 +1,30 @@
+# Test config commands to ensure they remain stable
+# Config is critical for user settings
+
+# Test config info
+exec apigear config info
+stderr 'info:'
+stderr 'config file:'
+
+# Test config with aliases
+exec apigear cfg info
+stderr 'info:'
+
+exec apigear c info
+stderr 'info:'
+
+# Test config get without argument (should show all)
+exec apigear config get
+stderr '.'
+
+# Test config env
+exec apigear config env
+stderr '.'
+
+# Test config help
+exec apigear config --help
+stdout 'Usage:'
+stdout 'config'
+stdout 'info'
+stdout 'get'
+stdout 'env'
