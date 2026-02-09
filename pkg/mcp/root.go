@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/apigear-io/cli/pkg/mcp/gen"
 	"github.com/apigear-io/cli/pkg/mcp/spec"
 	"github.com/apigear-io/cli/pkg/mcp/tpl"
@@ -45,7 +45,7 @@ func addCoreTools(s *server.MCPServer) {
 }
 
 func retrieveVersion() string {
-	bi := cfg.GetBuildInfo("cli")
+	bi := config.GetBuildInfo("cli")
 	version := fmt.Sprintf("%s-%s-%s", bi.Version, bi.Commit, bi.Date)
 	return version
 }

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/cmd/gen"
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/sol"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/orchestration/solution"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -62,7 +62,7 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 		if err := doc.Validate(); err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("invalid solution document: %s", err.Error())), nil
 		}
-		runner := sol.NewRunner()
+		runner := solution.NewRunner()
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
@@ -76,7 +76,7 @@ func registerGenerateExpertTool(s *server.MCPServer) {
 				cancel()
 				return mcp.NewToolResultError(fmt.Sprintf("error watching solution file: %s", err.Error())), nil
 			}
-			helper.WaitForInterrupt(cancel)
+			foundation.WaitForInterrupt(cancel)
 		}
 		return mcp.NewToolResultText("Successfully ran code generation with expert options"), nil
 	})

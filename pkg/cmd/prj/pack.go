@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -31,9 +31,9 @@ func NewPackCommand() *cobra.Command {
 			}
 			cmd.Printf("pack project %s\n", dir)
 			base := filepath.Base(dir)
-			target := helper.Join(cwd, "..", fmt.Sprintf("%s.tgz", base))
+			target := foundation.Join(cwd, "..", fmt.Sprintf("%s.tgz", base))
 
-			target, err = prj.PackProject(dir, target)
+			target, err = project.PackProject(dir, target)
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func NewPackCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "project directory to pack")
 	err := cmd.MarkFlagRequired("dir")
 	if err != nil {
-		log.Error().Err(err).Msg("failed to mark flag required")
+		logging.Error().Err(err).Msg("failed to mark flag required")
 	}
 	return cmd
 }

@@ -16,7 +16,7 @@ func TestMust(t *testing.T) {
 		})
 	})
 
-	// Note: Cannot test the error case as it calls log.Fatal which exits the process
+	// Note: Cannot test the error case as it calls logging.Fatal which exits the process
 }
 
 func TestMakeSolution(t *testing.T) {

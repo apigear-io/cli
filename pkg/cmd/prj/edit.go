@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewEditCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			cmd.Printf("launch vscode with %s\n", dir)
-			return prj.OpenEditor(dir)
+			return project.OpenEditor(dir)
 		},
 	}
 	return cmd

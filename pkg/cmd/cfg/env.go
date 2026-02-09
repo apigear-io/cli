@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/spf13/cobra"
 )
 
@@ -22,8 +22,8 @@ func NewEnvCommand() *cobra.Command {
 		Short: "Env prints apigear environment variables",
 		Long:  `Env prints apigear environment variables`,
 		Run: func(cmd *cobra.Command, args []string) {
-			settings := cfg.AllSettings()
-			cmd.Printf("APIGEAR_CONFIG_DIR=%s\n", cfg.ConfigDir())
+			settings := config.AllSettings()
+			cmd.Printf("APIGEAR_CONFIG_DIR=%s\n", config.ConfigDir())
 			for key, value := range settings {
 				name := fmt.Sprintf("APIGEAR_%s", strings.ToUpper(key))
 				valueStr := jsonIdent(value)

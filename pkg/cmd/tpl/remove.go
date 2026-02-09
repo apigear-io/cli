@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ func NewRemoveCommand() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fqn := args[0]
-			err := repos.Cache.Remove(fqn)
+			err := registry.Cache.Remove(fqn)
 			if err != nil {
 				cmd.PrintErrln(err)
 			} else {

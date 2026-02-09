@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
 
 	"github.com/spf13/cobra"
 )
@@ -36,7 +36,7 @@ func Yaml2Json(input string) error {
 		if err != nil {
 			return err
 		}
-		log.Info().Msgf("converted %s to %s", file, jsonFile)
+		logging.Info().Msgf("converted %s to %s", file, jsonFile)
 	}
 	return nil
 }
@@ -52,7 +52,7 @@ func NewYaml2JsonCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			err := Yaml2Json(args[0])
 			if err != nil {
-				log.Fatal().Err(err).Msg("convert yaml to json")
+				logging.Fatal().Err(err).Msg("convert yaml to json")
 			}
 		},
 	}

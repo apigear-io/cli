@@ -1,0 +1,35 @@
+package solution
+
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
+
+	"github.com/goccy/go-yaml"
+)
+
+func ReadSolutionDoc(file string) (*spec.SolutionDoc, error) {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	doc := &spec.SolutionDoc{}
+	err = yaml.Unmarshal(data, doc)
+	if err != nil {
+		return nil, err
+	}
+	// set the root dir
+	if doc.RootDir == "" {
+		doc.RootDir = filepath.Dir(file)
+	}
+	doc.RootDir, err = filepath.Abs(doc.RootDir)
+	if err != nil {
+		return nil, err
+	}
+	err = doc.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}

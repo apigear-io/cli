@@ -3,7 +3,7 @@ package tpl
 import (
 	"os"
 
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewListCommand() *cobra.Command {
 		Short:   "list templates from registry",
 		Long:    `list templates from the registry. A template can be installed using the install command.`,
 		Run: func(cmd *cobra.Command, _ []string) {
-			infos, err := repos.Registry.List()
+			infos, err := registry.Registry.List()
 			if err != nil {
 				cmd.PrintErrln(err)
 				os.Exit(-1)

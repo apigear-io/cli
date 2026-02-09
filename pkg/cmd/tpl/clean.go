@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +11,7 @@ func NewCleanCommand() *cobra.Command {
 		Use:   "clean",
 		Short: "clean all templates from the local cache",
 		Run: func(cmd *cobra.Command, _ []string) {
-			err := repos.Cache.Clean()
+			err := registry.Cache.Clean()
 			if err != nil {
 				cmd.PrintErrln(err)
 			} else {

@@ -3,7 +3,7 @@ package spec
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
 
 	"github.com/spf13/cobra"
 )

@@ -3,11 +3,11 @@ package gen
 import (
 	"context"
 
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/sol"
-	"github.com/apigear-io/cli/pkg/spec"
-	"github.com/apigear-io/cli/pkg/tasks"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/orchestration/solution"
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/foundation/tasks"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ func NewSolutionCommand() *cobra.Command {
 Each layer defines the input module files, output directory and the features to enable, 
 as also the other options. To create a demo module or solution use the 'project create' command.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Info().Msgf("generating solution %s", args[0])
+			logging.Info().Msgf("generating solution %s", args[0])
 			source = args[0]
 			return RunGenerateSolution(source, watch, force)
 		},
@@ -42,13 +42,13 @@ func RunGenerateSolution(solutionPath string, watch bool, force bool) error {
 	}
 	if !result.Valid() {
 		for _, err := range result.Errors {
-			log.Warn().Msgf("source %s at %s error %s", solutionPath, err.Field, err.Description)
+			logging.Warn().Msgf("source %s at %s error %s", solutionPath, err.Field, err.Description)
 		}
 		return nil
 	}
-	runner := sol.NewRunner()
+	runner := solution.NewRunner()
 	runner.OnTask(func(evt *tasks.TaskEvent) {
-		log.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
+		logging.Debug().Msgf("[%s] task %s: %v", evt.State, evt.Name, evt.Meta)
 	})
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -56,10 +56,10 @@ func RunGenerateSolution(solutionPath string, watch bool, force bool) error {
 	if watch {
 		err := runner.WatchSource(ctx, solutionPath, force)
 		if err != nil {
-			log.Error().Err(err).Msg("watching solution file")
+			logging.Error().Err(err).Msg("watching solution file")
 			cancel()
 		}
-		helper.WaitForInterrupt(cancel)
+		foundation.WaitForInterrupt(cancel)
 	} else {
 		err = runner.RunSource(ctx, solutionPath, force)
 		if err != nil {

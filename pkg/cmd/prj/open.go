@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewOpenCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			cmd.Printf("open project %s\n", dir)
-			return prj.OpenStudio(dir)
+			return project.OpenStudio(dir)
 		},
 	}
 	return cmd

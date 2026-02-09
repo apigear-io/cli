@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )

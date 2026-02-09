@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/sol"
-	"github.com/apigear-io/cli/pkg/spec"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/orchestration/solution"
+	"github.com/apigear-io/cli/pkg/apimodel/spec"
 
 	"github.com/spf13/cobra"
 )
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal().Err(err).Msg("parse command line")
+		logging.Fatal().Err(err).Msg("parse command line")
 	}
 }
 
@@ -41,7 +41,7 @@ func NewExpertCommand() *cobra.Command {
 			if err := doc.Validate(); err != nil {
 				return fmt.Errorf("invalid solution document: %w", err)
 			}
-			runner := sol.NewRunner()
+			runner := solution.NewRunner()
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
@@ -52,10 +52,10 @@ func NewExpertCommand() *cobra.Command {
 			if options.Watch {
 				err := runner.WatchDoc(ctx, doc.RootDir, doc)
 				if err != nil {
-					log.Error().Err(err).Msg("watching solution file")
+					logging.Error().Err(err).Msg("watching solution file")
 					cancel()
 				}
-				helper.WaitForInterrupt(cancel)
+				foundation.WaitForInterrupt(cancel)
 			}
 			return nil
 		},
@@ -75,7 +75,7 @@ func NewExpertCommand() *cobra.Command {
 func MakeSolution(options *ExpertOptions) *spec.SolutionDoc {
 	rootDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal().Err(err).Msg("get current working directory")
+		logging.Fatal().Err(err).Msg("get current working directory")
 	}
 	return &spec.SolutionDoc{
 		RootDir: rootDir,

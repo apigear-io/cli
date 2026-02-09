@@ -1,8 +1,8 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +16,8 @@ func CreateProjectCommand() *cobra.Command {
 		Long:  `create new project with default project files`,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			log.Debug().Msgf("create project in %s", dir)
-			info, err := prj.InitProject(dir)
+			logging.Debug().Msgf("create project in %s", dir)
+			info, err := project.InitProject(dir)
 			if err != nil {
 				return err
 			}
@@ -28,7 +28,7 @@ func CreateProjectCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&dir, "dir", "d", ".", "project directory to create")
 	err := cmd.MarkFlagRequired("dir")
 	if err != nil {
-		log.Error().Err(err).Msg("failed to mark flag required")
+		logging.Error().Err(err).Msg("failed to mark flag required")
 	}
 	return cmd
 }

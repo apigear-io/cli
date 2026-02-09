@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewInstallCommand() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			repoID := args[0]
-			fixedRepoId, err := repos.GetOrInstallTemplateFromRepoID(repoID)
+			fixedRepoId, err := registry.GetOrInstallTemplateFromRepoID(repoID)
 			cmd.Printf("using template %s\n", fixedRepoId)
 			if err != nil {
 				cmd.PrintErrln(err)

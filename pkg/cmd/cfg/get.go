@@ -1,7 +1,7 @@
 package cfg
 
 import (
-	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/spf13/cobra"
 )
 
@@ -16,14 +16,14 @@ func NewGetCmd() *cobra.Command {
 			if len(args) == 0 {
 				// print all settings
 				cmd.Println("all settings:")
-				for k, v := range cfg.AllSettings() {
+				for k, v := range config.AllSettings() {
 					cmd.Printf("  %s: %s\n", k, v)
 				}
 			} else {
 				// print setting by key
 				key := args[0]
-				if cfg.IsSet(key) {
-					cmd.Printf("%s: %s\n", key, cfg.Get(key))
+				if config.IsSet(key) {
+					cmd.Printf("%s: %s\n", key, config.Get(key))
 				} else {
 					cmd.Printf("key '%s' was never set\n", key)
 				}

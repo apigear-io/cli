@@ -6,7 +6,7 @@ package main
 import (
 	"os"
 
-	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/apigear-io/cli/pkg/cmd"
 )
 
@@ -18,7 +18,7 @@ var (
 
 // main entry point for apigear cli tool
 func main() {
-	cfg.SetBuildInfo("cli", cfg.BuildInfo{
+	config.SetBuildInfo("cli", config.BuildInfo{
 		Version: version,
 		Commit:  commit,
 		Date:    date,

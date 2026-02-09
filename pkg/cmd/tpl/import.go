@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ func NewImportCommand() *cobra.Command {
 			url := args[0]
 			version := args[1]
 			cmd.Printf("importing template from %s\n", url)
-			fqn, err := repos.Cache.Install(url, version)
+			fqn, err := registry.Cache.Install(url, version)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return

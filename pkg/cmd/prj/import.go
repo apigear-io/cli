@@ -1,15 +1,15 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
 
 func Must(err error) {
 	if err != nil {
-		log.Fatal().Msgf("error: %s", err)
+		logging.Fatal().Msgf("error: %s", err)
 	}
 }
 
@@ -23,8 +23,8 @@ func NewImportCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			source := args[0]
-			log.Debug().Msgf("import project %s to %s", source, target)
-			info, err := prj.ImportProject(source, target)
+			logging.Debug().Msgf("import project %s to %s", source, target)
+			info, err := project.ImportProject(source, target)
 			if err != nil {
 				return err
 			}

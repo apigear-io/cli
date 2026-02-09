@@ -8,9 +8,9 @@ import (
 
 	_ "embed" // for embedding the template
 
-	"github.com/apigear-io/cli/pkg/gen"
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/model"
+	"github.com/apigear-io/cli/pkg/codegen"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/apimodel"
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +27,8 @@ func Yaml2Idl(input string) error {
 		if ext != ".yaml" && ext != ".yml" {
 			return fmt.Errorf("%s is not a yaml file", file)
 		}
-		system := model.NewSystem("NO_NAME")
-		p := model.NewDataParser(system)
+		system := apimodel.NewSystem("NO_NAME")
+		p := apimodel.NewDataParser(system)
 		err = p.ParseFile(file)
 		if err != nil {
 			return err
@@ -44,11 +44,11 @@ func Yaml2Idl(input string) error {
 			return fmt.Errorf("multiple modules found in %s, only one module is supported", file)
 		}
 		module := system.Modules[0]
-		ctx := model.ModuleScope{
+		ctx := apimodel.ModuleScope{
 			System: system,
 			Module: module,
 		}
-		out, err := gen.RenderString(moduleIdlTemplate, ctx)
+		out, err := codegen.RenderString(moduleIdlTemplate, ctx)
 		if err != nil {
 			return fmt.Errorf("render module idl: %w", err)
 		}
@@ -71,7 +71,7 @@ func NewYaml2IdlCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			err := Yaml2Idl(args[0])
 			if err != nil {
-				log.Fatal().Err(err).Msg("convert yaml to idl")
+				logging.Fatal().Err(err).Msg("convert yaml to idl")
 			}
 		},
 	}

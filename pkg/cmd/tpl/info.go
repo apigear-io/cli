@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +12,7 @@ func NewInfoCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			info, err := repos.Registry.Get(name)
+			info, err := registry.Registry.Get(name)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
