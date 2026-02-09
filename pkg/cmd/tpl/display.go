@@ -3,7 +3,7 @@ package tpl
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/git"
+	"github.com/apigear-io/cli/pkg/foundation/git"
 	"github.com/pterm/pterm"
 )
 

@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ func NewSearchCommand() *cobra.Command {
 			if len(args) > 0 {
 				pattern = args[0]
 			}
-			infos, err := repos.Registry.Search(pattern)
+			infos, err := registry.Registry.Search(pattern)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return

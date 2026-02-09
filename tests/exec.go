@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/apigear-io/cli/pkg/cmd"
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ func execute(t *testing.T, args string) string {
 	root.SetOut(&b)
 	root.SetErr(&b)
 	root.SetArgs(strings.Split(args, " "))
-	log.OnReportBytes(func(s string) {
+	logging.OnReportBytes(func(s string) {
 		b.WriteString(s)
 	})
 	// ignore error here
@@ -35,7 +35,7 @@ func setup(t *testing.T) string {
 	origDir, err := os.Getwd()
 	assert.NoError(t, err)
 	tmpDir := t.TempDir()
-	err = helper.CopyDir("./testdata", tmpDir)
+	err = foundation.CopyDir("./testdata", tmpDir)
 	assert.NoError(t, err)
 	err = os.Chdir(tmpDir)
 	assert.NoError(t, err)

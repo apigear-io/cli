@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ func NewRecentCommand() *cobra.Command {
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			cmd.Println("recent projects:")
-			for _, info := range prj.RecentProjectInfos() {
+			for _, info := range project.RecentProjectInfos() {
 				cmd.Printf("  %s\n", info.Name)
 			}
 			return nil

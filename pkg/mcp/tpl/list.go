@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -18,7 +18,7 @@ func registerTemplateListTool(s *server.MCPServer) {
 		mcp.WithIdempotentHintAnnotation(true),
 	)
 	s.AddTool(templateListTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		infos, err := repos.Registry.List()
+		infos, err := registry.Registry.List()
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}

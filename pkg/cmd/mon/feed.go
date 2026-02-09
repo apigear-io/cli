@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/apigear-io/cli/pkg/helper"
-	"github.com/apigear-io/cli/pkg/log"
-	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/logging"
+	"github.com/apigear-io/cli/pkg/runtime/monitoring"
 
 	"github.com/spf13/cobra"
 )
@@ -26,24 +26,24 @@ func NewClientCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			options.script = args[0]
-			log.Debug().Msgf("run script %s", options.script)
-			var events []mon.Event
+			logging.Debug().Msgf("run script %s", options.script)
+			var events []monitoring.Event
 			var err error
-			switch helper.Ext(options.script) {
+			switch foundation.Ext(options.script) {
 			case ".json", ".ndjson":
-				events, err = mon.ReadJsonEvents(options.script)
-				log.Debug().Msgf("read %d events", len(events))
+				events, err = monitoring.ReadJsonEvents(options.script)
+				logging.Debug().Msgf("read %d events", len(events))
 				if err != nil {
 					return fmt.Errorf("error reading events: %w", err)
 				}
 			case ".js":
-				vm := mon.NewEventScript()
+				vm := monitoring.NewEventScript()
 				events, err = vm.RunScriptFromFile(options.script)
 				if err != nil {
 					return fmt.Errorf("error running script: %w", err)
 				}
 			case ".csv":
-				events, err = mon.ReadCsvEvents(options.script)
+				events, err = monitoring.ReadCsvEvents(options.script)
 				if err != nil {
 					return fmt.Errorf("error reading events: %w", err)
 				}
@@ -53,19 +53,19 @@ func NewClientCommand() *cobra.Command {
 			if len(events) == 0 {
 				return fmt.Errorf("no events to send")
 			}
-			sender := helper.NewHTTPSender(options.url)
-			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
-			err = ctrl.Run(events, func(event mon.Event) error {
+			sender := foundation.NewHTTPSender(options.url)
+			ctrl := foundation.NewSenderControl[monitoring.Event](options.repeat, options.sleep)
+			err = ctrl.Run(events, func(event monitoring.Event) error {
 				if event.Source == "" {
 					event.Source = "123"
 				}
 				// send as an array of events
-				payload := [1]mon.Event{event}
+				payload := [1]monitoring.Event{event}
 
 				return sender.SendValue(payload)
 			})
 			if err != nil {
-				log.Warn().Msgf("error sending events: %s", err)
+				logging.Warn().Msgf("error sending events: %s", err)
 			}
 			return nil
 		},

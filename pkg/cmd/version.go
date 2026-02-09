@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/cfg"
+	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ func NewVersionCommand() *cobra.Command {
 }
 
 func retrieveVersion() string {
-	bi := cfg.GetBuildInfo("cli")
+	bi := config.GetBuildInfo("cli")
 	version := fmt.Sprintf("%s-%s-%s", bi.Version, bi.Commit, bi.Date)
 	return version
 }

@@ -3,7 +3,7 @@ package tpl
 import (
 	"context"
 
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -17,7 +17,7 @@ func registerTemplateUpdateTool(s *server.MCPServer) {
 		mcp.WithIdempotentHintAnnotation(true),
 	)
 	s.AddTool(templateUpdateTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		err := repos.Registry.Update()
+		err := registry.Registry.Update()
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}

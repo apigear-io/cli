@@ -1,7 +1,7 @@
 package tpl
 
 import (
-	"github.com/apigear-io/cli/pkg/repos"
+	"github.com/apigear-io/cli/pkg/codegen/registry"
 
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ func NewUpdateCommand() *cobra.Command {
 		Use:   "update",
 		Short: "update the template registry",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := repos.Registry.Update()
+			err := registry.Registry.Update()
 			if err != nil {
 				cmd.PrintErrln(err)
 			}

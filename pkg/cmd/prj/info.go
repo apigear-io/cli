@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewInfoCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dir := args[0]
 			cmd.Printf("# info %s\n", dir)
-			info, err := prj.GetProjectInfo(dir)
+			info, err := project.GetProjectInfo(dir)
 			if err != nil {
 				return err
 			}

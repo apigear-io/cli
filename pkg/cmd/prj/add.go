@@ -1,7 +1,7 @@
 package prj
 
 import (
-	"github.com/apigear-io/cli/pkg/prj"
+	"github.com/apigear-io/cli/pkg/orchestration/project"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ func NewAddCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			docType := args[0]
 			name := args[1]
-			target, err := prj.AddDocument(prjDir, docType, name)
+			target, err := project.AddDocument(prjDir, docType, name)
 			if err != nil {
 				return err
 			}

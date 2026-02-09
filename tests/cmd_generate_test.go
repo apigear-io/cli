@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/helper"
+	"github.com/apigear-io/cli/pkg/foundation"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,7 @@ func TestGenerateCmd(t *testing.T) {
 func TestGenerateSolutionCmd(t *testing.T) {
 	setup(t)
 	cwd, err := os.Getwd()
-	helper.ListDir(".")
+	foundation.ListDir(".")
 	assert.NoError(t, err)
 	log.Printf("cwd: %s", cwd)
 	output := execute(t, "generate solution ./apigear/test.solution.yaml")

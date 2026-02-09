@@ -3,8 +3,8 @@ package cmd
 import (
 	"context"
 
-	"github.com/apigear-io/cli/pkg/cfg"
-	"github.com/apigear-io/cli/pkg/up"
+	"github.com/apigear-io/cli/pkg/foundation/config"
+	"github.com/apigear-io/cli/pkg/foundation/updater"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -17,9 +17,9 @@ func NewUpdateCommand() *cobra.Command {
 		Long:  `check and update the program to the latest version`,
 		Run: func(cmd *cobra.Command, args []string) {
 			repo := "apigear-io/cli"
-			version := cfg.GetBuildInfo("cli").Version
+			version := config.GetBuildInfo("cli").Version
 			ctx := context.Background()
-			u, err := up.NewUpdater(repo, version)
+			u, err := updater.NewUpdater(repo, version)
 			if err != nil {
 				cmd.PrintErrln(err)
 				return
