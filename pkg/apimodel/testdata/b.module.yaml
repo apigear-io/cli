@@ -1,0 +1,10 @@
+name: b
+imports:
+  - name: a
+    version: 1.0.0
+interfaces:
+  - name: B
+    properties:
+      - name: value
+        type: A
+        import: a

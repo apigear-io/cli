@@ -1,0 +1,50 @@
+name: Module01
+version: "1.0.0"
+interfaces:
+  - name: Interface01
+    properties:
+      - name: prop01
+        type: bool
+  - name: Interface02
+    operations:
+      - name: operation01
+        params:
+          - name: param01
+            type: bool
+        return:
+          type: bool
+  - name: Interface03
+    signals:
+      - name: signal01
+        params:
+          - name: param01
+            type: bool
+          - name: param02
+            type: bool
+  - name: Interface04
+    operations:
+      - name: operation01
+      - name: operation02
+      - name: operation03
+        return:
+          type: int
+  - name: Interface05
+    properties:
+      - name: prop01
+        type: int
+      - name: prop02
+        type: int
+        readonly: true
+      - name: prop03
+        type: int
+        readonly: false
+  - name: Interface06
+    extends:
+      name: Interface01
+      import: "Module01"
+enums:
+  - name: Enum1
+    members:
+      - name: "Enum1"
+      - name: "Enum2"
+      - name: "Enum3"
