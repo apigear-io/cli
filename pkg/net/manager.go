@@ -2,7 +2,6 @@ package net
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,16 +10,9 @@ import (
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
-	"github.com/nats-io/nats.go"
 )
 
 type Options struct {
-	NatsHost          string `json:"nats_host"`
-	NatsPort          int    `json:"nats_port"`
-	NatsDisabled      bool   `json:"nats_disabled"`
-	NatsListen        bool   `json:"nats_inprocess_only"`
-	NatsLeafURL       string `json:"nats_leaf_url"`
-	NatsCredentials   string `json:"nats_credentials"`
 	HttpAddr          string `json:"http_addr"`
 	HttpDisabled      bool   `json:"http_disabled"`
 	MonitorDisabled   bool   `json:"monitor_disabled"`
@@ -29,12 +21,6 @@ type Options struct {
 }
 
 var DefaultOptions = &Options{
-	NatsHost:          "localhost",
-	NatsPort:          4222,
-	NatsDisabled:      false,
-	NatsListen:        false,
-	NatsLeafURL:       "",
-	NatsCredentials:   "",
 	HttpAddr:          "localhost:5555",
 	HttpDisabled:      false,
 	MonitorDisabled:   false,
@@ -44,9 +30,7 @@ var DefaultOptions = &Options{
 
 type NetworkManager struct {
 	opts       *Options
-	natsServer *NatsServer
 	httpServer *HTTPServer
-	nc         *nats.Conn
 }
 
 func NewManager() *NetworkManager {
@@ -61,19 +45,6 @@ func (s *NetworkManager) Start(opts *Options) error {
 		err := s.StartHTTP(s.opts.HttpAddr)
 		if err != nil {
 			log.Error().Err(err).Msg("failed to start http server")
-			return err
-		}
-	}
-	if !s.opts.NatsDisabled {
-		err := s.StartNATS(&NatsServerOptions{
-			Host:        s.opts.NatsHost,
-			Port:        s.opts.NatsPort,
-			NatsListen:  s.opts.NatsListen,
-			LeafURL:     s.opts.NatsLeafURL,
-			Credentials: s.opts.NatsCredentials,
-		})
-		if err != nil {
-			log.Error().Err(err).Msg("failed to start nats server")
 			return err
 		}
 	}
@@ -112,51 +83,7 @@ func (s *NetworkManager) Stop() error {
 	if err != nil {
 		return err
 	}
-	err = s.StopNATS()
-	if err != nil {
-		return err
-	}
 	return nil
-}
-
-func (s *NetworkManager) StartNATS(opts *NatsServerOptions) error {
-	if s.natsServer != nil {
-		return fmt.Errorf("nats server already started")
-	}
-	server, err := NewNatsServer(opts)
-	if err != nil {
-		return err
-	}
-	s.natsServer = server
-	return s.natsServer.Start()
-}
-
-func (s *NetworkManager) StopNATS() error {
-	log.Info().Msg("stop nats server")
-	if s.nc != nil {
-		err := s.nc.Drain()
-		if err != nil {
-			return err
-		}
-	}
-	if s.natsServer != nil {
-		return s.natsServer.Shutdown()
-	}
-	return nil
-}
-
-func (s *NetworkManager) NatsClientURL() string {
-	if s.natsServer != nil {
-		return s.natsServer.ClientURL()
-	}
-	return ""
-}
-
-func (s *NetworkManager) NatsConnection() (*nats.Conn, error) {
-	if s.natsServer == nil {
-		return nil, fmt.Errorf("nats server not started")
-	}
-	return s.natsServer.Connection()
 }
 
 func (s *NetworkManager) StartHTTP(addr string) error {
@@ -191,12 +118,9 @@ func (s *NetworkManager) EnableMonitor() error {
 		log.Error().Msg("http server not started")
 		return fmt.Errorf("http server not started")
 	}
-	nc, err := s.NatsConnection()
-	if err != nil {
-		log.Error().Msgf("nats connection: %v", err)
-	}
-	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc))
+	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler())
 	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", s.httpServer.Address())
+	log.Warn().Msg("NATS disabled: monitor events will be logged locally but not broadcast")
 	return nil
 }
 
@@ -219,25 +143,4 @@ func (s *NetworkManager) GetSimulationAddress() (string, error) {
 // MonitorEmitter return the monitor event emitter.
 func (s *NetworkManager) MonitorEmitter() *helper.Hook[mon.Event] {
 	return &mon.Emitter
-}
-
-func (s *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
-	nc, err := s.NatsConnection()
-	if err != nil {
-		log.Error().Msgf("nats connection: %v", err)
-		return
-	}
-	log.Debug().Msg("subscribe to monitor events")
-	_, err = nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
-		var event mon.Event
-		err := json.Unmarshal(msg.Data, &event)
-		if err != nil {
-			log.Error().Msgf("unmarshal event: %v", err)
-			return
-		}
-		fn(&event)
-	})
-	if err != nil {
-		log.Error().Err(err).Msg("failed to subscribe to monitor events")
-	}
 }

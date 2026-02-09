@@ -1,0 +1,54 @@
+# Test experimental (x) commands structure
+# These format conversion commands should remain stable
+
+# Test x help
+exec apigear x --help
+stdout 'Usage:'
+stdout 'x'
+stdout 'doc'
+stdout 'json2yaml'
+stdout 'yaml2json'
+stdout 'yaml2idl'
+stdout 'idl2yaml'
+
+# Test experimental alias
+exec apigear experimental --help
+stdout 'experimental'
+
+# Test json2yaml help
+exec apigear x json2yaml --help
+stdout 'Usage:'
+stdout 'json2yaml'
+
+# Test json2yaml alias
+exec apigear x j2y --help
+stdout 'json2yaml'
+
+# Test yaml2json help
+exec apigear x yaml2json --help
+stdout 'Usage:'
+stdout 'yaml2json'
+
+# Test yaml2json alias
+exec apigear x y2j --help
+stdout 'yaml2json'
+
+# Test yaml2idl help
+exec apigear x yaml2idl --help
+stdout 'Usage:'
+stdout 'yaml2idl'
+
+# Test yaml2idl alias
+exec apigear x y2i --help
+stdout 'yaml2idl'
+
+# Test idl2yaml help
+exec apigear x idl2yaml --help
+stdout 'Usage:'
+stdout 'idl2yaml'
+
+# Test doc command help
+exec apigear x doc --help
+stdout 'Usage:'
+stdout 'doc'
+stdout '\-\-force'

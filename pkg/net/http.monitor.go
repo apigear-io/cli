@@ -9,7 +9,6 @@ import (
 
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
-	"github.com/nats-io/nats.go"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -17,7 +16,15 @@ import (
 
 var counter = atomic.Uint64{}
 
-func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
+// STUB: NATS Removed - Event Broadcasting Disabled
+// This handler receives monitor events via HTTP but does not broadcast them.
+// Events are still emitted to local hooks via mon.Emitter.FireHook()
+//
+// To re-enable NATS broadcasting:
+// 1. Add *nats.Conn parameter back to this function
+// 2. Restore NATS publishing code (nc.Publish)
+// 3. Update NetworkManager.EnableMonitor() to pass NATS connection
+func MonitorRequestHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		source := chi.URLParam(r, "source")
 		log.Debug().Msgf("handle monitor request %s", source)
@@ -41,21 +48,18 @@ func MonitorRequestHandler(nc *nats.Conn) http.HandlerFunc {
 			if event.Timestamp.IsZero() {
 				event.Timestamp = time.Now()
 			}
-			data, err := json.Marshal(event)
-			if err != nil {
-				log.Error().Msgf("marshal event: %v", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+			// Log event details (NATS broadcasting disabled)
+			log.Info().
+				Str("source", event.Source).
+				Str("type", string(event.Type)).
+				Str("id", event.Id).
+				Str("subject", event.Subject()).
+				Msg("Monitor event received (local only, not broadcast)")
+
+			// Fire local hooks (still works)
 			mon.Emitter.FireHook(event)
-			subject := event.Subject()
-			err = nc.Publish(subject, data)
-			if err != nil {
-				log.Error().Msgf("publish event: %v", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 

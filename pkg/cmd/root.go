@@ -8,9 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/mon"
 	"github.com/apigear-io/cli/pkg/cmd/olink"
 	"github.com/apigear-io/cli/pkg/cmd/prj"
-	"github.com/apigear-io/cli/pkg/cmd/sim"
 	"github.com/apigear-io/cli/pkg/cmd/spec"
-	"github.com/apigear-io/cli/pkg/cmd/stim"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/cmd/x"
 
@@ -28,12 +26,9 @@ func NewRootCommand() *cobra.Command {
 	}
 	cmd.SilenceErrors = false
 	cmd.SilenceUsage = false
-	cmd.AddCommand(NewServeCommand())
 	cmd.AddCommand(gen.NewRootCommand())
 	cmd.AddCommand(mon.NewRootCommand())
 	cmd.AddCommand(cfg.NewRootCommand())
-	cmd.AddCommand(sim.NewRootCommand())
-	cmd.AddCommand(stim.NewRootCommand())
 	cmd.AddCommand(spec.NewRootCommand())
 	cmd.AddCommand(prj.NewRootCommand())
 	cmd.AddCommand(x.NewRootCommand())

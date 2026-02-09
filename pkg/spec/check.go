@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/model"
-	"github.com/apigear-io/cli/pkg/sim"
 
 	"github.com/apigear-io/cli/pkg/idl"
 
@@ -66,8 +65,6 @@ func CheckFile(file string) (*Result, error) {
 		return CheckCsvFile(file)
 	case ".idl":
 		return CheckIdlFile(file)
-	case ".js":
-		return CheckJsFile(file)
 	default:
 		return nil, fmt.Errorf("unsupported file type: %s", file)
 	}
@@ -155,26 +152,6 @@ func CheckIdlFile(name string) (*Result, error) {
 	err = s.Validate()
 	if err != nil {
 		return nil, fmt.Errorf("resolve file %s: %w", name, err)
-	}
-	return &Result{}, nil
-}
-
-func CheckJsFile(name string) (*Result, error) {
-	eng := sim.NewEngine(sim.EngineOptions{})
-	src, err := os.ReadFile(name)
-	if err != nil {
-		return nil, err
-	}
-	err = eng.CompileScript(name, string(src))
-	if err != nil {
-		return &Result{
-			File: name,
-			Errors: []ErrorResult{
-				{
-					Description: err.Error(),
-				},
-			},
-		}, nil
 	}
 	return &Result{}, nil
 }

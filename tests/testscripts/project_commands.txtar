@@ -1,0 +1,52 @@
+# Test project commands structure
+# Project management is a key workflow
+
+# Test project help
+exec apigear project --help
+stdout 'Usage:'
+stdout 'project'
+stdout 'add'
+stdout 'create'
+stdout 'edit'
+stdout 'import'
+stdout 'info'
+stdout 'open'
+stdout 'pack'
+stdout 'recent'
+stdout 'share'
+
+# Test project alias
+exec apigear prj --help
+stdout 'project'
+
+# Test project create help
+exec apigear project create --help
+stdout 'Usage:'
+stdout 'create'
+stdout '\-\-dir'
+
+# Test project create requires --dir flag
+! exec apigear project create
+stderr 'required flag.*dir'
+
+# Test project add help
+exec apigear project add --help
+stdout 'Usage:'
+stdout 'add'
+stdout '\-\-project'
+
+# Test project import help
+exec apigear project import --help
+stdout 'Usage:'
+stdout 'import'
+stdout '\-\-target'
+
+# Test project recent
+exec apigear project recent
+! stderr 'error'
+
+# Test project pack help
+exec apigear project pack --help
+stdout 'Usage:'
+stdout 'pack'
+stdout '\-\-dir'

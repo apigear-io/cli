@@ -102,11 +102,6 @@ CLI commands are harder to test but important:
 - Schema validation edge cases
 - Error path testing
 
-#### `pkg/sim` (38.1% → Target: 60%+)
-- Simulation scenarios
-- State transitions
-- Event handling
-
 ## Testing Strategy Recommendations
 
 ### 1. Add Test Helpers
@@ -198,9 +193,7 @@ test:cover:report:
 - `pkg/cmd/mon`
 - `pkg/cmd/olink`
 - `pkg/cmd/prj`
-- `pkg/cmd/sim`
 - `pkg/cmd/spec`
-- `pkg/cmd/stim`
 - `pkg/cmd/tpl`
 - `pkg/cmd/x`
 - `pkg/gen/filters` (base)
@@ -224,7 +217,6 @@ test:cover:report:
 - `pkg/repos` - 12.3%
 - `pkg/cmd/cfg` - 28.6%
 - `pkg/model` - 34.9%
-- `pkg/sim` - 38.1%
 - `pkg/mon` - 40.9%
 - `pkg/spec` - 42.9%
 - `pkg/spec/rkw` - 43.9%
