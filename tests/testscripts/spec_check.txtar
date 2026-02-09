@@ -1,0 +1,43 @@
+# Test spec check command with valid and invalid files
+# Spec validation is a core user-facing feature
+
+# Test spec check with valid file
+exec apigear spec check apigear/test.module.yaml
+! stderr 'error'
+
+# Test spec check with aliases
+exec apigear s check apigear/test.module.yaml
+! stderr 'error'
+
+exec apigear spec c apigear/test.module.yaml
+! stderr 'error'
+
+exec apigear spec lint apigear/test.module.yaml
+! stderr 'error'
+
+# Test spec check with non-existent file
+! exec apigear spec check nonexistent.yaml
+stderr '.'
+
+# Test spec schema command
+exec apigear spec schema
+stdout '.'
+
+# Test spec schema with type flag
+exec apigear spec schema --type module
+stdout '.'
+
+exec apigear spec schema -t solution
+stdout '.'
+
+# Test spec schema with format flag
+exec apigear spec schema --format yaml
+stdout '.'
+
+exec apigear spec schema -f json
+stdout '.'
+
+-- apigear/test.module.yaml --
+schema: apigear.module/1.0
+name: test
+version: 1.0.0

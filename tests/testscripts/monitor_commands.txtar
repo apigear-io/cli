@@ -1,0 +1,37 @@
+# Test monitor commands structure
+# Monitor is used for API testing
+
+# Test monitor help
+exec apigear monitor --help
+stdout 'Usage:'
+stdout 'monitor'
+stdout 'run'
+stdout 'feed'
+
+# Test monitor with aliases
+exec apigear mon --help
+stdout 'monitor'
+
+exec apigear m --help
+stdout 'monitor'
+
+# Test monitor run help
+exec apigear monitor run --help
+stdout 'Usage:'
+stdout 'run'
+stdout '\-\-addr'
+
+# Test monitor run aliases
+exec apigear monitor r --help
+stdout 'run'
+
+exec apigear monitor start --help
+stdout 'run'
+
+# Test monitor feed help
+exec apigear monitor feed --help
+stdout 'Usage:'
+stdout 'feed'
+stdout '\-\-url'
+stdout '\-\-repeat'
+stdout '\-\-sleep'
