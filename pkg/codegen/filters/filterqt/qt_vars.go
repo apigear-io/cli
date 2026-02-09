@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func qtVars(nodes []*apimodel.TypedNode) (string, error) {
+func qtVars(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("qtVars called with nil nodes")
 	}

@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 // SystemScope is used by the generator to generate code for a system
 type SystemScope struct {

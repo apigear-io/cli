@@ -3,10 +3,10 @@ package filterjava
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToParamString(prefix string, schema *apimodel.Schema, name string) (string, error) {
+func ToParamString(prefix string, schema *objmodel.Schema, name string) (string, error) {
 	if schema.IsArray {
 		inner := schema.InnerSchema()
 		ret, err := ToReturnString(prefix, &inner)
@@ -23,7 +23,7 @@ func ToParamString(prefix string, schema *apimodel.Schema, name string) (string,
 	}
 }
 
-func javaParam(prefix string, node *apimodel.TypedNode) (string, error) {
+func javaParam(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("javaParam node is nil")
 	}

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func jniJavaParams(prefix string, nodes []*apimodel.TypedNode) (string, error) {
+func jniJavaParams(prefix string, nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "", fmt.Errorf("jniJavaParams called with nil nodes")
 	}

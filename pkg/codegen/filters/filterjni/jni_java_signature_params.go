@@ -3,10 +3,10 @@ package filterjni
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func jniJavaSignatureParams(nodes []*apimodel.TypedNode) (string, error) {
+func jniJavaSignatureParams(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "", fmt.Errorf("ueJniJavaParams called with nil nodes")
 	}

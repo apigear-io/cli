@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func goVars(nodes []*apimodel.TypedNode) (string, error) {
+func goVars(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("goNames called with nil nodes")
 	}
@@ -22,7 +22,7 @@ func goVars(nodes []*apimodel.TypedNode) (string, error) {
 	return strings.Join(names, ", "), nil
 }
 
-func goPublicVars(nodes []*apimodel.TypedNode) (string, error) {
+func goPublicVars(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "", fmt.Errorf("goNames called with nil nodes")
 	}

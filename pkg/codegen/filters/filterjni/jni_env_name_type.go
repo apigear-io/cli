@@ -3,39 +3,39 @@ package filterjni
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToEnvNameType(schema *apimodel.Schema) (string, error) {
+func ToEnvNameType(schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToType schema is nil")
 	}
 
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "Object"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "Int"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "Int"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "Long"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "Float"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "Float"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "Double"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "Boolean"
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		text = "Object"
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		text = "Object"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		text = "Object"
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		text = "Object"
 	default:
 		return "xxx", fmt.Errorf("ToEnvNameType unknown schema %s", schema.Dump())
@@ -43,6 +43,6 @@ func ToEnvNameType(schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func jniToEnvNameType(node *apimodel.TypedNode) (string, error) {
+func jniToEnvNameType(node *objmodel.TypedNode) (string, error) {
 	return ToEnvNameType(&node.Schema)
 }

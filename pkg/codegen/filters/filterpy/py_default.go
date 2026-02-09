@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
+func ToDefaultString(schema *objmodel.Schema, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("pyDefault schema is nil")
 	}
@@ -20,15 +20,15 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 		text = "[]"
 	} else {
 		switch schema.KindType {
-		case apimodel.TypeString:
+		case objmodel.TypeString:
 			text = "\"\""
-		case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+		case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 			text = "0"
-		case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+		case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 			text = "0.0"
-		case apimodel.TypeBool:
+		case objmodel.TypeBool:
 			text = "False"
-		case apimodel.TypeExtern:
+		case objmodel.TypeExtern:
 			xe := parsePyExtern(schema)
 			if xe.Default != "" {
 				text = xe.Default
@@ -39,7 +39,7 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 				}
 				text = fmt.Sprintf("%s%s()", py_module, xe.Name)
 			}
-		case apimodel.TypeEnum:
+		case objmodel.TypeEnum:
 			e_local := schema.LookupEnum("", schema.Type)
 			e_imported := schema.LookupEnum(schema.Import, schema.Type)
 			if e_local == nil && e_imported == nil {
@@ -52,7 +52,7 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 				prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
 			}
 			text = fmt.Sprintf("%s%s.%s", prefix, name, member)
-		case apimodel.TypeStruct:
+		case objmodel.TypeStruct:
 			s_local := schema.LookupStruct("", schema.Type)
 			s_imported := schema.LookupStruct(schema.Import, schema.Type)
 			if s_local == nil && s_imported == nil {
@@ -64,13 +64,13 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 				prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
 			}
 			text = fmt.Sprintf("%s%s()", prefix, ident)
-		case apimodel.TypeInterface:
+		case objmodel.TypeInterface:
 			i := schema.LookupInterface(schema.Import, schema.Type)
 			if i == nil {
 				return "xxx", fmt.Errorf("pyDefault interface not found: %s", schema.Dump())
 			}
 			text = "None"
-		case apimodel.TypeVoid:
+		case objmodel.TypeVoid:
 			text = "None"
 		default:
 			return "xxx", fmt.Errorf("pyDefault unknown schema %s", schema.Dump())
@@ -83,7 +83,7 @@ func ToDefaultString(schema *apimodel.Schema, prefix string) (string, error) {
 }
 
 // cppDefault returns the default value for a type
-func pyDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func pyDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("pyDefault called with nil node")
 	}

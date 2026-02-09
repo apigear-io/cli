@@ -3,7 +3,7 @@ package filtergo
 import (
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type GoExtern struct {
@@ -12,7 +12,7 @@ type GoExtern struct {
 	Name   string
 }
 
-func parseGoExtern(schema *apimodel.Schema) GoExtern {
+func parseGoExtern(schema *objmodel.Schema) GoExtern {
 	xe := schema.GetExtern()
 	return goExtern(xe)
 }
@@ -22,7 +22,7 @@ func shortGoImport(name string) string {
 	return parts[len(parts)-1]
 }
 
-func goExtern(xe *apimodel.Extern) GoExtern {
+func goExtern(xe *objmodel.Extern) GoExtern {
 	mod := xe.Meta.GetString("go.module")
 	imp := shortGoImport(mod)
 	name := xe.Meta.GetString("go.name")

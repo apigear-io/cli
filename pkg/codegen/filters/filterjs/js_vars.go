@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func jsVars(nodes []*apimodel.TypedNode) (string, error) {
+func jsVars(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("jsVars called with nil nodes")
 	}

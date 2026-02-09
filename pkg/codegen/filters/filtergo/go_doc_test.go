@@ -3,7 +3,7 @@ package filtergo
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ func TestDoc(t *testing.T) {
 	}
 	for _, tt := range table {
 		t.Run(tt.in, func(t *testing.T) {
-			node := &apimodel.NamedNode{
+			node := &objmodel.NamedNode{
 				Name:        "test",
 				Description: tt.in,
 			}

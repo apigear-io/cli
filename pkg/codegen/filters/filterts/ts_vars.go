@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func tsVars(nodes []*apimodel.TypedNode) (string, error) {
+func tsVars(nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("tsVars called with nil nodes")
 	}

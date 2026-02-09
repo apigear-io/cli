@@ -3,7 +3,7 @@ package tpl
 import (
 	"github.com/apigear-io/cli/pkg/codegen"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +17,7 @@ func NewLintCommand() *cobra.Command {
 			// if the templates in the dir are not valid
 			_, err := codegen.New(codegen.Options{
 				TemplatesDir: dir,
-				System:       apimodel.NewSystem("test"),
+				System:       objmodel.NewSystem("test"),
 				Features:     []string{"all"},
 				Force:        true,
 			})

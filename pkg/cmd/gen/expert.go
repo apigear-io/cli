@@ -8,7 +8,7 @@ import (
 	"github.com/apigear-io/cli/pkg/foundation"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/apigear-io/cli/pkg/orchestration/solution"
-	"github.com/apigear-io/cli/pkg/apimodel/spec"
+	"github.com/apigear-io/cli/pkg/objmodel/spec"
 
 	"github.com/spf13/cobra"
 )

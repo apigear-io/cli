@@ -1,9 +1,9 @@
 package idl
 
-import "github.com/apigear-io/cli/pkg/apimodel"
+import "github.com/apigear-io/cli/pkg/objmodel"
 
-func LoadIdlFromString(name string, content string) (*apimodel.System, error) {
-	system := apimodel.NewSystem(name)
+func LoadIdlFromString(name string, content string) (*objmodel.System, error) {
+	system := objmodel.NewSystem(name)
 	parser := NewParser(system)
 	err := parser.ParseString(content)
 	if err != nil {
@@ -12,8 +12,8 @@ func LoadIdlFromString(name string, content string) (*apimodel.System, error) {
 	return system, nil
 }
 
-func LoadIdlFromFiles(name string, files []string) (*apimodel.System, error) {
-	system := apimodel.NewSystem(name)
+func LoadIdlFromFiles(name string, files []string) (*objmodel.System, error) {
+	system := objmodel.NewSystem(name)
 	for _, file := range files {
 		parser := NewParser(system)
 		err := parser.ParseFile(file)

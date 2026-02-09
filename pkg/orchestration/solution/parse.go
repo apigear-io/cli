@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/apigear-io/cli/pkg/apimodel/idl"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel/idl"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // parseInputs parses the inputs from the layer.
 // A input can be either a file or a directory.
 // If the input is a directory, the files in the directory will be parsed.
-func parseInputs(s *apimodel.System, inputs []string) error {
+func parseInputs(s *objmodel.System, inputs []string) error {
 	log.Info().Msgf("parse inputs %v", inputs)
 	for _, file := range inputs {
 		log.Debug().Msgf("parse input %s", file)
 		switch filepath.Ext(file) {
 		case ".yaml", ".yml", ".json":
-			p := apimodel.NewDataParser(s)
+			p := objmodel.NewDataParser(s)
 			err := p.ParseFile(file)
 			if err != nil {
 				log.Error().Err(err).Msgf("input file: %s. skip", file)

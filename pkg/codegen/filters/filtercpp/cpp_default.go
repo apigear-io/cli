@@ -4,28 +4,28 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToDefaultString returns the default value for a type
-func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToDefaultString(prefix string, schema *objmodel.Schema) (string, error) {
 	text := ""
 	switch schema.KindType {
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "void"
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "std::string()"
-	case apimodel.TypeInt, apimodel.TypeInt32:
+	case objmodel.TypeInt, objmodel.TypeInt32:
 		text = "0"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "0LL"
-	case apimodel.TypeFloat, apimodel.TypeFloat32:
+	case objmodel.TypeFloat, objmodel.TypeFloat32:
 		text = "0.0f"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "0.0"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "false"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parseCppExtern(schema)
 		if xe.Default != "" {
 			text = xe.Default
@@ -37,7 +37,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 			}
 			text = fmt.Sprintf("%s%s()", prefix, xe.Name)
 		}
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := schema.LookupEnum(schema.Import, schema.Type)
 		NameSpace := prefix
 		if schema.Import != "" {
@@ -46,7 +46,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 		if e != nil {
 			text = fmt.Sprintf("%s%sEnum::%s", NameSpace, e.Name, e.Members[0].Name)
 		}
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := schema.LookupStruct(schema.Import, schema.Type)
 		NameSpace := prefix
 		if schema.Import != "" {
@@ -55,7 +55,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 		if s != nil {
 			text = fmt.Sprintf("%s%s()", NameSpace, s.Name)
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i != nil {
 			text = "nullptr"
@@ -73,7 +73,7 @@ func ToDefaultString(prefix string, schema *apimodel.Schema) (string, error) {
 }
 
 // cppDefault returns the default value for a type
-func cppDefault(prefix string, node *apimodel.TypedNode) (string, error) {
+func cppDefault(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("cppDefault node is nil")
 	}

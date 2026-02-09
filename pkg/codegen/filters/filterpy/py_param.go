@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToParamString(schema *apimodel.Schema, name string, prefix string) (string, error) {
+func ToParamString(schema *objmodel.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("pyParam schema is nil")
 	}
@@ -21,15 +21,15 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 		return fmt.Sprintf("%s: list[%s]", name, innerValue), nil
 	}
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		return fmt.Sprintf("%s: str", name), nil
-	case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+	case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 		return fmt.Sprintf("%s: int", name), nil
-	case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+	case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 		return fmt.Sprintf("%s: float", name), nil
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		return fmt.Sprintf("%s: bool", name), nil
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		x := schema.LookupExtern(schema.Import, schema.Type)
 		if x == nil {
 			return "xxx", fmt.Errorf("pyParam extern not found: %s", schema.Dump())
@@ -39,7 +39,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 			prefix = fmt.Sprintf("%s.", xe.Import)
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, xe.Name), nil
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e == nil && e_imported == nil {
@@ -51,7 +51,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 			prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s == nil && s_imported == nil {
@@ -63,7 +63,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 			prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
 		}
 		return fmt.Sprintf("%s: %s%s", name, prefix, ident), nil
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i := schema.LookupInterface(schema.Import, schema.Type)
 		if i == nil {
 			return "xxx", fmt.Errorf("pyParam interface not found: %s", schema.Dump())
@@ -75,7 +75,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 	}
 }
 
-func pyParam(prefix string, node *apimodel.TypedNode) (string, error) {
+func pyParam(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("pyParam called with nil node")
 	}

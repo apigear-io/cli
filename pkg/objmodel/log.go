@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 import (
 	zlog "github.com/apigear-io/cli/pkg/foundation/logging"

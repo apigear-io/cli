@@ -1,6 +1,6 @@
 package filtercpp
 
-import "github.com/apigear-io/cli/pkg/apimodel"
+import "github.com/apigear-io/cli/pkg/objmodel"
 
 const GPL_LIC = `/**
 NO TITLE
@@ -20,6 +20,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */`
 
-func cppGpl(m *apimodel.Module) string {
+func cppGpl(m *objmodel.Module) string {
 	return GPL_LIC
 }

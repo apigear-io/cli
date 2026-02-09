@@ -3,10 +3,10 @@ package filterrs
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToParamString(prefixVarName string, prefixComplexType string, schema *apimodel.Schema, node *apimodel.TypedNode) (string, error) {
+func ToParamString(prefixVarName string, prefixComplexType string, schema *objmodel.Schema, node *objmodel.TypedNode) (string, error) {
 	name, err := ToVarString(prefixVarName, node)
 	if err != nil {
 		return "xxx", fmt.Errorf("rsParam inner value error: %s", err)
@@ -56,7 +56,7 @@ func ToParamString(prefixVarName string, prefixComplexType string, schema *apimo
 	return "xxx", fmt.Errorf("rsParam unknown schema %s", schema.Dump())
 }
 
-func rsParam(prefixVarName string, prefixComplexType string, node *apimodel.TypedNode) (string, error) {
+func rsParam(prefixVarName string, prefixComplexType string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("rsParam node is nil")
 	}

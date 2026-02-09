@@ -3,41 +3,41 @@ package filterjni
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func jniEmptyReturnString(schema *apimodel.Schema) (string, error) {
+func jniEmptyReturnString(schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "", fmt.Errorf("ToType schema is nil")
 	}
 
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = ""
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "nullptr"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "0"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "0"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "0"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "0"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "0"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "0"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "false"
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		text = "nullptr"
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		text = "nullptr"
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		text = "nullptr"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		text = "nullptr"
 	default:
 		return "xxx", fmt.Errorf("ToEnvNameType unknown schema %s", schema.Dump())
@@ -48,6 +48,6 @@ func jniEmptyReturnString(schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func jniEmptyReturn(node *apimodel.TypedNode) (string, error) {
+func jniEmptyReturn(node *objmodel.TypedNode) (string, error) {
 	return jniEmptyReturnString(&node.Schema)
 }

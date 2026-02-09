@@ -10,7 +10,7 @@ import (
 
 	"github.com/apigear-io/cli/pkg/codegen"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +27,8 @@ func Yaml2Idl(input string) error {
 		if ext != ".yaml" && ext != ".yml" {
 			return fmt.Errorf("%s is not a yaml file", file)
 		}
-		system := apimodel.NewSystem("NO_NAME")
-		p := apimodel.NewDataParser(system)
+		system := objmodel.NewSystem("NO_NAME")
+		p := objmodel.NewDataParser(system)
 		err = p.ParseFile(file)
 		if err != nil {
 			return err
@@ -44,7 +44,7 @@ func Yaml2Idl(input string) error {
 			return fmt.Errorf("multiple modules found in %s, only one module is supported", file)
 		}
 		module := system.Modules[0]
-		ctx := apimodel.ModuleScope{
+		ctx := objmodel.ModuleScope{
 			System: system,
 			Module: module,
 		}

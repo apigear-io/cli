@@ -3,11 +3,11 @@ package filtergo
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // TODO: need to return error case
-func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToReturnString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
@@ -16,27 +16,27 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 	}
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "string"
-	case apimodel.TypeBytes:
+	case objmodel.TypeBytes:
 		text = "[]byte"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "int32"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "int32"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "int64"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "float32"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "float32"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "float64"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "bool"
-	case apimodel.TypeAny:
+	case objmodel.TypeAny:
 		text = "any"
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		x := schema.LookupExtern(schema.Import, schema.Type)
 		if x == nil {
 			return "xxx", fmt.Errorf("goReturn extern not found: %s", schema.Dump())
@@ -46,13 +46,13 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 			prefix = fmt.Sprintf("%s.", xe.Import)
 		}
 		text = fmt.Sprintf("%s%s", prefix, xe.Name)
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		text = fmt.Sprintf("%s%s", prefix, schema.Type)
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = ""
 	default:
 		return "xxx", fmt.Errorf("goReturn: unknown schema: %s", schema.Dump())
@@ -63,7 +63,7 @@ func ToReturnString(prefix string, schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func goReturn(prefix string, node *apimodel.TypedNode) (string, error) {
+func goReturn(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("goReturn node is nil")
 	}

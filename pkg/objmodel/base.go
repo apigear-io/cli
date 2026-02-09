@@ -1,10 +1,10 @@
-package apimodel
+package objmodel
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel/spec/rkw"
+	"github.com/apigear-io/cli/pkg/objmodel/spec/rkw"
 	"github.com/ettle/strcase"
 )
 

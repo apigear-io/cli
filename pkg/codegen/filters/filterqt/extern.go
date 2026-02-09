@@ -1,7 +1,7 @@
 package filterqt
 
 import (
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 type QtExtern struct {
@@ -13,12 +13,12 @@ type QtExtern struct {
 	Default   string
 }
 
-func parseQtExtern(schema *apimodel.Schema) QtExtern {
+func parseQtExtern(schema *objmodel.Schema) QtExtern {
 	xe := schema.GetExtern()
 	return qtExtern(xe)
 }
 
-func qtExtern(xe *apimodel.Extern) QtExtern {
+func qtExtern(xe *objmodel.Extern) QtExtern {
 	ns := xe.Meta.GetString("qt.namespace")
 	inc := xe.Meta.GetString("qt.include")
 	name := xe.Meta.GetString("qt.type")
@@ -38,7 +38,7 @@ func qtExtern(xe *apimodel.Extern) QtExtern {
 	}
 }
 
-func qtExterns(externs []*apimodel.Extern) []QtExtern {
+func qtExterns(externs []*objmodel.Extern) []QtExtern {
 	var items = []QtExtern{}
 	for _, ex := range externs {
 		items = append(items, qtExtern(ex))

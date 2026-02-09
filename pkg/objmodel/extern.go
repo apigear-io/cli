@@ -1,4 +1,4 @@
-package apimodel
+package objmodel
 
 type Extern struct {
 	NamedNode `json:",inline" yaml:",inline"`

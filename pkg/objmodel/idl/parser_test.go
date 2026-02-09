@@ -3,13 +3,13 @@ package idl
 import (
 	"testing"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func parseModule(t *testing.T, doc string) *apimodel.Module {
-	system := apimodel.NewSystem("test")
+func parseModule(t *testing.T, doc string) *objmodel.Module {
+	system := objmodel.NewSystem("test")
 	parser := NewParser(system)
 	assert.NoError(t, parser.ParseString(doc))
 	assert.Equal(t, 1, len(system.Modules))

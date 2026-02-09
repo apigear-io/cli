@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // cast value to module and concat module name to cpp open namespaces
 func nsOpen(node reflect.Value) (reflect.Value, error) {
-	module := node.Interface().(*apimodel.Module)
+	module := node.Interface().(*objmodel.Module)
 	if module == nil {
 		return reflect.Value{}, fmt.Errorf("invalid module")
 	}
@@ -24,7 +24,7 @@ func nsOpen(node reflect.Value) (reflect.Value, error) {
 
 // cast value to module and concat module name to cpp closing namespaces
 func nsClose(node reflect.Value) (reflect.Value, error) {
-	module := node.Interface().(*apimodel.Module)
+	module := node.Interface().(*objmodel.Module)
 	if module == nil {
 		return reflect.Value{}, fmt.Errorf("invalid module")
 	}
@@ -41,7 +41,7 @@ func nsClose(node reflect.Value) (reflect.Value, error) {
 
 // ns is a filter that concat module name to cpp namespaces
 func ns(node reflect.Value) (reflect.Value, error) {
-	module := node.Interface().(*apimodel.Module)
+	module := node.Interface().(*objmodel.Module)
 	if module == nil {
 		return reflect.Value{}, fmt.Errorf("invalid module")
 	}

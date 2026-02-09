@@ -4,32 +4,32 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToAsyncReturnString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ToReturnString schema is nil")
 	}
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "String"
-	case apimodel.TypeInt:
+	case objmodel.TypeInt:
 		text = "Integer"
-	case apimodel.TypeInt32:
+	case objmodel.TypeInt32:
 		text = "Integer"
-	case apimodel.TypeInt64:
+	case objmodel.TypeInt64:
 		text = "Long"
-	case apimodel.TypeFloat:
+	case objmodel.TypeFloat:
 		text = "Float"
-	case apimodel.TypeFloat32:
+	case objmodel.TypeFloat32:
 		text = "Float"
-	case apimodel.TypeFloat64:
+	case objmodel.TypeFloat64:
 		text = "Double"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "Boolean"
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e_local := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e_local == nil && e_imported == nil {
@@ -41,7 +41,7 @@ func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error)
 			prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(e_imported.Module.Name), common.CamelLowerCase(e_imported.Module.Name))
 		}
 		text = fmt.Sprintf("%s%s", prefix, name)
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s_local := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s_local == nil && s_imported == nil {
@@ -52,7 +52,7 @@ func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error)
 			prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(s_imported.Module.Name), common.CamelLowerCase(s_imported.Module.Name))
 		}
 		text = fmt.Sprintf("%s%s", prefix, common.CamelTitleCase(s_imported.Name))
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parseJavaExtern(schema)
 		text = fmt.Sprintf("new %s()", xe.Name)
 		var java_module string
@@ -61,7 +61,7 @@ func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error)
 			java_module = fmt.Sprintf("%s.", xe.Package)
 		}
 		text = fmt.Sprintf("%s%s", java_module, xe.Name)
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i_local := schema.LookupInterface("", schema.Type)
 		i_imported := schema.LookupInterface(schema.Import, schema.Type)
 		if i_local == nil && i_imported == nil {
@@ -72,26 +72,26 @@ func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error)
 			prefix = fmt.Sprintf("%s.%s_api.", common.CamelLowerCase(i_imported.Module.Name), common.CamelLowerCase(i_imported.Module.Name))
 		}
 		text = fmt.Sprintf("%sI%s", prefix, common.CamelTitleCase(i_imported.Name))
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		text = "Void"
 	default:
 		return "xxx", fmt.Errorf("javaReturn unknown schema %s", schema.Dump())
 	}
 	if schema.IsArray {
 		switch schema.KindType {
-		case apimodel.TypeInt:
+		case objmodel.TypeInt:
 			text = "int"
-		case apimodel.TypeInt32:
+		case objmodel.TypeInt32:
 			text = "int"
-		case apimodel.TypeInt64:
+		case objmodel.TypeInt64:
 			text = "long"
-		case apimodel.TypeFloat:
+		case objmodel.TypeFloat:
 			text = "float"
-		case apimodel.TypeFloat32:
+		case objmodel.TypeFloat32:
 			text = "float"
-		case apimodel.TypeFloat64:
+		case objmodel.TypeFloat64:
 			text = "double"
-		case apimodel.TypeBool:
+		case objmodel.TypeBool:
 			text = "boolean"
 		}
 		text = fmt.Sprintf("%s[]", text)
@@ -100,7 +100,7 @@ func ToAsyncReturnString(prefix string, schema *apimodel.Schema) (string, error)
 	return text, nil
 }
 
-func javaAsyncReturn(prefix string, node *apimodel.TypedNode) (string, error) {
+func javaAsyncReturn(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("javaReturn node is nil")
 	}

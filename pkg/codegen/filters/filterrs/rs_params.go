@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
-func rsParams(prefixVarName string, prefixComplexType string, separator string, nodes []*apimodel.TypedNode) (string, error) {
+func rsParams(prefixVarName string, prefixComplexType string, separator string, nodes []*objmodel.TypedNode) (string, error) {
 	if nodes == nil {
 		return "xxx", fmt.Errorf("rsParams called with nil nodes")
 	}

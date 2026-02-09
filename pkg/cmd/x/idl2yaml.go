@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/apigear-io/cli/pkg/apimodel/idl"
+	"github.com/apigear-io/cli/pkg/objmodel/idl"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +24,7 @@ func idl2yaml(input string) error {
 		if ext != ".idl" {
 			return fmt.Errorf("%s is not an IDL file", file)
 		}
-		sys := apimodel.NewSystem("NO_NAME")
+		sys := objmodel.NewSystem("NO_NAME")
 		logging.Debug().Msgf("Parsing IDL file: %s", file)
 		parser := idl.NewParser(sys)
 		err = parser.ParseFile(file)

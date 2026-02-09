@@ -3,11 +3,11 @@ package filterue
 import (
 	"fmt"
 
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/ettle/strcase"
 )
 
-func ToParamString(schema *apimodel.Schema, name string, prefix string) (string, error) {
+func ToParamString(schema *objmodel.Schema, name string, prefix string) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("ueParam schema is nil")
 	}
@@ -63,7 +63,7 @@ func ToParamString(schema *apimodel.Schema, name string, prefix string) (string,
 	return "xxx", fmt.Errorf("ueParam: unknown schema %s", schema.Dump())
 }
 
-func ueParam(prefix string, node *apimodel.TypedNode) (string, error) {
+func ueParam(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("ueParam called with nil node")
 	}

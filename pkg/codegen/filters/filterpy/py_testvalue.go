@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/apigear-io/cli/pkg/codegen/filters/common"
-	"github.com/apigear-io/cli/pkg/apimodel"
+	"github.com/apigear-io/cli/pkg/objmodel"
 )
 
 // ToTestValueString returns the test value string for a given schema.
 // We intentionally ignore arrays in order to return the test value of the inner type.
-func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
+func ToTestValueString(prefix string, schema *objmodel.Schema) (string, error) {
 	if schema == nil {
 		return "xxx", fmt.Errorf("pyTestValue schema is nil")
 	}
@@ -18,17 +18,17 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 	}
 	var text string
 	switch schema.KindType {
-	case apimodel.TypeString:
+	case objmodel.TypeString:
 		text = "\"xyz\""
-	case apimodel.TypeInt, apimodel.TypeInt32, apimodel.TypeInt64:
+	case objmodel.TypeInt, objmodel.TypeInt32, objmodel.TypeInt64:
 		text = "1"
-	case apimodel.TypeFloat, apimodel.TypeFloat32, apimodel.TypeFloat64:
+	case objmodel.TypeFloat, objmodel.TypeFloat32, objmodel.TypeFloat64:
 		text = "1.1"
-	case apimodel.TypeBool:
+	case objmodel.TypeBool:
 		text = "True"
-	case apimodel.TypeVoid:
+	case objmodel.TypeVoid:
 		return ToDefaultString(schema, prefix)
-	case apimodel.TypeEnum:
+	case objmodel.TypeEnum:
 		e_local := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e_local == nil && e_imported == nil {
@@ -44,7 +44,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 			prefix = fmt.Sprintf("%s.api.", e_imported.Module.Name)
 		}
 		text = fmt.Sprintf("%s%s.%s", prefix, name, member)
-	case apimodel.TypeStruct:
+	case objmodel.TypeStruct:
 		s_local := schema.LookupStruct("", schema.Type)
 		s_imported := schema.LookupStruct(schema.Import, schema.Type)
 		if s_local == nil && s_imported == nil {
@@ -56,7 +56,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 			prefix = fmt.Sprintf("%s.api.", s_imported.Module.Name)
 		}
 		text = fmt.Sprintf("%s%s()", prefix, ident)
-	case apimodel.TypeExtern:
+	case objmodel.TypeExtern:
 		xe := parsePyExtern(schema)
 		if xe.Default != "" {
 			text = xe.Default
@@ -67,7 +67,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 			}
 			text = fmt.Sprintf("%s%s()", py_module, xe.Name)
 		}
-	case apimodel.TypeInterface:
+	case objmodel.TypeInterface:
 		i_local := schema.LookupInterface("", schema.Type)
 		i_imported := schema.LookupInterface(schema.Import, schema.Type)
 		if i_local == nil && i_imported == nil {
@@ -85,7 +85,7 @@ func ToTestValueString(prefix string, schema *apimodel.Schema) (string, error) {
 	return text, nil
 }
 
-func pyTestValue(prefix string, node *apimodel.TypedNode) (string, error) {
+func pyTestValue(prefix string, node *objmodel.TypedNode) (string, error) {
 	if node == nil {
 		return "xxx", fmt.Errorf("pyTestValue node is nil")
 	}

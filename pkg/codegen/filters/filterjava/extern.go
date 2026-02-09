@@ -1,6 +1,6 @@
 package filterjava
 
-import "github.com/apigear-io/cli/pkg/apimodel"
+import "github.com/apigear-io/cli/pkg/objmodel"
 
 type JavaExtern struct {
 	Package         string
@@ -10,16 +10,16 @@ type JavaExtern struct {
 	DownloadPackage string
 }
 
-func parseJavaExtern(schema *apimodel.Schema) JavaExtern {
+func parseJavaExtern(schema *objmodel.Schema) JavaExtern {
 	xe := schema.GetExtern()
 	return javaExtern(xe)
 }
 
-func MakeJavaExtern(schema *apimodel.Schema) JavaExtern {
+func MakeJavaExtern(schema *objmodel.Schema) JavaExtern {
 	return parseJavaExtern(schema)
 }
 
-func javaExtern(xe *apimodel.Extern) JavaExtern {
+func javaExtern(xe *objmodel.Extern) JavaExtern {
 	ns := xe.Meta.GetString("java.package")
 	name := xe.Meta.GetString("java.name")
 	dft := xe.Meta.GetString("java.default")
