@@ -22,14 +22,13 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-chi/chi/v5 v5.2.2
-	github.com/go-git/go-git/v5 v5.16.2
+	github.com/go-git/go-git/v5 v5.16.5
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/goccy/go-yaml v1.18.0
 	github.com/google/uuid v1.6.0
 	github.com/mark3labs/mcp-go v0.38.0
 	github.com/rogpeppe/go-internal v1.14.1
 	github.com/rs/zerolog v1.34.0
-	github.com/whilp/git-urls v1.0.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )

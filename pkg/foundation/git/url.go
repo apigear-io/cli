@@ -4,15 +4,22 @@ import (
 	"net/url"
 
 	"github.com/gitsight/go-vcsurl"
-	urls "github.com/whilp/git-urls"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 )
 
-func ParseAsUrl(url string) (*url.URL, error) {
-	return urls.Parse(url)
+func ParseAsUrl(urlStr string) (*url.URL, error) {
+	// Use go-git's transport.NewEndpoint which is secure and well-maintained
+	endpoint, err := transport.NewEndpoint(urlStr)
+	if err != nil {
+		return nil, err
+	}
+	// Convert endpoint to standard URL
+	return url.Parse(endpoint.String())
 }
 
-func IsValidGitUrl(url string) bool {
-	_, err := urls.ParseTransport(url)
+func IsValidGitUrl(urlStr string) bool {
+	// Use go-git's transport.NewEndpoint for validation
+	_, err := transport.NewEndpoint(urlStr)
 	return err == nil
 }
 
