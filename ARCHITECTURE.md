@@ -2,16 +2,19 @@
 
 This document provides a comprehensive overview of the ApiGear CLI architecture, covering project structure, package organization, core concepts, and design patterns.
 
+**Last Updated:** 2026-02-09 (after domain-based reorganization)
+
 ## Table of Contents
 
 1. [Overview](#overview)
 2. [Project Structure](#project-structure)
-3. [Package Architecture](#package-architecture)
+3. [Domain Architecture](#domain-architecture)
 4. [Core Data Model](#core-data-model)
 5. [Key Workflows](#key-workflows)
 6. [CLI Architecture](#cli-architecture)
 7. [Design Patterns](#design-patterns)
 8. [Technology Stack](#technology-stack)
+9. [Future Architecture](#future-architecture)
 
 ---
 
@@ -31,19 +34,15 @@ ApiGear CLI is a command-line tool for API specification, code generation, and m
 │                         CLI Commands                             │
 │  (gen, mon, prj, tpl, spec, cfg, x, olink, mcp)                 │
 ├─────────────────────────────────────────────────────────────────┤
-│                       Domain Services                            │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐               │
-│  │   Gen   │ │   Mon   │ │   Prj   │ │   Tpl   │               │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘               │
+│                      Domain Services                             │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐   │
+│  │  ObjModel  │ │  Codegen   │ │Orchestrate │ │  Runtime   │   │
+│  │ (API Spec) │ │(Templates) │ │(Solutions) │ │ (Monitor)  │   │
+│  └────────────┘ └────────────┘ └────────────┘ └────────────┘   │
 ├─────────────────────────────────────────────────────────────────┤
-│                        Core Model                                │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐               │
-│  │  Model  │ │   IDL   │ │  Spec   │ │   Evt   │               │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘               │
-├─────────────────────────────────────────────────────────────────┤
-│                    Infrastructure                                │
+│                      Foundation Layer                            │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │
-│  │   Net   │ │ Streams │ │  Server │ │   Cfg   │ │  Helper │   │
+│  │  Config │ │ Logging │ │   Git   │ │   VFS   │ │  Tasks  │   │
 │  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -56,47 +55,88 @@ ApiGear CLI is a command-line tool for API specification, code generation, and m
 
 ```
 apigear-io/cli/
-├── cmd/                          # Application entry points
-│   ├── apigear/                  # Main CLI binary
-│   │   └── main.go               # Entry point
-│   └── apigear-streams/          # Streams CLI binary
-│       └── main.go
-├── pkg/                          # Core packages (27+ packages)
-│   ├── cfg/                      # Configuration management
+├── cmd/                          # Application entry point
+│   └── apigear/                  # Main CLI binary
+│       └── main.go               # Entry point
+│
+├── pkg/                          # Core packages (5 domains + CLI + MCP)
+│   ├── foundation/               # 🏗️ Foundation - Shared Infrastructure
+│   │   ├── *.go                  # Core utilities (fs, http, strings, async)
+│   │   ├── config/               # Configuration (Viper wrapper)
+│   │   ├── logging/              # Logging (zerolog + rotation)
+│   │   ├── git/                  # Git operations
+│   │   ├── vfs/                  # Virtual file system
+│   │   ├── tasks/                # Task execution framework
+│   │   ├── tools/                # Low-level tools
+│   │   └── updater/              # Self-update mechanism
+│   │
+│   ├── objmodel/                 # 📐 ObjectAPI Model - API Specification
+│   │   ├── *.go                  # System, Module, Interface, Struct, Enum
+│   │   ├── idl/                  # IDL parser (ANTLR4)
+│   │   │   ├── parser/           # Generated parser/lexer
+│   │   │   └── *.go              # Listener, helper functions
+│   │   └── spec/                 # Specification validation
+│   │       ├── schema/           # JSON schemas
+│   │       └── rkw/              # Reserved keywords
+│   │
+│   ├── codegen/                  # ⚙️ Code Generation - Templates & Generation
+│   │   ├── *.go                  # Generator, rules engine
+│   │   ├── filters/              # Language-specific filters
+│   │   │   ├── common/           # Shared filter functions
+│   │   │   ├── filtercpp/        # C++ filters
+│   │   │   ├── filtergo/         # Go filters
+│   │   │   ├── filterjs/         # JavaScript filters
+│   │   │   ├── filterts/         # TypeScript filters
+│   │   │   ├── filterpy/         # Python filters
+│   │   │   ├── filterqt/         # Qt filters
+│   │   │   ├── filterrs/         # Rust filters
+│   │   │   └── filterue/         # Unreal Engine filters
+│   │   ├── template/             # Template operations
+│   │   └── registry/             # Template registry & cache
+│   │
+│   ├── orchestration/            # 🎯 Orchestration - High-level Workflows
+│   │   ├── solution/             # Solution execution
+│   │   └── project/              # Project management
+│   │
+│   ├── runtime/                  # 🔄 Runtime - Monitoring & Services
+│   │   ├── monitoring/           # Event monitoring & recording
+│   │   ├── events/               # Event bus (stub after NATS removal)
+│   │   ├── network/              # HTTP/WebSocket network layer
+│   │   ├── simulation/           # API simulation
+│   │   └── streams/              # Event streaming (under development)
+│   │
 │   ├── cmd/                      # CLI command implementations
-│   ├── gen/                      # Code generation engine
-│   ├── model/                    # Core API model
-│   ├── idl/                      # IDL parser (ANTLR4)
-│   ├── spec/                     # Specification validation
-│   ├── mon/                      # Monitoring
-│   ├── net/                      # Network management
-│   ├── streams/                  # Event streaming (NATS)
-│   ├── server/                   # Server orchestration
-│   ├── prj/                      # Project management
-│   ├── tpl/                      # Template management
-│   ├── repos/                    # Template repository cache
-│   ├── git/                      # Git operations
-│   ├── vfs/                      # Virtual file system
-│   ├── evt/                      # Event system
-│   ├── helper/                   # Utility functions
-│   ├── log/                      # Logging (zerolog)
-│   ├── sol/                      # Solution documents
-│   ├── olnk/                     # ObjectLink protocol
-│   ├── mcp/                      # Model Context Protocol
-│   ├── app/                      # Application utilities
-│   ├── tools/                    # Miscellaneous tools
-│   ├── tasks/                    # Task execution
-│   └── up/                       # Self-update mechanism
+│   │   ├── gen/                  # Generate commands
+│   │   ├── mon/                  # Monitor commands
+│   │   ├── prj/                  # Project commands
+│   │   ├── tpl/                  # Template commands
+│   │   ├── spec/                 # Spec commands
+│   │   ├── cfg/                  # Config commands
+│   │   ├── x/                    # Experimental commands
+│   │   └── olink/                # ObjectLink REPL
+│   │
+│   └── mcp/                      # Model Context Protocol server
+│       ├── gen/                  # MCP generation tools
+│       ├── spec/                 # MCP spec tools
+│       └── tpl/                  # MCP template tools
+│
+├── internal/                     # Private application code
+│   └── (reserved for future REST API server implementation)
+│
 ├── data/                         # Static data and samples
 │   ├── mon/                      # Monitoring samples
 │   ├── project/                  # Project templates
 │   ├── spec/                     # Specification schemas
 │   └── template/                 # Template samples
+│
 ├── examples/                     # Example projects
 │   ├── counter/                  # Counter example
 │   └── tpl/                      # Template examples
+│
 ├── tests/                        # Integration tests
-├── docs/                         # Generated documentation
+├── docs/                         # Documentation
+│   ├── ARCHITECTURE.md           # This document
+│   └── ARCHITECTURE-REST-WEB.md  # REST API + Web UI plan
 ├── .github/                      # GitHub workflows
 ├── go.mod                        # Go module definition
 ├── go.sum                        # Dependency checksums
@@ -145,78 +185,141 @@ func main() {
 
 ---
 
-## Package Architecture
+## Domain Architecture
 
-### Layer Overview
+### Architectural Principles
+
+The codebase follows a **domain-based architecture** with clear separation of concerns:
+
+1. **Foundation Layer** - Shared infrastructure with no business logic
+2. **Domain Layers** - Business logic organized by domain boundaries
+3. **CLI Layer** - User interface commands
+4. **Clean Dependencies** - Unidirectional dependency flow
+
+### Dependency Hierarchy
 
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Layer 1: CLI Commands (pkg/cmd/*)                          │
-│ Cobra command handlers, user interaction                   │
+│ User interface, Cobra command handlers                     │
 ├────────────────────────────────────────────────────────────┤
-│ Layer 2: Domain Services                                   │
-│ gen, mon, prj, tpl, spec, sol                             │
+│ Layer 2: Orchestration & Runtime                           │
+│ orchestration/solution, orchestration/project              │
+│ runtime/monitoring, runtime/network, runtime/simulation    │
 ├────────────────────────────────────────────────────────────┤
-│ Layer 3: Core Model                                        │
-│ model, idl, evt                                            │
+│ Layer 3: Code Generation                                   │
+│ codegen (generator, filters, template, registry)           │
 ├────────────────────────────────────────────────────────────┤
-│ Layer 4: Infrastructure                                    │
-│ net, streams, server, cfg, helper, log, git, vfs          │
+│ Layer 4: ObjectAPI Model                                   │
+│ objmodel (model, idl, spec)                                │
+├────────────────────────────────────────────────────────────┤
+│ Layer 5: Foundation                                        │
+│ foundation (config, logging, git, vfs, tasks, tools)       │
 └────────────────────────────────────────────────────────────┘
 ```
 
-### Package Descriptions
+**Dependency Rules:**
+- Higher layers can depend on lower layers
+- Lower layers CANNOT depend on higher layers
+- No circular dependencies between domains
+- Foundation has zero dependencies on other domains
 
-#### Core Infrastructure
+### Domain Descriptions
 
-| Package | Purpose | Key Types |
-|---------|---------|-----------|
-| `cfg` | Configuration management using Viper | Thread-safe config wrapper |
-| `log` | Logging with zerolog and file rotation | Logger configuration |
-| `helper` | Utilities (fs, http, strings, async) | Various helper functions |
-| `git` | Git operations for project management | Clone, checkout functions |
+#### 1. Foundation Domain (`pkg/foundation/`)
 
-#### Data Model
+**Purpose:** Shared infrastructure used by all other domains.
 
-| Package | Purpose | Key Types |
-|---------|---------|-----------|
-| `model` | Core API module representation | `System`, `Module`, `Interface`, `Struct`, `Enum` |
-| `idl` | ANTLR4-based IDL parser | `Listener`, parser/lexer |
-| `spec` | Schema validation (YAML/JSON) | Document validators |
-| `evt` | Event system | `Event` struct |
-
-#### Code Generation
+**Key Packages:**
 
 | Package | Purpose | Key Types |
 |---------|---------|-----------|
-| `gen` | Template-based code generator | `Generator`, `Options`, `Stats` |
-| `gen/filters/*` | Language-specific template filters | `filtercpp`, `filtergo`, `filterjs`, etc. |
-| `tpl` | Template repository management | Cache, registry operations |
-| `repos` | SDK template cache | Template storage |
+| `foundation` | Core utilities (fs, http, strings, async, ids) | Helper functions |
+| `foundation/config` | Configuration management (Viper wrapper) | Thread-safe config access |
+| `foundation/logging` | Logging with zerolog and file rotation | Logger, EventWriter, Rotator |
+| `foundation/git` | Git operations (clone, checkout, tags) | Git helper functions |
+| `foundation/vfs` | Virtual file system with embedded demos | Demo files |
+| `foundation/tasks` | Task execution framework | Manager, Task |
+| `foundation/tools` | Low-level tools (colorwriter, hooks) | ColorWriter |
+| `foundation/updater` | Self-update mechanism | Updater |
 
-#### Monitoring
+**Dependencies:** None (bottom layer)
 
-| Package | Purpose | Key Types |
-|---------|---------|-----------|
-| `mon` | HTTP monitoring and recording | `Event`, `EventFactory` |
+#### 2. ObjectAPI Model Domain (`pkg/objmodel/`)
 
-#### Network & Communication
+**Purpose:** Define, parse, and validate ObjectAPI specifications.
 
-| Package | Purpose | Key Types |
-|---------|---------|-----------|
-| `net` | Network management | `NetworkManager`, `OlinkServer` |
-| `streams` | NATS JetStream integration | `Manager`, `Controller` |
-| `server` | Server orchestration | `Server` lifecycle |
-
-#### Project Management
+**Key Packages:**
 
 | Package | Purpose | Key Types |
 |---------|---------|-----------|
-| `prj` | Project handling | `ProjectInfo`, `DocumentInfo` |
-| `sol` | Solution documents | Solution parsing |
-| `vfs` | Virtual file system | Embedded demo files |
+| `objmodel` | Core API model | `System`, `Module`, `Interface`, `Struct`, `Enum` |
+| `objmodel/idl` | ANTLR4-based IDL parser | `Parser`, `Listener`, AST builder |
+| `objmodel/spec` | YAML/JSON specification validation | Schema validators, rules |
+| `objmodel/spec/rkw` | Reserved keyword checking | Reserved word lists |
 
-#### CLI Commands
+**Dependencies:** `foundation`
+
+**Note:** Named `objmodel` (not `apimodel`) to avoid confusion with future REST API models.
+
+#### 3. Code Generation Domain (`pkg/codegen/`)
+
+**Purpose:** Generate source code from ObjectAPI models using templates.
+
+**Key Packages:**
+
+| Package | Purpose | Key Types |
+|---------|---------|-----------|
+| `codegen` | Template-based code generator | `Generator`, `Options`, `Stats` |
+| `codegen/filters/*` | Language-specific template filters | 12 language filters |
+| `codegen/filters/common` | Shared filter functions | String/array helpers |
+| `codegen/filters/filtercpp` | C++ template filters | Type conversions, namespaces |
+| `codegen/filters/filtergo` | Go template filters | Type conversions, packages |
+| `codegen/filters/filterjs` | JavaScript template filters | Type conversions |
+| `codegen/filters/filterts` | TypeScript template filters | Type conversions |
+| `codegen/filters/filterpy` | Python template filters | Type conversions |
+| `codegen/filters/filterqt` | Qt/QML template filters | Qt type conversions |
+| `codegen/filters/filterrs` | Rust template filters | Type conversions |
+| `codegen/filters/filterue` | Unreal Engine filters | UE4/5 type conversions |
+| `codegen/template` | Template operations | Create, publish templates |
+| `codegen/registry` | Template registry & cache | Registry, cache management |
+
+**Dependencies:** `foundation`, `objmodel`
+
+#### 4. Orchestration Domain (`pkg/orchestration/`)
+
+**Purpose:** Orchestrate high-level workflows for building solutions and managing projects.
+
+**Key Packages:**
+
+| Package | Purpose | Key Types |
+|---------|---------|-----------|
+| `orchestration/solution` | Solution document execution | Runner, parser |
+| `orchestration/project` | Project lifecycle management | ProjectInfo, DocumentInfo |
+
+**Dependencies:** `foundation`, `objmodel`, `codegen`
+
+#### 5. Runtime Domain (`pkg/runtime/`)
+
+**Purpose:** Runtime services for monitoring, networking, simulation, and event streaming.
+
+**Key Packages:**
+
+| Package | Purpose | Key Types |
+|---------|---------|-----------|
+| `runtime/monitoring` | Event monitoring & recording | Event, EventFactory |
+| `runtime/events` | Event bus (stub, NATS removed) | IEventBus interface |
+| `runtime/network` | HTTP/WebSocket network layer | NetworkManager, OlinkServer |
+| `runtime/simulation` | API simulation engine | Manager |
+| `runtime/streams` | Event streaming (under development) | Manager |
+
+**Dependencies:** `foundation`, `objmodel`
+
+**Note:** Some packages are stubs after NATS removal, awaiting redesign.
+
+#### 6. CLI Commands (`pkg/cmd/`)
+
+**Purpose:** User-facing command implementations.
 
 | Package | Purpose |
 |---------|---------|
@@ -228,6 +331,20 @@ func main() {
 | `cmd/cfg` | Configuration commands |
 | `cmd/x` | Experimental/utility commands |
 | `cmd/olink` | ObjectLink REPL commands |
+
+**Dependencies:** All domains (top layer)
+
+#### 7. Model Context Protocol (`pkg/mcp/`)
+
+**Purpose:** MCP server for AI agent integration.
+
+| Package | Purpose |
+|---------|---------|
+| `mcp/gen` | MCP generation tools |
+| `mcp/spec` | MCP spec tools |
+| `mcp/tpl` | MCP template tools |
+
+**Dependencies:** All domains
 
 ---
 
@@ -305,6 +422,8 @@ type Schema struct {
 ### Model Visitor Pattern
 
 The `ModelVisitor` interface enables traversal of the model hierarchy:
+
+**Location:** `pkg/objmodel/visitor.go`
 
 ```go
 type ModelVisitor interface {
@@ -520,7 +639,7 @@ func withSignalContext(ctx context.Context, fn func(context.Context) error) erro
 ## Design Patterns
 
 ### Visitor Pattern
-**Location:** `pkg/model/visitor.go`
+**Location:** `pkg/objmodel/visitor.go`
 
 Used for traversing the model hierarchy for validation, code generation, and analysis.
 
@@ -546,7 +665,7 @@ func WalkModule(m *Module, v ModelVisitor) error {
 ```
 
 ### Factory Pattern
-**Location:** `pkg/mon/event.go`, `pkg/model/`
+**Location:** `pkg/runtime/monitoring/event.go`, `pkg/objmodel/`
 
 Creates events and model nodes with proper initialization.
 
@@ -557,7 +676,7 @@ type EventFactory struct {
 
 func (f *EventFactory) NewCallEvent(symbol string, data Payload) *Event {
     return &Event{
-        Id:        helper.NewID(),
+        Id:        foundation.NewID(),
         Device:    f.device,
         Type:      "call",
         Symbol:    symbol,
@@ -568,61 +687,56 @@ func (f *EventFactory) NewCallEvent(symbol string, data Payload) *Event {
 ```
 
 ### Manager Pattern
-**Location:** `pkg/server/`, `pkg/net/`, `pkg/streams/`
+**Location:** `pkg/runtime/network/`, `pkg/runtime/streams/`
 
 Manages lifecycle of complex components with startup/shutdown handling.
 
 ```go
-type Server struct {
-    network  *net.NetworkManager
-    streams  *streams.Manager
-    sim      *sim.Manager
+type NetworkManager struct {
+    server   *http.Server
+    // ...
 }
 
-func (s *Server) Start(ctx context.Context) error {
-    if err := s.network.Start(ctx); err != nil {
-        return err
-    }
-    if err := s.streams.Start(ctx); err != nil {
-        return err
-    }
-    return nil
+func (m *NetworkManager) Start(ctx context.Context) error {
+    // Start HTTP server
+    return m.server.ListenAndServe()
 }
 
-func (s *Server) Stop() error {
-    s.streams.Stop()
-    s.network.Stop()
-    return nil
+func (m *NetworkManager) Stop() error {
+    // Graceful shutdown
+    return m.server.Shutdown(context.Background())
 }
 ```
 
 ### Strategy Pattern
-**Location:** `pkg/gen/filters/`
+**Location:** `pkg/codegen/filters/`
 
 Language-specific code generation filters implement common interfaces.
 
 ```go
 // Each filter package provides language-specific template functions
-// pkg/gen/filters/filtergo/
-// pkg/gen/filters/filtercpp/
-// pkg/gen/filters/filterjs/
-// etc.
+// pkg/codegen/filters/filtergo/
+// pkg/codegen/filters/filtercpp/
+// pkg/codegen/filters/filterjs/
+// pkg/codegen/filters/filterts/
+// pkg/codegen/filters/filterpy/
+// etc. (12 language filters total)
 ```
 
 ### Builder Pattern
-**Location:** `pkg/idl/listener.go`
+**Location:** `pkg/objmodel/idl/listener.go`
 
 Builds the model from parsed AST incrementally.
 
 ```go
 type Listener struct {
-    system  *model.System
-    module  *model.Module
+    system  *objmodel.System
+    module  *objmodel.Module
     current interface{}
 }
 
 func (l *Listener) EnterModule(ctx *parser.ModuleContext) {
-    l.module = &model.Module{
+    l.module = &objmodel.Module{
         Name: ctx.Identifier().GetText(),
     }
     l.system.Modules = append(l.system.Modules, l.module)
@@ -630,7 +744,7 @@ func (l *Listener) EnterModule(ctx *parser.ModuleContext) {
 ```
 
 ### Adapter Pattern
-**Location:** `pkg/net/`
+**Location:** `pkg/runtime/network/`
 
 Protocol adapters (OLink, WebSocket) adapt between different communication protocols.
 
@@ -692,7 +806,7 @@ Location: `~/.apigear/config.json`
 
 ### Thread-Safe Access
 
-Configuration is accessed through a thread-safe wrapper in `pkg/cfg`:
+Configuration is accessed through a thread-safe wrapper in `pkg/foundation/config`:
 
 ```go
 func Get(key string) any
@@ -703,9 +817,86 @@ func GetStringSlice(key string) []string
 
 ---
 
+## Future Architecture
+
+### REST API + Web UI (Planned)
+
+**Status:** Design phase (see `docs/ARCHITECTURE-REST-WEB.md`)
+
+The CLI will be extended with a REST API server and React-based web UI:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Web UI (React + Vite)                     │
+│  Features: codegen, templates, specs, projects              │
+├─────────────────────────────────────────────────────────────┤
+│                REST API Server (apigear serve)               │
+│  internal/server/ - Chi router + http.HandlerFunc           │
+│  internal/restmodel/ - REST DTOs                            │
+├─────────────────────────────────────────────────────────────┤
+│              Existing Domain Services (pkg/)                 │
+│  Reused by both CLI and REST API                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Decisions:**
+- Server runs as `apigear serve` subcommand (not separate binary)
+- Chi router with stdlib `http.HandlerFunc` pattern
+- Swag for OpenAPI generation (annotations in code)
+- AI-written TypeScript SDKs (not codegen)
+- Separate `restmodel` package for REST DTOs (avoid confusion with `objmodel`)
+
+**Directory Structure:**
+```
+pkg/cmd/serve/           # Serve subcommand
+internal/server/         # HTTP handlers and router
+internal/restmodel/      # REST API DTOs
+web/                     # Vite + React frontend
+  src/
+    api/                 # TypeScript SDK (AI-written)
+    features/            # Feature modules
+    components/          # Shared components
+docs/swagger/            # Auto-generated OpenAPI specs
+```
+
+**Benefits:**
+- Single binary distribution
+- Reuses all existing domain logic
+- Type-safe APIs (Go + TypeScript)
+- Auto-generated documentation
+- Parallel frontend/backend development
+
+---
+
+## Package Reorganization History
+
+### February 2026 - Domain-Based Consolidation
+
+The package structure was reorganized from 23 fragmented packages into 5 logical domains:
+
+**Before:**
+- 23 small packages: `helper`, `cfg`, `log`, `git`, `vfs`, `tasks`, `tools`, `up`, `model`, `idl`, `spec`, `gen`, `tpl`, `repos`, `sol`, `prj`, `mon`, `evt`, `net`, `sim`, `streams`, etc.
+- Imports scattered across many paths
+- Unclear boundaries between concerns
+
+**After:**
+- 5 domains: `foundation`, `objmodel`, `codegen`, `orchestration`, `runtime`
+- Clear dependency hierarchy
+- Better code discoverability
+- Easier to work on isolated features
+
+**Migration:**
+- All import paths updated (1000+ changes)
+- Package declarations updated
+- No circular dependencies
+- All tests passing
+
+---
+
 ## Further Reading
 
 - [README.md](README.md) - Quick start guide
+- [ARCHITECTURE-REST-WEB.md](docs/ARCHITECTURE-REST-WEB.md) - REST API + Web UI plan
 - [examples/](examples/) - Example projects
 - [data/spec/](data/spec/) - Specification schemas
 - [API Documentation](https://apigear.io/docs) - Online documentation
