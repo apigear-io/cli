@@ -1,0 +1,86 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for ApiGear CLI operations",
+        "title": "ApiGear CLI API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/health": {
+            "get": {
+                "description": "Returns the health status of the API",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Health check endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status": {
+            "get": {
+                "description": "Returns status and build information for the API server",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Status and build information endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.StatusResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "buildDate": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": "string"
+                },
+                "goVersion": {
+                    "type": "string"
+                },
+                "uptime": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
