@@ -38,22 +38,13 @@ func NewServeCommand() *cobra.Command {
 				opts.Addr = fmt.Sprintf("%s:%d", opts.Host, opts.Port)
 			}
 
-			// Create and start NetworkManager
-			netman := network.NewManager()
-			netOpts := &network.Options{
-				HttpAddr:          opts.Addr,
-				HttpDisabled:      false,
-				MonitorDisabled:   true,
-				ObjectAPIDisabled: true,
-			}
-
-			err := netman.Start(netOpts)
-			if err != nil {
-				return fmt.Errorf("failed to start HTTP server: %w", err)
-			}
+			// Create HTTP server
+			httpServer := network.NewHTTPServer(&network.HttpServerOptions{
+				Addr: opts.Addr,
+			})
 
 			// Register API routes
-			router := netman.HttpServer().Router()
+			router := httpServer.Router()
 
 			// API v1 routes
 			router.Route("/api/v1", func(r chi.Router) {
@@ -69,12 +60,20 @@ func NewServeCommand() *cobra.Command {
 				http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 			})
 
+			// Start server
+			if err := httpServer.Start(); err != nil {
+				return fmt.Errorf("failed to start HTTP server: %w", err)
+			}
+
 			logging.Info().Msgf("Server starting on %s", opts.Addr)
 			logging.Info().Msgf("API endpoints available at http://%s/api/v1", opts.Addr)
 			logging.Info().Msgf("Swagger UI available at http://%s/swagger/index.html", opts.Addr)
 
 			// Wait for shutdown signal
-			return netman.Wait(cmd.Context())
+			return network.WaitForShutdown(cmd.Context(), func() {
+				logging.Info().Msg("stopping HTTP server...")
+				httpServer.Stop()
+			})
 		},
 	}
 
