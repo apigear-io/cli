@@ -29,6 +29,8 @@ require (
 	github.com/mark3labs/mcp-go v0.38.0
 	github.com/rogpeppe/go-internal v1.14.1
 	github.com/rs/zerolog v1.34.0
+	github.com/swaggo/http-swagger v1.3.4
+	github.com/swaggo/swag v1.16.4
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
@@ -73,8 +75,6 @@ require (
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
-	github.com/swaggo/http-swagger v1.3.4 // indirect
-	github.com/swaggo/swag v1.16.4 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/xanzy/go-gitlab v0.115.0 // indirect
