@@ -2,15 +2,12 @@ package serve
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/apigear-io/cli/internal/handler"
-	_ "github.com/apigear-io/cli/docs"
+	_ "github.com/apigear-io/cli/internal/swagger"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/apigear-io/cli/pkg/runtime/network"
-	"github.com/go-chi/chi/v5"
 	"github.com/spf13/cobra"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // ServeOptions holds the configuration for the serve command
@@ -43,22 +40,10 @@ func NewServeCommand() *cobra.Command {
 				Addr: opts.Addr,
 			})
 
-			// Register API routes
+			// Register routes
 			router := httpServer.Router()
-
-			// API v1 routes
-			router.Route("/api/v1", func(r chi.Router) {
-				r.Get("/health", handler.Health())
-				r.Get("/status", handler.Status())
-			})
-
-			// Swagger documentation
-			router.Get("/swagger/*", httpSwagger.WrapHandler)
-
-			// Root redirect to Swagger UI
-			router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-				http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
-			})
+			handler.RegisterAPIRoutes(router)
+			handler.RegisterSwaggerRoutes(router)
 
 			// Start server
 			if err := httpServer.Start(); err != nil {
