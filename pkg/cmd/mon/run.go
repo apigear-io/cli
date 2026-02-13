@@ -21,8 +21,8 @@ func NewServerCommand() *cobra.Command {
 				Addr: addr,
 			})
 
-			// Register monitor endpoint
-			httpServer.Router().Post("/monitor/{source}", handler.Monitor())
+			// Register monitor routes
+			handler.RegisterMonitorRoutes(httpServer.Router())
 
 			// Start server
 			if err := httpServer.Start(); err != nil {
