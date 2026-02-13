@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/apigear-io/cli/internal/handler"
 	"github.com/apigear-io/cli/pkg/foundation"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/apigear-io/cli/pkg/runtime/monitoring"
@@ -118,7 +119,7 @@ func (s *NetworkManager) EnableMonitor() error {
 		logging.Error().Msg("http server not started")
 		return fmt.Errorf("http server not started")
 	}
-	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler())
+	s.httpServer.Router().Post("/monitor/{source}", handler.Monitor())
 	logging.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", s.httpServer.Address())
 	logging.Warn().Msg("NATS disabled: monitor events will be logged locally but not broadcast")
 	return nil

@@ -35,6 +35,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/monitor/{source}": {
+            "post": {
+                "description": "Receives monitoring events from client applications",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "monitoring"
+                ],
+                "summary": "Monitor events endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event source identifier",
+                        "name": "source",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Array of monitoring events",
+                        "name": "events",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/monitoring.Event"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.MonitorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/status": {
             "get": {
                 "description": "Returns status and build information for the API server",
@@ -57,9 +107,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "handler.HealthResponse": {
             "type": "object",
             "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.MonitorResponse": {
+            "type": "object",
+            "properties": {
+                "eventsProcessed": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -87,6 +162,46 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "monitoring.Event": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/monitoring.Payload"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/monitoring.EventType"
+                }
+            }
+        },
+        "monitoring.EventType": {
+            "type": "string",
+            "enum": [
+                "call",
+                "signal",
+                "state"
+            ],
+            "x-enum-varnames": [
+                "TypeCall",
+                "TypeSignal",
+                "TypeState"
+            ]
+        },
+        "monitoring.Payload": {
+            "type": "object",
+            "additionalProperties": {}
         }
     }
 }`

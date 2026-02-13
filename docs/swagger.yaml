@@ -1,7 +1,23 @@
 basePath: /api/v1
 definitions:
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   handler.HealthResponse:
     properties:
+      status:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  handler.MonitorResponse:
+    properties:
+      eventsProcessed:
+        type: integer
       status:
         type: string
       timestamp:
@@ -19,6 +35,34 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  monitoring.Event:
+    properties:
+      data:
+        $ref: '#/definitions/monitoring.Payload'
+      id:
+        type: string
+      source:
+        type: string
+      symbol:
+        type: string
+      timestamp:
+        type: string
+      type:
+        $ref: '#/definitions/monitoring.EventType'
+    type: object
+  monitoring.EventType:
+    enum:
+    - call
+    - signal
+    - state
+    type: string
+    x-enum-varnames:
+    - TypeCall
+    - TypeSignal
+    - TypeState
+  monitoring.Payload:
+    additionalProperties: {}
     type: object
 host: localhost:8080
 info:
@@ -40,6 +84,39 @@ paths:
       summary: Health check endpoint
       tags:
       - system
+  /monitor/{source}:
+    post:
+      consumes:
+      - application/json
+      description: Receives monitoring events from client applications
+      parameters:
+      - description: Event source identifier
+        in: path
+        name: source
+        required: true
+        type: string
+      - description: Array of monitoring events
+        in: body
+        name: events
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/monitoring.Event'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.MonitorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Monitor events endpoint
+      tags:
+      - monitoring
   /status:
     get:
       description: Returns status and build information for the API server
