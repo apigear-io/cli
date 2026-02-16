@@ -11,11 +11,29 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// RegisterAPIRoutes registers all REST API routes (health, status)
+// RegisterAPIRoutes registers all REST API routes (health, status, templates)
 func RegisterAPIRoutes(router chi.Router) {
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/health", Health())
 		r.Get("/status", Status())
+
+		// Template endpoints
+		r.Route("/templates", func(r chi.Router) {
+			r.Get("/", ListTemplates())
+			r.Get("/get", GetTemplate())        // Use query param: ?id=apigear-io/template-ts
+			r.Post("/install", InstallTemplate()) // Use query param: ?id=apigear-io/template-ts
+			r.Get("/search", SearchTemplates())
+
+			r.Route("/cache", func(r chi.Router) {
+				r.Get("/", ListCachedTemplates())
+				r.Delete("/remove", RemoveTemplate()) // Use query param: ?id=apigear-io/template-ts
+				r.Post("/clean", CleanCache())
+			})
+
+			r.Route("/registry", func(r chi.Router) {
+				r.Post("/update", UpdateRegistry())
+			})
+		})
 	})
 }
 
