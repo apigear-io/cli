@@ -13,84 +13,218 @@ vars:
     sh: date -u '+%Y-%m-%dT%H:%M:%SZ'
 
 tasks:
+  # =============================================================================
+  # Backend (Go) Tasks
+  # =============================================================================
+
   setup:
-    desc: Setup the project
+    desc: Setup backend dependencies
     cmds:
       - go mod tidy
+
   build:
-    desc: Build the project
+    desc: Build backend binary
     cmds:
       - go build -o ./bin/apigear -ldflags="-X main.version={{.GIT_TAG}} -X main.commit={{.GIT_COMMIT}} -X main.date={{.BUILD_DATA}}" ./cmd/apigear
     sources:
       - "**/*.go"
+
   install:
-    desc: Install the project
+    desc: Install backend binary to GOPATH
     cmds:
       - go install -ldflags="-X main.version={{.GIT_TAG}} -X main.commit={{.GIT_COMMIT}} -X main.date={{.BUILD_DATA}}" ./cmd/apigear
+
   lint:
-    desc: Lint the project
+    desc: Lint backend code
     cmds:
       - golangci-lint run ./...
+
   test:
-    desc: Run tests
+    desc: Run backend tests
     cmds:
       - go test ./...
-  test::ci:
-    desc: Run tests on CI
+
+  test:ci:
+    desc: Run backend tests on CI
     cmds:
       - go test -failfast -race ./...
+
   test:nats:
-    desc: Run tests with nats
+    desc: Run backend tests with nats
     cmds:
       - go test -tags=nats ./...
+
   test:cover:
-    desc: Run tests with coverage
+    desc: Run backend tests with coverage
     cmds:
       - go test -coverprofile=coverage.txt ./...
+
   cover:
-    desc: Show coverage
+    desc: Show backend coverage report
     cmds:
       - go tool cover -html=coverage.txt
-  ci:
-    desc: Run all CI checks
-    cmds:
-      - task: setup
-      - task: lint
-      - task: test::ci
+
   run:
-    desc: Run command line
+    desc: Run backend CLI
     cmds:
       - go run ./cmd/apigear {{.CLI_ARGS}}
     sources:
       - "**/*.go"
+
   debug:
-    desc: Debug command line
+    desc: Debug backend CLI with delve
     cmds:
       - dlv debug ./cmd/apigear -- {{.CLI_ARGS}}
-  default:
-    desc: Run all CI checks
+
+  vuln:
+    desc: Check backend for vulnerabilities
     cmds:
-      - task: ci
+      - govulncheck ./...
+
+  # =============================================================================
+  # Frontend (Web UI) Tasks
+  # =============================================================================
+
+  web:setup:
+    desc: Setup frontend dependencies
+    dir: web
+    cmds:
+      - pnpm install
+
+  web:build:
+    desc: Build frontend for production
+    dir: web
+    cmds:
+      - pnpm build
+    sources:
+      - "src/**/*"
+      - "*.config.*"
+      - "package.json"
+
+  web:dev:
+    desc: Start frontend development server
+    dir: web
+    cmds:
+      - pnpm dev
+
+  web:preview:
+    desc: Preview frontend production build
+    dir: web
+    cmds:
+      - pnpm preview
+
+  web:lint:
+    desc: Lint frontend code
+    dir: web
+    cmds:
+      - pnpm lint
+
+  web:type-check:
+    desc: Type check frontend TypeScript
+    dir: web
+    cmds:
+      - pnpm type-check
+
+  web:test:
+    desc: Run frontend tests
+    dir: web
+    cmds:
+      - echo "Frontend tests not yet implemented"
+      # - pnpm test
+
+  web:clean:
+    desc: Clean frontend build artifacts
+    dir: web
+    cmds:
+      - rm -rf dist
+      - rm -rf node_modules/.vite
+
+  # =============================================================================
+  # Unified Tasks (Backend + Frontend)
+  # =============================================================================
+
+  setup:all:
+    desc: Setup both backend and frontend dependencies
+    cmds:
+      - task: setup
+      - task: web:setup
+
+  build:all:
+    desc: Build both backend and frontend
+    cmds:
+      - task: build
+      - task: web:build
+
+  lint:all:
+    desc: Lint both backend and frontend
+    cmds:
+      - task: lint
+      - task: web:lint
+
+  test:all:
+    desc: Run all tests (backend + frontend)
+    cmds:
+      - task: test
+      - task: web:test
+
+  clean:all:
+    desc: Clean both backend and frontend artifacts
+    cmds:
+      - task: clean
+      - task: web:clean
+
+  ci:all:
+    desc: Run all CI checks (backend + frontend)
+    cmds:
+      - task: setup:all
+      - task: lint:all
+      - task: test:ci
+      - task: web:type-check
+      - task: build:all
+
+  dev:
+    desc: Start full development environment (backend + frontend)
+    cmds:
+      - echo "Starting backend server on :8080..."
+      - echo "Starting frontend dev server on :3000..."
+      - echo "Run 'task run -- serve --port 8080' in one terminal"
+      - echo "Run 'task web:dev' in another terminal"
+
+  # =============================================================================
+  # Utility Tasks
+  # =============================================================================
+
+  ci:
+    desc: Run backend CI checks (backward compatibility)
+    cmds:
+      - task: setup
+      - task: lint
+      - task: test:ci
+
+  default:
+    desc: Run all CI checks (backend + frontend)
+    cmds:
+      - task: ci:all
+
   clean:
-    desc: Clean the project
+    desc: Clean backend artifacts
     cmds:
       - rm -rf ./bin
       - rm -rf ./coverage.txt
-  vuln:
-    desc: Check for vulnerabilities
-    cmds:
-      - govulncheck ./...
+
   antlr:
     desc: Generate antlr parser
     cmds:
       - antlr -Dlanguage=Go pkg/idl/parser/ObjectApi.g4
+
   docs:
-    desc: Generate docs
+    desc: Generate documentation
     cmds:
       - rm -rf ./docs
       - mkdir -p ./docs
       - go run ./cmd/apigear x doc
+
   schema:
-    desc: convert yaml schemas to json
+    desc: Convert yaml schemas to json
     cmds:
       - go run ./cmd/apigear x y2j 'pkg/spec/schema/*.yaml'
