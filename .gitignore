@@ -41,3 +41,10 @@ coverage.txt
 
 **/__debug*
 apigear
+
+# Web UI
+web/node_modules/
+web/dist/*
+!web/dist/.gitkeep
+web/.vite/
+web/.pnpm-store
