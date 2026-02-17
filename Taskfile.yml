@@ -217,7 +217,7 @@ tasks:
     cmds:
       - task: setup:all
       - task: web:build
-      - task: lint:all
+      - task: web:lint
       - task: test:ci
       - task: web:type-check
       - task: web:test
