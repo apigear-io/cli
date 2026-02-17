@@ -22,6 +22,7 @@ export interface TemplateInfo {
   inCache: boolean;
   inRegistry: boolean;
   tags?: string[];
+  updateNeeded: boolean; // True if cached version < latest version (semver comparison)
 }
 
 export interface TemplateListResponse {

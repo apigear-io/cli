@@ -7,22 +7,24 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/apigear-io/cli/pkg/codegen/registry"
 	"github.com/apigear-io/cli/pkg/foundation/git"
 )
 
 // TemplateInfo represents template information for API responses
 type TemplateInfo struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Author      string   `json:"author"`
-	Git         string   `json:"git"`
-	Version     string   `json:"version"`
-	Latest      string   `json:"latest"`
-	Versions    []string `json:"versions"`
-	InCache     bool     `json:"inCache"`
-	InRegistry  bool     `json:"inRegistry"`
-	Tags        []string `json:"tags,omitempty"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	Author       string   `json:"author"`
+	Git          string   `json:"git"`
+	Version      string   `json:"version"`
+	Latest       string   `json:"latest"`
+	Versions     []string `json:"versions"`
+	InCache      bool     `json:"inCache"`
+	InRegistry   bool     `json:"inRegistry"`
+	Tags         []string `json:"tags,omitempty"`
+	UpdateNeeded bool     `json:"updateNeeded"` // True if cached version < latest version
 }
 
 // TemplateListResponse represents the list of templates
@@ -42,6 +44,28 @@ type InstallProgressEvent struct {
 	Message  string `json:"message"`  // Human-readable message
 	Progress int    `json:"progress"` // 0-100 percentage
 	Error    string `json:"error,omitempty"`
+}
+
+// isVersionNewer checks if current version is older than target version using semver
+// Returns true if update is needed (current < target)
+func isVersionNewer(currentVersion, targetVersion string) bool {
+	if currentVersion == "" || targetVersion == "" {
+		return false
+	}
+
+	// Parse versions, handling both with and without 'v' prefix
+	current, err := semver.NewVersion(currentVersion)
+	if err != nil {
+		return false
+	}
+
+	target, err := semver.NewVersion(targetVersion)
+	if err != nil {
+		return false
+	}
+
+	// Return true if current version is less than target (update needed)
+	return current.LessThan(target)
 }
 
 // convertRepoInfo converts git.RepoInfo to TemplateInfo
@@ -90,6 +114,11 @@ func mergeTemplateInfo(registryInfos, cacheInfos []*git.RepoInfo) []*TemplateInf
 				templateInfo.Version = cached.Version.Name
 			} else if cached.Latest.Name != "" {
 				templateInfo.Version = cached.Latest.Name
+			}
+
+			// Check if update is needed using semantic versioning
+			if templateInfo.Version != "" && templateInfo.Latest != "" {
+				templateInfo.UpdateNeeded = isVersionNewer(templateInfo.Version, templateInfo.Latest)
 			}
 		}
 

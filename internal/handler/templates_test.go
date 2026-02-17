@@ -324,6 +324,102 @@ func TestSearchTemplates_NoResults(t *testing.T) {
 
 // Test helper functions
 
+func TestIsVersionNewer(t *testing.T) {
+	tests := []struct {
+		name           string
+		currentVersion string
+		targetVersion  string
+		wantUpdate     bool
+	}{
+		{
+			name:           "current is older - update needed",
+			currentVersion: "v1.0.0",
+			targetVersion:  "v1.1.0",
+			wantUpdate:     true,
+		},
+		{
+			name:           "current is same - no update",
+			currentVersion: "v1.0.0",
+			targetVersion:  "v1.0.0",
+			wantUpdate:     false,
+		},
+		{
+			name:           "current is newer - no update",
+			currentVersion: "v1.1.0",
+			targetVersion:  "v1.0.0",
+			wantUpdate:     false,
+		},
+		{
+			name:           "patch version update needed",
+			currentVersion: "v1.0.0",
+			targetVersion:  "v1.0.1",
+			wantUpdate:     true,
+		},
+		{
+			name:           "major version update needed",
+			currentVersion: "v1.9.9",
+			targetVersion:  "v2.0.0",
+			wantUpdate:     true,
+		},
+		{
+			name:           "double digit versions - v1.10.0 > v1.2.0",
+			currentVersion: "v1.2.0",
+			targetVersion:  "v1.10.0",
+			wantUpdate:     true,
+		},
+		{
+			name:           "double digit versions - v1.2.0 < v1.10.0",
+			currentVersion: "v1.10.0",
+			targetVersion:  "v1.2.0",
+			wantUpdate:     false,
+		},
+		{
+			name:           "empty current version",
+			currentVersion: "",
+			targetVersion:  "v1.0.0",
+			wantUpdate:     false,
+		},
+		{
+			name:           "empty target version",
+			currentVersion: "v1.0.0",
+			targetVersion:  "",
+			wantUpdate:     false,
+		},
+		{
+			name:           "both empty",
+			currentVersion: "",
+			targetVersion:  "",
+			wantUpdate:     false,
+		},
+		{
+			name:           "without v prefix",
+			currentVersion: "1.0.0",
+			targetVersion:  "1.1.0",
+			wantUpdate:     true,
+		},
+		{
+			name:           "invalid current version",
+			currentVersion: "invalid",
+			targetVersion:  "v1.0.0",
+			wantUpdate:     false,
+		},
+		{
+			name:           "invalid target version",
+			currentVersion: "v1.0.0",
+			targetVersion:  "invalid",
+			wantUpdate:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := isVersionNewer(tt.currentVersion, tt.targetVersion)
+			assert.Equal(t, tt.wantUpdate, got, "isVersionNewer(%s, %s) = %v, want %v",
+				tt.currentVersion, tt.targetVersion, got, tt.wantUpdate)
+		})
+	}
+}
+
 func TestConvertRepoInfo(t *testing.T) {
 	// This tests the internal conversion function
 	// We'd need to import the git package and create test data
