@@ -183,12 +183,34 @@ tasks:
       - task: build:all
 
   dev:
-    desc: Start full development environment (backend + frontend)
+    desc: Start full development environment with live reloading (requires overmind + air)
     cmds:
-      - echo "Starting backend server on :8080..."
-      - echo "Starting frontend dev server on :3000..."
-      - echo "Run 'task run -- serve --port 8080' in one terminal"
-      - echo "Run 'task web:dev' in another terminal"
+      - overmind start
+
+  dev:simple:
+    desc: Start full development environment without live reloading (requires overmind)
+    cmds:
+      - overmind start -f Procfile.dev
+
+  dev:manual:
+    desc: Show instructions for manual development setup
+    cmds:
+      - echo "=== Manual Development Setup ==="
+      - echo ""
+      - echo "Terminal 1 (Backend with live reload)"
+      - echo "  air -c .air.toml"
+      - echo ""
+      - echo "Terminal 2 (Frontend with HMR)"
+      - echo "  cd web && pnpm dev"
+      - echo ""
+      - echo "Or without air"
+      - echo "  Terminal 1 - task run -- serve --port 8080"
+      - echo "  Terminal 2 - cd web && pnpm dev"
+      - echo ""
+      - echo "=== URLs ==="
+      - echo "  Backend  - http://localhost:8080"
+      - echo "  Frontend - http://localhost:3000 (dev mode)"
+      - echo "  Web UI   - http://localhost:8080 (served by backend)"
 
   # =============================================================================
   # Utility Tasks

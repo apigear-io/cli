@@ -13,38 +13,91 @@ ApiGear CLI is a command line application that runs on Windows, Mac and Linux. Y
 
 Note: _The product has not yet a certification from Microsoft, Apple or Linux. So you may need to disable the security check to run the application._
 
+## Development
+
+### Quick Start
+
+```bash
+# Install dependencies
+task setup:all
+
+# Start development environment (requires overmind + air)
+task dev
+
+# Or see all available commands
+task --list
+```
+
+For detailed development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
+
+### Common Commands
+
+```bash
+task build:all         # Build backend + frontend
+task test:all          # Run all tests
+task lint:all          # Lint everything
+task dev               # Start dev environment with live reload
+task web:dev           # Start frontend dev server only
+task run -- <args>     # Run CLI commands
+```
+
 ## Tasks
 
 ### Preparation
 
-A typical development environment is:
+A typical development environment requires:
 
-- Install [Visual Studio Code](https://code.visualstudio.com)
 - Install latest Go from [Go Dev](https://go.dev)
+- Install [Node.js 20+](https://nodejs.org/)
+- Install [pnpm](https://pnpm.io/installation)
 - Install [Taskfile](https://taskfile.dev/#/installation)
+- (Optional) Install [air](https://github.com/cosmtrek/air) for live reloading
+- (Optional) Install [overmind](https://github.com/DarthSim/overmind) for process management
 
 ### Build
 
-Build uses the go build command to build the command line application.
+Build both backend and frontend:
 
 ```bash
-task build
+task build:all
+```
+
+Or build individually:
+
+```bash
+task build      # Backend only
+task web:build  # Frontend only
 ```
 
 ### Run
 
-Run just uses the go run command to run the command line application.
+Start the development environment:
 
 ```bash
-task run
+task dev        # With live reloading (requires overmind + air)
+task dev:manual # Show manual setup instructions
+```
+
+Or run the CLI directly:
+
+```bash
+task run -- serve --port 8080  # Start server
+task run -- template list       # List templates
 ```
 
 ### Linting
 
-Lint uses golangci-lint (see https://golangci-lint.run/usage/install/#local-installation)
+Lint both backend and frontend:
 
 ```bash
-task lint
+task lint:all
+```
+
+Or lint individually:
+
+```bash
+task lint       # Backend only (golangci-lint)
+task web:lint   # Frontend only (eslint)
 ```
 
 ## Dependencies
