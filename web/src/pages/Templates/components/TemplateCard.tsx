@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Card, Stack, Group, Text, Badge, Button, Progress } from '@mantine/core';
+import { Card, Stack, Group, Text, Badge, Button, Progress, ActionIcon, Tooltip } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconCheck, IconAlertCircle } from '@tabler/icons-react';
+import { IconCheck, IconAlertCircle, IconBrandGithub } from '@tabler/icons-react';
 import { useInstallTemplate } from '@/api/queries';
 import type { TemplateInfo, InstallProgressEvent } from '@/api/types';
 
@@ -52,15 +52,33 @@ export function TemplateCard({ template }: TemplateCardProps) {
   const isUpToDate = template.inCache && !template.updateNeeded;
   const hasUpdate = template.updateNeeded;
 
+  // Extract GitHub URL (remove .git suffix if present)
+  const githubUrl = template.git ? template.git.replace(/\.git$/, '') : null;
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
         <Group justify="space-between" align="flex-start">
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
             <Text fw={600} size="sm" truncate>
               {template.name}
             </Text>
-          </div>
+            {githubUrl && (
+              <Tooltip label="View on GitHub">
+                <ActionIcon
+                  component="a"
+                  href={githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="subtle"
+                  color="gray"
+                  size="sm"
+                >
+                  <IconBrandGithub size={16} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
           <Group gap="xs">
             {template.inCache && (
               <Badge color="green" size="sm" variant="light">

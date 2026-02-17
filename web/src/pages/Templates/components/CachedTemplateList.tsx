@@ -1,7 +1,7 @@
-import { Stack, Paper, Group, Text, Button, Center, Loader } from '@mantine/core';
+import { Stack, Paper, Group, Text, Button, Center, Loader, ActionIcon, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
-import { IconMoodEmpty, IconCheck, IconAlertCircle, IconTrash } from '@tabler/icons-react';
+import { IconMoodEmpty, IconCheck, IconAlertCircle, IconTrash, IconBrandGithub } from '@tabler/icons-react';
 import { useRemoveTemplate } from '@/api/queries';
 import type { TemplateInfo } from '@/api/types';
 
@@ -72,41 +72,62 @@ export function CachedTemplateList({ templates, isLoading }: CachedTemplateListP
 
   return (
     <Stack gap="xs">
-      {templates.map((template) => (
-        <Paper key={template.name} p="md" withBorder>
-          <Group justify="space-between" wrap="nowrap">
-            <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
-              <Text fw={500} truncate>
-                {template.name}
-              </Text>
-              <Group gap="xs">
-                <Text size="sm" c="dimmed">
-                  v{template.version || 'unknown'}
-                </Text>
-                {template.description && (
-                  <>
-                    <Text size="sm" c="dimmed">
-                      •
-                    </Text>
-                    <Text size="sm" c="dimmed" truncate>
-                      {template.description}
-                    </Text>
-                  </>
-                )}
-              </Group>
-            </Stack>
-            <Button
-              color="red"
-              variant="light"
-              leftSection={<IconTrash size={16} />}
-              onClick={() => handleRemove(template)}
-              loading={removeMutation.isPending}
-            >
-              Remove
-            </Button>
-          </Group>
-        </Paper>
-      ))}
+      {templates.map((template) => {
+        const githubUrl = template.git ? template.git.replace(/\.git$/, '') : null;
+
+        return (
+          <Paper key={template.name} p="md" withBorder>
+            <Group justify="space-between" wrap="nowrap">
+              <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+                <Group gap="xs">
+                  <Text fw={500} truncate>
+                    {template.name}
+                  </Text>
+                  {githubUrl && (
+                    <Tooltip label="View on GitHub">
+                      <ActionIcon
+                        component="a"
+                        href={githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="subtle"
+                        color="gray"
+                        size="sm"
+                      >
+                        <IconBrandGithub size={16} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </Group>
+                <Group gap="xs">
+                  <Text size="sm" c="dimmed">
+                    v{template.version || 'unknown'}
+                  </Text>
+                  {template.description && (
+                    <>
+                      <Text size="sm" c="dimmed">
+                        •
+                      </Text>
+                      <Text size="sm" c="dimmed" truncate>
+                        {template.description}
+                      </Text>
+                    </>
+                  )}
+                </Group>
+              </Stack>
+              <Button
+                color="red"
+                variant="light"
+                leftSection={<IconTrash size={16} />}
+                onClick={() => handleRemove(template)}
+                loading={removeMutation.isPending}
+              >
+                Remove
+              </Button>
+            </Group>
+          </Paper>
+        );
+      })}
     </Stack>
   );
 }
