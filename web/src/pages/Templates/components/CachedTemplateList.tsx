@@ -1,4 +1,4 @@
-import { Stack, Paper, Group, Text, Button, Center, Loader, ActionIcon, Tooltip } from '@mantine/core';
+import { Stack, Paper, Group, Text, Button, Center, ActionIcon, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { IconMoodEmpty, IconCheck, IconAlertCircle, IconTrash, IconBrandGithub } from '@tabler/icons-react';
@@ -7,10 +7,9 @@ import type { TemplateInfo } from '@/api/types';
 
 interface CachedTemplateListProps {
   templates: TemplateInfo[];
-  isLoading: boolean;
 }
 
-export function CachedTemplateList({ templates, isLoading }: CachedTemplateListProps) {
+export function CachedTemplateList({ templates }: CachedTemplateListProps) {
   const removeMutation = useRemoveTemplate();
 
   const handleRemove = (template: TemplateInfo) => {
@@ -44,17 +43,6 @@ export function CachedTemplateList({ templates, isLoading }: CachedTemplateListP
       },
     });
   };
-
-  if (isLoading) {
-    return (
-      <Center py="xl">
-        <Stack align="center" gap="md">
-          <Loader size="lg" />
-          <Text c="dimmed">Loading installed templates...</Text>
-        </Stack>
-      </Center>
-    );
-  }
 
   if (templates.length === 0) {
     return (

@@ -1,17 +1,20 @@
-import { useState, useMemo } from 'react';
-import { Stack, Title, Tabs, TextInput, Button, Group, Alert } from '@mantine/core';
-import { IconSearch, IconRefresh, IconAlertCircle } from '@tabler/icons-react';
+import { Suspense, useState, useMemo } from 'react';
+import { Stack, Title, Tabs, TextInput, Button, Group } from '@mantine/core';
+import { IconSearch, IconRefresh } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useTemplates, useCachedTemplates, useUpdateRegistry } from '@/api/queries';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LoadingFallback } from '@/components/LoadingFallback';
 import { RegistryTemplateList } from './components/RegistryTemplateList';
 import { CachedTemplateList } from './components/CachedTemplateList';
 
-export function Templates() {
+function TemplatesContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<string | null>('registry');
 
-  const { data: registryData, isLoading: registryLoading, error: registryError } = useTemplates();
-  const { data: cacheData, isLoading: cacheLoading, error: cacheError } = useCachedTemplates();
+  // No need for optional chaining - data is guaranteed to exist with useSuspenseQuery
+  const { data: registryData } = useTemplates();
+  const { data: cacheData } = useCachedTemplates();
   const updateRegistry = useUpdateRegistry();
 
   const handleUpdateRegistry = async () => {
@@ -32,7 +35,6 @@ export function Templates() {
   };
 
   const filteredTemplates = useMemo(() => {
-    if (!registryData?.templates) return [];
     if (!searchQuery) return registryData.templates;
 
     const queryLower = searchQuery.toLowerCase();
@@ -41,7 +43,7 @@ export function Templates() {
         t.name.toLowerCase().includes(queryLower) ||
         t.description?.toLowerCase().includes(queryLower)
     );
-  }, [registryData, searchQuery]);
+  }, [registryData.templates, searchQuery]);
 
   return (
     <Stack gap="lg">
@@ -57,18 +59,6 @@ export function Templates() {
         </Button>
       </Group>
 
-      {registryError && (
-        <Alert icon={<IconAlertCircle size={16} />} title="Error loading registry" color="red">
-          {registryError instanceof Error ? registryError.message : 'Failed to load templates'}
-        </Alert>
-      )}
-
-      {cacheError && (
-        <Alert icon={<IconAlertCircle size={16} />} title="Error loading cache" color="yellow">
-          {cacheError instanceof Error ? cacheError.message : 'Failed to load installed templates'}
-        </Alert>
-      )}
-
       <TextInput
         placeholder="Search templates..."
         leftSection={<IconSearch size={16} />}
@@ -79,27 +69,31 @@ export function Templates() {
       <Tabs value={activeTab} onChange={setActiveTab}>
         <Tabs.List>
           <Tabs.Tab value="registry">
-            Registry ({registryData?.count ?? 0})
+            Registry ({registryData.count})
           </Tabs.Tab>
           <Tabs.Tab value="installed">
-            Installed ({cacheData?.count ?? 0})
+            Installed ({cacheData.count})
           </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="registry" pt="md">
-          <RegistryTemplateList
-            templates={filteredTemplates}
-            isLoading={registryLoading}
-          />
+          <RegistryTemplateList templates={filteredTemplates} />
         </Tabs.Panel>
 
         <Tabs.Panel value="installed" pt="md">
-          <CachedTemplateList
-            templates={cacheData?.templates ?? []}
-            isLoading={cacheLoading}
-          />
+          <CachedTemplateList templates={cacheData.templates} />
         </Tabs.Panel>
       </Tabs>
     </Stack>
+  );
+}
+
+export function Templates() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<LoadingFallback message="Loading templates..." />}>
+        <TemplatesContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
