@@ -48,3 +48,7 @@ web/dist/*
 !web/dist/.gitkeep
 web/.vite/
 web/.pnpm-store
+
+# Development tools
+.overmind.sock
+build-errors.log

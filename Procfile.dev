@@ -1,0 +1,6 @@
+# Alternative Development Process File (without air)
+# Use when you don't want live-reloading or don't have air installed
+# Usage: overmind start -f Procfile.dev
+
+backend: go run ./cmd/apigear serve --port 8080
+frontend: cd web && pnpm dev
