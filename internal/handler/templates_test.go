@@ -344,6 +344,86 @@ func TestTemplateRoutes_Integration(t *testing.T) {
 	t.Skip("Integration test - requires full router setup")
 }
 
+// Test sorting consistency
+
+func TestListTemplates_ConsistentOrdering(t *testing.T) {
+	handler := ListTemplates()
+
+	// Call multiple times and verify order is consistent
+	var orders [][]string
+
+	for i := 0; i < 5; i++ {
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/templates", nil)
+		w := httptest.NewRecorder()
+
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response TemplateListResponse
+		err := json.NewDecoder(w.Body).Decode(&response)
+		require.NoError(t, err)
+
+		// Extract template names
+		names := make([]string, len(response.Templates))
+		for j, tmpl := range response.Templates {
+			names[j] = tmpl.Name
+		}
+		orders = append(orders, names)
+	}
+
+	// All orders should be identical
+	for i := 1; i < len(orders); i++ {
+		assert.Equal(t, orders[0], orders[i], "Template order should be consistent across calls")
+	}
+
+	// Verify alphabetical sorting
+	if len(orders) > 0 && len(orders[0]) > 1 {
+		for i := 1; i < len(orders[0]); i++ {
+			assert.True(t, orders[0][i-1] < orders[0][i], "Templates should be sorted alphabetically")
+		}
+	}
+}
+
+func TestListCachedTemplates_ConsistentOrdering(t *testing.T) {
+	handler := ListCachedTemplates()
+
+	// Call multiple times and verify order is consistent
+	var orders [][]string
+
+	for i := 0; i < 5; i++ {
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/templates/cache", nil)
+		w := httptest.NewRecorder()
+
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var response TemplateListResponse
+		err := json.NewDecoder(w.Body).Decode(&response)
+		require.NoError(t, err)
+
+		// Extract template names
+		names := make([]string, len(response.Templates))
+		for j, tmpl := range response.Templates {
+			names[j] = tmpl.Name
+		}
+		orders = append(orders, names)
+	}
+
+	// All orders should be identical
+	for i := 1; i < len(orders); i++ {
+		assert.Equal(t, orders[0], orders[i], "Cached template order should be consistent across calls")
+	}
+
+	// Verify alphabetical sorting
+	if len(orders) > 0 && len(orders[0]) > 1 {
+		for i := 1; i < len(orders[0]); i++ {
+			assert.True(t, orders[0][i-1] < orders[0][i], "Cached templates should be sorted alphabetically")
+		}
+	}
+}
+
 // Benchmark tests
 
 func BenchmarkListTemplates(b *testing.B) {

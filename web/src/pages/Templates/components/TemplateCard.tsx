@@ -48,8 +48,12 @@ export function TemplateCard({ template }: TemplateCardProps) {
     }
   };
 
-  const isUpToDate = template.inCache && template.version === template.latest;
-  const hasUpdate = template.inCache && template.version !== template.latest;
+  // Check if template is up to date
+  // Version can be empty for newly installed templates, treat as up to date if in cache
+  const hasVersion = template.version && template.version.trim() !== '';
+  const hasLatest = template.latest && template.latest.trim() !== '';
+  const isUpToDate = template.inCache && (!hasLatest || !hasVersion || template.version === template.latest);
+  const hasUpdate = template.inCache && hasVersion && hasLatest && template.version !== template.latest;
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
