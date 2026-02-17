@@ -47,7 +47,7 @@ tasks:
   test:ci:
     desc: Run backend tests on CI
     cmds:
-      - go test -failfast ./...
+      - go test -short -failfast ./...
 
   test:nats:
     desc: Run backend tests with nats

@@ -13,6 +13,11 @@ import (
 )
 
 func TestListTemplates(t *testing.T) {
+	// Skip in CI - requires network access to update registry
+	if testing.Short() {
+		t.Skip("Skipping test that requires network access")
+	}
+
 	handler := ListTemplates()
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/templates", nil)
@@ -267,6 +272,11 @@ func TestSearchTemplates_MissingQuery(t *testing.T) {
 }
 
 func TestSearchTemplates_WithQuery(t *testing.T) {
+	// Skip in CI - requires network access to update registry
+	if testing.Short() {
+		t.Skip("Skipping test that requires network access")
+	}
+
 	handler := SearchTemplates()
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/templates/search?q=python", nil)
@@ -305,6 +315,11 @@ func TestSearchTemplates_EmptyQuery(t *testing.T) {
 }
 
 func TestSearchTemplates_NoResults(t *testing.T) {
+	// Skip in CI - requires network access to update registry
+	if testing.Short() {
+		t.Skip("Skipping test that requires network access")
+	}
+
 	handler := SearchTemplates()
 
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/templates/search?q=nonexistenttemplate12345", nil)
@@ -443,6 +458,11 @@ func TestTemplateRoutes_Integration(t *testing.T) {
 // Test sorting consistency
 
 func TestListTemplates_ConsistentOrdering(t *testing.T) {
+	// Skip in CI - requires network access to update registry
+	if testing.Short() {
+		t.Skip("Skipping test that requires network access")
+	}
+
 	handler := ListTemplates()
 
 	// Call multiple times and verify order is consistent
