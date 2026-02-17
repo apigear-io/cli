@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Stack, Group, Text, Badge, Button, Progress, ActionIcon, Tooltip, Menu, Select } from '@mantine/core';
+import { Card, Stack, Group, Text, Badge, Button, Progress, ActionIcon, Tooltip, Menu } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconAlertCircle, IconBrandGithub, IconChevronDown } from '@tabler/icons-react';
 import { useInstallTemplate } from '@/api/queries';
@@ -13,14 +13,13 @@ export function TemplateCard({ template }: TemplateCardProps) {
   const [installing, setInstalling] = useState(false);
   const [progress, setProgress] = useState(0);
   const [progressMessage, setProgressMessage] = useState('');
-  const [selectedVersion, setSelectedVersion] = useState<string>(template.latest || '');
   const installMutation = useInstallTemplate();
 
   const handleInstall = async (version?: string) => {
     setInstalling(true);
     setProgress(0);
 
-    const versionToInstall = version || selectedVersion || template.latest;
+    const versionToInstall = version || template.latest;
 
     try {
       await installMutation.mutateAsync({
@@ -34,7 +33,7 @@ export function TemplateCard({ template }: TemplateCardProps) {
 
       notifications.show({
         title: 'Success',
-        message: `Template ${template.name} ${versionToInstall} installed successfully`,
+        message: `Template ${template.name}${versionToInstall ? ` ${versionToInstall}` : ''} installed successfully`,
         color: 'green',
         icon: <IconCheck size={18} />,
       });
@@ -120,61 +119,46 @@ export function TemplateCard({ template }: TemplateCardProps) {
             </Text>
           </Stack>
         ) : (
-          <Stack gap="xs">
+          <Button.Group style={{ width: '100%' }}>
+            <Button
+              style={{ flex: 1 }}
+              onClick={() => handleInstall()}
+              disabled={isUpToDate}
+              variant={hasUpdate ? 'filled' : 'light'}
+              loading={installMutation.isPending}
+            >
+              {isUpToDate ? 'Up to Date' : template.inCache ? 'Update' : 'Install'}
+            </Button>
             {template.versions && template.versions.length > 1 && (
-              <Select
-                label="Version"
-                placeholder="Select version"
-                value={selectedVersion}
-                onChange={(value) => setSelectedVersion(value || template.latest)}
-                data={template.versions.map((v) => ({
-                  value: v,
-                  label: v === template.latest ? `${v} (Latest)` : v,
-                }))}
-                size="xs"
-              />
-            )}
-            <Group gap="xs">
-              <Button
-                flex={1}
-                onClick={() => handleInstall()}
-                disabled={isUpToDate}
-                variant={hasUpdate ? 'filled' : 'light'}
-                loading={installMutation.isPending}
-              >
-                {isUpToDate ? 'Up to Date' : template.inCache ? 'Update' : 'Install'}
-              </Button>
-              {template.versions && template.versions.length > 1 && (
-                <Menu shadow="md" width={200}>
-                  <Menu.Target>
-                    <ActionIcon
-                      variant="light"
-                      size="lg"
-                      disabled={installMutation.isPending}
+              <Menu shadow="md" width={200} position="bottom-end">
+                <Menu.Target>
+                  <Button
+                    variant={hasUpdate ? 'filled' : 'light'}
+                    disabled={isUpToDate || installMutation.isPending}
+                    style={{ paddingLeft: 8, paddingRight: 8 }}
+                  >
+                    <IconChevronDown size={16} />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Label>Install specific version</Menu.Label>
+                  {template.versions.slice(0, 10).map((version) => (
+                    <Menu.Item
+                      key={version}
+                      onClick={() => handleInstall(version)}
                     >
-                      <IconChevronDown size={18} />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Label>Install specific version</Menu.Label>
-                    {template.versions.slice(0, 10).map((version) => (
-                      <Menu.Item
-                        key={version}
-                        onClick={() => handleInstall(version)}
-                      >
-                        {version === template.latest ? `${version} (Latest)` : version}
-                      </Menu.Item>
-                    ))}
-                    {template.versions.length > 10 && (
-                      <Menu.Label>
-                        +{template.versions.length - 10} more versions
-                      </Menu.Label>
-                    )}
-                  </Menu.Dropdown>
-                </Menu>
-              )}
-            </Group>
-          </Stack>
+                      {version === template.latest ? `${version} (Latest)` : version}
+                    </Menu.Item>
+                  ))}
+                  {template.versions.length > 10 && (
+                    <Menu.Label>
+                      +{template.versions.length - 10} more versions
+                    </Menu.Label>
+                  )}
+                </Menu.Dropdown>
+              </Menu>
+            )}
+          </Button.Group>
         )}
       </Stack>
     </Card>
