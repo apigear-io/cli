@@ -43,6 +43,9 @@ jobs:
       - name: Install frontend dependencies
         run: cd web && pnpm install --frozen-lockfile
 
+      - name: Build frontend
+        run: cd web && pnpm build
+
       - name: Run backend linting
         run: go mod tidy && git diff --exit-code go.mod go.sum
 
@@ -60,6 +63,3 @@ jobs:
 
       - name: Build backend
         run: go build -o ./bin/apigear ./cmd/apigear
-
-      - name: Build frontend
-        run: cd web && pnpm build
