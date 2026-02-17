@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/utils';
-import userEvent from '@testing-library/user-event';
 import { TemplateCard } from './TemplateCard';
 import type { TemplateInfo } from '@/api/types';
 
@@ -27,10 +26,12 @@ describe('TemplateCard', () => {
   const mockTemplate: TemplateInfo = {
     name: 'test-template',
     description: 'A test template',
+    author: 'test-author',
     latest: '1.0.0',
     version: '',
     git: 'https://github.com/test/template.git',
     inCache: false,
+    inRegistry: true,
     updateNeeded: false,
     versions: ['1.0.0', '0.9.0', '0.8.0'],
   };
@@ -82,8 +83,7 @@ describe('TemplateCard', () => {
     expect(upToDateButton).toBeDisabled();
   });
 
-  it('shows version selector dropdown when multiple versions are available', async () => {
-    const user = userEvent.setup();
+  it('shows version selector dropdown when multiple versions are available', () => {
     render(<TemplateCard template={mockTemplate} />);
 
     // Find the dropdown button (chevron icon button)
