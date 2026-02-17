@@ -1,5 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
+import { queryKeys } from './queryKeys';
 import type {
   HealthResponse,
   StatusResponse,
@@ -9,16 +10,16 @@ import type {
 } from './types';
 
 export function useHealth() {
-  return useQuery({
-    queryKey: ['health'],
+  return useSuspenseQuery({
+    queryKey: queryKeys.health(),
     queryFn: () => apiClient.get<HealthResponse>('/health'),
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 }
 
 export function useStatus() {
-  return useQuery({
-    queryKey: ['status'],
+  return useSuspenseQuery({
+    queryKey: queryKeys.status(),
     queryFn: () => apiClient.get<StatusResponse>('/status'),
     refetchInterval: 60000, // Refetch every 60 seconds
   });
@@ -26,34 +27,32 @@ export function useStatus() {
 
 // Template queries
 export function useTemplates() {
-  return useQuery({
-    queryKey: ['templates'],
+  return useSuspenseQuery({
+    queryKey: queryKeys.templates.registry(),
     queryFn: () => apiClient.get<TemplateListResponse>('/templates'),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
 export function useTemplate(id: string) {
-  return useQuery({
-    queryKey: ['templates', id],
+  return useSuspenseQuery({
+    queryKey: queryKeys.templates.detail(id),
     queryFn: () => apiClient.get<TemplateInfo>(`/templates/get?id=${encodeURIComponent(id)}`),
-    enabled: !!id,
   });
 }
 
 export function useCachedTemplates() {
-  return useQuery({
-    queryKey: ['templates', 'cache'],
+  return useSuspenseQuery({
+    queryKey: queryKeys.templates.cache(),
     queryFn: () => apiClient.get<TemplateListResponse>('/templates/cache'),
     refetchInterval: 30000, // Refresh every 30s
   });
 }
 
 export function useSearchTemplates(query: string) {
-  return useQuery({
-    queryKey: ['templates', 'search', query],
+  return useSuspenseQuery({
+    queryKey: queryKeys.templates.search(query),
     queryFn: () => apiClient.get<TemplateListResponse>(`/templates/search?q=${encodeURIComponent(query)}`),
-    enabled: !!query,
   });
 }
 
@@ -118,8 +117,7 @@ export function useInstallTemplate() {
       throw new Error('Installation stream ended unexpectedly');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      queryClient.invalidateQueries({ queryKey: ['templates', 'cache'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() });
     },
   });
 }
@@ -130,8 +128,7 @@ export function useRemoveTemplate() {
   return useMutation({
     mutationFn: (id: string) => apiClient.delete<{ message: string }>(`/templates/cache/remove?id=${encodeURIComponent(id)}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      queryClient.invalidateQueries({ queryKey: ['templates', 'cache'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() });
     },
   });
 }
@@ -142,7 +139,7 @@ export function useUpdateRegistry() {
   return useMutation({
     mutationFn: () => apiClient.post<{ message: string }>('/templates/registry/update', {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() });
     },
   });
 }
@@ -153,8 +150,7 @@ export function useCleanCache() {
   return useMutation({
     mutationFn: () => apiClient.post<{ message: string }>('/templates/cache/clean', {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
-      queryClient.invalidateQueries({ queryKey: ['templates', 'cache'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() });
     },
   });
 }

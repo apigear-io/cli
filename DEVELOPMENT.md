@@ -112,21 +112,34 @@ task dev
 ### Testing
 
 ```bash
-# Run all tests
+# Run all tests (backend + frontend)
 task test:all
 
-# Run backend tests only
-task test
+# Backend tests
+task test                 # Run backend tests
+task test:cover          # With coverage report
+task test:ci             # CI mode (with race detector)
 
-# Run backend tests with coverage
-task test:cover
+# Frontend unit tests (Vitest)
+task web:test            # Run unit tests once
+task web:test:watch      # Watch mode
+task web:test:ui         # Interactive UI mode
+task web:test:coverage   # With coverage report
 
-# Run frontend type checking
-task web:type-check
+# Frontend E2E tests (Playwright)
+task web:test:e2e        # Run E2E tests
+task web:test:e2e:ui     # Interactive UI mode (best for debugging)
+task web:test:e2e:debug  # Debug mode
 
-# Run frontend linting
-task web:lint
+# Frontend linting and type checking
+task web:type-check      # TypeScript type checking
+task web:lint            # ESLint
 ```
+
+**Testing Resources:**
+- Unit test utilities: `web/src/test/utils.tsx`
+- E2E test guide: `web/e2e/README.md`
+- Query testing: `QUERY_REFACTORING.md`
 
 ### Building
 
@@ -174,13 +187,30 @@ task web:dev          # Start frontend only
 ├── pkg/              # Public Go packages
 ├── web/              # Frontend React application
 │   ├── src/
-│   │   ├── api/      # API client & types
-│   │   ├── pages/    # Page components
-│   │   └── components/ # Shared components
-│   └── dist/         # Built frontend (embedded in Go binary)
+│   │   ├── api/      # API client & React Query hooks
+│   │   │   ├── client.ts      # Fetch wrapper
+│   │   │   ├── queries.ts     # React Query hooks (useSuspenseQuery)
+│   │   │   ├── queryKeys.ts   # Query key factory
+│   │   │   └── types.ts       # TypeScript types
+│   │   ├── components/        # Shared components
+│   │   │   ├── ErrorBoundary.tsx
+│   │   │   ├── LoadingFallback.tsx
+│   │   │   └── Layout/
+│   │   ├── pages/     # Page components
+│   │   ├── test/      # Test utilities
+│   │   │   ├── setup.ts       # Vitest setup
+│   │   │   └── utils.tsx      # Custom render with providers
+│   │   └── main.tsx   # App entry point
+│   ├── e2e/          # Playwright E2E tests
+│   ├── dist/         # Built frontend (embedded in Go binary)
+│   ├── vitest.config.ts       # Vitest configuration
+│   ├── playwright.config.ts   # Playwright configuration
+│   └── vite.config.ts         # Vite configuration
 ├── Procfile          # Development process definitions
 ├── .air.toml         # Air configuration for live reloading
-└── Taskfile.yml      # Task definitions
+├── Taskfile.yml      # Task definitions
+├── CLAUDE.md         # AI assistant context
+└── QUERY_REFACTORING.md  # useSuspenseQuery migration guide
 ```
 
 ## Configuration Files
@@ -282,14 +312,21 @@ curl -s http://localhost:8080/api/v1/templates | jq
 1. Create page component in `web/src/pages/NewPage/`
 2. Add route in `web/src/App.tsx`
 3. Add navigation link in `web/src/components/Layout/AppLayout.tsx`
-4. Use TanStack Query for data fetching
+4. Use TanStack Query for data fetching (prefer `useSuspenseQuery`)
 5. Use Mantine UI components for consistency
+6. Write tests: `NewPage.test.tsx` and `e2e/new-page.spec.ts`
 
 ### State Management
 
-- **TanStack Query** - Server state (API data)
+- **TanStack Query v5** - Server state (API data, prefer `useSuspenseQuery`)
 - **React Hooks** - Local component state
 - **URL State** - Route parameters and query strings
+
+**Query Best Practices:**
+- Use query key factory: `queryKeys.resource.operation()`
+- Prefer `useSuspenseQuery` for simpler code
+- Wrap components in `<Suspense>` + `<ErrorBoundary>`
+- See `QUERY_REFACTORING.md` for migration guide
 
 ## CI/CD
 
@@ -300,10 +337,11 @@ task ci:all
 ```
 
 Which includes:
-- Backend linting
+- Backend linting (golangci-lint)
 - Backend tests (with race detector)
 - Frontend TypeScript type checking
-- Frontend linting
+- Frontend linting (ESLint)
+- Frontend unit tests (Vitest)
 - Full build (backend + frontend)
 
 ## Performance
@@ -319,11 +357,20 @@ Which includes:
 - Check bundle size: `cd web && pnpm build --report`
 - Analyze with: `cd web && pnpm build && npx vite-bundle-visualizer`
 
+## Additional Documentation
+
+- **[CLAUDE.md](./CLAUDE.md)** - Context for AI assistants
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture
+- **[QUERY_REFACTORING.md](./web/QUERY_REFACTORING.md)** - useSuspenseQuery migration guide
+- **[E2E Testing Guide](./web/e2e/README.md)** - Playwright E2E test setup
+
 ## Resources
 
 - [Task Documentation](https://taskfile.dev/)
 - [Air Documentation](https://github.com/cosmtrek/air)
 - [Overmind Documentation](https://github.com/DarthSim/overmind)
 - [Vite Documentation](https://vitejs.dev/)
-- [TanStack Query](https://tanstack.com/query/latest)
-- [Mantine UI](https://mantine.dev/)
+- [TanStack Query v5](https://tanstack.com/query/latest)
+- [Mantine UI v8](https://mantine.dev/)
+- [Vitest](https://vitest.dev/)
+- [Playwright](https://playwright.dev/)

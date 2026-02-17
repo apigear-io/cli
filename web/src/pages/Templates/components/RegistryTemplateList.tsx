@@ -1,25 +1,13 @@
-import { Grid, Stack, Text, Center, Loader } from '@mantine/core';
+import { Grid, Stack, Text, Center } from '@mantine/core';
 import { IconMoodEmpty } from '@tabler/icons-react';
 import { TemplateCard } from './TemplateCard';
 import type { TemplateInfo } from '@/api/types';
 
 interface RegistryTemplateListProps {
   templates: TemplateInfo[];
-  isLoading: boolean;
 }
 
-export function RegistryTemplateList({ templates, isLoading }: RegistryTemplateListProps) {
-  if (isLoading) {
-    return (
-      <Center py="xl">
-        <Stack align="center" gap="md">
-          <Loader size="lg" />
-          <Text c="dimmed">Loading templates...</Text>
-        </Stack>
-      </Center>
-    );
-  }
-
+export function RegistryTemplateList({ templates }: RegistryTemplateListProps) {
   if (templates.length === 0) {
     return (
       <Center py="xl">
