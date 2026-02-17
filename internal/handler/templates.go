@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/apigear-io/cli/pkg/codegen/registry"
@@ -84,7 +85,12 @@ func mergeTemplateInfo(registryInfos, cacheInfos []*git.RepoInfo) []*TemplateInf
 		// Check if template is in cache
 		if cached, ok := cacheMap[name]; ok {
 			templateInfo.InCache = true
-			templateInfo.Version = cached.Version.Name
+			// Use cached version if available, otherwise use latest from cached info
+			if cached.Version.Name != "" {
+				templateInfo.Version = cached.Version.Name
+			} else if cached.Latest.Name != "" {
+				templateInfo.Version = cached.Latest.Name
+			}
 		}
 
 		templateMap[name] = templateInfo
@@ -106,6 +112,11 @@ func mergeTemplateInfo(registryInfos, cacheInfos []*git.RepoInfo) []*TemplateInf
 	for _, t := range templateMap {
 		templates = append(templates, t)
 	}
+
+	// Sort templates by name for consistent ordering
+	sort.Slice(templates, func(i, j int) bool {
+		return templates[i].Name < templates[j].Name
+	})
 
 	return templates
 }
@@ -306,6 +317,11 @@ func ListCachedTemplates() http.HandlerFunc {
 			templateInfo.InCache = true
 			templates = append(templates, templateInfo)
 		}
+
+		// Sort templates by name for consistent ordering
+		sort.Slice(templates, func(i, j int) bool {
+			return templates[i].Name < templates[j].Name
+		})
 
 		writeJSON(w, http.StatusOK, TemplateListResponse{
 			Templates: templates,
