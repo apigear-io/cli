@@ -1,3 +1,20 @@
+// ESLint Flat Config (v9+)
+//
+// LINTING ONLY - NO FORMATTING
+// This config focuses exclusively on code quality and correctness.
+// Formatting is handled by Prettier or not at all.
+//
+// Configs used:
+// - js.configs.recommended: Basic JavaScript linting (no style rules)
+// - tseslint.configs.recommended: TypeScript linting (no style rules)
+// - react-hooks: React Hooks rules of hooks
+// - react-refresh: Fast refresh compatibility
+//
+// We explicitly do NOT use:
+// - @stylistic/* plugins
+// - Any formatting-related rules
+// - tseslint.configs.stylistic
+
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
