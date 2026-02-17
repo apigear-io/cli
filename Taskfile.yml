@@ -216,11 +216,12 @@ tasks:
     desc: Run all CI checks (backend + frontend)
     cmds:
       - task: setup:all
+      - task: web:build
       - task: lint:all
       - task: test:ci
       - task: web:type-check
       - task: web:test
-      - task: build:all
+      - task: build
 
   dev:
     desc: Start full development environment with live reloading (requires overmind + air)

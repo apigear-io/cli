@@ -40,26 +40,11 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'web/pnpm-lock.yaml'
 
-      - name: Install frontend dependencies
-        run: cd web && pnpm install --frozen-lockfile
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build frontend
-        run: cd web && pnpm build
-
-      - name: Run backend linting
-        run: go mod tidy && git diff --exit-code go.mod go.sum
-
-      - name: Run backend tests
-        run: go test -failfast -race ./...
-
-      - name: Run frontend type checking
-        run: cd web && pnpm type-check
-
-      - name: Run frontend linting
-        run: cd web && pnpm lint
-
-      - name: Run frontend unit tests
-        run: cd web && pnpm exec vitest run
-
-      - name: Build backend
-        run: go build -o ./bin/apigear ./cmd/apigear
+      - name: Run CI checks
+        run: task ci:all
