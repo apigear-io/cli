@@ -30,8 +30,6 @@ func ToElementTypeString(prefix string, schema *objmodel.Schema) (string, error)
 	case objmodel.TypeBool:
 		text = "boolean"
 	case objmodel.TypeEnum:
-		symbol := schema.GetEnum()
-		text = fmt.Sprintf("%s%s", prefix, symbol.Name)
 		e_local := schema.LookupEnum("", schema.Type)
 		e_imported := schema.LookupEnum(schema.Import, schema.Type)
 		if e_local == nil && e_imported == nil {
@@ -56,7 +54,6 @@ func ToElementTypeString(prefix string, schema *objmodel.Schema) (string, error)
 		text = fmt.Sprintf("%s%s", prefix, common.CamelTitleCase(s_imported.Name))
 	case objmodel.TypeExtern:
 		xe := parseJavaExtern(schema)
-		text = fmt.Sprintf("new %s()", xe.Name)
 		var java_module string
 		java_module = ""
 		if xe.Package != "" {

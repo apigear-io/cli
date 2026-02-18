@@ -58,7 +58,6 @@ func ToTestValueString(prefix string, schema *objmodel.Schema) (string, error) {
 		text = fmt.Sprintf("new %s%s()", prefix, s_imported.Name)
 	case objmodel.TypeExtern:
 		xe := parseJavaExtern(schema)
-		text = fmt.Sprintf("new %s()", xe.Name)
 		if xe.Default != "" {
 			text = xe.Default
 		} else {

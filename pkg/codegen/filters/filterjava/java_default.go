@@ -117,7 +117,6 @@ func ToDefaultString(schema *objmodel.Schema, prefix string) (string, error) {
 			text = fmt.Sprintf("new %s%s()", prefix, s_imported.Name)
 		case objmodel.TypeExtern:
 			xe := parseJavaExtern(schema)
-			text = fmt.Sprintf("new %s()", xe.Name)
 			if xe.Default != "" {
 				text = xe.Default
 			} else {
@@ -135,9 +134,6 @@ func ToDefaultString(schema *objmodel.Schema, prefix string) (string, error) {
 				return "xxx", fmt.Errorf("javaDefault interface not found: %s", schema.Dump())
 			}
 			// if interface is local it is found both as s_local and s_imported
-			if i_local == nil {
-				prefix = fmt.Sprintf("%s.%s_impl.", common.CamelLowerCase(i_imported.Module.Name), common.CamelLowerCase(i_imported.Module.Name))
-			}
 			text = "null"
 		default:
 			return "xxx", fmt.Errorf("javaDefault unknown schema %s", schema.Dump())
