@@ -57,10 +57,8 @@ func jniSignatureType(node *objmodel.TypedNode) (string, error) {
 		}
 	case objmodel.TypeExtern:
 		xe := filterjava.MakeJavaExtern(&node.Schema)
-		var java_module string
-		java_module = ""
 		if xe.Package != "" {
-			java_module = xe.Package
+			java_module := xe.Package
 			java_module = common.Replace(java_module, ".", "/")
 			text = "L" + java_module + "/" + xe.Name + ";"
 		} else {
@@ -69,8 +67,7 @@ func jniSignatureType(node *objmodel.TypedNode) (string, error) {
 	case objmodel.TypeInterface:
 		i := node.LookupInterface(node.Import, node.Type)
 		if i != nil {
-			var name string
-			name = "I" + i.Name
+			name := "I" + i.Name
 			text = makeFullTypeName(i.Module.Name, name)
 		} else {
 			return "xxx", fmt.Errorf("ToSignatureType interface not found %s", node.Dump())

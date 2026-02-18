@@ -257,13 +257,13 @@ func TestLoadSchema(t *testing.T) {
 
 	t.Run("panics for unknown document type", func(t *testing.T) {
 		assert.Panics(t, func() {
-			LoadSchema(DocumentTypeUnknown)
+			_, _ = LoadSchema(DocumentTypeUnknown)
 		})
 	})
 
 	t.Run("panics for invalid document type", func(t *testing.T) {
 		assert.Panics(t, func() {
-			LoadSchema(DocumentType("invalid"))
+			_, _ = LoadSchema(DocumentType("invalid"))
 		})
 	})
 }

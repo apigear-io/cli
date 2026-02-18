@@ -276,7 +276,7 @@ func InstallTemplate() http.HandlerFunc {
 		// Helper to send SSE events
 		sendSSE := func(event InstallProgressEvent) {
 			data, _ := json.Marshal(event)
-			fmt.Fprintf(w, "data: %s\n\n", data)
+			_, _ = fmt.Fprintf(w, "data: %s\n\n", data)
 			flusher.Flush()
 		}
 

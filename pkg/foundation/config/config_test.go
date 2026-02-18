@@ -76,8 +76,8 @@ func TestNewConfig(t *testing.T) {
 		dir := t.TempDir()
 		customCacheDir := filepath.Join(dir, "custom-cache")
 
-		os.Setenv("APIGEAR_CACHE_DIR", customCacheDir)
-		defer os.Unsetenv("APIGEAR_CACHE_DIR")
+		_ = os.Setenv("APIGEAR_CACHE_DIR", customCacheDir)
+		defer func() { _ = os.Unsetenv("APIGEAR_CACHE_DIR") }()
 
 		cfg, err := NewConfig(dir)
 		require.NoError(t, err)
@@ -90,8 +90,8 @@ func TestNewConfig(t *testing.T) {
 		dir := t.TempDir()
 		customRegistryDir := filepath.Join(dir, "custom-registry")
 
-		os.Setenv("APIGEAR_REGISTRY_DIR", customRegistryDir)
-		defer os.Unsetenv("APIGEAR_REGISTRY_DIR")
+		_ = os.Setenv("APIGEAR_REGISTRY_DIR", customRegistryDir)
+		defer func() { _ = os.Unsetenv("APIGEAR_REGISTRY_DIR") }()
 
 		cfg, err := NewConfig(dir)
 		require.NoError(t, err)

@@ -12,7 +12,7 @@ func TestStubEventBusImplementsInterface(t *testing.T) {
 // TestStubEventBusPublish verifies Publish is a no-op
 func TestStubEventBusPublish(t *testing.T) {
 	bus := NewStubEventBus()
-	defer bus.Close()
+	defer func() { _ = bus.Close() }()
 
 	e := NewEvent("test.event", map[string]any{"key": "value"})
 	err := bus.Publish(e)
@@ -25,7 +25,7 @@ func TestStubEventBusPublish(t *testing.T) {
 // TestStubEventBusRequest verifies Request returns an error event
 func TestStubEventBusRequest(t *testing.T) {
 	bus := NewStubEventBus()
-	defer bus.Close()
+	defer func() { _ = bus.Close() }()
 
 	e := NewEvent("test.request", map[string]any{"key": "value"})
 	resp, err := bus.Request(e)
@@ -50,7 +50,7 @@ func TestStubEventBusRequest(t *testing.T) {
 // TestStubEventBusRegister verifies Register is a no-op
 func TestStubEventBusRegister(t *testing.T) {
 	bus := NewStubEventBus()
-	defer bus.Close()
+	defer func() { _ = bus.Close() }()
 
 	called := false
 	handler := func(e *Event) (*Event, error) {
@@ -70,7 +70,7 @@ func TestStubEventBusRegister(t *testing.T) {
 // TestStubEventBusUse verifies Use is a no-op
 func TestStubEventBusUse(t *testing.T) {
 	bus := NewStubEventBus()
-	defer bus.Close()
+	defer func() { _ = bus.Close() }()
 
 	called := false
 	middleware := func(e *Event) (*Event, error) {
@@ -106,14 +106,14 @@ func TestStubEventBusClose(t *testing.T) {
 // TestStubEventBusConcurrency verifies thread safety
 func TestStubEventBusConcurrency(t *testing.T) {
 	bus := NewStubEventBus()
-	defer bus.Close()
+	defer func() { _ = bus.Close() }()
 
 	// Run operations concurrently to check for race conditions
 	done := make(chan bool, 3)
 
 	go func() {
 		for i := 0; i < 100; i++ {
-			bus.Publish(NewEvent("test", nil))
+			_ = bus.Publish(NewEvent("test", nil))
 		}
 		done <- true
 	}()

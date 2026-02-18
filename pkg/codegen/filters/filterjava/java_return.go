@@ -54,7 +54,6 @@ func ToReturnString(prefix string, schema *objmodel.Schema) (string, error) {
 		text = fmt.Sprintf("%s%s", prefix, common.CamelTitleCase(s_imported.Name))
 	case objmodel.TypeExtern:
 		xe := parseJavaExtern(schema)
-		text = fmt.Sprintf("new %s()", xe.Name)
 		var java_module string
 		java_module = ""
 		if xe.Package != "" {
