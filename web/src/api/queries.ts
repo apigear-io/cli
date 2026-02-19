@@ -14,6 +14,15 @@ import type {
   ClientInfo,
   ClientConfig,
   CreateClientRequest,
+  ScriptFile,
+  ScriptInfo,
+  SaveScriptRequest,
+  SaveScriptResponse,
+  RunScriptResponse,
+  RunCodeRequest,
+  TraceFileInfo,
+  TraceStats,
+  TraceFileResponse,
 } from './types';
 
 export function useHealth() {
@@ -348,6 +357,148 @@ export function useDisconnectClient() {
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.clients.detail(name) });
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.clients.list() });
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.dashboard() });
+    },
+  });
+}
+
+// Stream queries - Scripts
+
+export function useScripts() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.scripts.list(),
+    queryFn: async () => {
+      const response = await apiClient.get<{ scripts: string[] | null }>('/stream/scripts');
+      return response.scripts || [];
+    },
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+}
+
+export function useScript(name: string) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.scripts.detail(name),
+    queryFn: () => apiClient.get<ScriptFile>(`/stream/scripts/${encodeURIComponent(name)}`),
+  });
+}
+
+export function useRunningScripts() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.scripts.running(),
+    queryFn: async () => {
+      const response = await apiClient.get<{ scripts: ScriptInfo[] | null }>('/stream/scripts/running');
+      return response.scripts || [];
+    },
+    refetchInterval: 3000, // Refresh every 3 seconds
+  });
+}
+
+// Stream mutations - Scripts
+
+export function useSaveScript() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: SaveScriptRequest) =>
+      apiClient.post<SaveScriptResponse>('/stream/scripts', request),
+    onSuccess: (_, { name }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.detail(name) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.list() });
+    },
+  });
+}
+
+export function useDeleteScript() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiClient.delete(`/stream/scripts/${encodeURIComponent(name)}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.all() });
+    },
+  });
+}
+
+export function useRunScript() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiClient.post<RunScriptResponse>(`/stream/scripts/${encodeURIComponent(name)}/run`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.running() });
+    },
+  });
+}
+
+export function useRunCode() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: RunCodeRequest) =>
+      apiClient.post<RunScriptResponse>('/stream/scripts/run', request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.running() });
+    },
+  });
+}
+
+export function useStopScript() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient.post(`/stream/scripts/stop/${encodeURIComponent(id)}`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.scripts.running() });
+    },
+  });
+}
+
+// Stream queries - Traces
+
+export function useTraceFiles() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.traces.list(),
+    queryFn: async () => {
+      const response = await apiClient.get<{ files: TraceFileInfo[] | null }>('/stream/traces');
+      return response.files || [];
+    },
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+}
+
+export function useTraceStats() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.traces.stats(),
+    queryFn: () => apiClient.get<TraceStats>('/stream/traces/stats'),
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+}
+
+export function useTraceFile(name: string, options?: { direction?: string; limit?: number }) {
+  return useSuspenseQuery({
+    queryKey: [...queryKeys.stream.traces.detail(name), options],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (options?.direction) params.append('direction', options.direction);
+      if (options?.limit) params.append('limit', options.limit.toString());
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return apiClient.get<TraceFileResponse>(`/stream/traces/${encodeURIComponent(name)}${query}`);
+    },
+  });
+}
+
+// Stream mutations - Traces
+
+export function useDeleteTraceFile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiClient.delete(`/stream/traces/${encodeURIComponent(name)}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.traces.all() });
     },
   });
 }

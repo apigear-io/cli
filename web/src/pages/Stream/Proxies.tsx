@@ -21,6 +21,7 @@ import {
   IconTrash,
   IconPlus,
   IconRefresh,
+  IconEye,
 } from '@tabler/icons-react';
 import {
   useProxies,
@@ -32,11 +33,14 @@ import {
 import type { ProxyMode, CreateProxyRequest } from '@/api/types';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingFallback } from '@/components/LoadingFallback';
+import { LiveMessageViewer } from './components/LiveMessageViewer';
 import { notifications } from '@mantine/notifications';
 
 function ProxiesContent() {
   const { data: proxies } = useProxies();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [selectedProxy, setSelectedProxy] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     listen: 'ws://localhost:5550/ws',
@@ -135,6 +139,11 @@ function ProxiesContent() {
         color: 'red',
       });
     }
+  };
+
+  const handleViewMessages = (name: string) => {
+    setSelectedProxy(name);
+    setViewerOpen(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -325,6 +334,16 @@ function ProxiesContent() {
                       </Button>
                     )}
                   </Group>
+
+                  <Button
+                    leftSection={<IconEye size={16} />}
+                    variant="light"
+                    size="sm"
+                    onClick={() => handleViewMessages(proxy.name)}
+                    disabled={proxy.status !== 'running'}
+                  >
+                    View Messages
+                  </Button>
                 </Stack>
               </Card>
             </Grid.Col>
@@ -391,6 +410,16 @@ function ProxiesContent() {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* Live Message Viewer Modal */}
+      <Modal
+        opened={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        title={`Live Messages: ${selectedProxy}`}
+        size="xl"
+      >
+        {selectedProxy && <LiveMessageViewer proxyName={selectedProxy} height="70vh" />}
       </Modal>
     </Stack>
   );

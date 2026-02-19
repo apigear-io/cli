@@ -52,5 +52,21 @@ export const queryKeys = {
       list: () => [...queryKeys.stream.clients.all(), 'list'] as const,
       detail: (name: string) => [...queryKeys.stream.clients.all(), 'detail', name] as const,
     },
+
+    // Scripts
+    scripts: {
+      all: () => [...queryKeys.stream.all(), 'scripts'] as const,
+      list: () => [...queryKeys.stream.scripts.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.scripts.all(), 'detail', name] as const,
+      running: () => [...queryKeys.stream.scripts.all(), 'running'] as const,
+    },
+
+    // Traces
+    traces: {
+      all: () => [...queryKeys.stream.all(), 'traces'] as const,
+      list: () => [...queryKeys.stream.traces.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.traces.all(), 'detail', name] as const,
+      stats: () => [...queryKeys.stream.traces.all(), 'stats'] as const,
+    },
   },
 } as const;

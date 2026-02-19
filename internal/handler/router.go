@@ -50,6 +50,7 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Post("/{name}/start", StartStreamProxy())
 				r.Post("/{name}/stop", StopStreamProxy())
 				r.Get("/{name}/stats", GetStreamProxyStats())
+				r.Get("/{name}/events", StreamProxyEvents(getStreamServices()))
 			})
 
 			// Clients
@@ -61,6 +62,29 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Delete("/{name}", DeleteStreamClient())
 				r.Post("/{name}/connect", ConnectStreamClient())
 				r.Post("/{name}/disconnect", DisconnectStreamClient())
+			})
+
+			// Scripts
+			r.Route("/scripts", func(r chi.Router) {
+				r.Get("/", ListScripts())
+				r.Post("/", SaveScript())
+				r.Get("/running", ListRunningScripts())
+				r.Post("/run", RunCode())
+				r.Get("/output", StreamScriptOutput(getStreamServices()))
+				r.Get("/{name}", LoadScript())
+				r.Put("/{name}", UpdateScript())
+				r.Delete("/{name}", DeleteScript())
+				r.Post("/{name}/run", RunScript())
+				r.Post("/stop/{id}", StopScript())
+			})
+
+			// Traces
+			r.Route("/traces", func(r chi.Router) {
+				r.Get("/", ListTraceFiles())
+				r.Get("/stats", GetTraceStats())
+				r.Post("/search", SearchTraces())
+				r.Get("/{name}", GetTraceFile())
+				r.Delete("/{name}", DeleteTraceFile())
 			})
 		})
 	})

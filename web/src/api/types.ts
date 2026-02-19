@@ -107,3 +107,112 @@ export interface StreamDashboardStats {
     rate: number;
   };
 }
+
+// Script types
+
+export type ScriptType = 'client' | 'backend';
+export type ScriptOutputLevel = 'log' | 'info' | 'warn' | 'error' | 'debug';
+
+export interface ScriptFileInfo {
+  name: string;
+  modTime: number;
+}
+
+export interface ScriptInfo {
+  id: string;
+  name: string;
+  type: ScriptType;
+}
+
+export interface ScriptFile {
+  name: string;
+  code: string;
+  modTime: number;
+}
+
+export interface ScriptOutputEntry {
+  level: ScriptOutputLevel;
+  message: string;
+}
+
+export interface SaveScriptRequest {
+  name: string;
+  code: string;
+  expectedModTime?: number;
+}
+
+export interface SaveScriptResponse {
+  name: string;
+  modTime: number;
+  message: string;
+}
+
+export interface RunScriptResponse {
+  id: string;
+  name: string;
+  message: string;
+}
+
+export interface RunCodeRequest {
+  name?: string;
+  code: string;
+}
+
+// Trace types
+
+export interface TraceFileInfo {
+  name: string;
+  path: string;
+  size: number;
+  modTime: string;
+  proxyName: string;
+}
+
+export interface TraceEntry {
+  ts: number; // Timestamp in milliseconds
+  dir: string; // Direction: "SEND" or "RECV"
+  proxy: string;
+  msg: unknown; // Raw JSON message
+}
+
+export interface TraceStats {
+  fileCount: number;
+  totalBytes: number;
+  totalMB: number;
+  traceDir: string;
+}
+
+export interface TraceFileResponse {
+  filename: string;
+  entries: TraceEntry[];
+  count: number;
+}
+
+export interface SearchTracesRequest {
+  proxyName?: string;
+  direction?: string;
+  startTime?: number;
+  endTime?: number;
+  maxFiles?: number;
+  maxEntries?: number;
+}
+
+// Live Message types
+
+export interface ParsedMessage {
+  msgType: number;
+  msgTypeName: string;
+  symbol?: string;
+  objectId?: string;
+  requestId?: number;
+  args?: unknown;
+}
+
+export interface ParsedMessageEvent {
+  type: string;
+  proxy: string;
+  direction: string; // "SEND" or "RECV"
+  timestamp: number;
+  message: unknown; // Raw JSON message
+  parsed?: ParsedMessage;
+}

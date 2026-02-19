@@ -8,6 +8,8 @@ import { Monitor } from './pages/Monitor/Monitor';
 import { StreamDashboard } from './pages/Stream/Dashboard';
 import { Proxies } from './pages/Stream/Proxies';
 import { Clients } from './pages/Stream/Clients';
+import { Scripting } from './pages/Stream/Scripting';
+import { Traces } from './pages/Stream/Traces';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="stream/dashboard" element={<StreamDashboard />} />
           <Route path="stream/proxies" element={<Proxies />} />
           <Route path="stream/clients" element={<Clients />} />
+          <Route path="stream/scripting" element={<Scripting />} />
+          <Route path="stream/traces" element={<Traces />} />
         </Route>
       </Routes>
     </BrowserRouter>
