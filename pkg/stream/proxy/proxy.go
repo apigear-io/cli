@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"sync"
@@ -44,8 +45,10 @@ type Proxy struct {
 	traceConfig config.TraceConfig
 
 	// HTTP server
-	server   *http.Server
-	serverMu sync.Mutex
+	server     *http.Server
+	listener   net.Listener
+	actualAddr string
+	serverMu   sync.Mutex
 
 	// Trace logging
 	traceWriter *lumberjack.Logger
@@ -85,6 +88,10 @@ func NewProxy(name, listenAddr, backend string, cfg config.ProxyConfig) *Proxy {
 
 	mode := ParseMode(cfg.Mode)
 
+	// Create a standalone stats collector for this proxy
+	stats := NewStats()
+	proxyStats := stats.GetProxyStats(name)
+
 	return &Proxy{
 		name:        name,
 		listenAddr:  listenAddr,
@@ -94,6 +101,7 @@ func NewProxy(name, listenAddr, backend string, cfg config.ProxyConfig) *Proxy {
 		ctx:         ctx,
 		cancelFunc:  cancel,
 		status:      StatusStopped,
+		stats:       proxyStats,
 		activeConns: make(map[uint64]*activeConnection),
 	}
 }
@@ -119,7 +127,7 @@ func (p *Proxy) Start() error {
 
 	// Initialize echo server for echo mode
 	if p.mode == ModeEcho {
-		p.echoServer = NewEchoServer(p.name)
+		p.echoServer = NewEchoServer(p.name, p.stats)
 	}
 
 	// Parse listen address
@@ -128,25 +136,32 @@ func (p *Proxy) Start() error {
 		return fmt.Errorf("invalid listen address: %w", err)
 	}
 
+	// Create listener first to get actual port
+	listener, err := net.Listen("tcp", u.Host)
+	if err != nil {
+		return fmt.Errorf("failed to create listener: %w", err)
+	}
+	p.listener = listener
+	p.actualAddr = listener.Addr().String()
+
 	// Create HTTP server
 	mux := http.NewServeMux()
 	mux.HandleFunc(u.Path, p.handleWebSocket)
 
 	p.server = &http.Server{
-		Addr:    u.Host,
 		Handler: mux,
 	}
 
 	log.Info().
 		Str("proxy", p.name).
-		Str("listen", p.listenAddr).
+		Str("listen", p.actualAddr).
 		Str("backend", p.backend).
 		Str("mode", p.mode.String()).
 		Msg("proxy started")
 
 	// Start server in background
 	go func() {
-		if err := p.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := p.server.Serve(listener); err != nil && err != http.ErrServerClosed {
 			log.Error().Err(err).Str("proxy", p.name).Msg("proxy server error")
 			p.statusMu.Lock()
 			p.status = StatusError
@@ -177,7 +192,14 @@ func (p *Proxy) Stop() error {
 		log.Warn().Err(err).Str("proxy", p.name).Msg("error shutting down proxy")
 	}
 
+	// Close listener
+	if p.listener != nil {
+		p.listener.Close()
+		p.listener = nil
+	}
+
 	p.server = nil
+	p.actualAddr = ""
 
 	// Close trace writer
 	if p.traceWriter != nil {
@@ -469,4 +491,13 @@ func (p *Proxy) SetTrace(enabled bool) {
 		}
 		p.traceMu.Unlock()
 	}
+}
+
+// GetListenAddr returns the actual listen address without protocol (host:port).
+// This is useful when using port 0 to get the actual assigned port.
+func (p *Proxy) GetListenAddr() string {
+	p.serverMu.Lock()
+	defer p.serverMu.Unlock()
+
+	return p.actualAddr
 }

@@ -10,13 +10,15 @@ import (
 
 // EchoServer implements a simple echo server that sends back received messages.
 type EchoServer struct {
-	name string
+	name  string
+	stats *ProxyStats
 }
 
 // NewEchoServer creates a new echo server.
-func NewEchoServer(name string) *EchoServer {
+func NewEchoServer(name string, stats *ProxyStats) *EchoServer {
 	return &EchoServer{
-		name: name,
+		name:  name,
+		stats: stats,
 	}
 }
 
@@ -43,9 +45,19 @@ func (e *EchoServer) Handle(ctx context.Context, conn relay.Connection) error {
 			return err
 		}
 
+		// Record stats
+		if e.stats != nil {
+			e.stats.RecordMessageReceived(len(data))
+		}
+
 		// Echo it back
 		if err := conn.WriteMessage(msgType, data); err != nil {
 			return err
+		}
+
+		// Record stats
+		if e.stats != nil {
+			e.stats.RecordMessageSent(len(data))
 		}
 	}
 }
