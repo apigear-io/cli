@@ -30,4 +30,27 @@ export const queryKeys = {
     // Search
     search: (query: string) => [...queryKeys.templates.all(), 'search', query] as const,
   },
+
+  // Stream
+  stream: {
+    all: () => ['stream'] as const,
+
+    // Dashboard
+    dashboard: () => [...queryKeys.stream.all(), 'dashboard'] as const,
+
+    // Proxies
+    proxies: {
+      all: () => [...queryKeys.stream.all(), 'proxies'] as const,
+      list: () => [...queryKeys.stream.proxies.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.proxies.all(), 'detail', name] as const,
+      stats: (name: string) => [...queryKeys.stream.proxies.all(), 'stats', name] as const,
+    },
+
+    // Clients
+    clients: {
+      all: () => [...queryKeys.stream.all(), 'clients'] as const,
+      list: () => [...queryKeys.stream.clients.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.clients.all(), 'detail', name] as const,
+    },
+  },
 } as const;

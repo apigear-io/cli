@@ -11,7 +11,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// RegisterAPIRoutes registers all REST API routes (health, status, templates)
+// RegisterAPIRoutes registers all REST API routes (health, status, templates, stream)
 func RegisterAPIRoutes(router chi.Router) {
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/health", Health())
@@ -32,6 +32,35 @@ func RegisterAPIRoutes(router chi.Router) {
 
 			r.Route("/registry", func(r chi.Router) {
 				r.Post("/update", UpdateRegistry())
+			})
+		})
+
+		// Stream endpoints
+		r.Route("/stream", func(r chi.Router) {
+			// Dashboard
+			r.Get("/dashboard", GetStreamDashboard())
+
+			// Proxies
+			r.Route("/proxies", func(r chi.Router) {
+				r.Get("/", ListStreamProxies())
+				r.Post("/", CreateStreamProxy())
+				r.Get("/{name}", GetStreamProxy())
+				r.Put("/{name}", UpdateStreamProxy())
+				r.Delete("/{name}", DeleteStreamProxy())
+				r.Post("/{name}/start", StartStreamProxy())
+				r.Post("/{name}/stop", StopStreamProxy())
+				r.Get("/{name}/stats", GetStreamProxyStats())
+			})
+
+			// Clients
+			r.Route("/clients", func(r chi.Router) {
+				r.Get("/", ListStreamClients())
+				r.Post("/", CreateStreamClient())
+				r.Get("/{name}", GetStreamClient())
+				r.Put("/{name}", UpdateStreamClient())
+				r.Delete("/{name}", DeleteStreamClient())
+				r.Post("/{name}/connect", ConnectStreamClient())
+				r.Post("/{name}/disconnect", DisconnectStreamClient())
 			})
 		})
 	})

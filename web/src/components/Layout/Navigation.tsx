@@ -6,6 +6,9 @@ import {
   IconFolder,
   IconCode,
   IconActivity,
+  IconServer,
+  IconChartLine,
+  IconUsers,
 } from '@tabler/icons-react';
 
 interface NavigationProps {
@@ -22,6 +25,14 @@ export function Navigation({ onNavigate }: NavigationProps) {
     { to: '/codegen', label: 'Code Generation', icon: IconCode },
     { to: '/monitor', label: 'Monitor', icon: IconActivity },
   ];
+
+  const streamLinks = [
+    { to: '/stream/dashboard', label: 'Dashboard', icon: IconChartLine },
+    { to: '/stream/proxies', label: 'Proxies', icon: IconServer },
+    { to: '/stream/clients', label: 'Clients', icon: IconUsers },
+  ];
+
+  const isStreamActive = location.pathname.startsWith('/stream');
 
   return (
     <Stack gap="xs">
@@ -41,6 +52,30 @@ export function Navigation({ onNavigate }: NavigationProps) {
           />
         );
       })}
+
+      <MantineNavLink
+        label="Stream"
+        leftSection={<IconServer size={20} />}
+        active={isStreamActive}
+        defaultOpened={isStreamActive}
+      >
+        {streamLinks.map((link) => {
+          const Icon = link.icon;
+          const isActive = location.pathname === link.to;
+
+          return (
+            <MantineNavLink
+              key={link.to}
+              component={Link}
+              to={link.to}
+              label={link.label}
+              leftSection={<Icon size={16} />}
+              active={isActive}
+              onClick={onNavigate}
+            />
+          );
+        })}
+      </MantineNavLink>
     </Stack>
   );
 }

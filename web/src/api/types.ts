@@ -36,3 +36,74 @@ export interface InstallProgressEvent {
   progress: number;
   error?: string;
 }
+
+// Stream types
+
+export type ProxyStatus = 'stopped' | 'running' | 'error';
+export type ProxyMode = 'proxy' | 'echo' | 'backend' | 'inbound-only';
+export type ClientStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
+
+export interface ProxyInfo {
+  name: string;
+  listen: string;
+  backend: string;
+  mode: ProxyMode;
+  status: ProxyStatus;
+  messagesReceived: number;
+  messagesSent: number;
+  activeConnections: number;
+  bytesReceived: number;
+  bytesSent: number;
+  uptime: number; // seconds
+}
+
+export interface ProxyConfig {
+  listen: string;
+  backend?: string;
+  mode: ProxyMode;
+  disabled?: boolean;
+}
+
+export interface CreateProxyRequest {
+  name: string;
+  config: ProxyConfig;
+}
+
+export interface ClientInfo {
+  name: string;
+  url: string;
+  interfaces: string[];
+  status: ClientStatus;
+  autoReconnect: boolean;
+  enabled: boolean;
+  lastError?: string;
+}
+
+export interface ClientConfig {
+  url: string;
+  interfaces: string[];
+  enabled: boolean;
+  autoReconnect: boolean;
+}
+
+export interface CreateClientRequest {
+  name: string;
+  config: ClientConfig;
+}
+
+export interface StreamDashboardStats {
+  proxies: {
+    total: number;
+    running: number;
+    stopped: number;
+  };
+  clients: {
+    total: number;
+    connected: number;
+    disconnected: number;
+  };
+  messages: {
+    total: number;
+    rate: number;
+  };
+}

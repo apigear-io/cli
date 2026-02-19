@@ -10,6 +10,7 @@ import (
 	"github.com/apigear-io/cli/pkg/cmd/prj"
 	"github.com/apigear-io/cli/pkg/cmd/serve"
 	"github.com/apigear-io/cli/pkg/cmd/spec"
+	"github.com/apigear-io/cli/pkg/cmd/stream"
 	"github.com/apigear-io/cli/pkg/cmd/tpl"
 	"github.com/apigear-io/cli/pkg/cmd/x"
 
@@ -39,5 +40,6 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(olink.NewRootCommand())
 	cmd.AddCommand(NewMCPCommand())
 	cmd.AddCommand(serve.NewServeCommand())
+	cmd.AddCommand(stream.NewRootCommand())
 	return cmd
 }

@@ -5,6 +5,9 @@ import { Templates } from './pages/Templates/Templates';
 import { Projects } from './pages/Projects/Projects';
 import { CodeGen } from './pages/CodeGen/CodeGen';
 import { Monitor } from './pages/Monitor/Monitor';
+import { StreamDashboard } from './pages/Stream/Dashboard';
+import { Proxies } from './pages/Stream/Proxies';
+import { Clients } from './pages/Stream/Clients';
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
           <Route path="projects" element={<Projects />} />
           <Route path="codegen" element={<CodeGen />} />
           <Route path="monitor" element={<Monitor />} />
+          <Route path="stream/dashboard" element={<StreamDashboard />} />
+          <Route path="stream/proxies" element={<Proxies />} />
+          <Route path="stream/clients" element={<Clients />} />
         </Route>
       </Routes>
     </BrowserRouter>
