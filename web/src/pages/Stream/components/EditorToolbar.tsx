@@ -1,14 +1,4 @@
-import { Group, Button, Text, Badge, Menu } from '@mantine/core';
-import {
-  IconSelect,
-  IconSelectAll,
-  IconX,
-  IconCut,
-  IconRestore,
-  IconStar,
-  IconStarOff,
-  IconDownload,
-} from '@tabler/icons-react';
+import { Group, Button, Text, Menu } from '@mantine/core';
 import { useEditorContext } from './EditorContext';
 import { useEditorMessages, useEditorExport } from '@/api/queries';
 import { notifications } from '@mantine/notifications';
@@ -39,10 +29,30 @@ export function EditorToolbar() {
   const deletedCount = deletedIndices.size;
   const markedCount = markedIndices.size;
 
-  const handleSelectAll = () => {
+  const handleSelectNone = () => {
+    clearSelection();
+  };
+
+  const handleSelectFiltered = () => {
+    if (!messagesData) return;
+    const filteredIndices = new Set(messagesData.messages.map((m) => m.index));
+    setSelectedIndices(filteredIndices);
+  };
+
+  const handleInvertSelection = () => {
     if (!messagesData) return;
     const allIndices = new Set(messagesData.messages.map((m) => m.index));
-    setSelectedIndices(allIndices);
+    const newSelected = new Set<number>();
+    allIndices.forEach((idx) => {
+      if (!selectedIndices.has(idx)) {
+        newSelected.add(idx);
+      }
+    });
+    setSelectedIndices(newSelected);
+  };
+
+  const handleSelectMarked = () => {
+    setSelectedIndices(new Set(markedIndices));
   };
 
   const handleCutSelected = () => {
@@ -154,144 +164,95 @@ export function EditorToolbar() {
   if (!sessionStats) return null;
 
   return (
-    <Group gap="md" p="xs" style={{ borderTop: '1px solid #dee2e6' }} wrap="wrap">
-      <Group gap="xs">
-        <IconSelect size={16} />
-        <Text size="sm" fw={500}>
-          Selection:
-        </Text>
-        {selectedCount > 0 ? (
-          <Badge size="md" color="blue">
-            {selectedCount.toLocaleString()} selected
-          </Badge>
-        ) : (
+    <Group gap="md" p="sm" style={{ borderTop: '1px solid #dee2e6' }} wrap="wrap" justify="space-between">
+      {/* Left side - Selection controls */}
+      <Group gap="md">
+        <Text size="sm">{selectedCount} selected</Text>
+
+        <Group gap={4}>
+          <Button size="xs" variant="subtle" onClick={handleSelectNone}>
+            Select None
+          </Button>
           <Text size="sm" c="dimmed">
-            None
+            |
           </Text>
-        )}
+          <Button size="xs" variant="subtle" onClick={handleSelectFiltered}>
+            Select Filtered
+          </Button>
+          <Text size="sm" c="dimmed">
+            |
+          </Text>
+          <Button size="xs" variant="subtle" onClick={handleInvertSelection}>
+            Invert
+          </Button>
+        </Group>
+
+        {/* Mark operations */}
+        <Group gap="xs">
+          <Button size="xs" variant="light" color="orange" onClick={handleMarkSelected} disabled={selectedCount === 0}>
+            Mark
+          </Button>
+          <Button size="xs" variant="light" color="orange" onClick={handleUnmarkSelected} disabled={selectedCount === 0}>
+            Unmark
+          </Button>
+          <Button size="xs" variant="light" color="orange" onClick={handleSelectMarked} disabled={markedCount === 0}>
+            Select Marked
+          </Button>
+        </Group>
       </Group>
 
-      {selectedCount > 0 && (
-        <Button
-          size="xs"
-          variant="subtle"
-          color="gray"
-          leftSection={<IconX size={14} />}
-          onClick={clearSelection}
-        >
-          Clear
-        </Button>
-      )}
+      {/* Right side - Cut operations and Export */}
+      <Group gap="md">
+        {/* Cut operations */}
+        <Group gap="xs">
+          <Button size="xs" variant="light" color="orange" onClick={handleCutBefore} disabled={selectedCount === 0}>
+            Cut Before
+          </Button>
+          <Button size="xs" variant="light" color="orange" onClick={handleCutSelected} disabled={selectedCount === 0}>
+            Cut Selected
+          </Button>
+          <Button size="xs" variant="light" color="orange" onClick={handleCutAfter} disabled={selectedCount === 0}>
+            Cut After
+          </Button>
+        </Group>
 
-      <Button
-        size="xs"
-        variant="light"
-        leftSection={<IconSelectAll size={14} />}
-        onClick={handleSelectAll}
-      >
-        Select All
-      </Button>
+        {deletedCount > 0 && (
+          <Button size="xs" variant="outline" color="orange" onClick={handleUndoAllCuts}>
+            Undo All Cuts
+          </Button>
+        )}
 
-      {/* Cut operations */}
-      {selectedCount > 0 && (
+        {/* Export menu */}
         <Menu shadow="md" width={200}>
           <Menu.Target>
-            <Button size="xs" variant="light" color="orange" leftSection={<IconCut size={14} />}>
-              Cut
+            <Button size="xs" variant="filled" color="blue" loading={exportMutation.isPending}>
+              Export
             </Button>
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item onClick={handleCutBefore}>Cut Before Selected</Menu.Item>
-            <Menu.Item onClick={handleCutSelected}>Cut Selected</Menu.Item>
-            <Menu.Item onClick={handleCutAfter}>Cut After Selected</Menu.Item>
+            <Menu.Item onClick={() => handleExport()}>Export All</Menu.Item>
+            <Menu.Item onClick={() => handleExport(Array.from(selectedIndices))} disabled={selectedCount === 0}>
+              Export Selected ({selectedCount})
+            </Menu.Item>
+            <Menu.Item onClick={() => handleExport(Array.from(markedIndices))} disabled={markedCount === 0}>
+              Export Marked ({markedCount})
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => {
+                if (!messagesData) return;
+                const undeleted = messagesData.messages
+                  .filter((m) => !deletedIndices.has(m.index))
+                  .map((m) => m.index);
+                handleExport(undeleted);
+              }}
+              disabled={deletedCount === 0}
+            >
+              Export Undeleted
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-      )}
-
-      {deletedCount > 0 && (
-        <>
-          <Badge size="md" color="orange">
-            {deletedCount.toLocaleString()} deleted
-          </Badge>
-          <Button
-            size="xs"
-            variant="subtle"
-            color="orange"
-            leftSection={<IconRestore size={14} />}
-            onClick={handleUndoAllCuts}
-          >
-            Undo All Cuts
-          </Button>
-        </>
-      )}
-
-      {/* Mark operations */}
-      {selectedCount > 0 && (
-        <>
-          <Button
-            size="xs"
-            variant="light"
-            color="yellow"
-            leftSection={<IconStar size={14} />}
-            onClick={handleMarkSelected}
-          >
-            Mark Selected
-          </Button>
-          <Button
-            size="xs"
-            variant="subtle"
-            color="yellow"
-            leftSection={<IconStarOff size={14} />}
-            onClick={handleUnmarkSelected}
-          >
-            Unmark
-          </Button>
-        </>
-      )}
-
-      {markedCount > 0 && (
-        <Badge size="md" color="yellow">
-          {markedCount.toLocaleString()} marked
-        </Badge>
-      )}
-
-      {/* Export menu */}
-      <Menu shadow="md" width={200}>
-        <Menu.Target>
-          <Button
-            size="xs"
-            variant="filled"
-            color="blue"
-            leftSection={<IconDownload size={14} />}
-            loading={exportMutation.isPending}
-          >
-            Export
-          </Button>
-        </Menu.Target>
-
-        <Menu.Dropdown>
-          <Menu.Item onClick={() => handleExport()}>Export All</Menu.Item>
-          <Menu.Item onClick={() => handleExport(Array.from(selectedIndices))} disabled={selectedCount === 0}>
-            Export Selected ({selectedCount})
-          </Menu.Item>
-          <Menu.Item onClick={() => handleExport(Array.from(markedIndices))} disabled={markedCount === 0}>
-            Export Marked ({markedCount})
-          </Menu.Item>
-          <Menu.Item
-            onClick={() => {
-              if (!messagesData) return;
-              const undeleted = messagesData.messages
-                .filter((m) => !deletedIndices.has(m.index))
-                .map((m) => m.index);
-              handleExport(undeleted);
-            }}
-            disabled={deletedCount === 0}
-          >
-            Export Undeleted
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+      </Group>
     </Group>
   );
 }
