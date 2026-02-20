@@ -99,6 +99,18 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Post("/export", ExportStreamEditor())
 				r.Post("/jq", RunStreamEditorJQ())
 			})
+
+			// Stream Player
+			r.Route("/player", func(r chi.Router) {
+				r.Get("/", ListPlayerStreams())
+				r.Post("/", CreatePlayerStream())
+				r.Get("/{id}", GetPlayerStream())
+				r.Post("/{id}/play", PlayPlayerStream())
+				r.Post("/{id}/pause", PausePlayerStream())
+				r.Post("/{id}/resume", ResumePlayerStream())
+				r.Post("/{id}/stop", StopPlayerStream())
+				r.Delete("/{id}", DeletePlayerStream())
+			})
 		})
 	})
 }
