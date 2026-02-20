@@ -11,9 +11,10 @@ import (
 
 // Manager manages multiple proxy instances.
 type Manager struct {
-	mu      sync.RWMutex
-	proxies map[string]*Proxy
-	stats   *Stats
+	mu         sync.RWMutex
+	proxies    map[string]*Proxy
+	stats      *Stats
+	messageHub MessageHubPublisher
 }
 
 // NewManager creates a new proxy manager.
@@ -35,6 +36,7 @@ func (m *Manager) AddProxy(name string, cfg config.ProxyConfig) error {
 
 	proxy := NewProxy(name, cfg.Listen, cfg.Backend, cfg)
 	proxy.stats = m.stats.GetProxyStats(name)
+	proxy.SetMessageHub(m.messageHub)
 
 	m.proxies[name] = proxy
 
@@ -174,4 +176,17 @@ func (m *Manager) Close() error {
 // Stats returns the global stats collector.
 func (m *Manager) Stats() *Stats {
 	return m.stats
+}
+
+// SetMessageHub sets the message hub for all proxies.
+func (m *Manager) SetMessageHub(hub MessageHubPublisher) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.messageHub = hub
+
+	// Update all existing proxies
+	for _, proxy := range m.proxies {
+		proxy.SetMessageHub(hub)
+	}
 }

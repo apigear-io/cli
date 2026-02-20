@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"sync"
+
 	"github.com/apigear-io/cli/pkg/stream/client"
 	"github.com/apigear-io/cli/pkg/stream/proxy"
 	"github.com/apigear-io/cli/pkg/stream/scripting"
@@ -27,40 +29,103 @@ type Services struct {
 	EventAdapter *EventAdapter
 }
 
-// MessageHub is a placeholder for message pub/sub functionality.
-// TODO: Implement message hub for real-time message streaming.
+// MessageHub is a pub/sub hub for real-time message streaming.
 type MessageHub struct {
-	// Implementation pending
+	mu          sync.RWMutex
+	subscribers map[string]map[chan ProxyMessage]struct{}
+}
+
+// NewMessageHub creates a new message hub.
+func NewMessageHub() *MessageHub {
+	return &MessageHub{
+		subscribers: make(map[string]map[chan ProxyMessage]struct{}),
+	}
 }
 
 // Subscribe subscribes to messages for a specific proxy.
 func (h *MessageHub) Subscribe(proxyName string) chan ProxyMessage {
-	// Stub implementation
-	return make(chan ProxyMessage)
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	ch := make(chan ProxyMessage, 100) // Buffered to prevent blocking
+
+	if h.subscribers[proxyName] == nil {
+		h.subscribers[proxyName] = make(map[chan ProxyMessage]struct{})
+	}
+	h.subscribers[proxyName][ch] = struct{}{}
+
+	return ch
 }
 
 // Unsubscribe unsubscribes from messages.
 func (h *MessageHub) Unsubscribe(ch chan ProxyMessage) {
-	// Stub implementation
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	// Remove from all proxy subscriptions
+	for _, subs := range h.subscribers {
+		delete(subs, ch)
+	}
+
 	close(ch)
+}
+
+// publishMessage publishes a message to all subscribers for a specific proxy.
+func (h *MessageHub) publishMessage(proxyName string, msg ProxyMessage) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	subs, ok := h.subscribers[proxyName]
+	if !ok {
+		return
+	}
+
+	// Send to all subscribers
+	for ch := range subs {
+		select {
+		case ch <- msg:
+			// Message sent successfully
+		default:
+			// Channel full, skip to prevent blocking
+		}
+	}
 }
 
 // ProxyMessage represents a proxy message event.
 type ProxyMessage struct {
+	ProxyName string `json:"proxyName"` // Proxy name
 	Direction string `json:"direction"` // "SEND" or "RECV"
 	Data      []byte `json:"data"`      // Raw message data
+	Timestamp int64  `json:"timestamp"` // Unix milliseconds
+}
+
+// Publish implements the proxy.MessageHubPublisher interface.
+// This allows the MessageHub to be used by proxies without import cycles.
+func (h *MessageHub) Publish(proxyName string, direction string, data []byte, timestamp int64) {
+	msg := ProxyMessage{
+		ProxyName: proxyName,
+		Direction: direction,
+		Data:      data,
+		Timestamp: timestamp,
+	}
+	h.publishMessage(proxyName, msg)
 }
 
 // NewServices creates a new services container with all dependencies initialized.
 func NewServices() *Services {
 	eventAdapter := NewEventAdapter("stream")
+	messageHub := NewMessageHub()
+	proxyManager := proxy.NewManager()
+
+	// Set message hub on proxy manager so all proxies can publish messages
+	proxyManager.SetMessageHub(messageHub)
 
 	return &Services{
-		ProxyManager:  proxy.NewManager(),
+		ProxyManager:  proxyManager,
 		ClientManager: client.NewManager(),
 		Stats:         proxy.NewStats(),
 		ScriptManager: scripting.NewManager("./data/scripts", nil),
-		MessageHub:    nil, // Optional, can be set later
+		MessageHub:    messageHub,
 		EventAdapter:  eventAdapter,
 	}
 }

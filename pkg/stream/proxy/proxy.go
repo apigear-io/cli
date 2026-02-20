@@ -34,6 +34,12 @@ type TraceEntry struct {
 	Message   json.RawMessage `json:"msg"`
 }
 
+// MessageHubPublisher is an interface for publishing messages to a message hub.
+// This avoids import cycles between proxy and stream packages.
+type MessageHubPublisher interface {
+	Publish(proxyName string, direction string, data []byte, timestamp int64)
+}
+
 // Proxy represents a WebSocket proxy instance.
 type Proxy struct {
 	name       string
@@ -59,6 +65,9 @@ type Proxy struct {
 
 	// Statistics
 	stats *ProxyStats
+
+	// Message hub for real-time streaming (optional)
+	messageHub MessageHubPublisher
 
 	// Context for lifecycle management
 	ctx        context.Context
@@ -408,6 +417,8 @@ func (p *Proxy) initTraceLogging() {
 
 // logMessage logs a message to trace file and console.
 func (p *Proxy) logMessage(direction Direction, msg []byte) {
+	timestamp := time.Now().UnixMilli()
+
 	if p.verbose {
 		// Parse message for display
 		parsed := protocol.ParseMessage(json.RawMessage(msg))
@@ -421,7 +432,7 @@ func (p *Proxy) logMessage(direction Direction, msg []byte) {
 
 	if p.trace && p.traceWriter != nil {
 		entry := TraceEntry{
-			Timestamp: time.Now().UnixMilli(),
+			Timestamp: timestamp,
 			Direction: direction.String(),
 			Proxy:     p.name,
 			Message:   json.RawMessage(msg),
@@ -441,6 +452,11 @@ func (p *Proxy) logMessage(direction Direction, msg []byte) {
 			}
 		}
 		p.traceMu.Unlock()
+	}
+
+	// Publish to message hub if available
+	if p.messageHub != nil {
+		p.messageHub.Publish(p.name, direction.String(), msg, timestamp)
 	}
 }
 
@@ -500,4 +516,9 @@ func (p *Proxy) GetListenAddr() string {
 	defer p.serverMu.Unlock()
 
 	return p.actualAddr
+}
+
+// SetMessageHub sets the message hub for real-time message streaming.
+func (p *Proxy) SetMessageHub(hub MessageHubPublisher) {
+	p.messageHub = hub
 }
