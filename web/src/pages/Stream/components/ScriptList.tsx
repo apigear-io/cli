@@ -15,7 +15,7 @@ export function ScriptList({ scripts, currentScript, onSelect, onDelete, onRun }
     <Paper withBorder p="md">
       <Stack gap="md">
         <Text size="sm" fw={600}>
-          Saved Scripts
+          Scripts
         </Text>
 
         <ScrollArea h={300}>

@@ -9,8 +9,7 @@ import {
   Modal,
   Text,
   Paper,
-  Menu,
-  ActionIcon,
+  Tabs,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -18,7 +17,6 @@ import {
   IconDeviceFloppy,
   IconFilePlus,
   IconBulb,
-  IconDots,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import {
@@ -125,11 +123,6 @@ export function ScriptingContent() {
       setScriptName('');
       setSaveModalOpen(true);
     }
-  };
-
-  const handleSaveAs = () => {
-    setScriptName('');
-    setSaveModalOpen(true);
   };
 
   const handleSaveConfirm = () => {
@@ -279,7 +272,7 @@ export function ScriptingContent() {
         <Group gap="xs">
           <Button
             leftSection={<IconFilePlus size={16} />}
-            variant="default"
+            variant="outline"
             size="sm"
             onClick={handleNew}
           >
@@ -287,44 +280,20 @@ export function ScriptingContent() {
           </Button>
           <Button
             leftSection={<IconBulb size={16} />}
-            variant="default"
+            variant="outline"
             size="sm"
+            color="green"
             onClick={() => setExamplesModalOpen(true)}
           >
             Examples
           </Button>
-          <Menu position="bottom-end">
-            <Menu.Target>
-              <ActionIcon variant="default" size="lg">
-                <IconDots size={16} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item onClick={handleSave} disabled={!code}>
-                Save{currentScript && ' (Ctrl+S)'}
-              </Menu.Item>
-              <Menu.Item onClick={handleSaveAs} disabled={!code}>
-                Save As...
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
           <Button
             leftSection={<IconDeviceFloppy size={16} />}
-            variant="default"
             size="sm"
             onClick={handleSave}
             disabled={!code}
           >
             Save
-          </Button>
-          <Button
-            leftSection={<IconPlayerPlay size={16} />}
-            color="green"
-            size="sm"
-            onClick={handleRun}
-            disabled={!code}
-          >
-            Run
           </Button>
           {activeScriptId && (
             <Button
@@ -339,36 +308,76 @@ export function ScriptingContent() {
         </Group>
       </Group>
 
-      {currentScript && (
-        <Paper p="xs" withBorder>
-          <Text size="sm">
-            Editing: <strong>{currentScript}</strong>
-          </Text>
-        </Paper>
-      )}
-
       <Grid>
         <Grid.Col span={3}>
-          <ScriptList
-            scripts={scripts}
-            currentScript={currentScript}
-            onSelect={handleLoadScript}
-            onDelete={handleDelete}
-            onRun={(name) => {
-              handleLoadScript(name);
-              setTimeout(() => handleRun(), 100);
-            }}
-          />
-          <RunningScripts scripts={runningScripts} onStop={handleStop} />
+          <Stack gap="md">
+            <ScriptList
+              scripts={scripts}
+              currentScript={currentScript}
+              onSelect={handleLoadScript}
+              onDelete={handleDelete}
+              onRun={(name) => {
+                handleLoadScript(name);
+                setTimeout(() => handleRun(), 100);
+              }}
+            />
+            <RunningScripts scripts={runningScripts} onStop={handleStop} />
+          </Stack>
         </Grid.Col>
 
         <Grid.Col span={9}>
           <Stack gap="md">
+            {/* Script Title and Run Button */}
+            <Group justify="space-between" align="center">
+              <Title order={3}>{currentScript || 'Untitled'}</Title>
+              {activeScriptId ? (
+                <Button
+                  leftSection={<IconPlayerStop size={16} />}
+                  color="red"
+                  size="sm"
+                  onClick={() => handleStop(activeScriptId)}
+                >
+                  Stop
+                </Button>
+              ) : (
+                <Button
+                  leftSection={<IconPlayerPlay size={16} />}
+                  color="green"
+                  size="sm"
+                  onClick={handleRun}
+                  disabled={!code}
+                >
+                  Start
+                </Button>
+              )}
+            </Group>
+
+            {/* Code Editor */}
             <Paper withBorder>
-              <ScriptEditor code={code} onChange={setCode} height="500px" />
+              <ScriptEditor code={code} onChange={setCode} height="400px" />
             </Paper>
 
-            {activeScriptId && <ConsoleOutput scriptId={activeScriptId} height="300px" />}
+            {/* Console/Messages Tabs */}
+            {activeScriptId && (
+              <Tabs defaultValue="console">
+                <Tabs.List>
+                  <Tabs.Tab value="console">Console</Tabs.Tab>
+                  <Tabs.Tab value="messages">Messages</Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value="console" pt="xs">
+                  <ConsoleOutput scriptId={activeScriptId} height="250px" />
+                </Tabs.Panel>
+
+                <Tabs.Panel value="messages" pt="xs">
+                  <Paper withBorder p="md">
+                    <Text size="sm" c="dimmed" fs="italic">
+                      No messages yet...
+                    </Text>
+                  </Paper>
+                </Tabs.Panel>
+              </Tabs>
+            )}
           </Stack>
         </Grid.Col>
       </Grid>
