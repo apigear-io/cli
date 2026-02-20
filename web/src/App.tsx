@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AppLayout } from './components/Layout/AppLayout';
+import { CodeGenAppShell } from './components/Layout/CodeGenAppShell';
+import { StreamAppShell } from './components/Layout/StreamAppShell';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Templates } from './pages/Templates/Templates';
 import { Projects } from './pages/Projects/Projects';
@@ -20,24 +21,39 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/codegen/dashboard" replace />} />
+
+        {/* CodeGen routes with CodeGen AppShell */}
+        <Route path="/codegen" element={<CodeGenAppShell />}>
+          <Route index element={<Navigate to="/codegen/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="templates" element={<Templates />} />
           <Route path="projects" element={<Projects />} />
-          <Route path="codegen" element={<CodeGen />} />
+          <Route path="generate" element={<CodeGen />} />
           <Route path="monitor" element={<Monitor />} />
-          <Route path="stream/dashboard" element={<StreamDashboard />} />
-          <Route path="stream/proxies" element={<Proxies />} />
-          <Route path="stream/clients" element={<Clients />} />
-          <Route path="stream/scripting" element={<Scripting />} />
-          <Route path="stream/traces" element={<Traces />} />
-          <Route path="stream/editor" element={<StreamEditor />} />
-          <Route path="stream/player" element={<Player />} />
-          <Route path="stream/generator" element={<Generator />} />
-          <Route path="stream/logs" element={<Logs />} />
-          <Route path="stream/settings" element={<Settings />} />
         </Route>
+
+        {/* Stream routes with Stream AppShell */}
+        <Route path="/stream" element={<StreamAppShell />}>
+          <Route index element={<Navigate to="/stream/dashboard" replace />} />
+          <Route path="dashboard" element={<StreamDashboard />} />
+          <Route path="proxies" element={<Proxies />} />
+          <Route path="clients" element={<Clients />} />
+          <Route path="scripting" element={<Scripting />} />
+          <Route path="traces" element={<Traces />} />
+          <Route path="editor" element={<StreamEditor />} />
+          <Route path="player" element={<Player />} />
+          <Route path="generator" element={<Generator />} />
+          <Route path="logs" element={<Logs />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* Fallback for old routes - redirect to new structure */}
+        <Route path="/dashboard" element={<Navigate to="/codegen/dashboard" replace />} />
+        <Route path="/templates" element={<Navigate to="/codegen/templates" replace />} />
+        <Route path="/projects" element={<Navigate to="/codegen/projects" replace />} />
+        <Route path="/monitor" element={<Navigate to="/codegen/monitor" replace />} />
       </Routes>
     </BrowserRouter>
   );
