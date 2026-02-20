@@ -2,7 +2,6 @@ import { useState, Suspense } from 'react';
 import {
   Stack,
   Title,
-  Grid,
   Paper,
   Group,
   Text,
@@ -11,8 +10,17 @@ import {
   ActionIcon,
   Table,
   Modal,
+  Select,
+  Alert,
 } from '@mantine/core';
-import { IconTrash, IconEye, IconRefresh, IconFileText } from '@tabler/icons-react';
+import {
+  IconTrash,
+  IconEye,
+  IconRefresh,
+  IconFileText,
+  IconDownload,
+  IconFolder,
+} from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useTraceFiles, useTraceStats, useDeleteTraceFile } from '@/api/queries';
 import { TraceViewer } from './TraceViewer';
@@ -26,6 +34,24 @@ export function TracesContent() {
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [proxyFilter, setProxyFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+
+  // Get unique proxy names for filter
+  const proxyOptions = [
+    { value: 'all', label: 'All Proxies' },
+    ...Array.from(new Set(files.map((f) => f.proxyName))).map((proxy) => ({
+      value: proxy,
+      label: proxy,
+    })),
+  ];
+
+  // Filter files based on selected filters
+  const filteredFiles = files.filter((file) => {
+    if (proxyFilter !== 'all' && file.proxyName !== proxyFilter) return false;
+    // Date filter can be enhanced later
+    return true;
+  });
 
   const handleView = (filename: string) => {
     setSelectedFile(filename);
@@ -66,11 +92,12 @@ export function TracesContent() {
 
   return (
     <Stack gap="md">
+      {/* Header */}
       <Group justify="space-between">
-        <Title order={2}>Trace Files</Title>
+        <Title order={2}>Stream Files</Title>
         <Button
           leftSection={<IconRefresh size={16} />}
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={() => window.location.reload()}
         >
@@ -78,63 +105,57 @@ export function TracesContent() {
         </Button>
       </Group>
 
-      {/* Stats Cards */}
-      <Grid>
-        <Grid.Col span={4}>
-          <Paper withBorder p="md">
-            <Stack gap="xs">
-              <Group gap="xs">
-                <IconFileText size={20} />
-                <Text size="sm" c="dimmed">
-                  Total Files
-                </Text>
-              </Group>
-              <Text size="xl" fw={700}>
-                {stats.fileCount}
-              </Text>
-            </Stack>
-          </Paper>
-        </Grid.Col>
-        <Grid.Col span={4}>
-          <Paper withBorder p="md">
-            <Stack gap="xs">
-              <Text size="sm" c="dimmed">
-                Total Size
-              </Text>
-              <Text size="xl" fw={700}>
-                {stats.totalMB.toFixed(2)} MB
-              </Text>
-            </Stack>
-          </Paper>
-        </Grid.Col>
-        <Grid.Col span={4}>
-          <Paper withBorder p="md">
-            <Stack gap="xs">
-              <Text size="sm" c="dimmed">
-                Trace Directory
-              </Text>
-              <Text size="sm" ff="monospace">
-                {stats.traceDir}
-              </Text>
-            </Stack>
-          </Paper>
-        </Grid.Col>
-      </Grid>
+      {/* Trace Directory Info */}
+      <Alert icon={<IconFolder size={16} />} color="blue" variant="light">
+        <Text size="sm">
+          <strong>Trace Directory:</strong> {stats.traceDir}
+        </Text>
+      </Alert>
+
+      {/* Filters and File Count */}
+      <Group justify="space-between">
+        <Group gap="md">
+          <Text size="sm" fw={500}>
+            Filter:
+          </Text>
+          <Select
+            value={proxyFilter}
+            onChange={(value) => setProxyFilter(value || 'all')}
+            data={proxyOptions}
+            size="sm"
+            style={{ width: 180 }}
+          />
+          <Select
+            value={dateFilter}
+            onChange={(value) => setDateFilter(value || 'all')}
+            data={[
+              { value: 'all', label: 'All Dates' },
+              { value: 'today', label: 'Today' },
+              { value: 'week', label: 'This Week' },
+            ]}
+            size="sm"
+            style={{ width: 150 }}
+          />
+        </Group>
+        <Badge size="lg" variant="light">
+          {filteredFiles.length} files
+        </Badge>
+      </Group>
 
       {/* Files Table */}
       <Paper withBorder>
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Filename</Table.Th>
-              <Table.Th>Proxy</Table.Th>
-              <Table.Th>Size</Table.Th>
-              <Table.Th>Modified</Table.Th>
-              <Table.Th>Actions</Table.Th>
+              <Table.Th>FILENAME</Table.Th>
+              <Table.Th>PROXY</Table.Th>
+              <Table.Th>DATE</Table.Th>
+              <Table.Th>SIZE</Table.Th>
+              <Table.Th>ACTIONS</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {files.length === 0 && (
+            {filteredFiles.length === 0 && (
               <Table.Tr>
                 <Table.Td colSpan={5}>
                   <Text ta="center" c="dimmed" py="xl">
@@ -143,42 +164,59 @@ export function TracesContent() {
                 </Table.Td>
               </Table.Tr>
             )}
-            {files.map((file) => (
+            {filteredFiles.map((file) => (
               <Table.Tr key={file.name}>
                 <Table.Td>
                   <Group gap="xs">
-                    <IconFileText size={16} />
-                    <Text ff="monospace" size="sm">
+                    <IconFileText size={16} color="var(--mantine-color-gray-6)" />
+                    <Text
+                      ff="monospace"
+                      size="sm"
+                      c="blue"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleView(file.name)}
+                    >
                       {file.name}
                     </Text>
                   </Group>
                 </Table.Td>
                 <Table.Td>
-                  <Badge variant="light">{file.proxyName}</Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm">{formatSize(file.size)}</Text>
+                  <Text size="sm">{file.proxyName}</Text>
                 </Table.Td>
                 <Table.Td>
                   <Text size="sm">{formatDate(file.modTime)}</Text>
                 </Table.Td>
                 <Table.Td>
-                  <Group gap="xs">
+                  <Text size="sm">{formatSize(file.size)}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <Group gap={4}>
                     <ActionIcon
-                      variant="subtle"
+                      variant="outline"
                       color="blue"
+                      size="sm"
                       onClick={() => handleView(file.name)}
                       title="View trace"
                     >
-                      <IconEye size={16} />
+                      <IconEye size={14} />
                     </ActionIcon>
                     <ActionIcon
-                      variant="subtle"
+                      variant="outline"
+                      color="green"
+                      size="sm"
+                      onClick={() => window.open(`/api/v1/stream/traces/${encodeURIComponent(file.name)}`, '_blank')}
+                      title="Download trace"
+                    >
+                      <IconDownload size={14} />
+                    </ActionIcon>
+                    <ActionIcon
+                      variant="outline"
                       color="red"
+                      size="sm"
                       onClick={() => handleDelete(file.name)}
                       title="Delete trace"
                     >
-                      <IconTrash size={16} />
+                      <IconTrash size={14} />
                     </ActionIcon>
                   </Group>
                 </Table.Td>
