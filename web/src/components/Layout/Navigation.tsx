@@ -15,6 +15,7 @@ import {
   IconPlayerPlay,
   IconList,
   IconSparkles,
+  IconSettings,
 } from '@tabler/icons-react';
 
 interface NavigationProps {
@@ -42,6 +43,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
     { to: '/stream/player', label: 'Stream Player', icon: IconPlayerPlay },
     { to: '/stream/generator', label: 'Generator', icon: IconSparkles },
     { to: '/stream/logs', label: 'Logs', icon: IconList },
+    { to: '/stream/settings', label: 'Settings', icon: IconSettings },
   ];
 
   const isStreamActive = location.pathname.startsWith('/stream');
