@@ -111,6 +111,10 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Post("/{id}/stop", StopPlayerStream())
 				r.Delete("/{id}", DeletePlayerStream())
 			})
+
+			// Application Logs
+			r.Get("/logs", GetLogs())
+			r.Delete("/logs", ClearLogs())
 		})
 	})
 }
