@@ -112,6 +112,16 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Delete("/{id}", DeletePlayerStream())
 			})
 
+			// Trace Generator
+			r.Route("/generator", func(r chi.Router) {
+				r.Post("/preview", GeneratorPreview(getStreamServices()))
+				r.Post("/save", GeneratorSave(getStreamServices()))
+				r.Get("/examples", GeneratorExamples(getStreamServices()))
+				r.Get("/templates", GeneratorListTemplates(getStreamServices()))
+				r.Post("/templates", GeneratorSaveTemplate(getStreamServices()))
+				r.Get("/templates/{name}", GeneratorLoadTemplate(getStreamServices()))
+			})
+
 			// Application Logs
 			r.Get("/logs", GetLogs())
 			r.Delete("/logs", ClearLogs())

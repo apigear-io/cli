@@ -375,3 +375,41 @@ export interface LogsResponse {
   entries: LogEntry[];
   count: number;
 }
+
+// Trace Generator types
+
+export interface GenerateRequest {
+  template: string;
+  count: number;
+}
+
+export interface GenerateResult {
+  entries: unknown[];
+  count: number;
+}
+
+export interface GeneratorSaveRequest {
+  template: string;
+  count: number;
+  proxyName: string;
+  filename: string;
+}
+
+export interface GeneratorSaveResponse {
+  filename: string;
+  count: number;
+}
+
+export interface GeneratorSaveTemplateRequest {
+  name: string;
+  template: string;
+}
+
+export interface GeneratorLoadTemplateResponse {
+  name: string;
+  template: string;
+}
+
+export interface GeneratorListTemplatesResponse {
+  templates: string[];
+}

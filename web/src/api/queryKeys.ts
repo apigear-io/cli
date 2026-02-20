@@ -82,5 +82,13 @@ export const queryKeys = {
       list: (level?: string, search?: string) =>
         [...queryKeys.stream.logs.all(), 'list', level || '', search || ''] as const,
     },
+
+    // Generator
+    generator: {
+      all: () => [...queryKeys.stream.all(), 'generator'] as const,
+      templates: () => [...queryKeys.stream.generator.all(), 'templates'] as const,
+      template: (name: string) => [...queryKeys.stream.generator.all(), 'template', name] as const,
+      examples: () => [...queryKeys.stream.generator.all(), 'examples'] as const,
+    },
   },
 } as const;

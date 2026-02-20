@@ -36,6 +36,13 @@ import type {
   EditorSeekResponse,
   EditorJQResponse,
   EditorFilters,
+  GenerateRequest,
+  GenerateResult,
+  GeneratorSaveRequest,
+  GeneratorSaveResponse,
+  GeneratorSaveTemplateRequest,
+  GeneratorLoadTemplateResponse,
+  GeneratorListTemplatesResponse,
 } from './types';
 
 export function useHealth() {
@@ -798,5 +805,60 @@ export function useClearLogs() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.logs.all() });
     },
+  });
+}
+
+// ============================================================================
+// Trace Generator API Hooks
+// ============================================================================
+
+export function useGeneratorTemplates() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.generator.templates(),
+    queryFn: () => apiClient.get<GeneratorListTemplatesResponse>('/stream/generator/templates'),
+  });
+}
+
+export function useGeneratorExamples() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.generator.examples(),
+    queryFn: () => apiClient.get<Record<string, string>>('/stream/generator/examples'),
+  });
+}
+
+export function useGeneratorPreview() {
+  return useMutation({
+    mutationFn: (req: GenerateRequest) =>
+      apiClient.post<GenerateResult>('/stream/generator/preview', req),
+  });
+}
+
+export function useGeneratorSave() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (req: GeneratorSaveRequest) =>
+      apiClient.post<GeneratorSaveResponse>('/stream/generator/save', req),
+    onSuccess: () => {
+      // Invalidate traces list since we created a new trace file
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.traces.all() });
+    },
+  });
+}
+
+export function useGeneratorSaveTemplate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (req: GeneratorSaveTemplateRequest) =>
+      apiClient.post('/stream/generator/templates', req),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.generator.templates() });
+    },
+  });
+}
+
+export function useGeneratorLoadTemplate() {
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiClient.get<GeneratorLoadTemplateResponse>(`/stream/generator/templates/${name}`),
   });
 }
