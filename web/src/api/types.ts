@@ -359,3 +359,19 @@ export interface CreatePlayerStreamRequest {
   loop: boolean;
   direction: string; // "", "SEND", "RECV"
 }
+
+// Application Logs types
+
+export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+
+export interface LogEntry {
+  timestamp: string;
+  level: LogLevel;
+  message: string;
+  fields?: Record<string, unknown>;
+}
+
+export interface LogsResponse {
+  entries: LogEntry[];
+  count: number;
+}

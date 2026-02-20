@@ -75,5 +75,12 @@ export const queryKeys = {
       list: () => [...queryKeys.stream.player.all(), 'list'] as const,
       detail: (id: string) => [...queryKeys.stream.player.all(), 'detail', id] as const,
     },
+
+    // Logs
+    logs: {
+      all: () => [...queryKeys.stream.all(), 'logs'] as const,
+      list: (level?: string, search?: string) =>
+        [...queryKeys.stream.logs.all(), 'list', level || '', search || ''] as const,
+    },
   },
 } as const;

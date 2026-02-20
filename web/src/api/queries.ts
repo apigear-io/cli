@@ -30,6 +30,8 @@ import type {
   EditorMessagesResponse,
   PlayerStream,
   CreatePlayerStreamRequest,
+  LogsResponse,
+  LogLevel,
   EditorTimelineResponse,
   EditorSeekResponse,
   EditorJQResponse,
@@ -767,6 +769,34 @@ export function useDeletePlayerStream() {
     mutationFn: (id: string) => apiClient.delete(`/stream/player/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.all() });
+    },
+  });
+}
+
+// ============================================================================
+// Application Logs API Hooks
+// ============================================================================
+
+export function useLogs(level?: LogLevel, search?: string) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.logs.list(level, search),
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (level) params.append('level', level);
+      if (search) params.append('search', search);
+      const query = params.toString();
+      return apiClient.get<LogsResponse>(`/stream/logs${query ? `?${query}` : ''}`);
+    },
+    refetchInterval: 2000, // Auto-refresh every 2 seconds
+  });
+}
+
+export function useClearLogs() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiClient.delete('/stream/logs'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.logs.all() });
     },
   });
 }
