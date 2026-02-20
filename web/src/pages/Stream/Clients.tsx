@@ -1,28 +1,21 @@
 import { Suspense, useState } from 'react';
 import {
   Card,
-  Grid,
   Text,
   Title,
   Stack,
   Group,
-  Badge,
   Button,
   Modal,
   TextInput,
   TagsInput,
-  ActionIcon,
-  Tooltip,
   Switch,
+  SimpleGrid,
 } from '@mantine/core';
 import {
   IconUsers,
-  IconPlugConnected,
-  IconPlugConnectedX,
-  IconTrash,
   IconPlus,
   IconRefresh,
-  IconAlertCircle,
 } from '@tabler/icons-react';
 import {
   useClients,
@@ -34,6 +27,7 @@ import {
 import type { CreateClientRequest } from '@/api/types';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingFallback } from '@/components/LoadingFallback';
+import { ClientCard } from './components/ClientCard';
 import { notifications } from '@mantine/notifications';
 
 function ClientsContent() {
@@ -142,19 +136,9 @@ function ClientsContent() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return 'green';
-      case 'connecting':
-        return 'yellow';
-      case 'disconnected':
-        return 'gray';
-      case 'error':
-        return 'red';
-      default:
-        return 'gray';
-    }
+  const handleRetry = async (name: string) => {
+    // Retry is just reconnecting
+    await handleConnect(name);
   };
 
   return (
@@ -162,23 +146,20 @@ function ClientsContent() {
       <Group justify="space-between" align="center">
         <Group>
           <Title order={2}>Clients</Title>
-          <Badge size="lg" variant="light" color="cyan">
-            {clients.length} total
-          </Badge>
         </Group>
         <Group>
+          <Button
+            leftSection={<IconPlus size={16} />}
+            onClick={() => setCreateModalOpen(true)}
+          >
+            Add Client
+          </Button>
           <Button
             leftSection={<IconRefresh size={16} />}
             variant="light"
             onClick={() => window.location.reload()}
           >
             Refresh
-          </Button>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={() => setCreateModalOpen(true)}
-          >
-            Create Client
           </Button>
         </Group>
       </Group>
@@ -197,118 +178,23 @@ function ClientsContent() {
               leftSection={<IconPlus size={16} />}
               onClick={() => setCreateModalOpen(true)}
             >
-              Create Client
+              Add Client
             </Button>
           </Stack>
         </Card>
       ) : (
-        <Grid>
+        <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
           {clients.map((client) => (
-            <Grid.Col key={client.name} span={{ base: 12, md: 6, lg: 4 }}>
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Stack gap="md">
-                  <Group justify="space-between" align="flex-start">
-                    <Stack gap={4}>
-                      <Group gap="xs">
-                        <IconUsers size={20} color="var(--mantine-color-cyan-6)" />
-                        <Text fw={600} size="lg">
-                          {client.name}
-                        </Text>
-                      </Group>
-                      <Group gap="xs">
-                        <Badge size="sm" color={getStatusColor(client.status)}>
-                          {client.status}
-                        </Badge>
-                        {!client.enabled && (
-                          <Badge size="sm" color="gray" variant="light">
-                            disabled
-                          </Badge>
-                        )}
-                        {client.autoReconnect && (
-                          <Badge size="sm" color="blue" variant="light">
-                            auto-reconnect
-                          </Badge>
-                        )}
-                      </Group>
-                    </Stack>
-                    <Tooltip label="Delete client">
-                      <ActionIcon
-                        color="red"
-                        variant="subtle"
-                        onClick={() => handleDelete(client.name)}
-                        disabled={client.status === 'connected'}
-                      >
-                        <IconTrash size={18} />
-                      </ActionIcon>
-                    </Tooltip>
-                  </Group>
-
-                  <Stack gap="xs">
-                    <Group gap="xs">
-                      <Text size="xs" c="dimmed" fw={500}>
-                        URL:
-                      </Text>
-                      <Text size="xs" fw={500}>
-                        {client.url}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  {client.interfaces.length > 0 && (
-                    <Stack gap={4}>
-                      <Text size="xs" c="dimmed" fw={500}>
-                        Interfaces:
-                      </Text>
-                      <Group gap="xs">
-                        {client.interfaces.map((iface) => (
-                          <Badge key={iface} size="xs" variant="light" color="violet">
-                            {iface}
-                          </Badge>
-                        ))}
-                      </Group>
-                    </Stack>
-                  )}
-
-                  {client.lastError && (
-                    <Group gap="xs" wrap="nowrap">
-                      <IconAlertCircle size={16} color="var(--mantine-color-red-6)" />
-                      <Text size="xs" c="red" lineClamp={2}>
-                        {client.lastError}
-                      </Text>
-                    </Group>
-                  )}
-
-                  <Group grow>
-                    {client.status === 'connected' ? (
-                      <Button
-                        leftSection={<IconPlugConnectedX size={16} />}
-                        color="orange"
-                        variant="light"
-                        size="sm"
-                        onClick={() => handleDisconnect(client.name)}
-                        loading={disconnectClient.isPending}
-                      >
-                        Disconnect
-                      </Button>
-                    ) : (
-                      <Button
-                        leftSection={<IconPlugConnected size={16} />}
-                        color="green"
-                        variant="light"
-                        size="sm"
-                        onClick={() => handleConnect(client.name)}
-                        loading={connectClient.isPending}
-                        disabled={!client.enabled}
-                      >
-                        Connect
-                      </Button>
-                    )}
-                  </Group>
-                </Stack>
-              </Card>
-            </Grid.Col>
+            <ClientCard
+              key={client.name}
+              client={client}
+              onConnect={handleConnect}
+              onDisconnect={handleDisconnect}
+              onRetry={handleRetry}
+              onDelete={handleDelete}
+            />
           ))}
-        </Grid>
+        </SimpleGrid>
       )}
 
       <Modal
