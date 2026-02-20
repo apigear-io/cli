@@ -40,7 +40,7 @@ export function StreamAppShell() {
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Title order={3}>ApiGear CLI</Title>
+            <Title order={3}>ApiGear Stream</Title>
           </Group>
 
           <Group gap="sm">

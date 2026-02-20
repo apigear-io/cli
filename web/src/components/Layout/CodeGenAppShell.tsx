@@ -40,7 +40,7 @@ export function CodeGenAppShell() {
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            <Title order={3}>ApiGear CLI</Title>
+            <Title order={3}>ApiGear CodeGen</Title>
           </Group>
 
           <Group gap="sm">
