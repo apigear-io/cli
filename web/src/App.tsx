@@ -10,6 +10,7 @@ import { Proxies } from './pages/Stream/Proxies';
 import { Clients } from './pages/Stream/Clients';
 import { Scripting } from './pages/Stream/Scripting';
 import { Traces } from './pages/Stream/Traces';
+import { StreamEditor } from './pages/Stream/StreamEditor';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="stream/clients" element={<Clients />} />
           <Route path="stream/scripting" element={<Scripting />} />
           <Route path="stream/traces" element={<Traces />} />
+          <Route path="stream/editor" element={<StreamEditor />} />
         </Route>
       </Routes>
     </BrowserRouter>

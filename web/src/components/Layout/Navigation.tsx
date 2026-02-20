@@ -11,6 +11,7 @@ import {
   IconUsers,
   IconFileCode,
   IconFileText,
+  IconEdit,
 } from '@tabler/icons-react';
 
 interface NavigationProps {
@@ -34,6 +35,7 @@ export function Navigation({ onNavigate }: NavigationProps) {
     { to: '/stream/clients', label: 'Clients', icon: IconUsers },
     { to: '/stream/scripting', label: 'Scripting', icon: IconFileCode },
     { to: '/stream/traces', label: 'Traces', icon: IconFileText },
+    { to: '/stream/editor', label: 'Stream Editor', icon: IconEdit },
   ];
 
   const isStreamActive = location.pathname.startsWith('/stream');

@@ -216,3 +216,120 @@ export interface ParsedMessageEvent {
   message: unknown; // Raw JSON message
   parsed?: ParsedMessage;
 }
+
+// Stream Editor types
+
+export interface EditTraceRequest {
+  sourceFile: string;
+  outputFile: string;
+  direction?: string;
+  startTime?: number;
+  endTime?: number;
+  proxyNames?: string[];
+  messageTypes?: number[];
+  containsText?: string;
+  normalizeTime?: boolean;
+  remapProxyName?: string;
+  timestampOffset?: number;
+}
+
+export interface MergeTracesRequest {
+  sourceFiles: string[];
+  outputFile: string;
+  sortByTime?: boolean;
+  normalize?: boolean;
+}
+
+export interface ExportTraceRequest {
+  sourceFile: string;
+  format: 'json' | 'jsonl';
+  direction?: string;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+// Stream Editor types
+
+export interface EditorMessage {
+  index: number;
+  timestamp: number;
+  direction: string;
+  proxy: string;
+  raw: Record<string, unknown>;
+  parsed: ParsedObjectLink;
+}
+
+export interface ParsedObjectLink {
+  msgType: number;
+  msgTypeName: string;
+  symbol?: string;
+  objectId?: string;
+  requestId?: number;
+  args?: unknown;
+}
+
+export interface EditorStats {
+  sessionId: string;
+  filename: string;
+  totalCount: number;
+  timeRange: {
+    start: number;
+    end: number;
+  };
+  proxies: string[];
+  interfaces: string[];
+}
+
+export interface EditorMessagesResponse {
+  messages: EditorMessage[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface EditorBucket {
+  startTime: number;
+  endTime: number;
+  sendCount: number;
+  recvCount: number;
+}
+
+export interface EditorTimelineResponse {
+  buckets: EditorBucket[];
+  timeRange: {
+    start: number;
+    end: number;
+  };
+}
+
+export interface EditorFilters {
+  proxy?: string;
+  interface?: string;
+  direction?: string;
+  type?: string;
+}
+
+export interface EditorLoadRequest {
+  filename?: string;
+}
+
+export interface EditorSeekResponse {
+  offset: number;
+  messageIndex: number;
+}
+
+export interface EditorJQMatch {
+  index: number;
+  result: unknown;
+}
+
+export interface EditorJQResponse {
+  matches: EditorJQMatch[];
+  totalMatches: number;
+}
+
+export interface EditorExportRequest {
+  sessionId: string;
+  indices?: number[];
+}

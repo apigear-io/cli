@@ -1,4 +1,4 @@
-import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSuspenseQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import { queryKeys } from './queryKeys';
 import type {
@@ -23,6 +23,15 @@ import type {
   TraceFileInfo,
   TraceStats,
   TraceFileResponse,
+  EditTraceRequest,
+  MergeTracesRequest,
+  ExportTraceRequest,
+  EditorStats,
+  EditorMessagesResponse,
+  EditorTimelineResponse,
+  EditorSeekResponse,
+  EditorJQResponse,
+  EditorFilters,
 } from './types';
 
 export function useHealth() {
@@ -489,6 +498,24 @@ export function useTraceFile(name: string, options?: { direction?: string; limit
   });
 }
 
+export function useTraceFilePreview(
+  name: string | null,
+  options?: { direction?: string; limit?: number; enabled?: boolean }
+) {
+  return useQuery({
+    queryKey: [...queryKeys.stream.traces.detail(name || ''), options],
+    queryFn: () => {
+      if (!name) throw new Error('No file selected');
+      const params = new URLSearchParams();
+      if (options?.direction) params.append('direction', options.direction);
+      if (options?.limit) params.append('limit', options.limit.toString());
+      const query = params.toString() ? `?${params.toString()}` : '';
+      return apiClient.get<TraceFileResponse>(`/stream/traces/${encodeURIComponent(name)}${query}`);
+    },
+    enabled: options?.enabled ?? false,
+  });
+}
+
 // Stream mutations - Traces
 
 export function useDeleteTraceFile() {
@@ -499,6 +526,163 @@ export function useDeleteTraceFile() {
       apiClient.delete(`/stream/traces/${encodeURIComponent(name)}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.stream.traces.all() });
+    },
+  });
+}
+
+export function useEditTrace() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: EditTraceRequest) =>
+      apiClient.post('/stream/traces/edit', request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.traces.all() });
+    },
+  });
+}
+
+export function useMergeTraces() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: MergeTracesRequest) =>
+      apiClient.post('/stream/traces/merge', request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.traces.all() });
+    },
+  });
+}
+
+export function useExportTrace() {
+  return useMutation({
+    mutationFn: async (request: ExportTraceRequest) => {
+      const response = await fetch('/api/v1/stream/traces/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+
+      return await response.blob();
+    },
+  });
+}
+
+// Stream Editor queries and mutations
+
+export function useEditorLoad() {
+  return useMutation({
+    mutationFn: async ({ file, name }: { file?: File; name?: string }) => {
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/v1/stream/editor/load', {
+          method: 'POST',
+          body: formData,
+        });
+        if (!response.ok) throw new Error('Upload failed');
+        return response.json() as Promise<EditorStats>;
+      } else if (name) {
+        return apiClient.post<EditorStats>('/stream/editor/load', { filename: name });
+      }
+      throw new Error('Either file or name must be provided');
+    },
+  });
+}
+
+export function useEditorMessages(
+  sessionId: string | null,
+  offset: number,
+  limit: number,
+  filters?: EditorFilters
+) {
+  return useQuery({
+    queryKey: ['editor', 'messages', sessionId, offset, limit, filters],
+    queryFn: () => {
+      const params = new URLSearchParams({
+        sessionId: sessionId!,
+        offset: offset.toString(),
+        limit: limit.toString(),
+      });
+      if (filters?.proxy) params.append('proxy', filters.proxy);
+      if (filters?.interface) params.append('interface', filters.interface);
+      if (filters?.direction) params.append('direction', filters.direction);
+      if (filters?.type) params.append('type', filters.type);
+
+      return apiClient.get<EditorMessagesResponse>(`/stream/editor/messages?${params}`);
+    },
+    enabled: !!sessionId,
+  });
+}
+
+export function useEditorTimeline(sessionId: string | null) {
+  return useQuery({
+    queryKey: ['editor', 'timeline', sessionId],
+    queryFn: () =>
+      apiClient.get<EditorTimelineResponse>(`/stream/editor/timeline?sessionId=${sessionId}`),
+    enabled: !!sessionId,
+  });
+}
+
+export function useEditorSeek() {
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      timestamp,
+      filters,
+    }: {
+      sessionId: string;
+      timestamp: number;
+      filters?: EditorFilters;
+    }) => {
+      const params = new URLSearchParams({
+        sessionId,
+        timestamp: timestamp.toString(),
+      });
+      if (filters?.proxy) params.append('proxy', filters.proxy);
+      if (filters?.interface) params.append('interface', filters.interface);
+      if (filters?.direction) params.append('direction', filters.direction);
+      if (filters?.type) params.append('type', filters.type);
+
+      return apiClient.get<EditorSeekResponse>(`/stream/editor/seek?${params}`);
+    },
+  });
+}
+
+export function useEditorJQ() {
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      query,
+      limit = 100,
+    }: {
+      sessionId: string;
+      query: string;
+      limit?: number;
+    }) => {
+      return apiClient.post<EditorJQResponse>('/stream/editor/jq', {
+        sessionId,
+        query,
+        limit,
+      });
+    },
+  });
+}
+
+export function useEditorExport() {
+  return useMutation({
+    mutationFn: async ({ sessionId, indices }: { sessionId: string; indices?: number[] }) => {
+      const response = await fetch('/api/v1/stream/editor/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, indices }),
+      });
+      if (!response.ok) throw new Error('Export failed');
+      return response.blob();
     },
   });
 }

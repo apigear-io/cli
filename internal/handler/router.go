@@ -83,8 +83,21 @@ func RegisterAPIRoutes(router chi.Router) {
 				r.Get("/", ListTraceFiles())
 				r.Get("/stats", GetTraceStats())
 				r.Post("/search", SearchTraces())
+				r.Post("/edit", EditTrace())
+				r.Post("/merge", MergeTraces())
+				r.Post("/export", ExportTrace())
 				r.Get("/{name}", GetTraceFile())
 				r.Delete("/{name}", DeleteTraceFile())
+			})
+
+			// Stream Editor
+			r.Route("/editor", func(r chi.Router) {
+				r.Post("/load", LoadStreamEditor())
+				r.Get("/messages", GetStreamEditorMessages())
+				r.Get("/timeline", GetStreamEditorTimeline())
+				r.Get("/seek", SeekStreamEditor())
+				r.Post("/export", ExportStreamEditor())
+				r.Post("/jq", RunStreamEditorJQ())
 			})
 		})
 	})
