@@ -28,6 +28,8 @@ import type {
   ExportTraceRequest,
   EditorStats,
   EditorMessagesResponse,
+  PlayerStream,
+  CreatePlayerStreamRequest,
   EditorTimelineResponse,
   EditorSeekResponse,
   EditorJQResponse,
@@ -683,6 +685,88 @@ export function useEditorExport() {
       });
       if (!response.ok) throw new Error('Export failed');
       return response.blob();
+    },
+  });
+}
+
+// ============================================================================
+// Stream Player API Hooks
+// ============================================================================
+
+export function usePlayerStreams() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.stream.player.list(),
+    queryFn: () => apiClient.get<PlayerStream[]>('/stream/player'),
+    refetchInterval: 2000, // Auto-refresh every 2 seconds
+  });
+}
+
+export function usePlayerStream(id: string | null) {
+  return useQuery({
+    queryKey: queryKeys.stream.player.detail(id || ''),
+    queryFn: () => apiClient.get<PlayerStream>(`/stream/player/${id}`),
+    enabled: !!id,
+    refetchInterval: 1000, // Auto-refresh every 1 second for live progress
+  });
+}
+
+export function useCreatePlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (request: CreatePlayerStreamRequest) =>
+      apiClient.post<PlayerStream>('/stream/player', request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.all() });
+    },
+  });
+}
+
+export function usePlayPlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.post<PlayerStream>(`/stream/player/${id}/play`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.detail(id) });
+    },
+  });
+}
+
+export function usePausePlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.post<PlayerStream>(`/stream/player/${id}/pause`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.detail(id) });
+    },
+  });
+}
+
+export function useResumePlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.post<PlayerStream>(`/stream/player/${id}/resume`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.detail(id) });
+    },
+  });
+}
+
+export function useStopPlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.post<PlayerStream>(`/stream/player/${id}/stop`, {}),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.detail(id) });
+    },
+  });
+}
+
+export function useDeletePlayerStream() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiClient.delete(`/stream/player/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.stream.player.all() });
     },
   });
 }

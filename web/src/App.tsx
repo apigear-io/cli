@@ -11,6 +11,7 @@ import { Clients } from './pages/Stream/Clients';
 import { Scripting } from './pages/Stream/Scripting';
 import { Traces } from './pages/Stream/Traces';
 import { StreamEditor } from './pages/Stream/StreamEditor';
+import { Player } from './pages/Stream/Player';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="stream/scripting" element={<Scripting />} />
           <Route path="stream/traces" element={<Traces />} />
           <Route path="stream/editor" element={<StreamEditor />} />
+          <Route path="stream/player" element={<Player />} />
         </Route>
       </Routes>
     </BrowserRouter>

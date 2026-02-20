@@ -333,3 +333,29 @@ export interface EditorExportRequest {
   sessionId: string;
   indices?: number[];
 }
+
+// Stream Player types
+
+export type PlayerState = 'stopped' | 'playing' | 'paused';
+
+export interface PlayerStream {
+  id: string;
+  proxyName: string;
+  filename: string;
+  speed: number;
+  loop: boolean;
+  direction: string; // "", "SEND", "RECV"
+  state: PlayerState;
+  position: number;
+  totalEntries: number;
+  progress: number; // 0.0 to 1.0
+}
+
+export interface CreatePlayerStreamRequest {
+  proxyName: string;
+  filename: string;
+  speed: number;
+  initialDelay: number; // ms
+  loop: boolean;
+  direction: string; // "", "SEND", "RECV"
+}
