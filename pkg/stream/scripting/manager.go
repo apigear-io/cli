@@ -44,7 +44,28 @@ func NewManager(scriptsDir string, stats StatsRecorder) *Manager {
 
 // RunScript runs a script with the given name.
 // Scripts run forever until manually stopped or until they call exit().
+// If a script with the same name is already running, it will be stopped first (restart behavior).
 func (m *Manager) RunScript(name, code string) (string, error) {
+	// Check if a script with this name is already running and stop it (restart behavior)
+	m.enginesMu.RLock()
+	var enginesToStop []*Engine
+	for _, existingEngine := range m.engines {
+		if existingEngine.Name() == name && !existingEngine.IsStopped() {
+			enginesToStop = append(enginesToStop, existingEngine)
+		}
+	}
+	m.enginesMu.RUnlock()
+
+	// Stop existing scripts outside the lock
+	for _, engine := range enginesToStop {
+		engine.Stop()
+	}
+
+	// Brief wait to allow cleanup to start
+	if len(enginesToStop) > 0 {
+		time.Sleep(10 * time.Millisecond)
+	}
+
 	id := fmt.Sprintf("script-%d", m.nextID.Add(1))
 
 	engine := NewEngine(id, name)

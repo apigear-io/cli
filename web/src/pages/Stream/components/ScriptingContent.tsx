@@ -193,6 +193,9 @@ export function ScriptingContent() {
   };
 
   const handleRun = () => {
+    // Check if this script is already running
+    const isAlreadyRunning = activeScriptId !== null;
+
     if (currentScript) {
       // Run saved script
       runScript.mutate(currentScript, {
@@ -200,7 +203,7 @@ export function ScriptingContent() {
           setActiveScriptId(data.id);
           notifications.show({
             title: 'Success',
-            message: 'Script started',
+            message: isAlreadyRunning ? 'Script restarted' : 'Script started',
             color: 'green',
           });
         },
@@ -221,7 +224,7 @@ export function ScriptingContent() {
             setActiveScriptId(data.id);
             notifications.show({
               title: 'Success',
-              message: 'Code started',
+              message: isAlreadyRunning ? 'Code restarted' : 'Code started',
               color: 'green',
             });
           },
