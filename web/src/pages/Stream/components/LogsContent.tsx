@@ -9,7 +9,7 @@ import {
   Text,
   ActionIcon,
   Tooltip,
-  Code,
+  JsonInput,
 } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
 import { IconSearch, IconDownload, IconTrash } from '@tabler/icons-react';
@@ -222,28 +222,31 @@ export function LogsContent() {
               return (
                 <Tooltip
                   label={
-                    <pre
-                      style={{
-                        margin: 0,
-                        padding: '8px',
-                        fontSize: '12px',
-                        fontFamily: 'monospace',
-                        maxWidth: 600,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                      }}
-                    >
-                      {expandedJson}
-                    </pre>
+                    <div style={{ width: 500 }}>
+                      <JsonInput
+                        value={expandedJson}
+                        readOnly
+                        autosize
+                        minRows={3}
+                        maxRows={15}
+                        styles={{
+                          input: {
+                            fontSize: '11px',
+                            fontFamily: 'monospace',
+                            padding: '8px',
+                          },
+                        }}
+                      />
+                    </div>
                   }
                   multiline
                   withArrow
                   position="left"
+                  offset={10}
                   styles={{
                     tooltip: {
-                      maxHeight: 400,
-                      overflowY: 'auto',
-                      padding: 0,
+                      padding: 8,
+                      maxWidth: 'none',
                     },
                   }}
                 >
