@@ -10,6 +10,7 @@ import {
   ActionIcon,
   Tooltip,
   JsonInput,
+  Paper,
 } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
 import { IconSearch, IconDownload, IconTrash } from '@tabler/icons-react';
@@ -222,7 +223,7 @@ export function LogsContent() {
               return (
                 <Tooltip
                   label={
-                    <div style={{ width: 500 }}>
+                    <Paper withBorder shadow="md" p="xs" style={{ width: 500 }}>
                       <JsonInput
                         value={expandedJson}
                         readOnly
@@ -239,26 +240,20 @@ export function LogsContent() {
                           },
                         }}
                       />
-                    </div>
+                    </Paper>
                   }
                   multiline
-                  withArrow
+                  withArrow={false}
                   position="left"
                   offset={10}
-                  styles={(theme) => ({
+                  styles={{
                     tooltip: {
-                      padding: 12,
+                      padding: 0,
                       maxWidth: 'none',
-                      backgroundColor: theme.colors.dark[6],
-                      border: `1px solid ${theme.colors.dark[4]}`,
-                      borderRadius: theme.radius.md,
-                      boxShadow: theme.shadows.lg,
+                      backgroundColor: 'transparent',
+                      border: 'none',
                     },
-                    arrow: {
-                      border: `1px solid ${theme.colors.dark[4]}`,
-                      backgroundColor: theme.colors.dark[6],
-                    },
-                  })}
+                  }}
                 >
                   <Text
                     size="xs"
