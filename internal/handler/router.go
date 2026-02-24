@@ -9,6 +9,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
+
+	"github.com/apigear-io/cli/pkg/stream/logging"
 )
 
 // RegisterAPIRoutes registers all REST API routes (health, status, templates, stream)
@@ -37,6 +39,9 @@ func RegisterAPIRoutes(router chi.Router) {
 
 		// Stream endpoints
 		r.Route("/stream", func(r chi.Router) {
+			// Apply HTTP logging middleware to all stream routes
+			r.Use(logging.HTTPLoggingMiddleware)
+
 			// Dashboard
 			r.Get("/dashboard", GetStreamDashboard())
 

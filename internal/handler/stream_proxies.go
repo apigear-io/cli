@@ -117,6 +117,11 @@ func CreateStreamProxy() http.HandlerFunc {
 		}
 
 		info := p.Info()
+		logOperation("CREATE", "proxy", map[string]interface{}{
+			"name":   req.Name,
+			"listen": req.Config.Listen,
+			"mode":   req.Config.Mode,
+		})
 		writeJSON(w, http.StatusCreated, info)
 	}
 }
@@ -227,6 +232,9 @@ func DeleteStreamProxy() http.HandlerFunc {
 		// Note: We ignore errors here since the proxy is already removed from memory.
 		// This handles the case where proxy was in memory but not persisted to config.
 
+		logOperation("DELETE", "proxy", map[string]interface{}{
+			"name": name,
+		})
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
@@ -261,6 +269,9 @@ func StartStreamProxy() http.HandlerFunc {
 		}
 
 		info := p.Info()
+		logOperation("START", "proxy", map[string]interface{}{
+			"name": name,
+		})
 		writeJSON(w, http.StatusOK, info)
 	}
 }
@@ -295,6 +306,9 @@ func StopStreamProxy() http.HandlerFunc {
 		}
 
 		info := p.Info()
+		logOperation("STOP", "proxy", map[string]interface{}{
+			"name": name,
+		})
 		writeJSON(w, http.StatusOK, info)
 	}
 }

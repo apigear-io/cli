@@ -114,6 +114,9 @@ func SaveScript() http.HandlerFunc {
 			return
 		}
 
+		logOperation("SAVE", "script", map[string]interface{}{
+			"name": req.Name,
+		})
 		writeJSON(w, http.StatusOK, SaveScriptResponse{
 			Name:    req.Name,
 			ModTime: modTime,
@@ -202,6 +205,9 @@ func DeleteScript() http.HandlerFunc {
 			return
 		}
 
+		logOperation("DELETE", "script", map[string]interface{}{
+			"name": name,
+		})
 		writeJSON(w, http.StatusOK, map[string]string{
 			"name":    name,
 			"message": "Script deleted successfully",
@@ -266,6 +272,10 @@ func RunScript() http.HandlerFunc {
 			return
 		}
 
+		logOperation("RUN", "script", map[string]interface{}{
+			"name": name,
+			"id":   id,
+		})
 		writeJSON(w, http.StatusOK, RunScriptResponse{
 			ID:      id,
 			Name:    name,
@@ -349,6 +359,9 @@ func StopScript() http.HandlerFunc {
 			return
 		}
 
+		logOperation("STOP", "script", map[string]interface{}{
+			"id": id,
+		})
 		writeJSON(w, http.StatusOK, map[string]string{
 			"id":      id,
 			"message": "Script stopped successfully",
