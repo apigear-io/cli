@@ -22,8 +22,12 @@ func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 
 // writeError writes a JSON error response with the given status code
 func writeError(w http.ResponseWriter, status int, err error, message string) {
+	errMsg := message
+	if err != nil {
+		errMsg = err.Error()
+	}
 	response := ErrorResponse{
-		Error:   err.Error(),
+		Error:   errMsg,
 		Message: message,
 	}
 	writeJSON(w, status, response)
