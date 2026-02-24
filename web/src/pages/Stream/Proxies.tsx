@@ -10,6 +10,7 @@ import {
   TextInput,
   Select,
   SimpleGrid,
+  Drawer,
 } from '@mantine/core';
 import {
   IconServer,
@@ -19,9 +20,12 @@ import {
 import {
   useProxies,
   useCreateProxy,
+  useUpdateProxy,
   useDeleteProxy,
+  useStartProxy,
+  useStopProxy,
 } from '@/api/queries';
-import type { ProxyMode, CreateProxyRequest } from '@/api/types';
+import type { ProxyMode, CreateProxyRequest, ProxyInfo } from '@/api/types';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingFallback } from '@/components/LoadingFallback';
 import { LiveMessageViewer } from './components/LiveMessageViewer';
@@ -31,8 +35,9 @@ import { notifications } from '@mantine/notifications';
 function ProxiesContent() {
   const { data: proxies } = useProxies();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
-  const [selectedProxy, setSelectedProxy] = useState<string | null>(null);
+  const [selectedProxy, setSelectedProxy] = useState<ProxyInfo | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     listen: 'ws://localhost:5550/ws',
@@ -41,7 +46,10 @@ function ProxiesContent() {
   });
 
   const createProxy = useCreateProxy();
+  const updateProxy = useUpdateProxy();
   const deleteProxy = useDeleteProxy();
+  const startProxy = useStartProxy();
+  const stopProxy = useStopProxy();
 
   const handleCreate = async () => {
     try {
@@ -76,6 +84,45 @@ function ProxiesContent() {
     }
   };
 
+  const handleEdit = (proxy: ProxyInfo) => {
+    setSelectedProxy(proxy);
+    setFormData({
+      name: proxy.name,
+      listen: proxy.listen,
+      backend: proxy.backend || '',
+      mode: proxy.mode,
+    });
+    setEditDrawerOpen(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedProxy) return;
+
+    try {
+      await updateProxy.mutateAsync({
+        name: selectedProxy.name,
+        config: {
+          listen: formData.listen,
+          backend: formData.mode === 'proxy' ? formData.backend : undefined,
+          mode: formData.mode,
+        },
+      });
+      notifications.show({
+        title: 'Success',
+        message: `Proxy "${selectedProxy.name}" updated successfully`,
+        color: 'green',
+      });
+      setEditDrawerOpen(false);
+      setSelectedProxy(null);
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to update proxy',
+        color: 'red',
+      });
+    }
+  };
+
   const handleDelete = async (name: string) => {
     if (!confirm(`Are you sure you want to delete proxy "${name}"?`)) {
       return;
@@ -97,9 +144,46 @@ function ProxiesContent() {
     }
   };
 
+  const handleStart = async (name: string) => {
+    try {
+      await startProxy.mutateAsync(name);
+      notifications.show({
+        title: 'Success',
+        message: `Proxy "${name}" started`,
+        color: 'green',
+      });
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to start proxy',
+        color: 'red',
+      });
+    }
+  };
+
+  const handleStop = async (name: string) => {
+    try {
+      await stopProxy.mutateAsync(name);
+      notifications.show({
+        title: 'Success',
+        message: `Proxy "${name}" stopped`,
+        color: 'green',
+      });
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to stop proxy',
+        color: 'red',
+      });
+    }
+  };
+
   const handleViewStats = (name: string) => {
-    setSelectedProxy(name);
-    setViewerOpen(true);
+    const proxy = proxies.find((p) => p.name === name);
+    if (proxy) {
+      setSelectedProxy(proxy);
+      setViewerOpen(true);
+    }
   };
 
   return (
@@ -150,7 +234,10 @@ function ProxiesContent() {
               key={proxy.name}
               proxy={proxy}
               onViewStats={handleViewStats}
+              onEdit={handleEdit}
               onDelete={handleDelete}
+              onStart={handleStart}
+              onStop={handleStop}
             />
           ))}
         </SimpleGrid>
@@ -217,14 +304,88 @@ function ProxiesContent() {
         </Stack>
       </Modal>
 
+      {/* Edit Proxy Drawer */}
+      <Drawer
+        opened={editDrawerOpen}
+        onClose={() => {
+          setEditDrawerOpen(false);
+          setSelectedProxy(null);
+        }}
+        title="Edit Proxy"
+        position="right"
+        size="md"
+      >
+        <Stack gap="md">
+          <TextInput
+            label="Name"
+            value={formData.name}
+            disabled
+            description="Proxy name cannot be changed"
+          />
+
+          <Select
+            label="Mode"
+            value={formData.mode}
+            onChange={(value) => setFormData({ ...formData, mode: value as ProxyMode })}
+            data={[
+              { value: 'proxy', label: 'Proxy - Forward to backend' },
+              { value: 'echo', label: 'Echo - Echo back messages' },
+              { value: 'backend', label: 'Backend - ObjectLink backend' },
+              { value: 'inbound-only', label: 'Inbound Only - Accept only' },
+            ]}
+            required
+          />
+
+          <TextInput
+            label="Listen Address"
+            placeholder="ws://localhost:5550/ws"
+            value={formData.listen}
+            onChange={(e) => setFormData({ ...formData, listen: e.target.value })}
+            required
+          />
+
+          {formData.mode === 'proxy' && (
+            <TextInput
+              label="Backend Address"
+              placeholder="ws://localhost:5560/ws"
+              value={formData.backend}
+              onChange={(e) => setFormData({ ...formData, backend: e.target.value })}
+              required
+            />
+          )}
+
+          <Group justify="flex-end" gap="xs" mt="md">
+            <Button
+              variant="light"
+              onClick={() => {
+                setEditDrawerOpen(false);
+                setSelectedProxy(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdate}
+              loading={updateProxy.isPending}
+              disabled={!formData.listen}
+            >
+              Update
+            </Button>
+          </Group>
+        </Stack>
+      </Drawer>
+
       {/* Live Message Viewer Modal */}
       <Modal
         opened={viewerOpen}
-        onClose={() => setViewerOpen(false)}
-        title={`Live Messages: ${selectedProxy}`}
+        onClose={() => {
+          setViewerOpen(false);
+          setSelectedProxy(null);
+        }}
+        title={`Live Messages: ${selectedProxy?.name}`}
         size="xl"
       >
-        {selectedProxy && <LiveMessageViewer proxyName={selectedProxy} height="70vh" />}
+        {selectedProxy && <LiveMessageViewer proxyName={selectedProxy.name} height="70vh" />}
       </Modal>
     </Stack>
   );

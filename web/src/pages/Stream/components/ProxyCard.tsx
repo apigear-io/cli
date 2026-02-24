@@ -1,4 +1,4 @@
-import { Card, Text, Badge, Group, Stack, ActionIcon, Tooltip } from '@mantine/core';
+import { Card, Text, Badge, Group, Stack, ActionIcon, Tooltip, Button } from '@mantine/core';
 import {
   IconEdit,
   IconTrash,
@@ -7,7 +7,10 @@ import {
   IconUsers,
   IconMessages,
   IconDatabase,
+  IconPlayerPlay,
+  IconPlayerStop,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import type { ProxyInfo } from '@/api/types';
 
 interface ProxyCardProps {
@@ -15,6 +18,8 @@ interface ProxyCardProps {
   onViewStats?: (name: string) => void;
   onEdit?: (proxy: ProxyInfo) => void;
   onDelete?: (name: string) => void;
+  onStart?: (name: string) => void;
+  onStop?: (name: string) => void;
 }
 
 function formatBytes(bytes: number): string {
@@ -25,7 +30,13 @@ function formatBytes(bytes: number): string {
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i] ?? 'TB'}`;
 }
 
-export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardProps) {
+export function ProxyCard({ proxy, onViewStats, onEdit, onDelete, onStart, onStop }: ProxyCardProps) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/stream/proxies/${proxy.name}`);
+  };
+
   const getStatusDotColor = () => {
     switch (proxy.status) {
       case 'running':
@@ -70,7 +81,14 @@ export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardPro
   };
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      style={{ cursor: 'pointer' }}
+      onClick={handleCardClick}
+    >
       <Stack gap="md">
         {/* Header with status dot and badges */}
         <Group justify="space-between" wrap="nowrap">
@@ -108,7 +126,10 @@ export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardPro
                   variant="light"
                   color="blue"
                   size="sm"
-                  onClick={() => onViewStats(proxy.name)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewStats(proxy.name);
+                  }}
                 >
                   <IconChartLine size={14} />
                 </ActionIcon>
@@ -120,7 +141,10 @@ export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardPro
                   variant="light"
                   color="gray"
                   size="sm"
-                  onClick={() => onEdit(proxy)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(proxy);
+                  }}
                 >
                   <IconEdit size={14} />
                 </ActionIcon>
@@ -132,7 +156,10 @@ export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardPro
                   variant="light"
                   color="red"
                   size="sm"
-                  onClick={() => onDelete(proxy.name)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(proxy.name);
+                  }}
                   disabled={proxy.status === 'running'}
                 >
                   <IconTrash size={14} />
@@ -185,6 +212,41 @@ export function ProxyCard({ proxy, onViewStats, onEdit, onDelete }: ProxyCardPro
               {formatBytes(proxy.bytesReceived + proxy.bytesSent)}
             </Text>
           </Group>
+        </Group>
+
+        {/* Start/Stop buttons */}
+        <Group gap="xs" grow>
+          {proxy.status === 'running' ? (
+            onStop && (
+              <Button
+                size="xs"
+                variant="light"
+                color="red"
+                leftSection={<IconPlayerStop size={14} />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStop(proxy.name);
+                }}
+              >
+                Stop
+              </Button>
+            )
+          ) : (
+            onStart && (
+              <Button
+                size="xs"
+                variant="light"
+                color="green"
+                leftSection={<IconPlayerPlay size={14} />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStart(proxy.name);
+                }}
+              >
+                Start
+              </Button>
+            )
+          )}
         </Group>
       </Stack>
     </Card>

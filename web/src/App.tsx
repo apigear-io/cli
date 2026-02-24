@@ -8,6 +8,7 @@ import { CodeGen } from './pages/CodeGen/CodeGen';
 import { Monitor } from './pages/Monitor/Monitor';
 import { StreamDashboard } from './pages/Stream/Dashboard';
 import { Proxies } from './pages/Stream/Proxies';
+import { ProxyDetail } from './pages/Stream/ProxyDetail';
 import { Clients } from './pages/Stream/Clients';
 import { Scripting } from './pages/Stream/Scripting';
 import { Traces } from './pages/Stream/Traces';
@@ -39,6 +40,7 @@ function App() {
           <Route index element={<Navigate to="/stream/dashboard" replace />} />
           <Route path="dashboard" element={<StreamDashboard />} />
           <Route path="proxies" element={<Proxies />} />
+          <Route path="proxies/:name" element={<ProxyDetail />} />
           <Route path="clients" element={<Clients />} />
           <Route path="scripting" element={<Scripting />} />
           <Route path="traces" element={<Traces />} />
