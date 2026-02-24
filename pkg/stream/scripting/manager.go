@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // Manager manages multiple running scripts.
@@ -50,10 +51,14 @@ func (m *Manager) RunScript(name, code string) (string, error) {
 	engine.SetStats(m.stats)
 
 	// Set up auto-cleanup when engine stops
+	// Keep engine around for 30 seconds after stop to allow clients to fetch output
 	engine.SetOnStopCallback(func() {
-		m.enginesMu.Lock()
-		delete(m.engines, id)
-		m.enginesMu.Unlock()
+		go func() {
+			time.Sleep(30 * time.Second)
+			m.enginesMu.Lock()
+			delete(m.engines, id)
+			m.enginesMu.Unlock()
+		}()
 	})
 
 	m.enginesMu.Lock()
@@ -91,12 +96,19 @@ func (m *Manager) StopScript(id string) error {
 }
 
 // GetRunningScripts returns information about all running scripts.
+// Note: Only returns scripts that are still running. Stopped scripts are filtered out
+// even if they remain in memory during the cleanup grace period.
 func (m *Manager) GetRunningScripts() []ScriptInfo {
 	m.enginesMu.RLock()
 	defer m.enginesMu.RUnlock()
 
 	result := make([]ScriptInfo, 0, len(m.engines))
 	for id, engine := range m.engines {
+		// Skip stopped engines (they remain in map for grace period but shouldn't show as running)
+		if engine.IsStopped() {
+			continue
+		}
+
 		scriptType := ScriptTypeClient
 		if engine.GetBackendServer() != nil {
 			scriptType = ScriptTypeBackend
@@ -343,10 +355,14 @@ func (m *Manager) LoadAndStart(scriptName, listenAddr, _ string) error {
 	engine.SetStats(m.stats)
 
 	// Set up auto-cleanup when engine stops
+	// Keep engine around for 30 seconds after stop to allow clients to fetch output
 	engine.SetOnStopCallback(func() {
-		m.enginesMu.Lock()
-		delete(m.engines, id)
-		m.enginesMu.Unlock()
+		go func() {
+			time.Sleep(30 * time.Second)
+			m.enginesMu.Lock()
+			delete(m.engines, id)
+			m.enginesMu.Unlock()
+		}()
 	})
 
 	m.enginesMu.Lock()

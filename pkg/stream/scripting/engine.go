@@ -239,6 +239,11 @@ func (e *Engine) Stop() {
 	}
 }
 
+// IsStopped returns true if the engine has been stopped.
+func (e *Engine) IsStopped() bool {
+	return e.stopped.Load()
+}
+
 // SetOnStopCallback sets a callback to be called when the engine stops.
 func (e *Engine) SetOnStopCallback(fn func()) {
 	e.stoppedMu.Lock()
