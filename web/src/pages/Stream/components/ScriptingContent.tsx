@@ -313,16 +313,6 @@ export function ScriptingContent() {
           >
             Save
           </Button>
-          {activeScriptId && (
-            <Button
-              leftSection={<IconPlayerStop size={16} />}
-              color="red"
-              size="sm"
-              onClick={() => handleStop(activeScriptId)}
-            >
-              Stop
-            </Button>
-          )}
         </Group>
       </Group>
 
