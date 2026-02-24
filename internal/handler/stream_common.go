@@ -11,6 +11,8 @@ var (
 	streamServices     *stream.Services
 	streamServicesOnce sync.Once
 	streamServicesMu   sync.RWMutex
+	streamConfigPath   string
+	streamConfigMu     sync.RWMutex
 )
 
 // getStreamServices returns the stream services singleton, initializing if needed
@@ -21,11 +23,33 @@ func getStreamServices() *stream.Services {
 	return streamServices
 }
 
+// GetStreamServices returns the stream services singleton (exported version for external packages)
+func GetStreamServices() *stream.Services {
+	return getStreamServices()
+}
+
 // setStreamServices sets a custom stream services instance (for testing)
 func setStreamServices(services *stream.Services) {
 	streamServicesMu.Lock()
 	defer streamServicesMu.Unlock()
 	streamServices = services
+}
+
+// SetStreamConfigPath sets the config file path for persistence
+func SetStreamConfigPath(path string) {
+	streamConfigMu.Lock()
+	defer streamConfigMu.Unlock()
+	streamConfigPath = path
+}
+
+// getStreamConfigPath returns the config file path
+func getStreamConfigPath() string {
+	streamConfigMu.RLock()
+	defer streamConfigMu.RUnlock()
+	if streamConfigPath == "" {
+		return "./stream.yaml" // Default path
+	}
+	return streamConfigPath
 }
 
 // StreamDashboardStats represents dashboard statistics

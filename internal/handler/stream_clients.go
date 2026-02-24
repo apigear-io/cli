@@ -89,8 +89,19 @@ func CreateStreamClient() http.HandlerFunc {
 			return
 		}
 
+		// Persist to config file first
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		if err := persistence.AddClient(req.Name, req.Config); err != nil {
+			writeError(w, http.StatusBadRequest, err, "failed to save client to config")
+			return
+		}
+
+		// Add to in-memory manager
 		services := getStreamServices()
 		if err := services.ClientManager.AddClient(req.Name, req.Config); err != nil {
+			// Try to rollback config file change
+			_ = persistence.DeleteClient(req.Name)
 			writeError(w, http.StatusBadRequest, err, "failed to create client")
 			return
 		}
@@ -141,7 +152,19 @@ func UpdateStreamClient() http.HandlerFunc {
 			return
 		}
 
-		// Remove and re-add with new config
+		// Persist to config file first (upsert: update if exists, add if not)
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		err = persistence.UpdateClient(name, cfg)
+		if err != nil {
+			// If update fails because client doesn't exist in config, add it instead
+			if err := persistence.AddClient(name, cfg); err != nil {
+				writeError(w, http.StatusBadRequest, err, "failed to save client to config")
+				return
+			}
+		}
+
+		// Remove and re-add with new config in memory
 		if err := services.ClientManager.RemoveClient(name); err != nil {
 			writeError(w, http.StatusInternalServerError, err, "failed to remove client")
 			return
@@ -180,10 +203,19 @@ func DeleteStreamClient() http.HandlerFunc {
 		}
 
 		services := getStreamServices()
+
+		// Remove from in-memory manager first
 		if err := services.ClientManager.RemoveClient(name); err != nil {
 			writeError(w, http.StatusNotFound, err, "client not found")
 			return
 		}
+
+		// Persist to config file (best effort - don't fail if it doesn't exist)
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		_ = persistence.DeleteClient(name)
+		// Note: We ignore errors here since the client is already removed from memory.
+		// This handles the case where client was in memory but not persisted to config.
 
 		w.WriteHeader(http.StatusNoContent)
 	}

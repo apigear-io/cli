@@ -93,8 +93,19 @@ func CreateStreamProxy() http.HandlerFunc {
 			req.Config.Mode = "proxy"
 		}
 
+		// Persist to config file first
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		if err := persistence.AddProxy(req.Name, req.Config); err != nil {
+			writeError(w, http.StatusBadRequest, err, "failed to save proxy to config")
+			return
+		}
+
+		// Add to in-memory manager
 		services := getStreamServices()
 		if err := services.ProxyManager.AddProxy(req.Name, req.Config); err != nil {
+			// Try to rollback config file change
+			_ = persistence.DeleteProxy(req.Name)
 			writeError(w, http.StatusBadRequest, err, "failed to create proxy")
 			return
 		}
@@ -139,13 +150,31 @@ func UpdateStreamProxy() http.HandlerFunc {
 		services := getStreamServices()
 
 		// Check if proxy exists
-		_, err := services.ProxyManager.GetProxy(name)
+		proxy, err := services.ProxyManager.GetProxy(name)
 		if err != nil {
 			writeError(w, http.StatusNotFound, err, "proxy not found")
 			return
 		}
 
-		// Remove and re-add with new config
+		// Check if proxy is running - must be stopped to update
+		if proxy.Status() == "running" {
+			writeError(w, http.StatusBadRequest, nil, "cannot update running proxy - stop it first")
+			return
+		}
+
+		// Persist to config file first (upsert: update if exists, add if not)
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		err = persistence.UpdateProxy(name, cfg)
+		if err != nil {
+			// If update fails because proxy doesn't exist in config, add it instead
+			if err := persistence.AddProxy(name, cfg); err != nil {
+				writeError(w, http.StatusBadRequest, err, "failed to save proxy to config")
+				return
+			}
+		}
+
+		// Remove and re-add with new config in memory
 		if err := services.ProxyManager.RemoveProxy(name); err != nil {
 			writeError(w, http.StatusInternalServerError, err, "failed to remove proxy")
 			return
@@ -184,10 +213,19 @@ func DeleteStreamProxy() http.HandlerFunc {
 		}
 
 		services := getStreamServices()
+
+		// Remove from in-memory manager first
 		if err := services.ProxyManager.RemoveProxy(name); err != nil {
 			writeError(w, http.StatusNotFound, err, "proxy not found")
 			return
 		}
+
+		// Persist to config file (best effort - don't fail if it doesn't exist)
+		configPath := getStreamConfigPath()
+		persistence := config.NewConfigPersistence(configPath)
+		_ = persistence.DeleteProxy(name)
+		// Note: We ignore errors here since the proxy is already removed from memory.
+		// This handles the case where proxy was in memory but not persisted to config.
 
 		w.WriteHeader(http.StatusNoContent)
 	}
