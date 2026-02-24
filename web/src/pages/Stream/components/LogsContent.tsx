@@ -11,9 +11,10 @@ import {
   Tooltip,
   JsonInput,
   Paper,
+  Button,
 } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
-import { IconSearch, IconDownload, IconTrash } from '@tabler/icons-react';
+import { IconSearch, IconDownload, IconTrash, IconCopy, IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useLogs, useClearLogs } from '@/api/queries';
 import type { LogLevel, LogEntry } from '@/api/types';
@@ -22,6 +23,7 @@ export function LogsContent() {
   const [level, setLevel] = useState<LogLevel | ''>('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedRecords, setSelectedRecords] = useState<LogEntry[]>([]);
   const pageSize = 50;
   const { data } = useLogs(level || undefined, search || undefined);
   const clearLogs = useClearLogs();
@@ -36,11 +38,40 @@ export function LogsContent() {
   const handleLevelChange = (value: string | null) => {
     setLevel((value as LogLevel) || '');
     setPage(1);
+    setSelectedRecords([]);
   };
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
+    setSelectedRecords([]);
+  };
+
+  const handleCopySelected = () => {
+    if (selectedRecords.length === 0) return;
+
+    // Format selected entries as JSON
+    const jsonData = JSON.stringify(selectedRecords, null, 2);
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(jsonData).then(() => {
+      notifications.show({
+        title: 'Success',
+        message: `Copied ${selectedRecords.length} log ${selectedRecords.length === 1 ? 'entry' : 'entries'} to clipboard`,
+        color: 'green',
+      });
+      setSelectedRecords([]);
+    }).catch(() => {
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to copy to clipboard',
+        color: 'red',
+      });
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedRecords([]);
   };
 
   const levelOptions = [
@@ -187,6 +218,34 @@ export function LogsContent() {
         </Text>
       </Group>
 
+      {/* Selection Banner */}
+      {selectedRecords.length > 0 && (
+        <Paper withBorder p="md" bg="blue.0" style={{ borderColor: 'var(--mantine-color-blue-3)' }}>
+          <Group justify="space-between">
+            <Group gap="md">
+              <Text size="sm" fw={500}>
+                {selectedRecords.length} {selectedRecords.length === 1 ? 'entry' : 'entries'} selected
+              </Text>
+              <Button
+                leftSection={<IconCopy size={16} />}
+                size="sm"
+                onClick={handleCopySelected}
+              >
+                Copy to Clipboard
+              </Button>
+              <Button
+                leftSection={<IconX size={16} />}
+                size="sm"
+                variant="subtle"
+                onClick={handleClearSelection}
+              >
+                Clear Selection
+              </Button>
+            </Group>
+          </Group>
+        </Paper>
+      )}
+
       {/* DataTable */}
       <DataTable
         withTableBorder
@@ -198,6 +257,9 @@ export function LogsContent() {
         recordsPerPage={pageSize}
         page={page}
         onPageChange={setPage}
+        selectedRecords={selectedRecords}
+        onSelectedRecordsChange={setSelectedRecords}
+        idAccessor={(record) => `${record.timestamp}-${record.level}-${record.message}`}
         columns={[
           {
             accessor: 'timestamp',
