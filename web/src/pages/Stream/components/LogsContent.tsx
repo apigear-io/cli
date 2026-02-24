@@ -234,6 +234,8 @@ export function LogsContent() {
                             fontSize: '11px',
                             fontFamily: 'monospace',
                             padding: '8px',
+                            border: 'none',
+                            backgroundColor: 'transparent',
                           },
                         }}
                       />
@@ -243,12 +245,20 @@ export function LogsContent() {
                   withArrow
                   position="left"
                   offset={10}
-                  styles={{
+                  styles={(theme) => ({
                     tooltip: {
-                      padding: 8,
+                      padding: 12,
                       maxWidth: 'none',
+                      backgroundColor: theme.colors.dark[6],
+                      border: `1px solid ${theme.colors.dark[4]}`,
+                      borderRadius: theme.radius.md,
+                      boxShadow: theme.shadows.lg,
                     },
-                  }}
+                    arrow: {
+                      border: `1px solid ${theme.colors.dark[4]}`,
+                      backgroundColor: theme.colors.dark[6],
+                    },
+                  })}
                 >
                   <Text
                     size="xs"
