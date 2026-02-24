@@ -14,7 +14,7 @@ import {
   Button,
 } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
-import { IconSearch, IconDownload, IconTrash, IconCopy, IconX } from '@tabler/icons-react';
+import { IconSearch, IconDownload, IconTrash, IconCopy, IconX, IconPlayerPause, IconPlayerPlay } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useLogs, useClearLogs } from '@/api/queries';
 import type { LogLevel, LogEntry } from '@/api/types';
@@ -24,8 +24,9 @@ export function LogsContent() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedRecords, setSelectedRecords] = useState<LogEntry[]>([]);
+  const [paused, setPaused] = useState(false);
   const pageSize = 50;
-  const { data } = useLogs(level || undefined, search || undefined);
+  const { data } = useLogs(level || undefined, search || undefined, paused);
   const clearLogs = useClearLogs();
 
   // Calculate pagination
@@ -72,6 +73,20 @@ export function LogsContent() {
 
   const handleClearSelection = () => {
     setSelectedRecords([]);
+  };
+
+  // Auto-pause when selecting items
+  const handleSelectionChange = (records: LogEntry[]) => {
+    setSelectedRecords(records);
+    if (records.length > 0 && !paused) {
+      setPaused(true);
+      notifications.show({
+        title: 'Auto-paused',
+        message: 'Logs paused automatically to preserve selection',
+        color: 'blue',
+        autoClose: 2000,
+      });
+    }
   };
 
   const levelOptions = [
@@ -169,8 +184,25 @@ export function LogsContent() {
     <Stack gap="md">
       {/* Header */}
       <Group justify="space-between">
-        <Title order={2}>Application Logs</Title>
+        <Group gap="sm">
+          <Title order={2}>Application Logs</Title>
+          {paused && (
+            <Badge color="orange" variant="light">
+              Paused
+            </Badge>
+          )}
+        </Group>
         <Group gap="xs">
+          <Tooltip label={paused ? 'Resume auto-refresh' : 'Pause auto-refresh'}>
+            <ActionIcon
+              variant="filled"
+              color={paused ? 'green' : 'orange'}
+              size="lg"
+              onClick={() => setPaused(!paused)}
+            >
+              {paused ? <IconPlayerPlay size={20} /> : <IconPlayerPause size={20} />}
+            </ActionIcon>
+          </Tooltip>
           <Tooltip label="Export logs">
             <ActionIcon variant="filled" color="blue" size="lg" onClick={handleExport}>
               <IconDownload size={20} />
@@ -258,7 +290,7 @@ export function LogsContent() {
         page={page}
         onPageChange={setPage}
         selectedRecords={selectedRecords}
-        onSelectedRecordsChange={setSelectedRecords}
+        onSelectedRecordsChange={handleSelectionChange}
         idAccessor={(record) => `${record.timestamp}-${record.level}-${record.message}`}
         columns={[
           {

@@ -784,7 +784,7 @@ export function useDeletePlayerStream() {
 // Application Logs API Hooks
 // ============================================================================
 
-export function useLogs(level?: LogLevel, search?: string) {
+export function useLogs(level?: LogLevel, search?: string, paused?: boolean) {
   return useSuspenseQuery({
     queryKey: queryKeys.stream.logs.list(level, search),
     queryFn: () => {
@@ -794,7 +794,7 @@ export function useLogs(level?: LogLevel, search?: string) {
       const query = params.toString();
       return apiClient.get<LogsResponse>(`/stream/logs${query ? `?${query}` : ''}`);
     },
-    refetchInterval: 2000, // Auto-refresh every 2 seconds
+    refetchInterval: paused ? false : 2000, // Auto-refresh every 2 seconds (disabled when paused)
   });
 }
 
