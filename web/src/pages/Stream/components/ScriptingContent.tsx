@@ -10,6 +10,8 @@ import {
   Text,
   Paper,
   Tabs,
+  ActionIcon,
+  Tooltip,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -17,6 +19,7 @@ import {
   IconDeviceFloppy,
   IconFilePlus,
   IconBulb,
+  IconHelp,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import {
@@ -32,6 +35,8 @@ import { ScriptEditor } from './ScriptEditor';
 import { ConsoleOutput } from './ConsoleOutput';
 import { ScriptList, RunningScripts } from './ScriptList';
 import { EXAMPLES } from './examples';
+import { HelpDrawer } from '@/components/HelpDrawer';
+import { scriptingHelpTabs } from './ScriptingHelpContent';
 
 export function ScriptingContent() {
   const { data: scripts } = useScripts();
@@ -45,6 +50,7 @@ export function ScriptingContent() {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [scriptName, setScriptName] = useState('');
   const [examplesModalOpen, setExamplesModalOpen] = useState(false);
+  const [helpDrawerOpen, setHelpDrawerOpen] = useState(false);
 
   const saveScript = useSaveScript();
   const deleteScript = useDeleteScript();
@@ -74,7 +80,7 @@ export function ScriptingContent() {
         message: `Loaded script: ${name}`,
         color: 'blue',
       });
-    } catch (error) {
+    } catch {
       notifications.show({
         title: 'Error',
         message: 'Failed to load script',
@@ -268,7 +274,19 @@ export function ScriptingContent() {
   return (
     <Stack gap="md">
       <Group justify="space-between">
-        <Title order={2}>Scripting</Title>
+        <Group gap="xs">
+          <Title order={2}>Scripting</Title>
+          <Tooltip label="Help & Documentation">
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="lg"
+              onClick={() => setHelpDrawerOpen(true)}
+            >
+              <IconHelp size={20} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
         <Group gap="xs">
           <Button
             leftSection={<IconFilePlus size={16} />}
@@ -435,6 +453,13 @@ export function ScriptingContent() {
           ))}
         </Stack>
       </Modal>
+
+      <HelpDrawer
+        opened={helpDrawerOpen}
+        onClose={() => setHelpDrawerOpen(false)}
+        title="Scripting Help"
+        tabs={scriptingHelpTabs}
+      />
     </Stack>
   );
 }
