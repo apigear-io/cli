@@ -5,18 +5,17 @@ import {
   Group,
   Select,
   TextInput,
-  Table,
   Badge,
   Text,
-  Paper,
   ActionIcon,
   Tooltip,
   Code,
 } from '@mantine/core';
+import { DataTable } from 'mantine-datatable';
 import { IconSearch, IconDownload, IconTrash } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useLogs, useClearLogs } from '@/api/queries';
-import type { LogLevel } from '@/api/types';
+import type { LogLevel, LogEntry } from '@/api/types';
 
 export function LogsContent() {
   const [level, setLevel] = useState<LogLevel | ''>('');
@@ -93,9 +92,26 @@ export function LogsContent() {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
+      hour12: false,
     });
     const ms = date.getMilliseconds().toString().padStart(3, '0');
     return `${timeStr}.${ms}`;
+  };
+
+  const formatFieldsCompact = (fields: Record<string, unknown> | undefined) => {
+    if (!fields || Object.keys(fields).length === 0) {
+      return '-';
+    }
+    // Single line JSON
+    return JSON.stringify(fields);
+  };
+
+  const formatFieldsExpanded = (fields: Record<string, unknown> | undefined) => {
+    if (!fields || Object.keys(fields).length === 0) {
+      return '';
+    }
+    // Pretty printed JSON
+    return JSON.stringify(fields, null, 2);
   };
 
   return (
@@ -150,52 +166,110 @@ export function LogsContent() {
         </Text>
       </Group>
 
-      {/* Table */}
-      <Paper withBorder>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>TIME</Table.Th>
-              <Table.Th>LEVEL</Table.Th>
-              <Table.Th>MESSAGE</Table.Th>
-              <Table.Th>FIELDS</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {data.entries.length === 0 && (
-              <Table.Tr>
-                <Table.Td colSpan={4}>
-                  <Text ta="center" c="dimmed" py="xl">
-                    No log entries
+      {/* DataTable */}
+      <DataTable
+        withTableBorder
+        borderRadius="sm"
+        striped
+        highlightOnHover
+        records={data.entries}
+        columns={[
+          {
+            accessor: 'timestamp',
+            title: 'Time',
+            width: 120,
+            render: (entry: LogEntry) => (
+              <Text size="xs" ff="monospace">
+                {formatTimestamp(entry.timestamp)}
+              </Text>
+            ),
+          },
+          {
+            accessor: 'level',
+            title: 'Level',
+            width: 80,
+            render: (entry: LogEntry) => (
+              <Badge size="sm" color={getLevelColor(entry.level)}>
+                {entry.level}
+              </Badge>
+            ),
+          },
+          {
+            accessor: 'message',
+            title: 'Message',
+            width: 300,
+            render: (entry: LogEntry) => (
+              <Text size="sm" lineClamp={1}>
+                {entry.message}
+              </Text>
+            ),
+          },
+          {
+            accessor: 'fields',
+            title: 'Fields',
+            render: (entry: LogEntry) => {
+              const compactJson = formatFieldsCompact(entry.fields);
+              const expandedJson = formatFieldsExpanded(entry.fields);
+
+              if (compactJson === '-') {
+                return (
+                  <Text size="xs" c="dimmed">
+                    -
                   </Text>
-                </Table.Td>
-              </Table.Tr>
-            )}
-            {data.entries.map((entry, index) => (
-              <Table.Tr key={index}>
-                <Table.Td>
-                  <Text size="sm" ff="monospace">
-                    {formatTimestamp(entry.timestamp)}
+                );
+              }
+
+              return (
+                <Tooltip
+                  label={
+                    <pre
+                      style={{
+                        margin: 0,
+                        padding: '8px',
+                        fontSize: '12px',
+                        fontFamily: 'monospace',
+                        maxWidth: 600,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {expandedJson}
+                    </pre>
+                  }
+                  multiline
+                  withArrow
+                  position="left"
+                  styles={{
+                    tooltip: {
+                      maxHeight: 400,
+                      overflowY: 'auto',
+                      padding: 0,
+                    },
+                  }}
+                >
+                  <Text
+                    size="xs"
+                    ff="monospace"
+                    c="dimmed"
+                    style={{
+                      cursor: 'pointer',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {compactJson}
                   </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Badge size="sm" color={getLevelColor(entry.level)}>
-                    {entry.level}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm">{entry.message}</Text>
-                </Table.Td>
-                <Table.Td>
-                  {entry.fields && Object.keys(entry.fields).length > 0 && (
-                    <Code block>{JSON.stringify(entry.fields, null, 2)}</Code>
-                  )}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Paper>
+                </Tooltip>
+              );
+            },
+          },
+        ]}
+        noRecordsText="No log entries"
+        minHeight={400}
+        verticalSpacing="xs"
+      />
     </Stack>
   );
 }
