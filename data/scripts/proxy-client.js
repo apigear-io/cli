@@ -1,11 +1,5 @@
 // Connect to ObjectLink backend
 const client = connect('ws://localhost:5550/ws');
+const counter = client.interface("demo.Counter")
+counter.invoke("increment")
 
-client.onConnect(() => {
-  console.log('connected to proxy!');
-  console.log('available services:', client.services());
-});
-
-client.onError((error) => {
-  console.error('connection error:', error);
-});

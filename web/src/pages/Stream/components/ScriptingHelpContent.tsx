@@ -210,11 +210,16 @@ counter.invoke('increment').then(() => {
             code={`const backend = createBackend('ws://localhost:8080/ws');
 
 backend.register('demo.Counter', {
-  count: 0,
-
-  increment() {
-    this.count++;
-    backend.notifyPropertyChanged('count', this.count);
+  properties: {
+    count: 0
+  },
+  methods: {
+    increment(params, ctx) {
+      let count = ctx.get('count');
+      count++;
+      ctx.set('count', count);  // Broadcasts PROPERTY_CHANGE
+      return count;
+    }
   }
 });
 
@@ -224,41 +229,107 @@ console.log('Backend running...');`}
 
         <HelpSection title="Registering Objects">
           <Text>
-            Use <code>backend.register(objectId, implementation)</code> to provide an object
-            implementation:
+            Use <code>backend.register(objectId, config)</code> to provide an object
+            implementation. The config object has the following structure:
           </Text>
           <HelpCode
             code={`backend.register('demo.Calculator', {
-  result: 0,
-
-  add(a, b) {
-    this.result = a + b;
-    backend.notifyPropertyChanged('result', this.result);
-    return this.result;
+  // Initial property values
+  properties: {
+    result: 0
   },
 
-  clear() {
-    this.result = 0;
-    backend.notifyPropertyChanged('result', this.result);
+  // Method handlers (receive params and context)
+  methods: {
+    add(params, ctx) {
+      const result = params.a + params.b;
+      ctx.set('result', result);  // Set and broadcast
+      return result;
+    },
+
+    clear(params, ctx) {
+      ctx.set('result', 0);
+    }
+  },
+
+  // Optional lifecycle callbacks
+  onLink(ctx) {
+    console.log('Client linked to', ctx.objectId);
+  },
+
+  onUnlink(ctx) {
+    console.log('Client unlinked from', ctx.objectId);
   }
 });`}
           />
         </HelpSection>
 
-        <HelpSection title="Sending Notifications">
+        <HelpSection title="Context Object (ctx)">
+          <Text>
+            Method handlers receive a context object that provides access to the object's state:
+          </Text>
           <HelpTable
             headers={['Method', 'Description', 'Example']}
             rows={[
               [
-                <code>notifyPropertyChanged(propId, value)</code>,
-                'Notify clients of property change',
-                <code>{"backend.notifyPropertyChanged('count', 5)"}</code>,
+                <code>ctx.get(propName)</code>,
+                'Get a property value',
+                <code>{"const count = ctx.get('count')"}</code>,
               ],
               [
-                <code>notifySignal(signalId, args)</code>,
-                'Send a signal to clients',
-                <code>{"backend.notifySignal('alarm', [])"}</code>,
+                <code>ctx.set(propName, value)</code>,
+                'Set property and broadcast PROPERTY_CHANGE',
+                <code>{"ctx.set('count', 5)"}</code>,
               ],
+              [
+                <code>ctx.emit(signalName, ...args)</code>,
+                'Send a signal to all linked clients',
+                <code>{"ctx.emit('alarm', { level: 'high' })"}</code>,
+              ],
+              [
+                <code>ctx.clientCount()</code>,
+                'Get number of linked clients',
+                <code>{"const count = ctx.clientCount()"}</code>,
+              ],
+              [
+                <code>ctx.objectId</code>,
+                'Get the object ID',
+                <code>{"console.log(ctx.objectId)"}</code>,
+              ],
+            ]}
+          />
+        </HelpSection>
+
+        <HelpSection title="Object Handle">
+          <Text>
+            The <code>backend.register()</code> method returns an object handle that you can use
+            to interact with the object from outside method handlers:
+          </Text>
+          <HelpCode
+            code={`const obj = backend.register('demo.Counter', {
+  properties: { count: 0 },
+  methods: { /* ... */ }
+});
+
+// Update properties from timer or other code
+every(1000, () => {
+  const current = obj.get('count');
+  obj.set('count', current + 1);  // Broadcasts to clients
+});
+
+// Emit signals
+obj.emit('tick', { time: Date.now() });
+
+// Check client count
+console.log('Connected clients:', obj.clientCount());`}
+          />
+          <HelpTable
+            headers={['Method', 'Description']}
+            rows={[
+              [<code>obj.get(propName)</code>, 'Get property value'],
+              [<code>obj.set(propName, value)</code>, 'Set property and broadcast'],
+              [<code>obj.emit(signalName, ...args)</code>, 'Send signal to clients'],
+              [<code>obj.clientCount()</code>, 'Get number of linked clients'],
             ]}
           />
         </HelpSection>
