@@ -21,8 +21,27 @@ import type { LogLevel, LogEntry } from '@/api/types';
 export function LogsContent() {
   const [level, setLevel] = useState<LogLevel | ''>('');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
   const { data } = useLogs(level || undefined, search || undefined);
   const clearLogs = useClearLogs();
+
+  // Calculate pagination
+  const totalRecords = data.entries.length;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedEntries = data.entries.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  const handleLevelChange = (value: string | null) => {
+    setLevel((value as LogLevel) || '');
+    setPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const levelOptions = [
     { value: '', label: 'All Levels' },
@@ -148,7 +167,7 @@ export function LogsContent() {
           </Text>
           <Select
             value={level}
-            onChange={(value) => setLevel((value as LogLevel) || '')}
+            onChange={handleLevelChange}
             data={levelOptions}
             size="sm"
             style={{ width: 150 }}
@@ -156,14 +175,15 @@ export function LogsContent() {
           <TextInput
             placeholder="Search..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             leftSection={<IconSearch size={16} />}
             size="sm"
             style={{ width: 300 }}
           />
         </Group>
         <Text size="sm" c="dimmed">
-          {data.count} entries
+          {totalRecords} entries
+          {totalRecords > pageSize && ` (showing ${startIndex + 1}-${Math.min(endIndex, totalRecords)})`}
         </Text>
       </Group>
 
@@ -173,7 +193,11 @@ export function LogsContent() {
         borderRadius="sm"
         striped
         highlightOnHover
-        records={data.entries}
+        records={paginatedEntries}
+        totalRecords={totalRecords}
+        recordsPerPage={pageSize}
+        page={page}
+        onPageChange={setPage}
         columns={[
           {
             accessor: 'timestamp',
