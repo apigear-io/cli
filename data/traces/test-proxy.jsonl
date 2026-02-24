@@ -1,0 +1,4 @@
+{"ts":1708445000000,"dir":"SEND","proxy":"test-proxy","msg":{"type":"hello","data":"world"}}
+{"ts":1708445001000,"dir":"RECV","proxy":"test-proxy","msg":{"type":"response","status":"ok"}}
+{"ts":1708445002000,"dir":"SEND","proxy":"test-proxy","msg":{"type":"ping"}}
+{"ts":1708445003000,"dir":"RECV","proxy":"test-proxy","msg":{"type":"pong"}}

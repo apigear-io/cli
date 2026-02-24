@@ -305,14 +305,6 @@ export function ScriptingContent() {
           >
             Examples
           </Button>
-          <Button
-            leftSection={<IconDeviceFloppy size={16} />}
-            size="sm"
-            onClick={handleSave}
-            disabled={!code}
-          >
-            Save
-          </Button>
         </Group>
       </Group>
 
@@ -335,29 +327,39 @@ export function ScriptingContent() {
 
         <Grid.Col span={9}>
           <Stack gap="md">
-            {/* Script Title and Run Button */}
+            {/* Script Title and Actions */}
             <Group justify="space-between" align="center">
               <Title order={3}>{currentScript || 'Untitled'}</Title>
-              {activeScriptId ? (
+              <Group gap="xs">
                 <Button
-                  leftSection={<IconPlayerStop size={16} />}
-                  color="red"
+                  leftSection={<IconDeviceFloppy size={16} />}
                   size="sm"
-                  onClick={() => handleStop(activeScriptId)}
-                >
-                  Stop
-                </Button>
-              ) : (
-                <Button
-                  leftSection={<IconPlayerPlay size={16} />}
-                  color="green"
-                  size="sm"
-                  onClick={handleRun}
+                  onClick={handleSave}
                   disabled={!code}
                 >
-                  Start
+                  Save
                 </Button>
-              )}
+                {activeScriptId ? (
+                  <Button
+                    leftSection={<IconPlayerStop size={16} />}
+                    color="red"
+                    size="sm"
+                    onClick={() => handleStop(activeScriptId)}
+                  >
+                    Stop
+                  </Button>
+                ) : (
+                  <Button
+                    leftSection={<IconPlayerPlay size={16} />}
+                    color="green"
+                    size="sm"
+                    onClick={handleRun}
+                    disabled={!code}
+                  >
+                    Start
+                  </Button>
+                )}
+              </Group>
             </Group>
 
             {/* Code Editor */}
