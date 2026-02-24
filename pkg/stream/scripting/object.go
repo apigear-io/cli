@@ -144,25 +144,39 @@ func (o *ObjectDefinition) GetProperties() map[string]interface{} {
 
 // broadcastPropertyChange sends PROPERTY_CHANGE to all linked clients.
 func (o *ObjectDefinition) broadcastPropertyChange(propName string, value interface{}) {
-	propertyID := o.ObjectID + "/" + propName
-	msg := []interface{}{MsgPropertyChange, propertyID, value}
+	if o.engine == nil {
+		return
+	}
 
-	if o.engine != nil {
-		if server := o.engine.GetBackendServer(); server != nil {
-			server.BroadcastToLinked(o.ObjectID, msg)
-		}
+	server := o.engine.GetBackendServer()
+	if server == nil {
+		return
+	}
+
+	// Get the backend server's registry and notify property change
+	// This will broadcast to all linked clients via objectlink-core-go
+	if bs, ok := server.(*BackendServer); ok {
+		kwargs := make(map[string]interface{})
+		kwargs[propName] = value
+		bs.registry.NotifyPropertyChange(o.ObjectID, kwargs)
 	}
 }
 
 // Emit sends a SIGNAL to all linked clients.
 func (o *ObjectDefinition) Emit(signalName string, args ...interface{}) {
-	signalID := o.ObjectID + "/" + signalName
-	msg := []interface{}{MsgSignal, signalID, args}
+	if o.engine == nil {
+		return
+	}
 
-	if o.engine != nil {
-		if server := o.engine.GetBackendServer(); server != nil {
-			server.BroadcastToLinked(o.ObjectID, msg)
-		}
+	server := o.engine.GetBackendServer()
+	if server == nil {
+		return
+	}
+
+	// Get the backend server's registry and notify signal
+	// This will broadcast to all linked clients via objectlink-core-go
+	if bs, ok := server.(*BackendServer); ok {
+		bs.registry.NotifySignal(o.ObjectID, signalName, args)
 	}
 }
 
