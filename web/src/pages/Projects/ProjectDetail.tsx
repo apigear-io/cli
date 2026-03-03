@@ -56,6 +56,9 @@ function ProjectDetailContent() {
   const navigate = useNavigate();
   const openExternal = useOpenFileExternal();
 
+  const projectPath = encodedPath ? decodeURIComponent(encodedPath) : '';
+  const { data: project } = useProject(projectPath);
+
   const [editingFile, setEditingFile] = useState<{ path: string; name: string } | null>(null);
   const [openingExternalPath, setOpeningExternalPath] = useState<string | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<DocumentInfo | null>(null);
@@ -64,9 +67,6 @@ function ProjectDetailContent() {
     navigate('/codegen/projects');
     return null;
   }
-
-  const projectPath = decodeURIComponent(encodedPath);
-  const { data: project } = useProject(projectPath);
 
   const handleEdit = (doc: DocumentInfo) => {
     setEditingFile({ path: doc.path, name: doc.name });

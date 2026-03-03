@@ -100,7 +100,7 @@ export function CodeGeneration() {
     return () => {
       eventSource.close();
     };
-  }, [encodedSolutionPath, navigate, isDone]);
+  }, [encodedSolutionPath, navigate, isDone, status]);
 
   const addLog = (type: LogEntry['type'], message: string, data?: unknown) => {
     setLogs((prev) => [

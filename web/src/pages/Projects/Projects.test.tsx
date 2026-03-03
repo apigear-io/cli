@@ -52,14 +52,38 @@ vi.mock('@mantine/modals', () => ({
   },
 }));
 
+function mockQueryResult(data: ProjectListResponse) {
+  return {
+    data,
+    isLoading: false,
+    error: null,
+    isError: false,
+    isSuccess: true,
+    status: 'success' as const,
+    dataUpdatedAt: Date.now(),
+    errorUpdatedAt: 0,
+    failureCount: 0,
+    failureReason: null,
+    errorUpdateCount: 0,
+    isFetched: true,
+    isFetchedAfterMount: true,
+    isFetching: false,
+    isRefetching: false,
+    isPending: false,
+    isStale: false,
+    isPlaceholderData: false,
+    refetch: vi.fn(),
+    fetchStatus: 'idle' as const,
+    isRefetchError: false,
+    isLoadingError: false,
+    isPaused: false,
+  };
+}
+
 describe('Projects', () => {
   it('renders loading state initially', async () => {
     const { useRecentProjects } = await import('@/api/queries');
-    vi.mocked(useRecentProjects).mockReturnValue({
-      data: mockProjects,
-      isLoading: false,
-      error: null,
-    } as any);
+    vi.mocked(useRecentProjects).mockReturnValue(mockQueryResult(mockProjects));
 
     render(<Projects />);
 
@@ -71,11 +95,7 @@ describe('Projects', () => {
 
   it('renders projects list when projects exist', async () => {
     const { useRecentProjects } = await import('@/api/queries');
-    vi.mocked(useRecentProjects).mockReturnValue({
-      data: mockProjects,
-      isLoading: false,
-      error: null,
-    } as any);
+    vi.mocked(useRecentProjects).mockReturnValue(mockQueryResult(mockProjects));
 
     render(<Projects />);
 
@@ -87,11 +107,7 @@ describe('Projects', () => {
 
   it('renders empty state when no projects exist', async () => {
     const { useRecentProjects } = await import('@/api/queries');
-    vi.mocked(useRecentProjects).mockReturnValue({
-      data: emptyProjects,
-      isLoading: false,
-      error: null,
-    } as any);
+    vi.mocked(useRecentProjects).mockReturnValue(mockQueryResult(emptyProjects));
 
     render(<Projects />);
 
@@ -103,11 +119,7 @@ describe('Projects', () => {
 
   it('shows create project button', async () => {
     const { useRecentProjects } = await import('@/api/queries');
-    vi.mocked(useRecentProjects).mockReturnValue({
-      data: mockProjects,
-      isLoading: false,
-      error: null,
-    } as any);
+    vi.mocked(useRecentProjects).mockReturnValue(mockQueryResult(mockProjects));
 
     render(<Projects />);
 
@@ -119,11 +131,7 @@ describe('Projects', () => {
 
   it('displays project document count', async () => {
     const { useRecentProjects } = await import('@/api/queries');
-    vi.mocked(useRecentProjects).mockReturnValue({
-      data: mockProjects,
-      isLoading: false,
-      error: null,
-    } as any);
+    vi.mocked(useRecentProjects).mockReturnValue(mockQueryResult(mockProjects));
 
     render(<Projects />);
 
