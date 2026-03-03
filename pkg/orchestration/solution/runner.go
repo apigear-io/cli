@@ -2,23 +2,33 @@ package solution
 
 import (
 	"context"
+	"time"
 
-	"github.com/apigear-io/cli/pkg/foundation/config"
 	"github.com/apigear-io/cli/pkg/codegen"
 	"github.com/apigear-io/cli/pkg/foundation"
+	"github.com/apigear-io/cli/pkg/foundation/config"
+	"github.com/apigear-io/cli/pkg/foundation/tasks"
 	"github.com/apigear-io/cli/pkg/objmodel"
 	"github.com/apigear-io/cli/pkg/objmodel/spec"
-	"github.com/apigear-io/cli/pkg/foundation/tasks"
 )
 
+// RunStats accumulates code generation statistics across all targets.
+type RunStats struct {
+	FilesWritten int      `json:"filesWritten"`
+	FilesSkipped int      `json:"filesSkipped"`
+	FilesCopied  int      `json:"filesCopied"`
+	TotalFiles   int      `json:"totalFiles"`
+	TargetCount  int      `json:"targetCount"`
+	DurationMs   int64    `json:"durationMs"`
+}
+
 type Runner struct {
-	tm *tasks.TaskManager
-	// tasks map[string]*task
+	tm    *tasks.TaskManager
+	Stats RunStats
 }
 
 func NewRunner() *Runner {
 	return &Runner{
-		// tasks: make(map[string]*task),
 		tm: tasks.NewTaskManager(),
 	}
 }
@@ -50,7 +60,7 @@ func (r *Runner) RunSource(ctx context.Context, source string, force bool) error
 // It should not act on a cached value.
 func (r *Runner) RunDoc(ctx context.Context, file string, doc *spec.SolutionDoc) error {
 	task := func(ctx context.Context) error {
-		return runSolution(doc)
+		return r.runSolution(doc)
 	}
 	meta := map[string]interface{}{
 		"solution": file,
@@ -84,7 +94,7 @@ func (r *Runner) WatchDoc(ctx context.Context, file string, doc *spec.SolutionDo
 	deps := doc.AggregateDependencies()
 	deps = append(deps, file)
 	task := func(ctx context.Context) error {
-		return runSolution(doc)
+		return r.runSolution(doc)
 	}
 	meta := map[string]interface{}{
 		"solution": file,
@@ -115,15 +125,18 @@ func (r *Runner) runSolutionFromSource(_ context.Context, source string, force b
 			target.Force = true
 		}
 	}
-	return runSolution(doc)
+	return r.runSolution(doc)
 }
 
-func runSolution(doc *spec.SolutionDoc) error {
+func (r *Runner) runSolution(doc *spec.SolutionDoc) error {
 	log.Info().Msgf("run solution %s", doc.RootDir)
 	if err := doc.Validate(); err != nil {
 		return err
 	}
 	rootDir := doc.RootDir
+
+	start := time.Now()
+	r.Stats = RunStats{}
 
 	for _, target := range doc.Targets {
 		name := target.Name
@@ -173,7 +186,16 @@ func runSolution(doc *spec.SolutionDoc) error {
 		if err != nil {
 			return err
 		}
+		// Accumulate stats from this target
+		r.Stats.FilesWritten += g.Stats.FilesWritten
+		r.Stats.FilesSkipped += g.Stats.FilesSkipped
+		r.Stats.FilesCopied += g.Stats.FilesCopied
+		r.Stats.TargetCount++
 	}
+
+	r.Stats.TotalFiles = r.Stats.FilesWritten + r.Stats.FilesSkipped + r.Stats.FilesCopied
+	r.Stats.DurationMs = time.Since(start).Milliseconds()
+
 	return nil
 }
 

@@ -1,0 +1,16 @@
+traceConfig:
+  maxSizeMB: 10
+  maxBackups: 5
+  maxAgeDays: 7
+  compress: true
+proxies:
+  demo:
+    listen: ws://localhost:5550/ws
+    backend: ws://localhost:5560/ws
+    mode: proxy
+clients:
+  demo:
+    url: ws://localhost:5550/ws
+    interfaces: []
+    enabled: true
+    autoReconnect: true

@@ -1,0 +1,6 @@
+traceConfig:
+  maxSizeMB: 10
+  maxBackups: 5
+  maxAgeDays: 7
+  compress: true
+proxies: {}

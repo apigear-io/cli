@@ -30,4 +30,79 @@ export const queryKeys = {
     // Search
     search: (query: string) => [...queryKeys.templates.all(), 'search', query] as const,
   },
+
+  // Projects
+  projects: {
+    all: () => ['projects'] as const,
+
+    // Recent projects
+    recent: () => [...queryKeys.projects.all(), 'recent'] as const,
+
+    // Single project detail
+    detail: (path: string) => [...queryKeys.projects.all(), 'detail', path] as const,
+
+    // Suggested directories
+    directories: () => [...queryKeys.projects.all(), 'directories'] as const,
+  },
+
+  // Stream
+  stream: {
+    all: () => ['stream'] as const,
+
+    // Dashboard
+    dashboard: () => [...queryKeys.stream.all(), 'dashboard'] as const,
+
+    // Proxies
+    proxies: {
+      all: () => [...queryKeys.stream.all(), 'proxies'] as const,
+      list: () => [...queryKeys.stream.proxies.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.proxies.all(), 'detail', name] as const,
+      stats: (name: string) => [...queryKeys.stream.proxies.all(), 'stats', name] as const,
+    },
+
+    // Clients
+    clients: {
+      all: () => [...queryKeys.stream.all(), 'clients'] as const,
+      list: () => [...queryKeys.stream.clients.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.clients.all(), 'detail', name] as const,
+    },
+
+    // Scripts
+    scripts: {
+      all: () => [...queryKeys.stream.all(), 'scripts'] as const,
+      list: () => [...queryKeys.stream.scripts.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.scripts.all(), 'detail', name] as const,
+      running: () => [...queryKeys.stream.scripts.all(), 'running'] as const,
+    },
+
+    // Traces
+    traces: {
+      all: () => [...queryKeys.stream.all(), 'traces'] as const,
+      list: () => [...queryKeys.stream.traces.all(), 'list'] as const,
+      detail: (name: string) => [...queryKeys.stream.traces.all(), 'detail', name] as const,
+      stats: () => [...queryKeys.stream.traces.all(), 'stats'] as const,
+    },
+
+    // Player
+    player: {
+      all: () => [...queryKeys.stream.all(), 'player'] as const,
+      list: () => [...queryKeys.stream.player.all(), 'list'] as const,
+      detail: (id: string) => [...queryKeys.stream.player.all(), 'detail', id] as const,
+    },
+
+    // Logs
+    logs: {
+      all: () => [...queryKeys.stream.all(), 'logs'] as const,
+      list: (level?: string, search?: string) =>
+        [...queryKeys.stream.logs.all(), 'list', level || '', search || ''] as const,
+    },
+
+    // Generator
+    generator: {
+      all: () => [...queryKeys.stream.all(), 'generator'] as const,
+      templates: () => [...queryKeys.stream.generator.all(), 'templates'] as const,
+      template: (name: string) => [...queryKeys.stream.generator.all(), 'template', name] as const,
+      examples: () => [...queryKeys.stream.generator.all(), 'examples'] as const,
+    },
+  },
 } as const;

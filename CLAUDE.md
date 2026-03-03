@@ -74,7 +74,128 @@ export function Page() {
 
 **Current Status:**
 - ✅ Templates page migrated
-- 🔲 Dashboard, Projects, CodeGen, Monitor pages - still using useQuery
+- ✅ Stream pages use useSuspenseQuery
+- ✅ Projects page migrated
+- 🔲 Dashboard, CodeGen, Monitor pages - still using useQuery
+
+### 3. Stream Module (WebSocket Proxy & ObjectLink Clients)
+
+**Overview:**
+The Stream module (`pkg/stream/`) provides WebSocket proxy and ObjectLink client management capabilities. Integrated in February 2025 from wsproxy project.
+
+**Key Features:**
+- WebSocket proxy with 4 modes: proxy, echo, backend, inbound-only
+- ObjectLink client management using objectlink-core-go library
+- Real-time message statistics and tracing
+- Web UI for proxy and client management
+- CLI commands for all operations
+
+**Architecture:**
+```
+pkg/stream/
+├── proxy/      # WebSocket proxy with multiple modes
+├── client/     # ObjectLink client management (uses objectlink-core-go)
+├── relay/      # WebSocket connection infrastructure
+├── protocol/   # Best-effort message parsing for logging/UI
+├── config/     # YAML/JSON configuration
+└── services.go # Dependency injection container
+```
+
+**API Endpoints:**
+- `/api/v1/stream/dashboard` - Overall statistics
+- `/api/v1/stream/proxies/*` - Proxy CRUD and control
+- `/api/v1/stream/clients/*` - Client CRUD and control
+
+**Frontend Pages:**
+- `/stream/dashboard` - Statistics overview with real-time updates
+- `/stream/proxies` - Proxy management (create, start, stop, delete)
+- `/stream/clients` - Client management (connect, disconnect)
+
+**Query Keys:**
+```typescript
+queryKeys.stream.dashboard()
+queryKeys.stream.proxies.list()
+queryKeys.stream.proxies.detail(name)
+queryKeys.stream.clients.list()
+queryKeys.stream.clients.detail(name)
+```
+
+**Auto-refresh Intervals:**
+- Dashboard stats: 5 seconds
+- Proxy list: 3 seconds
+- Proxy details: 2 seconds
+- Client list: 3 seconds
+- Client details: 2 seconds
+
+**CLI Commands:**
+```bash
+apigear stream                      # Start server
+apigear stream proxy list           # List proxies
+apigear stream proxy create <name>  # Create proxy
+apigear stream client list          # List clients
+apigear stream echo                 # Quick echo server
+```
+
+**Testing:**
+- 85+ Go unit tests covering all packages
+- 108 E2E tests across all browsers (Chromium, Firefox, WebKit)
+- Test coverage: >80% for core packages
+
+**Documentation:**
+- See `pkg/stream/README.md` for comprehensive usage guide
+- Config examples in `pkg/stream/config/config.go`
+
+### 4. Projects Feature (Feb 2025)
+
+**Overview:**
+Complete web UI for project management, allowing users to list, create, and manage ApiGear projects through the browser.
+
+**Key Features:**
+- Recent projects list with auto-refresh (10s interval)
+- Create new project with default demo files
+- View project details (documents list)
+- Delete projects with confirmation dialog
+
+**API Endpoints:**
+- `GET /api/v1/projects/recent` - List recent projects
+- `POST /api/v1/projects` - Create new project
+- `GET /api/v1/projects/get?path=<path>` - Get project details
+- `DELETE /api/v1/projects?path=<path>` - Delete project
+
+**Frontend Pages:**
+- `/projects` - Project management interface
+
+**Query Keys:**
+```typescript
+queryKeys.projects.all()
+queryKeys.projects.recent()
+queryKeys.projects.detail(path)
+```
+
+**Auto-refresh:**
+- Recent projects: 10 second refetch interval
+- Project details: 30 second stale time
+
+**Backend Functions:**
+- Uses `project.InitProject()` for creation (creates apigear/ directory with demo files)
+- Uses `project.ReadProject()` for details
+- Uses `project.RecentProjectInfos()` for list
+- Uses `config.AppendRecentEntry()` / `RemoveRecentEntry()` for tracking
+
+**Default Demo Files:**
+Backend creates these files in new projects:
+- `apigear/demo.module.yaml` - Sample module (Counter interface)
+- `apigear/demo.module.idl` - IDL version
+- `apigear/demo.solution.yaml` - Build configuration
+- `apigear/demo.sim.js` - JavaScript simulation
+
+**Current Status:**
+- ✅ Recent projects list
+- ✅ Create with initialization
+- ✅ Project details view
+- ✅ Delete functionality
+- 🔲 Import from Git (Phase 2)
+- 🔲 Add documents to projects (Phase 2)
 
 ## Architecture & Tech Stack
 
@@ -126,6 +247,7 @@ export function Page() {
 │   │   │   └── Layout/           # Layout components
 │   │   ├── pages/         # Page components
 │   │   │   ├── Templates/        # Template management (uses Suspense)
+│   │   │   ├── Stream/           # WebSocket proxy & client mgmt (uses Suspense)
 │   │   │   ├── Dashboard/        # Dashboard page
 │   │   │   ├── Projects/         # Projects page
 │   │   │   ├── CodeGen/          # Code generation
@@ -313,6 +435,7 @@ task ci:all               # Full CI pipeline
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
 - [QUERY_REFACTORING.md](./web/QUERY_REFACTORING.md) - useSuspenseQuery guide
 - [E2E Testing Guide](./web/e2e/README.md) - Playwright setup
+- [Stream Module Guide](./pkg/stream/README.md) - WebSocket proxy & ObjectLink clients
 
 ### External Resources
 - [TanStack Query v5 Docs](https://tanstack.com/query/latest)

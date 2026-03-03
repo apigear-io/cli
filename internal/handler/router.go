@@ -9,9 +9,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
+
+	"github.com/apigear-io/cli/pkg/stream/logging"
 )
 
-// RegisterAPIRoutes registers all REST API routes (health, status, templates)
+// RegisterAPIRoutes registers all REST API routes (health, status, templates, stream)
 func RegisterAPIRoutes(router chi.Router) {
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Get("/health", Health())
@@ -33,6 +35,121 @@ func RegisterAPIRoutes(router chi.Router) {
 			r.Route("/registry", func(r chi.Router) {
 				r.Post("/update", UpdateRegistry())
 			})
+		})
+
+		// Project endpoints
+		r.Route("/projects", func(r chi.Router) {
+			r.Get("/directories", GetProjectDirectories())
+			r.Get("/browse", BrowseDirectories())
+			r.Get("/recent", ListRecentProjects())
+			r.Post("/", CreateProject())
+			r.Get("/get", GetProject())   // Use query param: ?path=<encoded-path>
+			r.Delete("/", DeleteProject()) // Use query param: ?path=<encoded-path>
+
+			// Code generation
+			r.Get("/generate", GenerateCode()) // Use query params: ?path=<solution-path>&force=<bool>
+
+			// File operations
+			r.Route("/files", func(r chi.Router) {
+				r.Get("/read", ReadFile())                 // Use query param: ?path=<file-path>
+				r.Post("/write", WriteFile())              // Body: {path, content}
+				r.Post("/open-external", OpenFileExternal()) // Body: {path}
+			})
+		})
+
+		// Stream endpoints
+		r.Route("/stream", func(r chi.Router) {
+			// Apply HTTP logging middleware to all stream routes
+			r.Use(logging.HTTPLoggingMiddleware)
+
+			// Dashboard
+			r.Get("/dashboard", GetStreamDashboard())
+
+			// Proxies
+			r.Route("/proxies", func(r chi.Router) {
+				r.Get("/", ListStreamProxies())
+				r.Post("/", CreateStreamProxy())
+				r.Get("/{name}", GetStreamProxy())
+				r.Put("/{name}", UpdateStreamProxy())
+				r.Delete("/{name}", DeleteStreamProxy())
+				r.Post("/{name}/start", StartStreamProxy())
+				r.Post("/{name}/stop", StopStreamProxy())
+				r.Get("/{name}/stats", GetStreamProxyStats())
+				r.Get("/{name}/events", StreamProxyEvents(getStreamServices()))
+			})
+
+			// Clients
+			r.Route("/clients", func(r chi.Router) {
+				r.Get("/", ListStreamClients())
+				r.Post("/", CreateStreamClient())
+				r.Get("/{name}", GetStreamClient())
+				r.Put("/{name}", UpdateStreamClient())
+				r.Delete("/{name}", DeleteStreamClient())
+				r.Post("/{name}/connect", ConnectStreamClient())
+				r.Post("/{name}/disconnect", DisconnectStreamClient())
+			})
+
+			// Scripts
+			r.Route("/scripts", func(r chi.Router) {
+				r.Get("/", ListScripts())
+				r.Post("/", SaveScript())
+				r.Get("/running", ListRunningScripts())
+				r.Post("/run", RunCode())
+				r.Get("/output", StreamScriptOutput(getStreamServices()))
+				r.Get("/{name}", LoadScript())
+				r.Put("/{name}", UpdateScript())
+				r.Delete("/{name}", DeleteScript())
+				r.Post("/{name}/run", RunScript())
+				r.Post("/stop/{id}", StopScript())
+			})
+
+			// Traces
+			r.Route("/traces", func(r chi.Router) {
+				r.Get("/", ListTraceFiles())
+				r.Get("/stats", GetTraceStats())
+				r.Post("/search", SearchTraces())
+				r.Post("/edit", EditTrace())
+				r.Post("/merge", MergeTraces())
+				r.Post("/export", ExportTrace())
+				r.Get("/{name}", GetTraceFile())
+				r.Delete("/{name}", DeleteTraceFile())
+			})
+
+			// Stream Editor
+			r.Route("/editor", func(r chi.Router) {
+				r.Post("/load", LoadStreamEditor())
+				r.Get("/messages", GetStreamEditorMessages())
+				r.Get("/timeline", GetStreamEditorTimeline())
+				r.Get("/seek", SeekStreamEditor())
+				r.Post("/export", ExportStreamEditor())
+				r.Post("/jq", RunStreamEditorJQ())
+			})
+
+			// Stream Player
+			r.Route("/player", func(r chi.Router) {
+				r.Get("/", ListPlayerStreams())
+				r.Post("/", CreatePlayerStream())
+				r.Get("/{id}", GetPlayerStream())
+				r.Post("/{id}/play", PlayPlayerStream())
+				r.Post("/{id}/pause", PausePlayerStream())
+				r.Post("/{id}/resume", ResumePlayerStream())
+				r.Post("/{id}/stop", StopPlayerStream())
+				r.Delete("/{id}", DeletePlayerStream())
+			})
+
+			// Trace Generator
+			r.Route("/generator", func(r chi.Router) {
+				r.Post("/preview", GeneratorPreview(getStreamServices()))
+				r.Post("/save", GeneratorSave(getStreamServices()))
+				r.Get("/examples", GeneratorExamples(getStreamServices()))
+				r.Get("/templates", GeneratorListTemplates(getStreamServices()))
+				r.Post("/templates", GeneratorSaveTemplate(getStreamServices()))
+				r.Get("/templates/{name}", GeneratorLoadTemplate(getStreamServices()))
+			})
+
+			// Application Logs
+			r.Get("/logs", GetLogs())
+			r.Delete("/logs", ClearLogs())
 		})
 	})
 }

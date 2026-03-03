@@ -9,6 +9,8 @@ import App from './App';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import '@mantine/code-highlight/styles.css';
+import 'mantine-datatable/styles.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {

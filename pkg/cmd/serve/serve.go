@@ -8,6 +8,7 @@ import (
 	_ "github.com/apigear-io/cli/internal/swagger"
 	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/apigear-io/cli/pkg/runtime/network"
+	"github.com/apigear-io/cli/pkg/stream/config"
 	"github.com/apigear-io/cli/web"
 	"github.com/spf13/cobra"
 )
@@ -37,6 +38,35 @@ func NewServeCommand() *cobra.Command {
 			// Set Addr from host and port if not explicitly provided
 			if opts.Addr == "" {
 				opts.Addr = fmt.Sprintf("%s:%d", opts.Host, opts.Port)
+			}
+
+			// Initialize stream config path for persistence
+			configPath := "./stream.yaml"
+			handler.SetStreamConfigPath(configPath)
+
+			// Load existing stream config if it exists
+			if _, err := os.Stat(configPath); err == nil {
+				cfg, err := config.LoadConfig(configPath)
+				if err != nil {
+					logging.Warn().Err(err).Msg("Failed to load stream config, starting with empty state")
+				} else {
+					// Initialize stream services and load config
+					services := handler.GetStreamServices()
+
+					if len(cfg.Proxies) > 0 {
+						logging.Info().Msgf("Loading %d proxies from config", len(cfg.Proxies))
+						if err := services.ProxyManager.LoadFromConfig(cfg.Proxies); err != nil {
+							logging.Warn().Err(err).Msg("Failed to load some proxies")
+						}
+					}
+
+					if len(cfg.Clients) > 0 {
+						logging.Info().Msgf("Loading %d clients from config", len(cfg.Clients))
+						if err := services.ClientManager.LoadFromConfig(cfg.Clients); err != nil {
+							logging.Warn().Err(err).Msg("Failed to load some clients")
+						}
+					}
+				}
 			}
 
 			// Create HTTP server
