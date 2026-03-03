@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = ["serve", "--port", "8080"]
   bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ./cmd/apigear"
+  cmd = "go build -ldflags=\"-X main.version=v0.50.1-dev -X main.commit=dev -X main.date=dev\" -o ./tmp/main ./cmd/apigear"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "web", "node_modules", "bin", "docs"]
   exclude_file = []

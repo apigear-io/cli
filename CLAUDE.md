@@ -75,7 +75,8 @@ export function Page() {
 **Current Status:**
 - ✅ Templates page migrated
 - ✅ Stream pages use useSuspenseQuery
-- 🔲 Dashboard, Projects, CodeGen, Monitor pages - still using useQuery
+- ✅ Projects page migrated
+- 🔲 Dashboard, CodeGen, Monitor pages - still using useQuery
 
 ### 3. Stream Module (WebSocket Proxy & ObjectLink Clients)
 
@@ -143,6 +144,58 @@ apigear stream echo                 # Quick echo server
 **Documentation:**
 - See `pkg/stream/README.md` for comprehensive usage guide
 - Config examples in `pkg/stream/config/config.go`
+
+### 4. Projects Feature (Feb 2025)
+
+**Overview:**
+Complete web UI for project management, allowing users to list, create, and manage ApiGear projects through the browser.
+
+**Key Features:**
+- Recent projects list with auto-refresh (10s interval)
+- Create new project with default demo files
+- View project details (documents list)
+- Delete projects with confirmation dialog
+
+**API Endpoints:**
+- `GET /api/v1/projects/recent` - List recent projects
+- `POST /api/v1/projects` - Create new project
+- `GET /api/v1/projects/get?path=<path>` - Get project details
+- `DELETE /api/v1/projects?path=<path>` - Delete project
+
+**Frontend Pages:**
+- `/projects` - Project management interface
+
+**Query Keys:**
+```typescript
+queryKeys.projects.all()
+queryKeys.projects.recent()
+queryKeys.projects.detail(path)
+```
+
+**Auto-refresh:**
+- Recent projects: 10 second refetch interval
+- Project details: 30 second stale time
+
+**Backend Functions:**
+- Uses `project.InitProject()` for creation (creates apigear/ directory with demo files)
+- Uses `project.ReadProject()` for details
+- Uses `project.RecentProjectInfos()` for list
+- Uses `config.AppendRecentEntry()` / `RemoveRecentEntry()` for tracking
+
+**Default Demo Files:**
+Backend creates these files in new projects:
+- `apigear/demo.module.yaml` - Sample module (Counter interface)
+- `apigear/demo.module.idl` - IDL version
+- `apigear/demo.solution.yaml` - Build configuration
+- `apigear/demo.sim.js` - JavaScript simulation
+
+**Current Status:**
+- ✅ Recent projects list
+- ✅ Create with initialization
+- ✅ Project details view
+- ✅ Delete functionality
+- 🔲 Import from Git (Phase 2)
+- 🔲 Add documents to projects (Phase 2)
 
 ## Architecture & Tech Stack
 
