@@ -37,6 +37,7 @@ function App() {
           <Route path="projects/generate/:encodedSolutionPath" element={<CodeGeneration />} />
           <Route path="generate" element={<CodeGen />} />
           <Route path="monitor" element={<Monitor />} />
+          <Route path="logs" element={<Logs />} />
         </Route>
 
         {/* Stream routes with Stream AppShell */}

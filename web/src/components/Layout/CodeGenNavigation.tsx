@@ -6,6 +6,7 @@ import {
   IconFolder,
   IconCode,
   IconActivity,
+  IconList,
 } from '@tabler/icons-react';
 
 interface CodeGenNavigationProps {
@@ -21,6 +22,7 @@ export function CodeGenNavigation({ onNavigate }: CodeGenNavigationProps) {
     { to: '/codegen/projects', label: 'Projects', icon: IconFolder },
     { to: '/codegen/generate', label: 'Code Generation', icon: IconCode },
     { to: '/codegen/monitor', label: 'Monitor', icon: IconActivity },
+    { to: '/codegen/logs', label: 'Logs', icon: IconList },
   ];
 
   return (

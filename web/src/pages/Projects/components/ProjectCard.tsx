@@ -5,7 +5,7 @@ import type { ProjectInfo } from '@/api/types';
 
 interface ProjectCardProps {
   project: ProjectInfo;
-  onDelete: (path: string) => void;
+  onDelete?: (path: string) => void;
 }
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
@@ -39,23 +39,25 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         </Group>
 
         <Group gap="xs">
-          <Menu shadow="md" width={200}>
-            <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" onClick={handleMenuClick}>
-                <IconDots size={16} />
-              </ActionIcon>
-            </Menu.Target>
+          {onDelete && (
+            <Menu shadow="md" width={200}>
+              <Menu.Target>
+                <ActionIcon variant="subtle" color="gray" onClick={handleMenuClick}>
+                  <IconDots size={16} />
+                </ActionIcon>
+              </Menu.Target>
 
-            <Menu.Dropdown onClick={handleMenuClick}>
-              <Menu.Item
-                leftSection={<IconTrash size={16} />}
-                color="red"
-                onClick={() => onDelete(project.path)}
-              >
-                Delete
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+              <Menu.Dropdown onClick={handleMenuClick}>
+                <Menu.Item
+                  leftSection={<IconTrash size={16} />}
+                  color="red"
+                  onClick={() => onDelete(project.path)}
+                >
+                  Delete
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
           <IconChevronRight size={16} style={{ opacity: 0.5 }} />
         </Group>
       </Group>
