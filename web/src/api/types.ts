@@ -37,6 +37,92 @@ export interface InstallProgressEvent {
   error?: string;
 }
 
+// Project types
+
+export interface DocumentInfo {
+  name: string;
+  path: string;
+  type: string; // "module" | "solution" | "simulation" | "scenario"
+}
+
+export interface ProjectInfo {
+  name: string;
+  path: string;
+  documents: DocumentInfo[];
+}
+
+export interface ProjectListResponse {
+  projects: ProjectInfo[];
+  count: number;
+}
+
+export interface CreateProjectRequest {
+  name: string; // Project name (directory name)
+  path: string; // Parent directory path
+}
+
+export interface ProjectDirectoriesResponse {
+  homeDir: string;
+  workingDir: string;
+  suggestions: string[];
+}
+
+export interface DirectoryEntry {
+  name: string;
+  path: string;
+  accessible: boolean;
+}
+
+export interface DirectoryListResponse {
+  currentPath: string;
+  parentPath: string;
+  directories: DirectoryEntry[];
+  count: number;
+}
+
+export interface ReadFileResponse {
+  path: string;
+  content: string;
+  encoding: string;
+}
+
+export interface WriteFileRequest {
+  path: string;
+  content: string;
+}
+
+export interface OpenExternalRequest {
+  path: string;
+}
+
+// Code Generation types
+
+export type TaskState =
+  | 'idle'
+  | 'added'
+  | 'removed'
+  | 'watching'
+  | 'running'
+  | 'finished'
+  | 'stopped'
+  | 'failed';
+
+export interface TaskEvent {
+  name: string;
+  state: TaskState;
+  meta: Record<string, unknown>;
+}
+
+export interface CodeGenerationEvent {
+  type: 'connected' | 'task' | 'error' | 'completed';
+  data: unknown;
+}
+
+export interface GenerateCodeRequest {
+  solutionPath: string;
+  force?: boolean;
+}
+
 // Stream types
 
 export type ProxyStatus = 'stopped' | 'running' | 'error';

@@ -7,6 +7,13 @@ import type {
   TemplateListResponse,
   TemplateInfo,
   InstallProgressEvent,
+  ProjectListResponse,
+  ProjectInfo,
+  CreateProjectRequest,
+  ProjectDirectoriesResponse,
+  ReadFileResponse,
+  WriteFileRequest,
+  OpenExternalRequest,
   StreamDashboardStats,
   ProxyInfo,
   ProxyConfig,
@@ -188,6 +195,83 @@ export function useCleanCache() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all() });
     },
+  });
+}
+
+// Project queries
+
+export function useProjectDirectories() {
+  return useQuery({
+    queryKey: queryKeys.projects.directories(),
+    queryFn: () => apiClient.get<ProjectDirectoriesResponse>('/projects/directories'),
+    staleTime: Infinity, // Directories don't change frequently
+  });
+}
+
+export function useRecentProjects() {
+  return useSuspenseQuery({
+    queryKey: queryKeys.projects.recent(),
+    queryFn: () => apiClient.get<ProjectListResponse>('/projects/recent'),
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+}
+
+export function useProject(path: string) {
+  return useSuspenseQuery({
+    queryKey: queryKeys.projects.detail(path),
+    queryFn: () => apiClient.get<ProjectInfo>(`/projects/get?path=${encodeURIComponent(path)}`),
+    staleTime: 30000, // 30 seconds
+  });
+}
+
+// Project mutations
+
+export function useCreateProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (req: CreateProjectRequest) =>
+      apiClient.post<ProjectInfo>('/projects', req),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() });
+    },
+  });
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (path: string) =>
+      apiClient.delete<void>(`/projects?path=${encodeURIComponent(path)}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() });
+    },
+  });
+}
+
+// File operations
+
+export function useReadFile(path: string) {
+  return useQuery({
+    queryKey: ['file', path],
+    queryFn: () =>
+      apiClient.get<ReadFileResponse>(`/projects/files/read?path=${encodeURIComponent(path)}`),
+    enabled: !!path,
+  });
+}
+
+export function useWriteFile() {
+  return useMutation({
+    mutationFn: (req: WriteFileRequest) =>
+      apiClient.post<{ message: string; path: string }>('/projects/files/write', req),
+  });
+}
+
+export function useOpenFileExternal() {
+  return useMutation({
+    mutationFn: (req: OpenExternalRequest) =>
+      apiClient.post<{ message: string; path: string }>('/projects/files/open-external', req),
   });
 }
 

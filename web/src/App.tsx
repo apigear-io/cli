@@ -4,6 +4,8 @@ import { StreamAppShell } from './components/Layout/StreamAppShell';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Templates } from './pages/Templates/Templates';
 import { Projects } from './pages/Projects/Projects';
+import { ProjectDetail } from './pages/Projects/ProjectDetail';
+import { CodeGeneration } from './pages/Projects/CodeGeneration';
 import { CodeGen } from './pages/CodeGen/CodeGen';
 import { Monitor } from './pages/Monitor/Monitor';
 import { StreamDashboard } from './pages/Stream/Dashboard';
@@ -31,6 +33,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="templates" element={<Templates />} />
           <Route path="projects" element={<Projects />} />
+          <Route path="projects/:encodedPath" element={<ProjectDetail />} />
+          <Route path="projects/generate/:encodedSolutionPath" element={<CodeGeneration />} />
           <Route path="generate" element={<CodeGen />} />
           <Route path="monitor" element={<Monitor />} />
         </Route>

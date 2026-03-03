@@ -31,6 +31,20 @@ export const queryKeys = {
     search: (query: string) => [...queryKeys.templates.all(), 'search', query] as const,
   },
 
+  // Projects
+  projects: {
+    all: () => ['projects'] as const,
+
+    // Recent projects
+    recent: () => [...queryKeys.projects.all(), 'recent'] as const,
+
+    // Single project detail
+    detail: (path: string) => [...queryKeys.projects.all(), 'detail', path] as const,
+
+    // Suggested directories
+    directories: () => [...queryKeys.projects.all(), 'directories'] as const,
+  },
+
   // Stream
   stream: {
     all: () => ['stream'] as const,
