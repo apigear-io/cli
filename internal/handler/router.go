@@ -37,6 +37,26 @@ func RegisterAPIRoutes(router chi.Router) {
 			})
 		})
 
+		// Project endpoints
+		r.Route("/projects", func(r chi.Router) {
+			r.Get("/directories", GetProjectDirectories())
+			r.Get("/browse", BrowseDirectories())
+			r.Get("/recent", ListRecentProjects())
+			r.Post("/", CreateProject())
+			r.Get("/get", GetProject())   // Use query param: ?path=<encoded-path>
+			r.Delete("/", DeleteProject()) // Use query param: ?path=<encoded-path>
+
+			// Code generation
+			r.Get("/generate", GenerateCode()) // Use query params: ?path=<solution-path>&force=<bool>
+
+			// File operations
+			r.Route("/files", func(r chi.Router) {
+				r.Get("/read", ReadFile())                 // Use query param: ?path=<file-path>
+				r.Post("/write", WriteFile())              // Body: {path, content}
+				r.Post("/open-external", OpenFileExternal()) // Body: {path}
+			})
+		})
+
 		// Stream endpoints
 		r.Route("/stream", func(r chi.Router) {
 			// Apply HTTP logging middleware to all stream routes

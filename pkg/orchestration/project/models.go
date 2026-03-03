@@ -1,9 +1,9 @@
 package project
 
 type DocumentInfo struct {
-	Name string
-	Path string
-	Type string
+	Name string `json:"name"`
+	Path string `json:"path"`
+	Type string `json:"type"`
 }
 
 type ProjectInfo struct {
