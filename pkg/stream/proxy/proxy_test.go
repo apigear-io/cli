@@ -110,7 +110,7 @@ func TestEchoMode(t *testing.T) {
 	}
 }
 
-// TestProxyMode tests the proxy forwarding mode
+// TestProxyMode tests the proxy forwarding mode with fan-in/fan-out
 func TestProxyMode(t *testing.T) {
 	// Create backend server
 	backend := testWSServer(t)
@@ -127,11 +127,11 @@ func TestProxyMode(t *testing.T) {
 	proxy.SetTrace(false)
 
 	// Start proxy
-	go func() {
-		_ = proxy.Start()
-	}()
+	err := proxy.Start()
+	require.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	// Wait for backend reader loop to connect
+	time.Sleep(200 * time.Millisecond)
 
 	// Connect client to proxy
 	listenAddr := proxy.GetListenAddr()
@@ -145,7 +145,8 @@ func TestProxyMode(t *testing.T) {
 	err = client.WriteMessage(websocket.TextMessage, testMsg)
 	require.NoError(t, err, "Failed to send message")
 
-	// Read response (backend echoes it back)
+	// Read response (backend echoes it back via fan-out broadcast)
+	client.SetReadDeadline(time.Now().Add(2 * time.Second))
 	msgType, msg, err := client.ReadMessage()
 	require.NoError(t, err, "Failed to read response")
 	assert.Equal(t, websocket.TextMessage, msgType)
@@ -154,7 +155,111 @@ func TestProxyMode(t *testing.T) {
 	// Stop proxy
 	err = proxy.Stop()
 	assert.NoError(t, err)
+}
+
+// TestProxyFanOut tests that backend responses are broadcast to all connected clients
+func TestProxyFanOut(t *testing.T) {
+	// Create backend server (echo)
+	backend := testWSServer(t)
+	defer backend.Close()
+
+	backendURL := strings.Replace(backend.URL, "http://", "ws://", 1)
+	cfg := config.ProxyConfig{
+		Mode: "proxy",
+	}
+
+	proxy := NewProxy("test-fanout", "ws://localhost:0/ws", backendURL, cfg)
+	proxy.SetTrace(false)
+
+	err := proxy.Start()
+	require.NoError(t, err)
+
+	// Wait for backend reader loop to connect
+	time.Sleep(200 * time.Millisecond)
+
+	listenAddr := proxy.GetListenAddr()
+	wsURL := fmt.Sprintf("ws://%s/ws", listenAddr)
+
+	// Connect 3 clients
+	numClients := 3
+	clients := make([]*websocket.Conn, numClients)
+	for i := 0; i < numClients; i++ {
+		conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		require.NoError(t, err, "Failed to connect client %d", i)
+		clients[i] = conn
+		defer conn.Close()
+	}
+
+	// Give clients time to register
 	time.Sleep(100 * time.Millisecond)
+
+	// Client 0 sends a message
+	testMsg := []byte(`{"type":"fanout","data":"hello all"}`)
+	err = clients[0].WriteMessage(websocket.TextMessage, testMsg)
+	require.NoError(t, err, "Client 0 failed to send")
+
+	// All 3 clients should receive the echoed response (broadcast)
+	for i, client := range clients {
+		client.SetReadDeadline(time.Now().Add(2 * time.Second))
+		msgType, msg, err := client.ReadMessage()
+		require.NoError(t, err, "Client %d failed to read broadcast", i)
+		assert.Equal(t, websocket.TextMessage, msgType, "Client %d wrong msg type", i)
+		assert.Equal(t, testMsg, msg, "Client %d received wrong message", i)
+	}
+
+	err = proxy.Stop()
+	assert.NoError(t, err)
+}
+
+// TestProxyClientDisconnect tests that one client disconnecting doesn't affect others
+func TestProxyClientDisconnect(t *testing.T) {
+	backend := testWSServer(t)
+	defer backend.Close()
+
+	backendURL := strings.Replace(backend.URL, "http://", "ws://", 1)
+	cfg := config.ProxyConfig{
+		Mode: "proxy",
+	}
+
+	proxy := NewProxy("test-disconnect", "ws://localhost:0/ws", backendURL, cfg)
+	proxy.SetTrace(false)
+
+	err := proxy.Start()
+	require.NoError(t, err)
+
+	// Wait for backend reader loop to connect
+	time.Sleep(200 * time.Millisecond)
+
+	listenAddr := proxy.GetListenAddr()
+	wsURL := fmt.Sprintf("ws://%s/ws", listenAddr)
+
+	// Connect 2 clients
+	client1, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	require.NoError(t, err)
+
+	client2, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	require.NoError(t, err)
+	defer client2.Close()
+
+	time.Sleep(100 * time.Millisecond)
+
+	// Disconnect client1
+	client1.Close()
+	time.Sleep(100 * time.Millisecond)
+
+	// client2 should still work: send and receive
+	testMsg := []byte(`{"type":"test","data":"after disconnect"}`)
+	err = client2.WriteMessage(websocket.TextMessage, testMsg)
+	require.NoError(t, err, "Client2 failed to send after client1 disconnect")
+
+	client2.SetReadDeadline(time.Now().Add(2 * time.Second))
+	msgType, msg, err := client2.ReadMessage()
+	require.NoError(t, err, "Client2 failed to read after client1 disconnect")
+	assert.Equal(t, websocket.TextMessage, msgType)
+	assert.Equal(t, testMsg, msg)
+
+	err = proxy.Stop()
+	assert.NoError(t, err)
 }
 
 // TestInboundOnlyMode tests inbound-only mode (accepts connections but doesn't forward)
@@ -252,11 +357,11 @@ func TestObjectLinkMessages(t *testing.T) {
 	proxy := NewProxy("test-objectlink", "ws://localhost:0/ws", backendURL, cfg)
 	proxy.SetTrace(false)
 
-	go func() {
-		_ = proxy.Start()
-	}()
+	err := proxy.Start()
+	require.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	// Wait for backend reader loop to connect
+	time.Sleep(200 * time.Millisecond)
 
 	listenAddr := proxy.GetListenAddr()
 	wsURL := fmt.Sprintf("ws://%s/ws", listenAddr)
@@ -272,6 +377,7 @@ func TestObjectLinkMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	// Read response
+	client.SetReadDeadline(time.Now().Add(2 * time.Second))
 	_, response, err := client.ReadMessage()
 	require.NoError(t, err)
 
@@ -289,6 +395,7 @@ func TestObjectLinkMessages(t *testing.T) {
 	err = client.WriteMessage(websocket.TextMessage, invokeData)
 	require.NoError(t, err)
 
+	client.SetReadDeadline(time.Now().Add(2 * time.Second))
 	_, response, err = client.ReadMessage()
 	require.NoError(t, err)
 	assert.NotEmpty(t, response)
