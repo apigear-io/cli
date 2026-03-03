@@ -3,21 +3,144 @@ package stream
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"text/tabwriter"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
+	"github.com/apigear-io/cli/pkg/foundation/logging"
 	"github.com/apigear-io/cli/pkg/stream"
 	"github.com/apigear-io/cli/pkg/stream/config"
 )
 
+// proxyRunOptions holds configuration for running the proxy server.
+type proxyRunOptions struct {
+	ConfigFile string
+	Verbose    bool
+	Trace      bool
+}
+
 // NewProxyCommand creates the proxy management command.
 func NewProxyCommand() *cobra.Command {
+	opts := &proxyRunOptions{}
+
 	cmd := &cobra.Command{
-		Use:   "proxy",
-		Short: "Manage WebSocket proxies",
-		Long:  `Manage WebSocket proxies (list, create, start, stop, delete).`,
+		Use:   "proxy [config.yaml]",
+		Short: "Run proxy server or manage proxies",
+		Long: `Run the WebSocket proxy server, or use subcommands to manage proxy configuration.
+
+When called without a subcommand, starts the proxy server using the config file.
+
+Examples:
+  # Start proxy server with default config
+  apigear stream proxy
+
+  # Start with custom config file
+  apigear stream proxy config.yaml
+
+  # Start with verbose logging
+  apigear stream proxy --verbose
+
+  # Manage proxies
+  apigear stream proxy list
+  apigear stream proxy create my-proxy --listen ws://localhost:5550/ws
+  apigear stream proxy delete my-proxy`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configFile := opts.ConfigFile
+			if len(args) > 0 {
+				configFile = args[0]
+			}
+			if configFile == "" {
+				configFile = "stream.yaml"
+			}
+
+			cfg, created, err := config.LoadOrCreateConfig(configFile)
+			if err != nil {
+				return fmt.Errorf("failed to load config: %w", err)
+			}
+
+			if created {
+				logging.Info().Msgf("Created default config file: %s", configFile)
+				logging.Info().Msg("Edit the config file and restart to configure proxies and clients")
+			}
+
+			if err := cfg.Validate(); err != nil {
+				return fmt.Errorf("invalid config: %w", err)
+			}
+
+			if opts.Verbose {
+				cfg.Verbose = true
+			}
+			if opts.Trace {
+				cfg.Trace = true
+			}
+
+			services := stream.NewServices()
+			defer services.Close()
+
+			if len(cfg.Proxies) > 0 {
+				logging.Info().Msgf("Loading %d proxies from config", len(cfg.Proxies))
+				if err := services.ProxyManager.LoadFromConfig(cfg.Proxies); err != nil {
+					log.Warn().Err(err).Msg("failed to load some proxies")
+				}
+				// Enable console traffic output for all proxies
+				for name := range cfg.Proxies {
+					if p, err := services.ProxyManager.GetProxy(name); err == nil {
+						p.SetOutput(cmd.ErrOrStderr())
+					}
+				}
+			}
+
+			if len(cfg.Clients) > 0 {
+				logging.Info().Msgf("Loading %d clients from config", len(cfg.Clients))
+				if err := services.ClientManager.LoadFromConfig(cfg.Clients); err != nil {
+					log.Warn().Err(err).Msg("failed to load some clients")
+				}
+			}
+
+			proxies := services.ProxyManager.ListProxies()
+			clients := services.ClientManager.ListClients()
+
+			logging.Info().Msgf("Stream server started with %d proxies and %d clients",
+				len(proxies), len(clients))
+
+			if len(proxies) > 0 {
+				logging.Info().Msg("Active proxies:")
+				for _, p := range proxies {
+					logging.Info().Msgf("  - %s: %s -> %s (%s, %s)",
+						p.Name, p.Listen, p.Backend, p.Mode, p.Status)
+				}
+			}
+
+			if len(clients) > 0 {
+				logging.Info().Msg("Active clients:")
+				for _, c := range clients {
+					logging.Info().Msgf("  - %s: %s (%s)",
+						c.Name, c.URL, c.Status)
+				}
+			}
+
+			if len(proxies) == 0 && len(clients) == 0 {
+				logging.Info().Msg("No proxies or clients configured. Edit the config file to add them.")
+			}
+
+			sigCh := make(chan os.Signal, 1)
+			signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+
+			logging.Info().Msg("Press Ctrl+C to stop")
+
+			<-sigCh
+			logging.Info().Msg("Shutting down...")
+
+			return nil
+		},
 	}
+
+	cmd.Flags().StringVarP(&opts.ConfigFile, "config", "c", "", "config file (default: stream.yaml)")
+	cmd.Flags().BoolVarP(&opts.Verbose, "verbose", "v", false, "enable verbose logging")
+	cmd.Flags().BoolVarP(&opts.Trace, "trace", "t", false, "enable trace logging to files")
 
 	cmd.AddCommand(newProxyListCommand())
 	cmd.AddCommand(newProxyCreateCommand())
