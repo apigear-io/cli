@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/apigear-io/cli/pkg/foundation"
 	"github.com/apigear-io/cli/pkg/foundation/config"
@@ -608,6 +609,21 @@ func GenerateCode() http.HandlerFunc {
 			return
 		}
 
+		// Pre-flight: read and validate solution doc (checks templates exist, inputs valid, etc.)
+		// This runs BEFORE SSE headers so we can return proper HTTP errors.
+		_, err = solution.ReadSolutionDoc(solutionPath)
+		if err != nil {
+			errMsg := err.Error()
+			if strings.Contains(errMsg, "template") || strings.Contains(errMsg, "not found") {
+				writeError(w, http.StatusBadRequest, err,
+					fmt.Sprintf("Template not available: %s. Please install the required template from the Templates page.", errMsg))
+			} else {
+				writeError(w, http.StatusBadRequest, err,
+					fmt.Sprintf("Solution validation failed: %s", errMsg))
+			}
+			return
+		}
+
 		// Set SSE headers
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
@@ -653,9 +669,15 @@ func GenerateCode() http.HandlerFunc {
 			return
 		}
 
-		// Send completion message
+		// Send completion message with stats
 		sendSSEEvent(w, flusher, "completed", map[string]interface{}{
-			"message": "Code generation completed successfully",
+			"message":      "Code generation completed successfully",
+			"filesWritten": runner.Stats.FilesWritten,
+			"filesSkipped": runner.Stats.FilesSkipped,
+			"filesCopied":  runner.Stats.FilesCopied,
+			"totalFiles":   runner.Stats.TotalFiles,
+			"targetCount":  runner.Stats.TargetCount,
+			"durationMs":   runner.Stats.DurationMs,
 		})
 	}
 }

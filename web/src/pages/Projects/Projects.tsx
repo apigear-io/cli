@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react';
 import { Stack, Button, Group, SimpleGrid } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconPlus, IconFolderOpen } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -14,6 +14,7 @@ import {
 import {
   ProjectCard,
   CreateProjectModal,
+  OpenProjectModal,
   EmptyState,
 } from './components';
 
@@ -23,6 +24,7 @@ function ProjectsContent() {
   const deleteProject = useDeleteProject();
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [openModalOpen, setOpenModalOpen] = useState(false);
 
   const handleCreate = async (req: { name: string; path: string }) => {
     try {
@@ -72,16 +74,28 @@ function ProjectsContent() {
     <Stack gap="lg">
       <Group justify="space-between" align="flex-start">
         <Breadcrumbs items={[{ label: 'Projects' }]} />
-        <Button
-          onClick={() => setCreateModalOpen(true)}
-          leftSection={<IconPlus size={16} />}
-        >
-          Create Project
-        </Button>
+        <Group>
+          <Button
+            variant="light"
+            onClick={() => setOpenModalOpen(true)}
+            leftSection={<IconFolderOpen size={16} />}
+          >
+            Open Project
+          </Button>
+          <Button
+            onClick={() => setCreateModalOpen(true)}
+            leftSection={<IconPlus size={16} />}
+          >
+            Create Project
+          </Button>
+        </Group>
       </Group>
 
       {data.count === 0 ? (
-        <EmptyState onCreate={() => setCreateModalOpen(true)} />
+        <EmptyState
+          onCreate={() => setCreateModalOpen(true)}
+          onOpen={() => setOpenModalOpen(true)}
+        />
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
           {data.projects.map((project) => (
@@ -98,6 +112,11 @@ function ProjectsContent() {
         opened={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreate}
+      />
+
+      <OpenProjectModal
+        opened={openModalOpen}
+        onClose={() => setOpenModalOpen(false)}
       />
     </Stack>
   );

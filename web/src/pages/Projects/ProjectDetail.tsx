@@ -5,51 +5,43 @@ import {
   Text,
   Paper,
   Group,
-  Badge,
-  Button,
-  ActionIcon,
-  Tooltip,
 } from '@mantine/core';
 import {
   IconFolder,
-  IconFile,
-  IconEdit,
-  IconExternalLink,
-  IconPlayerPlay,
+  IconApi,
+  IconSettings,
+  IconFileDescription,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { LoadingFallback } from '@/components/LoadingFallback';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { FileEditorModal } from '@/components/FileEditorModal';
-import { DocumentInfoDrawer } from './components';
+import { DocumentInfoDrawer, DocumentSection } from './components';
 import { useProject, useOpenFileExternal } from '@/api/queries';
 import type { DocumentInfo } from '@/api/types';
 
-const getDocumentTypeColor = (type: string | undefined) => {
-  if (!type) {
-    return 'gray';
+function groupDocuments(docs: DocumentInfo[]) {
+  const modules: DocumentInfo[] = [];
+  const solutions: DocumentInfo[] = [];
+  const others: DocumentInfo[] = [];
+
+  for (const doc of docs) {
+    switch (doc.type?.toLowerCase()) {
+      case 'module':
+        modules.push(doc);
+        break;
+      case 'solution':
+        solutions.push(doc);
+        break;
+      default:
+        others.push(doc);
+        break;
+    }
   }
 
-  switch (type.toLowerCase()) {
-    case 'module':
-      return 'blue';
-    case 'solution':
-      return 'green';
-    case 'simulation':
-      return 'orange';
-    case 'scenario':
-      return 'purple';
-    case 'unknown':
-      return 'gray';
-    default:
-      return 'gray';
-  }
-};
-
-const isSolutionFile = (doc: DocumentInfo) => {
-  return doc.name.endsWith('.solution.yaml');
-};
+  return { modules, solutions, others };
+}
 
 function ProjectDetailContent() {
   const { encodedPath } = useParams<{ encodedPath: string }>();
@@ -135,75 +127,43 @@ function ProjectDetailContent() {
           </Text>
         </Paper>
       ) : (
-        <Stack gap="sm">
-          {project.documents.map((doc, index) => (
-            <Paper
-              key={index}
-              shadow="xs"
-              p="md"
-              withBorder
-              style={{ cursor: 'pointer' }}
-              onClick={(e) => handleDocumentClick(doc, e)}
-            >
-              <Group justify="space-between" wrap="nowrap">
-                <Group gap="md" style={{ flex: 1, minWidth: 0 }}>
-                  <IconFile size={20} style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <Group gap="xs" mb={4}>
-                      <Text fw={500}>{doc.name}</Text>
-                      <Badge color={getDocumentTypeColor(doc.type)} size="sm">
-                        {doc.type || 'unknown'}
-                      </Badge>
-                    </Group>
-                    <Text
-                      size="xs"
-                      c="dimmed"
-                      style={{ wordBreak: 'break-all', overflow: 'hidden' }}
-                    >
-                      {doc.path}
-                    </Text>
-                  </div>
-                </Group>
-
-                <Group gap="xs" style={{ flexShrink: 0 }}>
-                  {isSolutionFile(doc) && (
-                    <Tooltip label="Generate code">
-                      <Button
-                        size="sm"
-                        variant="light"
-                        color="green"
-                        leftSection={<IconPlayerPlay size={16} />}
-                        onClick={() => handleGenerate(doc)}
-                      >
-                        Generate
-                      </Button>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip label="Edit in browser">
-                    <ActionIcon
-                      size="lg"
-                      variant="light"
-                      onClick={() => handleEdit(doc)}
-                    >
-                      <IconEdit size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-
-                  <Tooltip label="Open in external editor">
-                    <ActionIcon
-                      size="lg"
-                      variant="light"
-                      onClick={() => handleOpenExternal(doc)}
-                      loading={openingExternalPath === doc.path}
-                    >
-                      <IconExternalLink size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Group>
-              </Group>
-            </Paper>
-          ))}
+        <Stack gap="lg">
+          {(() => {
+            const { modules, solutions, others } = groupDocuments(project.documents);
+            return (
+              <>
+                <DocumentSection
+                  title="API Modules"
+                  icon={<IconApi size={20} />}
+                  documents={modules}
+                  onEdit={handleEdit}
+                  onOpenExternal={handleOpenExternal}
+                  onDocumentClick={handleDocumentClick}
+                  openingExternalPath={openingExternalPath}
+                />
+                <DocumentSection
+                  title="Solutions"
+                  icon={<IconSettings size={20} />}
+                  documents={solutions}
+                  onEdit={handleEdit}
+                  onOpenExternal={handleOpenExternal}
+                  onDocumentClick={handleDocumentClick}
+                  onGenerate={handleGenerate}
+                  showGenerateButton
+                  openingExternalPath={openingExternalPath}
+                />
+                <DocumentSection
+                  title="Other Files"
+                  icon={<IconFileDescription size={20} />}
+                  documents={others}
+                  onEdit={handleEdit}
+                  onOpenExternal={handleOpenExternal}
+                  onDocumentClick={handleDocumentClick}
+                  openingExternalPath={openingExternalPath}
+                />
+              </>
+            );
+          })()}
         </Stack>
       )}
 

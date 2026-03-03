@@ -123,6 +123,15 @@ export interface GenerateCodeRequest {
   force?: boolean;
 }
 
+export interface CodeGenerationSummary {
+  filesWritten: number;
+  filesSkipped: number;
+  filesCopied: number;
+  totalFiles: number;
+  targetCount: number;
+  durationMs: number;
+}
+
 // Stream types
 
 export type ProxyStatus = 'stopped' | 'running' | 'error';

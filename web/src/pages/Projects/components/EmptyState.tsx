@@ -1,11 +1,12 @@
-import { Stack, Title, Text, Button, Paper } from '@mantine/core';
-import { IconFolderPlus } from '@tabler/icons-react';
+import { Stack, Title, Text, Button, Paper, Group } from '@mantine/core';
+import { IconFolderPlus, IconFolderOpen } from '@tabler/icons-react';
 
 interface EmptyStateProps {
   onCreate: () => void;
+  onOpen: () => void;
 }
 
-export function EmptyState({ onCreate }: EmptyStateProps) {
+export function EmptyState({ onCreate, onOpen }: EmptyStateProps) {
   return (
     <Paper shadow="sm" p="xl" withBorder>
       <Stack gap="md" align="center" style={{ minHeight: 300 }} justify="center">
@@ -17,9 +18,18 @@ export function EmptyState({ onCreate }: EmptyStateProps) {
           Create your first ApiGear project to get started with API development and code
           generation.
         </Text>
-        <Button onClick={onCreate} leftSection={<IconFolderPlus size={16} />}>
-          Create Your First Project
-        </Button>
+        <Group>
+          <Button onClick={onCreate} leftSection={<IconFolderPlus size={16} />}>
+            Create New Project
+          </Button>
+          <Button
+            variant="light"
+            onClick={onOpen}
+            leftSection={<IconFolderOpen size={16} />}
+          >
+            Open Existing Project
+          </Button>
+        </Group>
       </Stack>
     </Paper>
   );
