@@ -1,0 +1,115 @@
+package filterjava
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestListAsyncReturn(t *testing.T) {
+	t.Parallel()
+	syss := loadTestSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test1", "propVoid", "CompletableFuture<Void>"},
+		{"test", "Test1", "propBool", "CompletableFuture<Boolean>"},
+		{"test", "Test1", "propInt", "CompletableFuture<Integer>"},
+		{"test", "Test1", "propInt32", "CompletableFuture<Integer>"},
+		{"test", "Test1", "propInt64", "CompletableFuture<Long>"},
+		{"test", "Test1", "propFloat", "CompletableFuture<Float>"},
+		{"test", "Test1", "propFloat32", "CompletableFuture<Float>"},
+		{"test", "Test1", "propFloat64", "CompletableFuture<Double>"},
+		{"test", "Test1", "propString", "CompletableFuture<String>"},
+		{"test", "Test1", "propBoolArray", "CompletableFuture<List<Boolean>>"},
+		{"test", "Test1", "propIntArray", "CompletableFuture<List<Integer>>"},
+		{"test", "Test1", "propInt32Array", "CompletableFuture<List<Integer>>"},
+		{"test", "Test1", "propInt64Array", "CompletableFuture<List<Long>>"},
+		{"test", "Test1", "propFloatArray", "CompletableFuture<List<Float>>"},
+		{"test", "Test1", "propFloat32Array", "CompletableFuture<List<Float>>"},
+		{"test", "Test1", "propFloat64Array", "CompletableFuture<List<Double>>"},
+		{"test", "Test1", "propStringArray", "CompletableFuture<List<String>>"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				prop := sys.LookupProperty(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, prop)
+				r, err := javaListAsyncReturn("", prop)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestListAsyncOperationReturn(t *testing.T) {
+	t.Parallel()
+	syss := loadTestSystems(t)
+	var propTests = []struct {
+		mn string
+		in string
+		pn string
+		rt string
+	}{
+		{"test", "Test3", "opVoid", "CompletableFuture<Void>"},
+		{"test", "Test3", "opBool", "CompletableFuture<Boolean>"},
+		{"test", "Test3", "opInt", "CompletableFuture<Integer>"},
+		{"test", "Test3", "opInt32", "CompletableFuture<Integer>"},
+		{"test", "Test3", "opInt64", "CompletableFuture<Long>"},
+		{"test", "Test3", "opFloat", "CompletableFuture<Float>"},
+		{"test", "Test3", "opFloat32", "CompletableFuture<Float>"},
+		{"test", "Test3", "opFloat64", "CompletableFuture<Double>"},
+		{"test", "Test3", "opString", "CompletableFuture<String>"},
+		{"test", "Test3", "opBoolArray", "CompletableFuture<List<Boolean>>"},
+		{"test", "Test3", "opIntArray", "CompletableFuture<List<Integer>>"},
+		{"test", "Test3", "opInt32Array", "CompletableFuture<List<Integer>>"},
+		{"test", "Test3", "opInt64Array", "CompletableFuture<List<Long>>"},
+		{"test", "Test3", "opFloatArray", "CompletableFuture<List<Float>>"},
+		{"test", "Test3", "opFloat32Array", "CompletableFuture<List<Float>>"},
+		{"test", "Test3", "opFloat64Array", "CompletableFuture<List<Double>>"},
+		{"test", "Test3", "opStringArray", "CompletableFuture<List<String>>"},
+	}
+	for _, sys := range syss {
+		for _, tt := range propTests {
+			t.Run(tt.pn, func(t *testing.T) {
+				op := sys.LookupOperation(tt.mn, tt.in, tt.pn)
+				assert.NotNil(t, op)
+				r, err := javaListAsyncReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.rt, r)
+			})
+		}
+	}
+}
+
+func TestListAsyncReturnExternsYaml(t *testing.T) {
+	t.Parallel()
+	table := []struct {
+		module_name    string
+		interface_name string
+		operation_name string
+		result         string
+	}{
+		{"test_apigear_next", "Iface1", "func1", "CompletableFuture<XType1>"},
+		{"test_apigear_next", "Iface1", "func3", "CompletableFuture<demo.x.XType3A>"},
+		{"test_apigear_next", "Iface1", "funcList", "CompletableFuture<List<demo.x.XType3A>>"},
+		{"test_apigear_next", "Iface1", "funcImportedEnum", "CompletableFuture<test.test_api.Enum1>"},
+		{"test_apigear_next", "Iface1", "funcImportedStruct", "CompletableFuture<test.test_api.Struct1>"},
+	}
+	syss := loadExternSystemsYAML(t)
+	for _, sys := range syss {
+		for _, tt := range table {
+			t.Run(tt.operation_name, func(t *testing.T) {
+				op := sys.LookupOperation(tt.module_name, tt.interface_name, tt.operation_name)
+				assert.NotNil(t, op)
+				r, err := javaListAsyncReturn("", op.Return)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.result, r)
+			})
+		}
+	}
+}
