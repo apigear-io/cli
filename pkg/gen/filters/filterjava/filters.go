@@ -14,4 +14,10 @@ func PopulateFuncMap(fm template.FuncMap) {
 	fm["javaAsyncReturn"] = javaAsyncReturn
 	fm["javaTestValue"] = javaTestValue
 	fm["javaElementType"] = javaElementType
+	fm["javaListReturn"] = javaListReturn
+	fm["javaListType"] = javaListType
+	fm["javaListParam"] = javaListParam
+	fm["javaListParams"] = javaListParams
+	fm["javaListDefault"] = javaListDefault
+	fm["javaListAsyncReturn"] = javaListAsyncReturn
 }
