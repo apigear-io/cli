@@ -19,7 +19,7 @@ func jsonIdent(v any) string {
 func NewEnvCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "env",
-		Short: "Env prints apigear environment variables",
+		Short: "env prints apigear environment variables",
 		Long:  `Env prints apigear environment variables`,
 		Run: func(cmd *cobra.Command, args []string) {
 			settings := cfg.AllSettings()

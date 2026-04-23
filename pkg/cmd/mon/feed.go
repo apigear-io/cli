@@ -2,6 +2,7 @@ package mon
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/apigear-io/cli/pkg/helper"
@@ -11,17 +12,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewClientCommand() *cobra.Command {
+func NewFeedCommand() *cobra.Command {
 	type ClientOptions struct {
-		url    string        // monitor server url
-		script string        // script to run
-		repeat int           // -1 for infinite
-		sleep  time.Duration // sleep between each event
+		url      string        // monitor server url
+		script   string        // script to run
+		repeat   int           // -1 for infinite
+		interval time.Duration // sleep between each event
+		deviceId string        // device id to use
+		batch    int           // number of events to send in a batch
 	}
 	var options = &ClientOptions{}
 	var cmd = &cobra.Command{
 		Use:   "feed",
-		Short: "Feed a script to a monitor",
+		Short: "feed a script to a monitor",
 		Long:  `Feeds API calls from various sources to the monitor to be displayed. This is mainly to playback recorded API calls.`,
 		Args:  cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
@@ -31,7 +34,7 @@ func NewClientCommand() *cobra.Command {
 			var err error
 			switch helper.Ext(options.script) {
 			case ".json", ".ndjson":
-				events, err = mon.ReadJsonEvents(options.script)
+				events, err = helper.ReadNDJSONFile[mon.Event](options.script)
 				log.Debug().Msgf("read %d events", len(events))
 				if err != nil {
 					return fmt.Errorf("error reading events: %w", err)
@@ -53,28 +56,49 @@ func NewClientCommand() *cobra.Command {
 			if len(events) == 0 {
 				return fmt.Errorf("no events to send")
 			}
-			sender := helper.NewHTTPSender(options.url)
-			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.sleep)
+			url := strings.Join([]string{strings.TrimRight(options.url, "/"), "monitor", options.deviceId}, "/")
+			log.Info().Msgf("sending %d events to %s", len(events), url)
+			sender := helper.NewHTTPSender(url)
+			ctrl := helper.NewSenderControl[mon.Event](options.repeat, options.interval, options.batch)
+
+			// Counter to track sent messages
+			var sentCount int
+
 			err = ctrl.Run(events, func(event mon.Event) error {
-				if event.Source == "" {
-					event.Source = "123"
+				if event.Device == "" {
+					event.Device = options.deviceId
 				}
 				// send as an array of events
-				payload := [1]mon.Event{event}
 
-				return sender.SendValue(payload)
+				payload := [1]mon.Event{event}
+				log.Info().Msgf("send event %s %s %s", event.Device, event.Type.String(), event.Symbol)
+				err := sender.SendValue(payload)
+				if err == nil {
+					sentCount++
+				}
+				return err
 			})
 			if err != nil {
 				log.Warn().Msgf("error sending events: %s", err)
 			}
+
+			// Report total sent
+			totalExpected := len(events) * options.repeat
+			log.Info().Msgf("feed completed: sent %d/%d events (%.1f%%)", sentCount, totalExpected, float64(sentCount)/float64(totalExpected)*100)
+			fmt.Printf("Feed completed: sent %d/%d events\n", sentCount, totalExpected)
+
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.url, "url", "http://localhost:5555/monitor/123", "monitor server address")
+	cmd.Flags().StringVar(&options.url, "url", "http://localhost:5555", "monitor server address")
 	// repeat is -1 for infinite
 	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "number of times to repeat the script")
 	// sleep is in milliseconds
-	cmd.Flags().DurationVar(&options.sleep, "sleep", 0, "sleep between each event")
+	cmd.Flags().DurationVar(&options.interval, "interval", 100*time.Millisecond, "interval between each event")
+	// deviceId to use
+	cmd.Flags().StringVar(&options.deviceId, "device", "123", "device id to use")
+	// batch size
+	cmd.Flags().IntVar(&options.batch, "batch", 1, "number of events to send in a batch")
 
 	return cmd
 }

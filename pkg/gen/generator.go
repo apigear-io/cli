@@ -175,12 +175,15 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 	}
 	scopes := f.FindScopesByMatch(spec.ScopeSystem)
 	for _, scope := range scopes {
+		log.Debug().Msgf("processing system scope %s", scope.Match)
 		err := g.processScope(scope, ctx)
 		if err != nil {
+			log.Warn().Msgf("An error occured")
 			return err
 		}
 	}
 	for _, module := range g.opts.System.Modules {
+		log.Debug().Msgf("processing module %s", module.Name)
 		// process module
 		scopes := f.FindScopesByMatch(spec.ScopeModule)
 		ctx := model.ModuleScope{
@@ -190,12 +193,15 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			Meta:     g.opts.Meta,
 		}
 		for _, scope := range scopes {
+			log.Debug().Msgf("processing module scope %s", scope.Match)
 			err := g.processScope(scope, ctx)
 			if err != nil {
+				log.Warn().Msgf("An error occured")
 				return err
 			}
 		}
 		for _, iface := range module.Interfaces {
+			log.Debug().Msgf("processing interface %s", iface.Name)
 			// process interface
 			ctx := model.InterfaceScope{
 				System:    g.opts.System,
@@ -206,13 +212,16 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeInterface)
 			for _, scope := range scopes {
+				log.Debug().Msgf("processing interface scope %s", scope.Match)
 				err := g.processScope(scope, ctx)
 				if err != nil {
+					log.Warn().Msgf("An error occured")
 					return err
 				}
 			}
 		}
 		for _, struct_ := range module.Structs {
+			log.Debug().Msgf("processing struct %s", struct_.Name)
 			// process struct
 			ctx := model.StructScope{
 				System:   g.opts.System,
@@ -223,13 +232,16 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeStruct)
 			for _, scope := range scopes {
+				log.Debug().Msgf("processing struct scope %s", scope.Match)
 				err := g.processScope(scope, ctx)
 				if err != nil {
+					log.Warn().Msgf("An error occured")
 					return err
 				}
 			}
 		}
 		for _, enum := range module.Enums {
+			log.Debug().Msgf("processing enum %s", enum.Name)
 			// process enum
 			ctx := model.EnumScope{
 				System:   g.opts.System,
@@ -240,13 +252,16 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeEnum)
 			for _, scope := range scopes {
+				log.Debug().Msgf("processing enum scope %s", scope.Match)
 				err := g.processScope(scope, ctx)
 				if err != nil {
+					log.Warn().Msgf("An error occured")
 					return err
 				}
 			}
 		}
 		for _, extern := range module.Externs {
+			log.Debug().Msgf("processing extern %s", extern.Name)
 			ctx := model.ExternScope{
 				System:   g.opts.System,
 				Module:   module,
@@ -256,6 +271,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 			}
 			scopes := f.FindScopesByMatch(spec.ScopeExtern)
 			for _, scope := range scopes {
+				log.Debug().Msgf("processing extern scope %s", scope.Match)
 				err := g.processScope(scope, ctx)
 				if err != nil {
 					log.Warn().Msgf("An error occured")
@@ -269,6 +285,7 @@ func (g *generator) processFeature(f *spec.FeatureRule) error {
 
 // processScope processes a scope rule (e.g. system, modules, ...) with the given context
 func (g *generator) processScope(scope *spec.ScopeRule, ctx any) error {
+	log.Debug().Msgf("processing scope %s", scope.Match)
 	prefix := scope.Prefix
 	for _, doc := range scope.Documents {
 		// clean doc target

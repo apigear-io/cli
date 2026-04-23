@@ -3,96 +3,128 @@ package net
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/apigear-io/cli/pkg/helper"
 	"github.com/apigear-io/cli/pkg/log"
 	"github.com/apigear-io/cli/pkg/mon"
+	"github.com/apigear-io/cli/pkg/streams/config"
 	"github.com/nats-io/nats.go"
 )
 
 type Options struct {
-	NatsHost          string `json:"nats_host"`
-	NatsPort          int    `json:"nats_port"`
-	NatsDisabled      bool   `json:"nats_disabled"`
-	NatsListen        bool   `json:"nats_inprocess_only"`
-	NatsLeafURL       string `json:"nats_leaf_url"`
-	NatsCredentials   string `json:"nats_credentials"`
-	HttpAddr          string `json:"http_addr"`
-	HttpDisabled      bool   `json:"http_disabled"`
-	MonitorDisabled   bool   `json:"monitor_disabled"`
-	ObjectAPIDisabled bool   `json:"object_api_disabled"`
-	Logging           bool   `json:"logging"`
+	NatsServerURL string         `json:"nats_server_url"`
+	HttpAddr      string         `json:"http_addr"`
+	Logging       bool           `json:"logging"`
+	WSProxy       *WSProxyConfig `json:"ws_proxy,omitempty"`
 }
 
-var DefaultOptions = &Options{
-	NatsHost:          "localhost",
-	NatsPort:          4222,
-	NatsDisabled:      false,
-	NatsListen:        false,
-	NatsLeafURL:       "",
-	NatsCredentials:   "",
-	HttpAddr:          "localhost:5555",
-	HttpDisabled:      false,
-	MonitorDisabled:   false,
-	ObjectAPIDisabled: false,
-	Logging:           false,
+type WSProxyConfig struct {
+	Enabled           bool          `json:"enabled"`
+	BasePath          string        `json:"base_path"`
+	Routes            []RouteConfig `json:"routes"`
+	ReconnectAttempts int           `json:"reconnect_attempts"`
+	ReconnectBackoff  time.Duration `json:"reconnect_backoff"`
 }
 
-type NetworkManager struct {
-	opts       *Options
-	natsServer *NatsServer
-	httpServer *HTTPServer
-	nc         *nats.Conn
-}
-
-func NewManager() *NetworkManager {
-	log.Debug().Msg("net.NewManager")
-	return &NetworkManager{}
-}
-
-func (s *NetworkManager) Start(opts *Options) error {
-	s.opts = opts
-	log.Debug().Msg("start network manager")
-	if !s.opts.HttpDisabled {
-		err := s.StartHTTP(s.opts.HttpAddr)
-		if err != nil {
-			log.Error().Err(err).Msg("failed to start http server")
-			return err
-		}
+func (o *Options) Validate() error {
+	if o.NatsServerURL == "" {
+		o.NatsServerURL = nats.DefaultURL
+		log.Info().Msgf("nats server URL not set, using default: %s", o.NatsServerURL)
 	}
-	if !s.opts.NatsDisabled {
-		err := s.StartNATS(&NatsServerOptions{
-			Host:        s.opts.NatsHost,
-			Port:        s.opts.NatsPort,
-			NatsListen:  s.opts.NatsListen,
-			LeafURL:     s.opts.NatsLeafURL,
-			Credentials: s.opts.NatsCredentials,
-		})
-		if err != nil {
-			log.Error().Err(err).Msg("failed to start nats server")
-			return err
-		}
+	if o.HttpAddr == "" {
+		o.HttpAddr = "127.0.0.1:5555"
+		log.Info().Msgf("http address not set, using default: %s", o.HttpAddr)
 	}
-	if !s.opts.MonitorDisabled {
-		err := s.EnableMonitor()
-		if err != nil {
-			log.Error().Err(err).Msg("failed to enable monitor")
-			return err
+	if o.WSProxy != nil {
+		if o.WSProxy.BasePath == "" {
+			o.WSProxy.BasePath = "/ws"
+		}
+		if o.WSProxy.ReconnectAttempts <= 0 {
+			o.WSProxy.ReconnectAttempts = 3
+		}
+		if o.WSProxy.ReconnectBackoff <= 0 {
+			o.WSProxy.ReconnectBackoff = 500 * time.Millisecond
 		}
 	}
 	return nil
 }
 
-func (s *NetworkManager) Wait(ctx context.Context) error {
+type NetworkManager struct {
+	opts       Options
+	httpServer *HTTPServer
+	nc         *nats.Conn
+	wsProxy    *WSProxy
+	olnkServer *OlinkServer
+	olnkRelay  *ReplayOlinkRelay
+}
+
+func NewManager(opts Options) *NetworkManager {
+	log.Debug().Msg("net.NewManager")
+	if err := opts.Validate(); err != nil {
+		log.Error().Err(err).Msg("invalid network manager options")
+	}
+	return &NetworkManager{
+		opts:       opts,
+		olnkServer: NewOlinkServer(),
+	}
+}
+
+func (m *NetworkManager) NatsConnection() (*nats.Conn, error) {
+	if m.nc != nil && !m.nc.IsClosed() {
+		return m.nc, nil
+	}
+	if m.opts.NatsServerURL == "" {
+		return nil, fmt.Errorf("nats server URL not set")
+	}
+	nc, err := nats.Connect(m.opts.NatsServerURL)
+	if err != nil {
+		return nil, err
+	}
+	m.nc = nc
+	return m.nc, nil
+}
+
+func (m *NetworkManager) Start(ctx context.Context) error {
+	log.Debug().Msg("start network manager")
+	err := m.StartHTTP(m.opts.HttpAddr)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start http server")
+		return err
+	}
+	err = m.EnableMonitor(true)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to enable monitor")
+		return err
+	}
+	if err := m.EnableWSProxy(); err != nil {
+		log.Error().Err(err).Msg("failed to enable ws proxy")
+		return err
+	}
+	err = m.enableOlinkServer()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to enable olink server")
+		return err
+	}
+	err = m.enableReplayRelay()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to enable replay relay")
+		return err
+	}
+	return nil
+}
+
+func (m *NetworkManager) Wait(ctx context.Context) error {
 	log.Info().Msg("services running...")
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	defer func() {
-		err := s.Stop()
+		err := m.Stop()
 		if err != nil {
 			log.Error().Err(err).Msg("failed to stop services")
 		}
@@ -106,67 +138,30 @@ func (s *NetworkManager) Wait(ctx context.Context) error {
 	}
 }
 
-func (s *NetworkManager) Stop() error {
+func (m *NetworkManager) Stop() error {
 	log.Info().Msg("stop network manager")
-	err := s.StopHTTP()
+	err := m.StopHTTP()
 	if err != nil {
 		return err
 	}
-	err = s.StopNATS()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *NetworkManager) StartNATS(opts *NatsServerOptions) error {
-	if s.natsServer != nil {
-		return fmt.Errorf("nats server already started")
-	}
-	server, err := NewNatsServer(opts)
-	if err != nil {
-		return err
-	}
-	s.natsServer = server
-	return s.natsServer.Start()
-}
-
-func (s *NetworkManager) StopNATS() error {
-	log.Info().Msg("stop nats server")
-	if s.nc != nil {
-		err := s.nc.Drain()
+	if m.olnkRelay != nil {
+		log.Info().Msg("stop olink replay relay")
+		err = m.olnkRelay.Stop()
 		if err != nil {
-			return err
+			log.Error().Err(err).Msg("failed to stop olink replay relay")
 		}
 	}
-	if s.natsServer != nil {
-		return s.natsServer.Shutdown()
-	}
 	return nil
 }
 
-func (s *NetworkManager) NatsClientURL() string {
-	if s.natsServer != nil {
-		return s.natsServer.ClientURL()
-	}
-	return ""
-}
-
-func (s *NetworkManager) NatsConnection() (*nats.Conn, error) {
-	if s.natsServer == nil {
-		return nil, fmt.Errorf("nats server not started")
-	}
-	return s.natsServer.Connection()
-}
-
-func (s *NetworkManager) StartHTTP(addr string) error {
-	if s.httpServer != nil {
+func (m *NetworkManager) StartHTTP(addr string) error {
+	if m.httpServer != nil {
 		log.Info().Msg("stop running http server")
-		s.httpServer.Stop()
+		m.httpServer.Stop()
 	}
 	log.Info().Msg("start http server")
-	s.httpServer = NewHTTPServer(&HttpServerOptions{Addr: addr})
-	err := s.httpServer.Start()
+	m.httpServer = NewHTTPServer(&HttpServerOptions{Addr: addr})
+	err := m.httpServer.Start()
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start http server")
 	}
@@ -174,70 +169,165 @@ func (s *NetworkManager) StartHTTP(addr string) error {
 	return err
 }
 
-func (s *NetworkManager) StopHTTP() error {
+func (m *NetworkManager) StopHTTP() error {
 	log.Info().Msg("stop http server")
-	if s.httpServer != nil {
-		s.httpServer.Stop()
+	if m.httpServer != nil {
+		m.httpServer.Stop()
 	}
 	return nil
 }
 
-func (s *NetworkManager) HttpServer() *HTTPServer {
-	return s.httpServer
+func (m *NetworkManager) HttpServer() *HTTPServer {
+	return m.httpServer
 }
 
-func (s *NetworkManager) EnableMonitor() error {
-	if s.httpServer == nil {
+func (m *NetworkManager) EnableMonitor(doLog bool) error {
+	log.Info().Msg("enable monitor endpoint")
+	if m.httpServer == nil {
 		log.Error().Msg("http server not started")
 		return fmt.Errorf("http server not started")
 	}
-	nc, err := s.NatsConnection()
+	nc, err := m.NatsConnection()
 	if err != nil {
-		log.Error().Msgf("nats connection: %v", err)
+		log.Error().Err(err).Msg("nats connection")
+		return err
 	}
-	s.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc))
-	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", s.httpServer.Address())
+	m.httpServer.Router().HandleFunc("/monitor/{source}", MonitorRequestHandler(nc, doLog))
+	log.Info().Msgf("start http monitor endpoint on http://%s/monitor/{source}", m.httpServer.Address())
 	return nil
 }
 
-func (s *NetworkManager) GetMonitorAddress() (string, error) {
-	log.Info().Msg("get monitor address")
-	if s.httpServer == nil {
-		return "", fmt.Errorf("http server not started")
+func (m *NetworkManager) EnableWSProxy() error {
+	cfg := m.opts.WSProxy
+	if cfg == nil || !cfg.Enabled {
+		return nil
 	}
-	return fmt.Sprintf("http://%s/monitor/${source}", s.httpServer.Address()), nil
+	if m.httpServer == nil {
+		return fmt.Errorf("http server not started")
+	}
+
+	opts := ProxyOptions{
+		BasePath:          cfg.BasePath,
+		Routes:            cfg.Routes,
+		ReconnectAttempts: cfg.ReconnectAttempts,
+		ReconnectBackoff:  cfg.ReconnectBackoff,
+		OnConnect: func(ctx context.Context, info *ConnectionInfo) error {
+			log.Info().Str("target", info.TargetURL).Str("path", info.Route.Path).Msg("ws proxy connection accepted")
+			return nil
+		},
+		OnDisconnect: func(ctx context.Context, info *ConnectionInfo, err error) {
+			event := log.Info()
+			if err != nil && !errors.Is(err, context.Canceled) {
+				event = log.Warn().Err(err)
+			}
+			event.Str("target", info.TargetURL).Str("path", info.Route.Path).Msg("ws proxy connection closed")
+		},
+	}
+
+	proxy, err := NewWSProxy(opts)
+	if err != nil {
+		return fmt.Errorf("ws proxy init: %w", err)
+	}
+	m.wsProxy = proxy
+
+	m.httpServer.Router().Mount("/", proxy)
+	log.Info().Msgf("ws proxy enabled at %s", cfg.BasePath)
+	return nil
 }
 
-func (s *NetworkManager) GetSimulationAddress() (string, error) {
-	log.Info().Msg("get simulation address")
-	if s.httpServer == nil {
+func (m *NetworkManager) GetMonitorAddress() (string, error) {
+	log.Info().Msg("get monitor address")
+	if m.httpServer == nil {
 		return "", fmt.Errorf("http server not started")
 	}
-	return fmt.Sprintf("ws://%s/ws", s.httpServer.Address()), nil
+	return fmt.Sprintf("http://%s/monitor/${source}", m.httpServer.Address()), nil
+}
+
+func (m *NetworkManager) GetSimulationAddress() (string, error) {
+	log.Info().Msg("get simulation address")
+	if m.httpServer == nil {
+		return "", fmt.Errorf("http server not started")
+	}
+	return fmt.Sprintf("ws://%s/ws", m.httpServer.Address()), nil
 }
 
 // MonitorEmitter return the monitor event emitter.
-func (s *NetworkManager) MonitorEmitter() *helper.Hook[mon.Event] {
+func (m *NetworkManager) MonitorEmitter() *helper.Hook[mon.Event] {
 	return &mon.Emitter
 }
 
-func (s *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
-	nc, err := s.NatsConnection()
+func (m *NetworkManager) OnMonitorEvent(fn func(event *mon.Event)) {
+	nc, err := m.NatsConnection()
 	if err != nil {
 		log.Error().Msgf("nats connection: %v", err)
 		return
 	}
-	log.Debug().Msg("subscribe to monitor events")
-	_, err = nc.Subscribe(mon.MonitorSubject+".>", func(msg *nats.Msg) {
+	log.Info().Msg("subscribe to monitor events")
+	_, err = nc.Subscribe(config.MonitorSubject+".>", func(msg *nats.Msg) {
 		var event mon.Event
-		err := json.Unmarshal(msg.Data, &event)
-		if err != nil {
-			log.Error().Msgf("unmarshal event: %v", err)
-			return
+
+		// Try to read metadata from NATS headers first (optimized path)
+		if msg.Header != nil && msg.Header.Get("X-Monitor-Type") != "" {
+			// Headers available - reconstruct event from headers + data payload
+			event.Type = mon.ParseEventType(msg.Header.Get("X-Monitor-Type"))
+			event.Symbol = msg.Header.Get("X-Monitor-Symbol")
+			event.Device = msg.Header.Get("X-Monitor-Device")
+			event.Id = msg.Header.Get("X-Monitor-Id")
+			// Parse timestamp if available
+			if tsStr := msg.Header.Get("X-Monitor-Timestamp"); tsStr != "" {
+				if ts, err := time.Parse("2006-01-02T15:04:05.999999999Z07:00", tsStr); err == nil {
+					event.Timestamp = ts
+				}
+			}
+
+			// Unmarshal only the Data payload (not full event)
+			var payload mon.Payload
+			if err := json.Unmarshal(msg.Data, &payload); err != nil {
+				log.Error().Msgf("unmarshal data payload: %v", err)
+				return
+			}
+			event.Data = payload
+		} else {
+			// Fallback: full event decode (backward compatibility with old messages)
+			if err := json.Unmarshal(msg.Data, &event); err != nil {
+				log.Error().Msgf("unmarshal event: %v", err)
+				return
+			}
 		}
+
 		fn(&event)
 	})
 	if err != nil {
 		log.Error().Err(err).Msg("failed to subscribe to monitor events")
 	}
+}
+
+func (m *NetworkManager) enableOlinkServer() error {
+	if m.httpServer == nil {
+		return fmt.Errorf("http server not started")
+	}
+	addr := m.HttpServer().Address()
+	log.Info().Msgf("starting Olink server at ws://%s/ws", addr)
+	m.HttpServer().Router().Handle("/ws", m.olnkServer)
+	return nil
+}
+
+func (m *NetworkManager) OlinkServer() *OlinkServer {
+	return m.olnkServer
+}
+
+func (m *NetworkManager) enableReplayRelay() error {
+	log.Info().Msg("enable olink replay relay")
+	nc, err := m.NatsConnection()
+	if err != nil {
+		log.Error().Err(err).Msg("failed to get nats connection for replay relay")
+		return err
+	}
+	relay := NewReplayOlinkRelay(nc, config.PlaybackSubject, m.OlinkServer())
+	if err := relay.Start(context.Background()); err != nil {
+		log.Error().Err(err).Msg("failed to start playback relay")
+		return err
+	}
+	m.olnkRelay = relay
+	return nil
 }

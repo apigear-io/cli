@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "stimulate",
 		Aliases: []string{"stim"},
-		Short:   "Stimulate API calls to services",
+		Short:   "stimulate API calls to services",
 		Long:    `Stimulate API calls using either a dynamic JS script to services`,
 	}
 	cmd.AddCommand(NewRunCommand())

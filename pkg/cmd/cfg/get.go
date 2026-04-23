@@ -9,7 +9,7 @@ func NewGetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "get",
 		Aliases: []string{"g"},
-		Short:   "Display configuration values",
+		Short:   "display configuration values",
 		Long:    `Display the value of a configuration variable`,
 		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

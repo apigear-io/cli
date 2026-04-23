@@ -2,7 +2,6 @@ package sim
 
 import (
 	"github.com/apigear-io/objectlink-core-go/olink/client"
-	"github.com/apigear-io/objectlink-core-go/olink/remote"
 )
 
 type NullConnector struct {
@@ -35,17 +34,4 @@ func (c *NullConnector) Node(url string) *client.Node {
 }
 
 type NullServer struct {
-}
-
-var _ IOlinkServer = (*NullServer)(nil)
-
-func NewNullServer() *NullServer {
-	return &NullServer{}
-}
-
-func (c *NullServer) RegisterSource(sink remote.IObjectSource) {
-	log.Info().Msg("Register source")
-}
-func (c *NullServer) UnregisterSource(sink remote.IObjectSource) {
-	log.Info().Msg("Unregister source")
 }

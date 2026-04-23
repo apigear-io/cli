@@ -10,7 +10,7 @@ func NewInfoCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "info",
 		Aliases: []string{"i"},
-		Short:   "Display the config information",
+		Short:   "display the config information",
 		Long:    `Display the config information and the location of the config file`,
 		Run: func(cmd *cobra.Command, _ []string) {
 			cmd.Println("info:")
