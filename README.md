@@ -223,3 +223,6 @@ graph TD
 ```
 
 So to use the simulation we need to start an embedded NATS server with the attached simService which uses the simManager to orchestrate the simulations. The simManager uses the world and actors to orchestrate the simulation. The world can run a simulation script and it's possible to call actor functions or world level functions using the simClient which uses the nats connection to send messages to the simService and vice versa.
+## License
+
+Licensed under the [MIT License](./LICENSE). See [LICENSE](./LICENSE) for details.
