@@ -145,6 +145,29 @@ func (c *cache) Install(url string, version string) (string, error) {
 	return name, nil
 }
 
+// InstallRef installs a template from an arbitrary git url into the cache and
+// checks it out at ref (a tag, branch or commit). Unlike Install, which is
+// driven by the registry and only resolves version tags, InstallRef supports
+// any git ref and derives a host-qualified cache name so that any host works.
+func (c *cache) InstallRef(url string, ref string) (string, error) {
+	if ref == "" {
+		return "", fmt.Errorf("version is required")
+	}
+	name, err := RepoNameFromGitURL(url)
+	if err != nil {
+		return "", err
+	}
+	name = MakeRepoID(name, ref)
+	dst := helper.Join(c.cacheDir, name)
+	if err := git.CloneOrPull(url, dst); err != nil {
+		return "", err
+	}
+	if err := git.CheckoutRef(dst, ref); err != nil {
+		return "", err
+	}
+	return name, nil
+}
+
 // ListTemplates lists all templates in the cache
 func (c *cache) ListCachedRepos() ([]*git.RepoInfo, error) {
 	// walk package dir to find a dir that contains a .git dir

@@ -55,7 +55,7 @@
           "type": "string"
         },
         "template": {
-          "description": "Path to the template which can be either template package name (e.g. apigear-io/template-cpp) or a template folder with a rules document (../\u003ctemplate_folder\u003e).",
+          "description": "The template to use. It can be a local template folder with a rules document (../\u003ctemplate_folder\u003e), a registry template package name (e.g. apigear-io/template-cpp), or a direct git url with a ref (tag, branch or commit) appended as @\u003cref\u003e (e.g. https://github.com/me/template.git@v1.2.0 or git@github.com:me/template.git@main).",
           "type": "string"
         }
       },
