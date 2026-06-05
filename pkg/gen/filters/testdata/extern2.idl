@@ -10,6 +10,8 @@ extern XType1
 @cpp.include: "x.h"
 @py.module: "demo.x"
 @java.package: "demo.x"
+@cs.name: "XType2"
+@cs.namespace: "Demo.X"
 extern XType2
 
 // external type imported from another module with alias
@@ -23,4 +25,7 @@ extern XType2
 @py.name: "XType3A"
 @java.package: "demo.x"
 @java.name: "XType3A"
+@cs.name: "XType3A"
+@cs.namespace: "Demo.X"
+@cs.default: "Demo.X.XTypeFactory.Create()"
 extern XType3

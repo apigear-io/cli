@@ -18,6 +18,8 @@ externs:
       py.import: "demo.x"
       java.package: "demo.x"
       java.name: "XType2A"
+      cs.namespace: "Demo.X"
+      cs.name: "XType2A"
   - name: XType3
     meta:
       qt.type: XType3A
@@ -38,3 +40,6 @@ externs:
       java.package: "demo.x"
       java.name: "XType3A"
       java.default: "someCtorXType3A()"
+      cs.namespace: "Demo.X"
+      cs.name: "XType3A"
+      cs.default: "Demo.X.XTypeFactory.Create()"

@@ -10,6 +10,7 @@ extern XType1
 @cpp.namespace: "demo::x"
 @cpp.include: "x.h"
 @java.package: "demo.x"
+@cs.namespace: "Demo.X"
 extern XType2
 
 // external type imported from another module with alias
@@ -26,6 +27,10 @@ extern XType2
 
 @java.package: "demo.x"
 @java.name: "XType3A"
+
+@cs.namespace: "Demo.X"
+@cs.name: "XType3A"
+@cs.default: "Demo.X.XTypeFactory.Create()"
 extern XType3
 
 
