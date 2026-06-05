@@ -91,15 +91,28 @@ func (l *SolutionTarget) compute(doc *SolutionDoc) error {
 	if l.computed {
 		return nil
 	}
-	// compute template dir
+	// compute template dir. A template can be resolved three ways, in order:
+	//   1. a local template folder (relative to the solution root dir)
+	//   2. a direct git url with a ref (e.g. https://host/me/tpl.git@v1.0.0)
+	//   3. a registry template package name (e.g. apigear-io/template-cpp)
+	// Git urls are detected before the registry so they never reach the
+	// registry repo-id parser, which is not git-url aware.
 	tplDir := helper.Join(doc.RootDir, l.Template)
 	if helper.IsDir(tplDir) {
 		l.TemplateDir = tplDir
 		l.TemplatesDir = helper.Join(tplDir, "templates")
 		l.RulesFile = helper.Join(tplDir, "rules.yaml")
 	} else {
-		// try to find the template dir in the templates dir
-		repoId, err := repos.GetOrInstallTemplateFromRepoID(l.Template)
+		var repoId string
+		var err error
+		if repos.IsGitURL(l.Template) {
+			// clone directly from the given git url@version
+			url, version := repos.SplitGitURLVersion(l.Template)
+			repoId, err = repos.GetOrInstallTemplateFromGitURL(url, version)
+		} else {
+			// resolve the template from the registry
+			repoId, err = repos.GetOrInstallTemplateFromRepoID(l.Template)
+		}
 		if err != nil {
 			log.Err(err).Msgf("failed to get template %s", l.Template)
 			return err
