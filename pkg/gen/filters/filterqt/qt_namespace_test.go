@@ -9,7 +9,7 @@ import (
 func TestQtNamespace(t *testing.T) {
 	t.Parallel()
 	var tests = []struct {
-		in    string
+		in     string
 		result string
 	}{
 		{"", ""},
@@ -19,7 +19,7 @@ func TestQtNamespace(t *testing.T) {
 		{"NAMESPACE", "namespace"},
 		{"Name Space", "name_space"},
 	}
-	
+
 	for _, testLine := range tests {
 		t.Run(testLine.in, func(t *testing.T) {
 			out := qtNamespace(testLine.in)

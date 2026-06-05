@@ -36,7 +36,7 @@ func ToParamString(prefix string, schema *model.Schema, name string) (string, er
 	ex := schema.LookupExtern(schema.Import, schema.Type)
 	if ex != nil {
 		exQt := qtExtern(schema.GetExtern())
-		namespace :=""
+		namespace := ""
 		if exQt.NameSpace != "" {
 			namespace = fmt.Sprintf("%s::", exQt.NameSpace)
 		}

@@ -2,8 +2,8 @@ package common
 
 import (
 	"fmt"
-	"slices"
 	"reflect"
+	"slices"
 
 	"github.com/ettle/strcase"
 	"github.com/gertd/go-pluralize"
@@ -49,22 +49,22 @@ func Pluralize(s string, i int) string {
 }
 
 func unpackArray(s any) []any {
-    v := reflect.ValueOf(s)
-    r := make([]any, v.Len())
-    for i := 0; i < v.Len(); i++ {
-        r[i] = v.Index(i).Interface()
-    }
-    return r
+	v := reflect.ValueOf(s)
+	r := make([]any, v.Len())
+	for i := 0; i < v.Len(); i++ {
+		r[i] = v.Index(i).Interface()
+	}
+	return r
 }
 
 func CollectFields(items any, fieldName string) ([]string, error) {
-	list := []string {}
+	list := []string{}
 	unpacked := unpackArray(items)
 	for _, item := range unpacked {
-	    r := reflect.ValueOf(item)
+		r := reflect.ValueOf(item)
 		reflectValue := reflect.Indirect(r).FieldByName(fieldName)
 		if !reflectValue.IsValid() {
-			return list, fmt.Errorf("given struct %T has no field %s ",  item, fieldName)
+			return list, fmt.Errorf("given struct %T has no field %s ", item, fieldName)
 		}
 		value := reflectValue.String()
 		list = append(list, value)
@@ -72,8 +72,8 @@ func CollectFields(items any, fieldName string) ([]string, error) {
 	return list, nil
 }
 
-func Unique (inList []string) []string {
+func Unique(inList []string) []string {
 	list := slices.Clone(inList)
 	slices.Sort(list)
-    return  slices.Compact(list)
+	return slices.Compact(list)
 }

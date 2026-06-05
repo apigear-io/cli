@@ -35,10 +35,10 @@ func NewObjectService(engine *Engine, objectId string, properties map[string]any
 	}
 	s.source = NewOLinkSource(s)
 	s.engine.registerSource(s.source)
-	
+
 	// Create the proxy for this service
 	s.proxy = CreateServiceProxy(engine.rt, s)
-	
+
 	return s
 }
 
@@ -154,7 +154,7 @@ func (o *ObjectService) RemoveProperty(name string) {
 func (o *ObjectService) EmitSignal(signal string, args ...any) {
 	// Emit locally to JavaScript listeners
 	o.signalEmitter.Emit(signal, args)
-	
+
 	// Also notify OLink clients if source is available
 	if o.source != nil {
 		o.source.NotifySignal(signal, core.Args(args))

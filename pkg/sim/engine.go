@@ -84,19 +84,19 @@ func NewEngine(opts EngineOptions) *Engine {
 	}
 	e.world = NewWorld(e)
 	e.loop.Start()
-	
+
 	// Initial setup - wait for initialization to complete before returning
 	// This ensures e.rt is set and the engine is fully ready
 	done := make(chan bool)
 	e.loop.RunOnLoop(func(rt *goja.Runtime) {
-		e.rt = rt  // Set the runtime once during initialization
+		e.rt = rt // Set the runtime once during initialization
 		rt.SetFieldNameMapper(goja.UncapFieldNameMapper())
 		e.world.register(rt)
 		registry.Enable(rt)
 		done <- true
 	})
-	<-done  // Wait for initialization to complete
-	
+	<-done // Wait for initialization to complete
+
 	return e
 }
 
