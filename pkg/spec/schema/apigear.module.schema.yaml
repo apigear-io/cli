@@ -3,6 +3,21 @@ description: |
   This is the schema for the ObjectAPI 1.0 specification.
   It is used to validate the ObjectAPI 1.0 specification.
 
+  Model overview: a module groups interfaces, structs and enums. An interface
+  describes a reactive object that may live locally or be accessed remotely
+  (e.g. over ApiGear ObjectLink). It has three member kinds:
+    - properties: observable state. Each property automatically gets a getter,
+      a setter (unless readonly) and a change-notification signal - never add a
+      separate signal just to report a property change.
+    - operations: callable methods with parameters and an optional return value;
+      depending on the target they may complete asynchronously.
+    - signals: one-way notifications emitted to subscribers; they carry
+      parameters but never return a value.
+  Property, operation and signal names share one namespace per interface and
+  must all be unique (including each property's implicit change signal). Types
+  from another module require both an 'import' on the type and an entry in the
+  top-level 'imports' array.
+
   An example of a valid ObjectAPI 1.0 specification is:
 
   ```
@@ -110,16 +125,16 @@ definitions:
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       type:
         type: string
-        description: "A type either a primitive type (int, int16, int32, int64, float, float16, float32, float64, bool, string) or a declared type name (e.g. an interface name, struct name or enum name)."
+        description: "The type: either a primitive type (bool, int, int32, int64, float, float32, float64, string, bytes, any) or the name of a declared type (an interface, struct or enum). Note: there is no int16/float16. For a type declared in another module, also set 'import' (see below)."
       import:
         type: string
-        description: "If the type is defined in another module, this is the name of that module."
+        description: "If the type is defined in another module, this is that module's name. The module must also be listed in the top-level 'imports' array, otherwise the reference will not resolve."
       array:
         type: boolean
         description: "If true, the type is an array of the given type."
       readonly:
         type: boolean
-        description: "If true, the type is readonly and no setter will be generated, meaning it cannot be modified after creation."
+        description: "Only meaningful for interface properties: if true, the property is read-only and no setter is generated. Has no effect on struct fields or operation parameters."
   Type:
     type: object
     description: "A type information without a name. (e.g. int), used for return types."
@@ -134,10 +149,10 @@ definitions:
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       type:
         type: string
-        description: "A primitive type or a defined type (such as interface, struct or enum)."
+        description: "The return type: a primitive type (bool, int, int32, int64, float, float32, float64, string, bytes, any) or a declared type (interface, struct or enum)."
       import:
         type: string
-        description: "If the type is defined in another module, this is the name of that module."
+        description: "If the type is defined in another module, this is that module's name. The module must also be listed in the top-level 'imports' array, otherwise the reference will not resolve."
       array:
         type: boolean
         description: "If true, the type is an array of the given type."
@@ -159,7 +174,7 @@ definitions:
         description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
   Interface:
     type: object
-    description: "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals must be unique within the interface."
+    description: "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals share one namespace and must all be unique within the interface (this includes each property's auto-generated change signal)."
     required: [name]
     additionalProperties: false
     properties:
@@ -172,7 +187,7 @@ definitions:
         description: "A description of the interface. This should provide a clear and concise explanation of the interface's purpose and functionality."
       extends:
         type: object
-        description: "An interface can extend another interface, inheriting its properties and operations. If the interface comes from another module, the import field must be set."
+        description: "References a single base interface. Inheritance is technology-neutral and delegated to the target template, which is expected to render it as native inheritance (e.g. C++ ': public Base', Java 'extends Base'). Declare only the members this interface ADDS - do NOT re-declare the base's properties, operations or signals, as that would produce redundant overrides or shadowing in the generated code. Set 'import' when the base interface is in another module. Note: support is template-dependent and the bundled templates do not currently render extends, so inherited members may be absent in generated output."
         required: [name]
         additionalProperties: false
         properties:
@@ -182,13 +197,13 @@ definitions:
             pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
           import:
             type: string
-            description: "The name of the module where the base interface is defined."
+            description: "The name of the module where the base interface is defined. If it is another module, that module must also be listed in the top-level 'imports' array."
       meta:
         type: object
         description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
       properties:
         type: array
-        description: "An array of reactive properties. Templates automatically generate setter, getter and change signal for each property (set<Name>, get<Name>, on<Name>)."
+        description: "An array of reactive properties. For each property the generated SDK automatically provides a getter, a setter (unless 'readonly' is set) and a change-notification signal that fires whenever the value changes. Do NOT declare a separate signal to report a property change - it already exists. Exact generated names (e.g. getX/setX/onXChanged) depend on the target language template."
         items:
           $ref: "#/definitions/NamedType"
       operations:
@@ -198,9 +213,9 @@ definitions:
           $ref: "#/definitions/Operation"
       signals:
         type: array
-        description: "An array of emittablesignals, with parameters."
+        description: "An array of signals the interface can emit. Declare only signals that are NOT already implied by a property change (see 'properties')."
         items:
-          $ref: "#/definitions/Operation"
+          $ref: "#/definitions/Signal"
   Struct:
     type: object
     description: "A struct is a message format that groups related data fields under a single name."
@@ -245,8 +260,9 @@ definitions:
           $ref: "#/definitions/EnumMember"
   Operation:
     type: object
-    description: "An operation is a callable interface method, with parameters and a return type."
+    description: "An operation is a callable interface method with parameters and an optional return type. Omit 'return' (or set its type to 'void') for operations that return nothing."
     additionalProperties: false
+    required: [name]
     properties:
       name:
         type: string
@@ -263,6 +279,27 @@ definitions:
       params:
         type: array
         description: "An array of operation parameters."
+        items:
+          $ref: "#/definitions/NamedType"
+  Signal:
+    type: object
+    description: "A signal is a one-way notification emitted by the interface to its subscribers. Signals carry parameters but never return a value."
+    additionalProperties: false
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: "A name starts with a letter, followed by zero-or-more letters, numbers or underscores."
+        pattern: "^[a-zA-Z][0-9A-Za-z_]*$"
+      description:
+        type: string
+        description: "A description of the signal. Should be a short, descriptive text about when the signal is emitted."
+      meta:
+        type: object
+        description: "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported."
+      params:
+        type: array
+        description: "An array of signal parameters."
         items:
           $ref: "#/definitions/NamedType"
   EnumMember: # member value inside an enum
@@ -283,5 +320,5 @@ definitions:
         description: "Meta information are read by the individual template. Read the template manual which meta tags are supported."
       value:
         type: integer
-        description: "The value of the enum member. It must be unique within the enum and must be a positive integer. If no value is specified, the first member will be assigned the value 0, and subsequent members will be assigned incrementing values."
+        description: "The non-negative integer value of the enum member, unique within the enum. Auto-numbering is all-or-nothing: if you omit 'value' on EVERY member, members are numbered 0, 1, 2 ... by position; but as soon as you set 'value' on ANY member, auto-numbering is disabled and every member left without a 'value' stays 0 (which may collide). So specify either all values or none."
         minimum: 0
