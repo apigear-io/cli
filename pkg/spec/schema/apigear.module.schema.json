@@ -50,7 +50,7 @@
           "type": "string"
         },
         "value": {
-          "description": "The value of the enum member. It must be unique within the enum and must be a positive integer. If no value is specified, the first member will be assigned the value 0, and subsequent members will be assigned incrementing values.",
+          "description": "The non-negative integer value of the enum member, unique within the enum. Auto-numbering is all-or-nothing: if you omit 'value' on EVERY member, members are numbered 0, 1, 2 ... by position; but as soon as you set 'value' on ANY member, auto-numbering is disabled and every member left without a 'value' stays 0 (which may collide). So specify either all values or none.",
           "minimum": 0,
           "type": "integer"
         }
@@ -85,7 +85,7 @@
     },
     "Interface": {
       "additionalProperties": false,
-      "description": "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals must be unique within the interface.",
+      "description": "An interface is a collection of reactive properties, callable operations and emittable signals. Names of properties, operations and signals share one namespace and must all be unique within the interface (this includes each property's auto-generated change signal).",
       "properties": {
         "description": {
           "description": "A description of the interface. This should provide a clear and concise explanation of the interface's purpose and functionality.",
@@ -93,10 +93,10 @@
         },
         "extends": {
           "additionalProperties": false,
-          "description": "An interface can extend another interface, inheriting its properties and operations. If the interface comes from another module, the import field must be set.",
+          "description": "References a single base interface. Inheritance is technology-neutral and delegated to the target template, which is expected to render it as native inheritance (e.g. C++ ': public Base', Java 'extends Base'). Declare only the members this interface ADDS - do NOT re-declare the base's properties, operations or signals, as that would produce redundant overrides or shadowing in the generated code. Set 'import' when the base interface is in another module. Note: support is template-dependent and the bundled templates do not currently render extends, so inherited members may be absent in generated output.",
           "properties": {
             "import": {
-              "description": "The name of the module where the base interface is defined.",
+              "description": "The name of the module where the base interface is defined. If it is another module, that module must also be listed in the top-level 'imports' array.",
               "type": "string"
             },
             "name": {
@@ -127,16 +127,16 @@
           "type": "array"
         },
         "properties": {
-          "description": "An array of reactive properties. Templates automatically generate setter, getter and change signal for each property (set\u003cName\u003e, get\u003cName\u003e, on\u003cName\u003e).",
+          "description": "An array of reactive properties. For each property the generated SDK automatically provides a getter, a setter (unless 'readonly' is set) and a change-notification signal that fires whenever the value changes. Do NOT declare a separate signal to report a property change - it already exists. Exact generated names (e.g. getX/setX/onXChanged) depend on the target language template.",
           "items": {
             "$ref": "#/definitions/NamedType"
           },
           "type": "array"
         },
         "signals": {
-          "description": "An array of emittablesignals, with parameters.",
+          "description": "An array of signals the interface can emit. Declare only signals that are NOT already implied by a property change (see 'properties').",
           "items": {
-            "$ref": "#/definitions/Operation"
+            "$ref": "#/definitions/Signal"
           },
           "type": "array"
         }
@@ -159,7 +159,7 @@
           "type": "string"
         },
         "import": {
-          "description": "If the type is defined in another module, this is the name of that module.",
+          "description": "If the type is defined in another module, this is that module's name. The module must also be listed in the top-level 'imports' array, otherwise the reference will not resolve.",
           "type": "string"
         },
         "meta": {
@@ -172,11 +172,11 @@
           "type": "string"
         },
         "readonly": {
-          "description": "If true, the type is readonly and no setter will be generated, meaning it cannot be modified after creation.",
+          "description": "Only meaningful for interface properties: if true, the property is read-only and no setter is generated. Has no effect on struct fields or operation parameters.",
           "type": "boolean"
         },
         "type": {
-          "description": "A type either a primitive type (int, int16, int32, int64, float, float16, float32, float64, bool, string) or a declared type name (e.g. an interface name, struct name or enum name).",
+          "description": "The type: either a primitive type (bool, int, int32, int64, float, float32, float64, string, bytes, any) or the name of a declared type (an interface, struct or enum). Note: there is no int16/float16. For a type declared in another module, also set 'import' (see below).",
           "type": "string"
         }
       },
@@ -188,7 +188,7 @@
     },
     "Operation": {
       "additionalProperties": false,
-      "description": "An operation is a callable interface method, with parameters and a return type.",
+      "description": "An operation is a callable interface method with parameters and an optional return type. Omit 'return' (or set its type to 'void') for operations that return nothing.",
       "properties": {
         "description": {
           "description": "A description of the operation. Should be a short, descriptive text about the operation.",
@@ -214,6 +214,39 @@
           "$ref": "#/definitions/Type"
         }
       },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "Signal": {
+      "additionalProperties": false,
+      "description": "A signal is a one-way notification emitted by the interface to its subscribers. Signals carry parameters but never return a value.",
+      "properties": {
+        "description": {
+          "description": "A description of the signal. Should be a short, descriptive text about when the signal is emitted.",
+          "type": "string"
+        },
+        "meta": {
+          "description": "Meta information is evaluated by the individual template. Read the template manual which meta tags are supported.",
+          "type": "object"
+        },
+        "name": {
+          "description": "A name starts with a letter, followed by zero-or-more letters, numbers or underscores.",
+          "pattern": "^[a-zA-Z][0-9A-Za-z_]*$",
+          "type": "string"
+        },
+        "params": {
+          "description": "An array of signal parameters.",
+          "items": {
+            "$ref": "#/definitions/NamedType"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "name"
+      ],
       "type": "object"
     },
     "Struct": {
@@ -259,7 +292,7 @@
           "type": "string"
         },
         "import": {
-          "description": "If the type is defined in another module, this is the name of that module.",
+          "description": "If the type is defined in another module, this is that module's name. The module must also be listed in the top-level 'imports' array, otherwise the reference will not resolve.",
           "type": "string"
         },
         "meta": {
@@ -267,7 +300,7 @@
           "type": "object"
         },
         "type": {
-          "description": "A primitive type or a defined type (such as interface, struct or enum).",
+          "description": "The return type: a primitive type (bool, int, int32, int64, float, float32, float64, string, bytes, any) or a declared type (interface, struct or enum).",
           "type": "string"
         }
       },
@@ -277,7 +310,7 @@
       "type": "object"
     }
   },
-  "description": "This is the schema for the ObjectAPI 1.0 specification.\nIt is used to validate the ObjectAPI 1.0 specification.\n\nAn example of a valid ObjectAPI 1.0 specification is:\n\n```\nschema: apigear.module/1.0\nname: my.module\nversion: 1.0\ninterfaces:\n  - name: Counter\n    properties:\n      - name: value\n        type: int\n    operations:\n      - name: increment\n        params:\n          - name: value\n            type: int\n        return: int\n      - name: decrement\n        params:\n          - name: value\n            type: int\n        return: int\n```\n",
+  "description": "This is the schema for the ObjectAPI 1.0 specification.\nIt is used to validate the ObjectAPI 1.0 specification.\n\nModel overview: a module groups interfaces, structs and enums. An interface\ndescribes a reactive object that may live locally or be accessed remotely\n(e.g. over ApiGear ObjectLink). It has three member kinds:\n  - properties: observable state. Each property automatically gets a getter,\n    a setter (unless readonly) and a change-notification signal - never add a\n    separate signal just to report a property change.\n  - operations: callable methods with parameters and an optional return value;\n    depending on the target they may complete asynchronously.\n  - signals: one-way notifications emitted to subscribers; they carry\n    parameters but never return a value.\nProperty, operation and signal names share one namespace per interface and\nmust all be unique (including each property's implicit change signal). Types\nfrom another module require both an 'import' on the type and an entry in the\ntop-level 'imports' array.\n\nAn example of a valid ObjectAPI 1.0 specification is:\n\n```\nschema: apigear.module/1.0\nname: my.module\nversion: 1.0\ninterfaces:\n  - name: Counter\n    properties:\n      - name: value\n        type: int\n    operations:\n      - name: increment\n        params:\n          - name: value\n            type: int\n        return: int\n      - name: decrement\n        params:\n          - name: value\n            type: int\n        return: int\n```\n",
   "properties": {
     "description": {
       "description": "Module description. Should be a short description of the module.",
