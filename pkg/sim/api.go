@@ -33,12 +33,12 @@ func (w *World) CreateService(object string, properties map[string]any) (any, er
 	w.servicesLoaded = true
 	service := NewObjectService(w.engine, object, properties)
 	w.services[object] = service
-	
+
 	// If called from JavaScript, return a proxy
 	if w.engine.rt != nil {
 		return CreateServiceProxy(w.engine.rt, service), nil
 	}
-	
+
 	// If called from Go (e.g., tests), return the service directly
 	return service, nil
 }
@@ -53,7 +53,7 @@ func (w *World) GetService(object string) *ObjectService {
 func (w *World) register(rt *goja.Runtime) {
 	// Keep the engine runtime reference for proxy creation
 	w.engine.rt = rt
-	
+
 	// Register $createService directly (no need for proxy.js anymore)
 	if err := rt.Set("$createService", w.CreateService); err != nil {
 		log.Error().Err(err).Msg("failed to set $createService")

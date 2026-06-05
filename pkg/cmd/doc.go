@@ -2,5 +2,4 @@
 // The CLI is based on cobra and viper.
 // * https://github.com/spf13/cobra
 // * https://github.com/spf13/viper
-//
 package cmd
