@@ -9,10 +9,10 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "monitor",
 		Aliases: []string{"mon", "m"},
-		Short:   "Display monitor API calls",
+		Short:   "display monitor API calls",
 		Long:    `Display monitored API calls using a monitoring server. SDKs typically create trace points and forward all API traffic to this monitoring service if configured.`,
 	}
-	cmd.AddCommand(NewClientCommand())
-	cmd.AddCommand(NewServerCommand())
+	cmd.AddCommand(NewFeedCommand())
+	cmd.AddCommand(NewRunCommand())
 	return cmd
 }

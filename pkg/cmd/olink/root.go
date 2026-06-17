@@ -10,7 +10,7 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "olink",
 		Aliases: []string{"ol"},
-		Short:   "Start an ObjectLink REPL to test the olink protocol",
+		Short:   "start an ObjectLink REPL to test the olink protocol",
 		Long: `The olink command starts an interactive REPL (Read-Eval-Print Loop) for testing 
 the ObjectLink protocol. It provides commands to connect to servers, link to objects,
 invoke methods, set properties, and observe signals.`,

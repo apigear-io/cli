@@ -1,0 +1,290 @@
+package session
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/apigear-io/cli/pkg/streams/buffer"
+	"github.com/apigear-io/cli/pkg/streams/config"
+	"github.com/apigear-io/cli/pkg/streams/natsutil"
+	"github.com/google/uuid"
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/jetstream"
+	"github.com/rs/zerolog/log"
+)
+
+// RecordOptions controls how a live device stream is captured into JetStream.
+type RecordOptions struct {
+	ServerURL     string
+	Subject       string
+	DeviceID      string
+	SessionID     string
+	Retention     time.Duration
+	SessionBucket string
+	Note          string
+	Verbose       bool
+	Progress      func(Metadata)
+	PreRoll       time.Duration
+}
+
+// Record subscribes to subject.deviceID and persists messages into a dedicated JetStream stream, tracking metadata in KV.
+func Record(ctx context.Context, opts RecordOptions) (*Metadata, error) {
+	if opts.ServerURL == "" {
+		return nil, errors.New("server URL cannot be empty")
+	}
+	baseSubject := strings.TrimSpace(opts.Subject)
+	if baseSubject == "" {
+		return nil, errors.New("subject cannot be empty")
+	}
+	opts.DeviceID = strings.TrimSpace(opts.DeviceID)
+	if opts.DeviceID == "" {
+		return nil, errors.New("device-id cannot be empty")
+	}
+	sessionID := strings.TrimSpace(opts.SessionID)
+	if sessionID == "" {
+		sessionID = uuid.NewString()
+	}
+	sessionBucket := strings.TrimSpace(opts.SessionBucket)
+	if sessionBucket == "" {
+		sessionBucket = config.SessionBucket
+	}
+
+	nc, err := nats.Connect(opts.ServerURL)
+	if err != nil {
+		return nil, fmt.Errorf("connect to NATS: %w", err)
+	}
+	defer func() {
+		if drainErr := nc.Drain(); drainErr != nil {
+			log.Error().Err(drainErr).Str("session", sessionID).Msg("failed to drain NATS connection after record")
+		}
+	}()
+
+	js, err := jetstream.New(nc)
+	if err != nil {
+		return nil, fmt.Errorf("jetstream context: %w", err)
+	}
+
+	sessMgr, err := NewSessionStore(js, sessionBucket)
+	if err != nil {
+		return nil, err
+	}
+	_, _, err = sessMgr.Load(sessionID)
+	if err == nil {
+		log.Warn().Str("session", sessionID).Msg("session already exists")
+		return nil, fmt.Errorf("session %s already exists", sessionID)
+	} else if !errors.Is(err, jetstream.ErrKeyNotFound) {
+		return nil, err
+	}
+
+	sourceSubject := config.DeviceSubject(baseSubject, opts.DeviceID)
+	sessionSubject := config.SessionSubject(sessionID)
+	streamName := StreamName(sessionID)
+
+	streamCfg := jetstream.StreamConfig{
+		Name:      streamName,
+		Subjects:  []string{sessionSubject},
+		Retention: jetstream.LimitsPolicy,
+		Storage:   jetstream.FileStorage,
+	}
+	if opts.Retention > 0 {
+		streamCfg.MaxAge = opts.Retention
+	}
+
+	_, err = js.CreateStream(ctx, streamCfg)
+	if err != nil {
+		return nil, fmt.Errorf("add stream: %w", err)
+	}
+
+	log.Info().Str("session", sessionID).Str("device", opts.DeviceID).Msg("record stream created")
+
+	metadata := &Metadata{
+		SessionID:      sessionID,
+		DeviceID:       opts.DeviceID,
+		SourceSubject:  sourceSubject,
+		SessionSubject: sessionSubject,
+		Stream:         streamName,
+		Bucket:         sessionBucket,
+		Start:          time.Now().UTC(),
+		End:            time.Now().UTC(),
+		Note:           opts.Note,
+	}
+	if opts.Retention > 0 {
+		metadata.Retention = opts.Retention.String()
+	}
+
+	if opts.PreRoll > 0 {
+		replayCtx, cancelReplay := context.WithTimeout(context.Background(), opts.PreRoll+time.Second)
+		defer cancelReplay()
+		since := time.Now().Add(-opts.PreRoll)
+		until := time.Now()
+		count, last, err := buffer.Replay(replayCtx, js, opts.DeviceID, since, until, func(bufMsg *nats.Msg, bufferedAt time.Time) error {
+			recordedAt := bufferedAt
+			if recordedAt.IsZero() {
+				recordedAt = time.Now().UTC()
+			}
+			replayed := &nats.Msg{
+				Subject: sessionSubject,
+				Header:  nats.Header{},
+				Data:    append([]byte(nil), bufMsg.Data...),
+			}
+			replayed.Header.Set("Content-Type", "application/json")
+			replayed.Header.Set(config.HeaderDevice, opts.DeviceID)
+			replayed.Header.Set(config.HeaderSession, sessionID)
+			replayed.Header.Set(config.HeaderRecordedAt, recordedAt.Format(time.RFC3339Nano))
+			replayed.Header.Set(config.HeaderPreRoll, "true")
+			return publishToStream(replayCtx, js, replayed)
+		})
+		if err != nil {
+			log.Error().Err(err).Str("session", sessionID).Msg("pre-roll replay failed")
+		} else if count > 0 {
+			metadata.MessageCount = count
+			if !last.IsZero() {
+				metadata.End = last
+			}
+		}
+	}
+
+	revision, err := sessMgr.Put(metadata, 0)
+	if err != nil {
+		return nil, err
+	}
+	if opts.Progress != nil {
+		opts.Progress(*metadata)
+	}
+
+	// Capture the time BEFORE subscription to catch any missed messages from buffer
+	subscriptionStartTime := time.Now().UTC()
+
+	msgCh := make(chan *nats.Msg, 1024)
+	sub, err := nc.ChanSubscribe(sourceSubject, msgCh)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe source: %w", err)
+	}
+	defer func() {
+		if err := sub.Drain(); err != nil {
+			log.Warn().Err(err).Str("subject", sourceSubject).Msg("failed to drain subscription")
+		}
+	}()
+
+	// Ensure subscription is fully established on NATS server before proceeding
+	// This prevents race condition where messages arrive before subscription is ready
+	if err := nc.FlushTimeout(2 * time.Second); err != nil {
+		return nil, fmt.Errorf("flush subscription: %w", err)
+	}
+
+	// Replay messages from buffer that arrived during subscription setup
+	// This ensures we don't miss any messages due to timing
+	subscriptionReadyTime := time.Now().UTC()
+	replayCtx, cancelReplay := context.WithTimeout(context.Background(), 5*time.Second)
+	count, last, err := buffer.Replay(replayCtx, js, opts.DeviceID, subscriptionStartTime, subscriptionReadyTime, func(bufMsg *nats.Msg, bufferedAt time.Time) error {
+		recordedAt := bufferedAt
+		if recordedAt.IsZero() {
+			recordedAt = time.Now().UTC()
+		}
+		replayed := &nats.Msg{
+			Subject: sessionSubject,
+			Header:  nats.Header{},
+			Data:    append([]byte(nil), bufMsg.Data...),
+		}
+		replayed.Header.Set("Content-Type", "application/json")
+		replayed.Header.Set(config.HeaderDevice, opts.DeviceID)
+		replayed.Header.Set(config.HeaderSession, sessionID)
+		replayed.Header.Set(config.HeaderRecordedAt, recordedAt.Format(time.RFC3339Nano))
+		// Copy original headers from buffered message if they exist
+		if bufMsg.Header != nil {
+			for k, v := range bufMsg.Header {
+				if k != config.HeaderBufferedAt && k != config.HeaderDeadline {
+					replayed.Header[k] = v
+				}
+			}
+		}
+		return publishToStream(replayCtx, js, replayed)
+	})
+	cancelReplay()
+	if err != nil {
+		log.Warn().Err(err).Str("session", sessionID).Msg("failed to replay messages from buffer during setup")
+	} else if count > 0 {
+		log.Info().Str("session", sessionID).Int("count", count).Msg("replayed messages that arrived during subscription setup")
+		metadata.MessageCount += count
+		if !last.IsZero() {
+			metadata.End = last
+		}
+	}
+
+	var mu sync.Mutex
+
+	updateMeta := func(update func(*Metadata)) error {
+		mu.Lock()
+		defer mu.Unlock()
+		update(metadata)
+		rev, err := sessMgr.Put(metadata, revision)
+		if err != nil {
+			return err
+		}
+		revision = rev
+		if opts.Progress != nil {
+			copy := *metadata
+			opts.Progress(copy)
+		}
+		return nil
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			err := ctx.Err()
+			_ = updateMeta(func(m *Metadata) {
+				m.End = time.Now().UTC()
+			})
+			if errors.Is(err, context.Canceled) {
+				log.Info().Str("session", sessionID).Msg("record context canceled")
+				return metadata, nil
+			}
+			return metadata, err
+		case msg, ok := <-msgCh:
+			if !ok {
+				log.Info().Str("session", sessionID).Msg("record channel closed")
+				return metadata, nil
+			}
+
+			recordedAt := time.Now().UTC()
+			stored := &nats.Msg{
+				Subject: sessionSubject,
+				Header:  natsutil.CloneHeader(msg.Header),
+				Data:    append([]byte(nil), msg.Data...),
+			}
+			stored.Header.Set("Content-Type", "application/json")
+			stored.Header.Set(config.HeaderDevice, opts.DeviceID)
+			stored.Header.Set(config.HeaderSession, sessionID)
+			stored.Header.Set(config.HeaderRecordedAt, recordedAt.Format(time.RFC3339Nano))
+
+			err := publishToStream(ctx, js, stored)
+			if err != nil {
+				log.Error().Err(err).Str("session", sessionID).Msg("publish to stream failed")
+				return metadata, err
+			}
+
+			err = updateMeta(func(m *Metadata) {
+				m.MessageCount++
+				m.End = recordedAt
+			})
+			if err != nil {
+				log.Error().Err(err).Str("session", sessionID).Msg("update metadata failed")
+				return metadata, err
+			}
+		}
+	}
+}
+
+func publishToStream(ctx context.Context, js jetstream.JetStream, msg *nats.Msg) error {
+	err := ctx.Err()
+	if err != nil {
+		return err
+	}
+	_, err = js.PublishMsg(ctx, msg)
+	return err
+}

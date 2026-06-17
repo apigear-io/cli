@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "spec",
 		Aliases: []string{"s"},
-		Short:   "Load and validate files",
+		Short:   "load and validate files",
 		Long:    `Specification defines the file formats used inside apigear`,
 	}
 	cmd.AddCommand(NewCheckCommand())

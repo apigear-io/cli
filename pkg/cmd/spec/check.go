@@ -13,7 +13,7 @@ func NewCheckCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "check",
 		Aliases: []string{"c", "lint"},
-		Short:   "Check document",
+		Short:   "check document",
 		Long:    `Check documents and report errors`,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

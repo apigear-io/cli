@@ -71,7 +71,7 @@ func (s *EventScript) jsCall(symbol string, data Payload) {
 		Id:        uuid.New().String(),
 		Type:      TypeCall,
 		Timestamp: time.Now(),
-		Source:    "345",
+		Device:    "345",
 		Symbol:    symbol,
 		Data:      data,
 	}
@@ -84,7 +84,7 @@ func (s *EventScript) jsSignal(symbol string, data Payload) {
 		Id:        uuid.New().String(),
 		Type:      TypeSignal,
 		Timestamp: time.Now(),
-		Source:    "345",
+		Device:    "345",
 		Symbol:    symbol,
 		Data:      data,
 	}
@@ -97,7 +97,7 @@ func (s *EventScript) jsSet(symbol string, data Payload) {
 		Id:        uuid.New().String(),
 		Type:      TypeState,
 		Timestamp: time.Now(),
-		Source:    "345",
+		Device:    "345",
 		Symbol:    symbol,
 		Data:      data,
 	}

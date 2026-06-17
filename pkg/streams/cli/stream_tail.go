@@ -1,0 +1,39 @@
+package cli
+
+import (
+	"context"
+
+	"github.com/apigear-io/cli/pkg/streams/config"
+	"github.com/apigear-io/cli/pkg/streams/msgio"
+	"github.com/nats-io/nats.go"
+	"github.com/spf13/cobra"
+)
+
+func newStreamTailCmd() *cobra.Command {
+	opts := msgio.TailOptions{
+		Subject: config.MonitorSubject,
+	}
+
+	cmd := &cobra.Command{
+		Use:     "tail",
+		Short:   "tail a live stream from a device",
+		Aliases: []string{"follow", "watch"},
+		GroupID: "record",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			return withSignalContext(cmd.Context(), func(ctx context.Context) error {
+				opts.Verbose = rootOpts.verbose
+				return withNATS(ctx, func(nc *nats.Conn) error {
+					tailer := msgio.NewTailer(nc, opts)
+					return tailer.Run(ctx)
+				})
+			})
+		},
+	}
+
+	cmd.Flags().StringVar(&opts.Subject, "subject", opts.Subject, "Base monitor subject name")
+	cmd.Flags().StringVar(&opts.DeviceID, "device", "", "Device identifier to subscribe to. If empty, subscribes to all devices.")
+	cmd.Flags().BoolVar(&opts.Pretty, "pretty", false, "Pretty print JSON payloads")
+	cmd.Flags().BoolVar(&opts.Headers, "headers", false, "Print message headers")
+
+	return cmd
+}

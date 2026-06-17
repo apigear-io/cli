@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:     "generate",
 		Aliases: []string{"gen", "g"},
-		Short:   "Generate code from APIs",
+		Short:   "generate code from APIs",
 		Long:    `generate API SDKs from API descriptions using templates`,
 	}
 	cmd.AddCommand(NewExpertCommand(), NewSolutionCommand())

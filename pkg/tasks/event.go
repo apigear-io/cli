@@ -34,11 +34,12 @@ func (e *TaskEvent) String() string {
 	return fmt.Sprintf("task %s: %s -> %v", e.Name, e.State, e.Meta)
 }
 
-func NewTaskEvent(item *TaskItem, state TaskState) *TaskEvent {
+// NewTaskEvent creates a new task event
+func NewTaskEvent(name string, state TaskState) *TaskEvent {
 	return &TaskEvent{
-		Name:  item.name,
+		Name:  name,
 		State: state,
-		Meta:  item.meta,
+		Meta:  map[string]interface{}{},
 	}
 }
 

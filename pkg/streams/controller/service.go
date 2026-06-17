@@ -1,0 +1,432 @@
+package controller
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/apigear-io/cli/pkg/streams/config"
+	"github.com/apigear-io/cli/pkg/streams/natsutil"
+	"github.com/apigear-io/cli/pkg/streams/session"
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go/jetstream"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	DefaultCommandSubject = config.RecordRpcSubject
+	DefaultStateBucket    = config.StateBucket
+)
+
+const (
+	ActionStart = "start"
+	ActionStop  = "stop"
+)
+
+// RpcRequest represents an RPC request sent to the controller.
+type RpcRequest struct {
+	Action        string `json:"action"`
+	Subject       string `json:"subject,omitempty"`
+	DeviceID      string `json:"device_id,omitempty"`
+	SessionID     string `json:"session_id,omitempty"`
+	Retention     string `json:"retention,omitempty"`
+	SessionBucket string `json:"session_bucket,omitempty"`
+	Note          string `json:"note,omitempty"`
+	PreRoll       string `json:"pre_roll,omitempty"`
+	Verbose       bool   `json:"verbose,omitempty"`
+}
+
+// RpcResponse communicates the outcome of a controller command.
+type RpcResponse struct {
+	OK        bool           `json:"ok"`
+	Message   string         `json:"message,omitempty"`
+	SessionID string         `json:"session_id,omitempty"`
+	State     *StateSnapshot `json:"state,omitempty"`
+}
+
+// StateSnapshot is persisted in the KV state bucket.
+type StateSnapshot struct {
+	SessionID     string    `json:"session_id"`
+	DeviceID      string    `json:"device_id"`
+	Subject       string    `json:"subject"`
+	Status        string    `json:"status"`
+	MessageCount  int       `json:"message_count"`
+	LastError     string    `json:"last_error,omitempty"`
+	StartedAt     time.Time `json:"started_at,omitempty"`
+	LastMessageAt time.Time `json:"last_message_at,omitempty"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+// Options configure the controller runtime.
+type Options struct {
+	ServerURL        string
+	RecordRpcSubject string
+	StateBucket      string
+}
+
+// NewController creates a new controller instance with the provided options.
+func NewController(js jetstream.JetStream, opts Options) (*Controller, error) {
+	if js == nil {
+		return nil, errors.New("jetstream context is nil")
+	}
+	if opts.RecordRpcSubject == "" {
+		opts.RecordRpcSubject = config.RecordRpcSubject
+	}
+	if opts.StateBucket == "" {
+		opts.StateBucket = config.StateBucket
+	}
+	if opts.ServerURL == "" {
+		return nil, errors.New("server URL is required")
+	}
+
+	ctx := context.Background()
+	kv, err := natsutil.EnsureKeyValue(ctx, js, opts.StateBucket)
+	if err != nil {
+		return nil, fmt.Errorf("state bucket %s: %w", opts.StateBucket, err)
+	}
+
+	return &Controller{
+		js:      js,
+		opts:    opts,
+		stateKV: kv,
+		jobs:    map[string]*recordJob{},
+	}, nil
+}
+
+type Controller struct {
+	js      jetstream.JetStream
+	opts    Options
+	stateKV jetstream.KeyValue
+
+	mu   sync.Mutex
+	jobs map[string]*recordJob
+	sub  *nats.Subscription
+}
+
+type recordJob struct {
+	cancel context.CancelFunc
+	done   chan struct{}
+}
+
+// Start begins listening for RPC commands on the configured subject.
+func (c *Controller) Start() error {
+	log.Info().
+		Str("subject", c.opts.RecordRpcSubject).
+		Str("queue", config.RecordControllerQueueGroup).
+		Msg("starting record controller")
+	sub, err := c.js.Conn().QueueSubscribe(c.opts.RecordRpcSubject, config.RecordControllerQueueGroup, c.handleMsg)
+	if err != nil {
+		return fmt.Errorf("subscribe %s: %w", c.opts.RecordRpcSubject, err)
+	}
+
+	c.mu.Lock()
+	c.sub = sub
+	c.mu.Unlock()
+
+	log.Info().
+		Str("subject", c.opts.RecordRpcSubject).
+		Str("queue", config.RecordControllerQueueGroup).
+		Msg("record controller started")
+	return nil
+}
+
+// Close gracefully shuts down the controller by unsubscribing and stopping all jobs.
+func (c *Controller) Close() {
+	c.mu.Lock()
+	if c.sub != nil {
+		if err := c.sub.Drain(); err != nil {
+			log.Warn().Err(err).Str("subject", c.opts.RecordRpcSubject).Msg("failed to drain subscription")
+		}
+		c.sub = nil
+	}
+	c.mu.Unlock()
+
+	c.stopAll()
+}
+
+func (c *Controller) stopAll() {
+	c.mu.Lock()
+	jobs := make([]*recordJob, 0, len(c.jobs))
+	for sessionID, job := range c.jobs {
+		jobs = append(jobs, job)
+		delete(c.jobs, sessionID)
+	}
+	c.mu.Unlock()
+
+	for _, job := range jobs {
+		job.cancel()
+		<-job.done
+	}
+}
+
+func (c *Controller) handleMsg(msg *nats.Msg) {
+	var req RpcRequest
+	err := json.Unmarshal(msg.Data, &req)
+	if err != nil {
+		log.Error().Err(err).Msg("invalid command payload")
+		c.respondError(msg, "invalid command payload: %v", err)
+		return
+	}
+
+	switch strings.ToLower(req.Action) {
+	case ActionStart:
+		log.Debug().Str("session", req.SessionID).Str("device", req.DeviceID).Msg("handling start command")
+		resp := c.handleStart(req)
+		c.respond(msg, resp)
+	case ActionStop:
+		log.Debug().Str("session", req.SessionID).Msg("handling stop command")
+		resp := c.handleStop(req)
+		c.respond(msg, resp)
+	default:
+		log.Warn().Str("action", req.Action).Msg("unknown controller action")
+		c.respondError(msg, "unknown action %q", req.Action)
+	}
+}
+
+func (c *Controller) handleStart(req RpcRequest) RpcResponse {
+	start, err := req.normalizeStart()
+	if err != nil {
+		log.Warn().Err(err).Str("action", req.Action).Msg("start command invalid")
+		resp := RpcResponse{Message: err.Error()}
+		if start.SessionID != "" {
+			resp.SessionID = start.SessionID
+		}
+		return resp
+	}
+
+	if start.PreRoll > 0 {
+		if start.PreRoll > config.BufferWindow {
+			return RpcResponse{Message: fmt.Sprintf("pre-roll %s exceeds buffer window %s", start.PreRoll, config.BufferWindow), SessionID: start.SessionID}
+		}
+	}
+
+	// Device ID is required for recording
+	if start.DeviceID == "" {
+		return RpcResponse{Message: "device-id is required for recording", SessionID: start.SessionID}
+	}
+
+	job := &recordJob{done: make(chan struct{})}
+
+	c.mu.Lock()
+	if _, exists := c.jobs[start.SessionID]; exists {
+		c.mu.Unlock()
+		log.Warn().Str("session", start.SessionID).Msg("start command rejected: already running")
+		return RpcResponse{Message: fmt.Sprintf("session %s already running", start.SessionID), SessionID: start.SessionID}
+	}
+
+	// Check if device is already being recorded
+	for existingSessionID, existingJob := range c.jobs {
+		if existingJob == nil {
+			continue
+		}
+		// Load existing session state to check device ID
+		existingState, err := c.loadState(existingSessionID)
+		if err == nil && existingState.DeviceID == start.DeviceID && existingState.Status == "running" {
+			c.mu.Unlock()
+			log.Warn().Str("device", start.DeviceID).Str("existing_session", existingSessionID).Msg("start command rejected: device already being recorded")
+			return RpcResponse{Message: fmt.Sprintf("device %s already being recorded by session %s", start.DeviceID, existingSessionID), SessionID: start.SessionID}
+		}
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	job.cancel = cancel
+	c.jobs[start.SessionID] = job
+	c.mu.Unlock()
+
+	started := time.Now().UTC()
+	state := StateSnapshot{
+		SessionID:    start.SessionID,
+		DeviceID:     start.DeviceID,
+		Subject:      start.Subject,
+		Status:       "running",
+		MessageCount: 0,
+		StartedAt:    started,
+	}
+	_ = c.writeState(state)
+
+	go c.runRecord(ctx, job, start, started)
+
+	log.Info().Str("session", start.SessionID).Str("device", start.DeviceID).Msg("recording job launched")
+	return RpcResponse{OK: true, Message: "recording started", SessionID: start.SessionID, State: &state}
+}
+
+func (c *Controller) runRecord(ctx context.Context, job *recordJob, start startCommand, started time.Time) {
+	log.Info().Str("session", start.SessionID).Str("device", start.DeviceID).Str("server", c.opts.ServerURL).Msg("recording job started")
+	defer func() {
+		close(job.done)
+		c.mu.Lock()
+		delete(c.jobs, start.SessionID)
+		c.mu.Unlock()
+	}()
+
+	opts := session.RecordOptions{
+		ServerURL:     c.opts.ServerURL,
+		Subject:       start.Subject,
+		DeviceID:      start.DeviceID,
+		SessionID:     start.SessionID,
+		Retention:     start.Retention,
+		SessionBucket: start.SessionBucket,
+		Note:          start.Note,
+		Verbose:       start.Verbose,
+		PreRoll:       start.PreRoll,
+	}
+
+	opts.Progress = func(meta session.Metadata) {
+		snap := StateSnapshot{
+			SessionID:     meta.SessionID,
+			DeviceID:      meta.DeviceID,
+			Subject:       meta.SourceSubject,
+			Status:        "running",
+			MessageCount:  meta.MessageCount,
+			StartedAt:     started,
+			LastMessageAt: meta.End,
+		}
+		err := c.writeState(snap)
+		if err != nil {
+			log.Error().Err(err).Str("session", meta.SessionID).Msg("update state failed")
+		}
+	}
+
+	meta, err := session.Record(ctx, opts)
+
+	state := StateSnapshot{
+		SessionID:     start.SessionID,
+		DeviceID:      start.DeviceID,
+		Subject:       start.Subject,
+		StartedAt:     started,
+		LastMessageAt: time.Now().UTC(),
+	}
+
+	if err != nil {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+			state.Status = "stopped"
+		} else {
+			state.Status = "error"
+			state.LastError = err.Error()
+		}
+	} else {
+		state.Status = "stopped"
+		if meta != nil {
+			state.MessageCount = meta.MessageCount
+			state.DeviceID = meta.DeviceID
+			state.Subject = meta.SourceSubject
+			state.LastMessageAt = meta.End
+		}
+	}
+
+	_ = c.writeState(state)
+}
+
+func (c *Controller) handleStop(req RpcRequest) RpcResponse {
+	sessionID := strings.TrimSpace(req.SessionID)
+	if sessionID == "" {
+		return RpcResponse{Message: "session-id cannot be empty"}
+	}
+
+	c.mu.Lock()
+	job, jobExists := c.jobs[sessionID]
+	c.mu.Unlock()
+
+	if !jobExists {
+		// nothing running, but update state to stopped
+		snap, err := c.loadState(sessionID)
+		if err != nil {
+			log.Error().Err(err).Str("session", sessionID).Msg("load state failed")
+			return RpcResponse{Message: fmt.Sprintf("load state: %v", err), SessionID: sessionID}
+		}
+		snap.Status = "stopped"
+		snap.LastError = ""
+		if snap.StartedAt.IsZero() {
+			snap.StartedAt = time.Now().UTC()
+		}
+		_ = c.writeState(snap)
+		return RpcResponse{OK: true, SessionID: sessionID, Message: "no active recording"}
+	}
+
+	job.cancel()
+	<-job.done
+
+	log.Info().Str("session", sessionID).Msg("recording job signaled to stop")
+	return RpcResponse{OK: true, SessionID: sessionID, Message: "recording stopped"}
+}
+
+func (c *Controller) respond(msg *nats.Msg, resp RpcResponse) {
+	if !resp.OK && resp.Message == "" {
+		resp.Message = "command failed"
+	}
+	data, _ := json.Marshal(resp)
+	log.Debug().Str("session", resp.SessionID).Bool("ok", resp.OK).Msg("command response")
+	_ = msg.Respond(data)
+}
+
+func (c *Controller) respondError(msg *nats.Msg, format string, args ...any) {
+	resp := RpcResponse{OK: false, Message: fmt.Sprintf(format, args...)}
+	data, _ := json.Marshal(resp)
+	log.Error().Msgf(format, args...)
+	_ = msg.Respond(data)
+}
+
+func (c *Controller) writeState(state StateSnapshot) error {
+	if state.SessionID == "" {
+		return errors.New("state missing session id")
+	}
+	if state.Subject == "" || state.DeviceID == "" {
+		prev, err := c.loadState(state.SessionID)
+		if err == nil {
+			if state.Subject == "" {
+				state.Subject = prev.Subject
+			}
+			if state.DeviceID == "" {
+				state.DeviceID = prev.DeviceID
+			}
+			if state.MessageCount == 0 {
+				state.MessageCount = prev.MessageCount
+			}
+			if state.StartedAt.IsZero() {
+				state.StartedAt = prev.StartedAt
+			}
+			if state.LastMessageAt.IsZero() {
+				state.LastMessageAt = prev.LastMessageAt
+			}
+		}
+	}
+	state.UpdatedAt = time.Now().UTC()
+	data, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	_, err = c.stateKV.Put(context.Background(), state.SessionID, data)
+	return err
+}
+
+func (c *Controller) loadState(sessionID string) (StateSnapshot, error) {
+	value := StateSnapshot{SessionID: sessionID}
+	entry, err := c.stateKV.Get(context.Background(), sessionID)
+	if err != nil {
+		if errors.Is(err, jetstream.ErrKeyNotFound) {
+			return value, nil
+		}
+		return value, err
+	}
+	err = json.Unmarshal(entry.Value(), &value)
+	if err != nil {
+		return value, err
+	}
+	return value, nil
+}
+
+func parseRetention(value string) (time.Duration, error) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return 0, nil
+	}
+	d, err := time.ParseDuration(value)
+	if err != nil {
+		return 0, fmt.Errorf("invalid retention duration: %w", err)
+	}
+	return d, nil
+}

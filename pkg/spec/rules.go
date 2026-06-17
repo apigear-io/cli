@@ -201,12 +201,14 @@ func (r *FeatureRule) Validate() error {
 
 // FindScopeByMatch returns the first scope that matches the given match.
 func (s *FeatureRule) FindScopesByMatch(match ScopeType) []*ScopeRule {
+	log.Debug().Msgf("finding scopes by match: %s", match)
 	var scopes []*ScopeRule
 	for _, scope := range s.Scopes {
 		if scope.Match == match {
 			scopes = append(scopes, scope)
 		}
 	}
+	log.Debug().Msgf("found %d scopes by match: %s", len(scopes), match)
 	return scopes
 }
 

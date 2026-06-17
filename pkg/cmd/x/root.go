@@ -8,7 +8,7 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "x",
 		Aliases: []string{"experimental"},
-		Short:   "Experimental commands",
+		Short:   "experimental commands",
 		Long:    `Command which are under development or experimental`,
 	}
 	cmd.AddCommand(NewDocsCommand())
@@ -16,6 +16,8 @@ func NewRootCommand() *cobra.Command {
 	cmd.AddCommand(NewYaml2JsonCommand())
 	cmd.AddCommand(NewYaml2IdlCommand())
 	cmd.AddCommand(NewIdl2YamlCommand())
+	cmd.AddCommand(NewWSEchoCommand())
+	cmd.AddCommand(NewWSCatCommand())
 	return cmd
 }
 

@@ -1,0 +1,43 @@
+package cli
+
+import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/apigear-io/cli/pkg/streams/config"
+	"github.com/apigear-io/cli/pkg/streams/session"
+	"github.com/spf13/cobra"
+)
+
+func newStreamPlayCmd() *cobra.Command {
+	opts := &session.PlaybackOptions{
+		Bucket: config.SessionBucket,
+		Speed:  1,
+	}
+
+	cmd := &cobra.Command{
+		Use:     "play",
+		Short:   "play back a recorded stream session",
+		Aliases: []string{"replay"},
+		GroupID: "record",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+			defer cancel()
+
+			opts.ServerURL = rootOpts.server
+			opts.Verbose = rootOpts.verbose
+			return session.Playback(ctx, *opts)
+		},
+	}
+
+	cmd.Flags().StringVar(&opts.SessionID, "session", "", "Session identifier to replay")
+	cmd.Flags().StringVar(&opts.TargetSubject, "target-subject", "", "Optional override subject to publish during playback (default: "+config.PlaybackSubject+")")
+	cmd.Flags().Float64Var(&opts.Speed, "speed", opts.Speed, "Playback speed multiplier (e.g. 0.25, 1, 5)")
+	if err := cmd.MarkFlagRequired("session"); err != nil {
+		cobra.CheckErr(err)
+	}
+
+	return cmd
+}

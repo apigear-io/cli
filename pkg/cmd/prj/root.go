@@ -9,7 +9,7 @@ func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "project",
 		Aliases: []string{"prj"},
-		Short:   "Manage apigear projects",
+		Short:   "manage apigear projects",
 		Long:    `Projects consist of API descriptions, SDK configuration, simulation documents and other files`,
 	}
 	cmd.AddCommand(NewAddCommand())

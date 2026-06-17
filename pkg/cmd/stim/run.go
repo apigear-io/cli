@@ -21,7 +21,7 @@ func NewRunCommand() *cobra.Command {
 		Use:     "run",
 		Aliases: []string{"r"},
 		Args:    cobra.ExactArgs(1),
-		Short:   "Run stimulation script using an optional scenario file",
+		Short:   "run stimulation script using an optional scenario file",
 		Long:    `Stimulation script runs scripted calls to a service backend.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			simman := sim.NewManager(sim.ManagerOptions{})

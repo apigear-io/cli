@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/apigear-io/cli/pkg/net"
 	"github.com/apigear-io/objectlink-core-go/olink/remote"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/console"
@@ -42,7 +43,7 @@ func createPathResolver(workDir string) require.PathResolver {
 
 type EngineOptions struct {
 	WorkDir   string
-	Server    IOlinkServer
+	Server    net.IOlinkServer
 	Connector IOlinkConnector
 }
 type Engine struct {
@@ -50,7 +51,7 @@ type Engine struct {
 	world     *World
 	loop      *eventloop.EventLoop
 	workDir   string
-	server    IOlinkServer
+	server    net.IOlinkServer
 	connector IOlinkConnector
 	rt        *goja.Runtime
 	registry  *require.Registry
@@ -62,7 +63,7 @@ func NewEngine(opts EngineOptions) *Engine {
 		opts.WorkDir = "."
 	}
 	if opts.Server == nil {
-		opts.Server = NewOlinkServer()
+		opts.Server = net.NewOlinkServer()
 	}
 	if opts.Connector == nil {
 		opts.Connector = NewOlinkConnector()
@@ -100,7 +101,7 @@ func NewEngine(opts EngineOptions) *Engine {
 	return e
 }
 
-func (e *Engine) SetOlinkServer(server IOlinkServer) {
+func (e *Engine) SetOlinkServer(server net.IOlinkServer) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
 	e.server = server
